@@ -11,9 +11,29 @@ const axe = require.resolve("axe-core/axe.min.js")
       await p.goto("http://localhost:3000" + path, { waitUntil: "networkidle" })
       await p.waitForTimeout(300)
       await p.evaluate(() => document.fonts.ready)
-      const missing = await p.evaluate(() =>
-        [...document.querySelectorAll("[data-slot=icon]")].filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.textContent)
+      // A ligature that didn't resolve renders as text far wider than 1em.
+      const missing = await p.evaluate(() => {
+        const out = []
+        for (const e of document.querySelectorAll("[data-slot=icon]")) {
+          const r = document.createRange()
+          r.selectNodeContents(e)
+          if (r.getBoundingClientRect().width > e.getBoundingClientRect().width * 1.5) out.push(e.textContent)
+        }
+        return out
+      })
+      // Glyph alignment: the line box must equal the icon box, or the glyph drifts.
+      const misaligned = await p.evaluate(() =>
+        [...document.querySelectorAll("[data-slot=icon]")]
+          .filter((e) => {
+            const cs = getComputedStyle(e)
+            return Math.abs(parseFloat(cs.lineHeight) - parseFloat(cs.fontSize)) > 0.5 || Math.abs(e.getBoundingClientRect().height - parseFloat(cs.fontSize)) > 0.5
+          })
+          .map((e) => `${e.textContent} (line-height ${getComputedStyle(e).lineHeight}, font-size ${getComputedStyle(e).fontSize})`)
       )
+      for (const m of new Set(misaligned)) {
+        total++
+        console.log(`${scheme.padEnd(5)} ${path.padEnd(19)} icon ${m} is not vertically centered`)
+      }
       for (const m of new Set(missing)) {
         total++
         console.log(`${scheme.padEnd(5)} ${path.padEnd(19)} icon "${m}" is not in the font subset (run npm run icons)`)

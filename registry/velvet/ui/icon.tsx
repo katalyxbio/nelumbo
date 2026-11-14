@@ -53,8 +53,15 @@ function Icon({ name, fill, weight, grade, size, label, className, style, ...pro
       aria-label={label}
       translate="no"
       className={cn(
-        "inline-block shrink-0 overflow-hidden text-center leading-none font-normal whitespace-nowrap normal-case not-italic select-none",
-        "size-[var(--icon-size,1.25em)] text-[length:var(--icon-size,1.25em)]",
+        "inline-block shrink-0 text-center font-normal whitespace-nowrap normal-case not-italic select-none",
+        // Box and line height are exactly 1em of the icon's own font size, so the
+        // glyph is centered whatever unit --icon-size uses. Otherwise it drops and gets cut off.
+        // Written as arbitrary properties so tailwind-merge can't drop them: it
+        // treats a font-size class as overriding any earlier leading-* class.
+        "[font-size:var(--icon-size,1.25em)] size-[1em] [line-height:1]",
+        // Clip only sideways (hides the ligature text before the font loads);
+        // never clip vertically, so nothing can crop the glyph.
+        "overflow-x-clip overflow-y-visible",
         "[font-family:var(--icon-font,'Material_Symbols_Rounded')] [font-feature-settings:'liga'] [direction:ltr] [word-wrap:normal]",
         "[font-variation-settings:'FILL'_var(--icon-fill,0),'wght'_var(--icon-wght,400),'GRAD'_var(--icon-grad,0),'opsz'_var(--icon-opsz,24)]",
         "transition-[font-variation-settings] duration-300 ease-standard motion-reduce:transition-none",
