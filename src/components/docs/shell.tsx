@@ -36,6 +36,16 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/chip", label: "Chip", isNew: true },
     ],
   },
+  {
+    group: "Overlays",
+    items: [
+      { href: "/components/dialog", label: "Dialog" },
+      { href: "/components/sheet", label: "Sheet" },
+      { label: "Popover", soon: true },
+      { label: "Dropdown Menu", soon: true },
+      { label: "Tooltip", soon: true },
+    ],
+  },
 ]
 
 export function DocsShell({ children }: { children: React.ReactNode }) {

@@ -771,6 +771,45 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "shadcn-compatible Dialog on Radix: spring entrance over a blurred scrim, sizes, a hero icon that centers the header, and a scrolling body with edge hairlines.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/icon-button"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/dialog.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "sheet",
+      "type": "registry:ui",
+      "title": "Sheet",
+      "description": "shadcn-compatible Sheet on Radix Dialog: four sides, a floating style, and bottom sheets with a drag handle and drag-to-dismiss.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/dialog"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/sheet.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
