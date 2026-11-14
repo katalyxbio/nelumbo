@@ -71,7 +71,7 @@ export default function ButtonPage() {
         </div>
       </Section>
 
-      <Section title="With icons" description="Icons size to the label (1.15em) and padding tightens on the icon side automatically.">
+      <Section title="With icons" description="Icons size to the label (1.3em, about 18px on a default button) and padding tightens on the icon side automatically.">
         <Preview>
           <Button><Icon name="send" /> Send invite</Button>
           <Button variant="tonal">Continue <Icon name="arrow_forward" /></Button>

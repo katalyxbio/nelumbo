@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { Icon } from "@/registry/velvet/ui/icon"
 import { Button } from "@/registry/velvet/ui/button"
 import { cn } from "@/lib/utils"
-import { SEED_PRESETS, useStudio } from "./studio"
+import { ICON_STYLES, SEED_PRESETS, useStudio } from "./studio"
 
 const NAV = [
   { group: "Foundations", items: [{ href: "/", label: "Color, depth & motion" }] },
@@ -93,7 +93,7 @@ function ThemeToggle() {
 }
 
 function SeedPicker() {
-  const { seed, setSeed, vibrance, setVibrance } = useStudio()
+  const { seed, setSeed, vibrance, setVibrance, iconStyle, setIconStyle } = useStudio()
   return (
     <div className="flex flex-col gap-3 rounded-2xl bg-surface-container-low p-3.5 dark:bg-surface-container">
       <div className="flex items-center justify-between">
@@ -138,6 +138,23 @@ function SeedPicker() {
           onChange={(e) => setVibrance(Number(e.target.value))}
           className="w-full accent-primary"
         />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <span id="icon-style-label" className="type-label-md text-muted-foreground">Icon style</span>
+        <div role="radiogroup" aria-labelledby="icon-style-label" className="grid grid-cols-3 gap-1 rounded-full bg-surface-container-high p-1 dark:bg-surface-container-highest">
+          {ICON_STYLES.map((s) => (
+            <button
+              key={s}
+              type="button"
+              role="radio"
+              aria-checked={iconStyle === s}
+              onClick={() => setIconStyle(s)}
+              className="state-layer tactile cursor-pointer rounded-full py-1.5 type-label-sm text-muted-foreground outline-none focus-visible:outline-2 focus-visible:outline-ring aria-checked:bg-card aria-checked:text-foreground aria-checked:shadow-e1"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   )

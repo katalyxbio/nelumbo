@@ -2,6 +2,11 @@
 
 import * as React from "react"
 import { buildScheme, schemeToCss } from "@/lib/velvet/scheme"
+import { materialSymbolsUrl } from "@/registry/velvet/ui/icon"
+import { USED_ICONS } from "@/lib/velvet/icons.generated"
+
+export type IconStyle = "Rounded" | "Outlined" | "Sharp"
+export const ICON_STYLES: IconStyle[] = ["Rounded", "Outlined", "Sharp"]
 
 export const DEFAULT_SEED = "#5b5bd6"
 
@@ -21,6 +26,8 @@ type Studio = {
   setSeed: (s: string) => void
   setVibrance: (v: number) => void
   setDark: (d: boolean) => void
+  iconStyle: IconStyle
+  setIconStyle: (s: IconStyle) => void
 }
 
 const Ctx = React.createContext<Studio | null>(null)
@@ -35,6 +42,15 @@ export function StudioProvider({ children }: { children: React.ReactNode }) {
   const [seed, setSeed] = React.useState(DEFAULT_SEED)
   const [vibrance, setVibrance] = React.useState(1)
   const [dark, setDark] = React.useState(false)
+  const [iconStyle, setIconStyle] = React.useState<IconStyle>("Rounded")
+
+  // Docs-only preview of the other Material Symbols families. Rounded stays
+  // Velvet's default; this swaps --icon-font and loads the matching subset.
+  React.useEffect(() => {
+    const root = document.documentElement
+    if (iconStyle === "Rounded") root.style.removeProperty("--icon-font")
+    else root.style.setProperty("--icon-font", `'Material Symbols ${iconStyle}'`)
+  }, [iconStyle])
 
   React.useEffect(() => {
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) setDark(true)
@@ -55,7 +71,8 @@ export function StudioProvider({ children }: { children: React.ReactNode }) {
   }, [seed, vibrance])
 
   return (
-    <Ctx.Provider value={{ seed, vibrance, dark, setSeed, setVibrance, setDark }}>
+    <Ctx.Provider value={{ seed, vibrance, dark, setSeed, setVibrance, setDark, iconStyle, setIconStyle }}>
+      {iconStyle !== "Rounded" && <link rel="stylesheet" href={materialSymbolsUrl(USED_ICONS, iconStyle)} />}
       {css && <style id="velvet-live">{css}</style>}
       {children}
     </Ctx.Provider>

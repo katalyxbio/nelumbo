@@ -35,6 +35,7 @@ export const USED_ICONS: IconName[] = [
   "photo_camera",
   "pill",
   "play_arrow",
+  "radio",
   "search",
   "send",
   "settings",
