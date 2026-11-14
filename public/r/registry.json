@@ -909,7 +909,7 @@
       "name": "snackbar",
       "type": "registry:ui",
       "title": "Snackbar",
-      "description": "Snackbars on Radix Toast with a sonner-style snackbar() call: one at a time with a queue, a single action, icons, persistent and urgent messages, swipe to dismiss.",
+      "description": "Snackbars on Radix Toast with a sonner-compatible API (toast, toast.success/error/warning/info/loading/promise, Toaster): one at a time with a queue, a single action, descriptions, in-place updates, swipe to dismiss.",
       "dependencies": [
         "radix-ui"
       ],

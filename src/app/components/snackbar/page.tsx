@@ -1,15 +1,19 @@
 "use client"
 
 import * as React from "react"
-import { Snackbars, snackbar } from "@/registry/velvet/ui/snackbar"
+import { Snackbars, snackbar, toast } from "@/registry/velvet/ui/snackbar"
 import { Button } from "@/registry/velvet/ui/button"
 import { Icon } from "@/registry/velvet/ui/icon"
+import { Checkbox } from "@/registry/velvet/ui/checkbox"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const MESSAGES = ["Weekly report", "Invoice #2024-118", "Design review notes"]
 
+const wait = (ms: number, fail = false) => new Promise<number>((res, rej) => setTimeout(() => (fail ? rej(new Error("Network error")) : res(24)), ms))
+
 export default function SnackbarPage() {
   const [inbox, setInbox] = React.useState(MESSAGES)
+  const [failNext, setFailNext] = React.useState(false)
 
   const archive = () => {
     const [first, ...rest] = inbox
@@ -101,7 +105,7 @@ export default function SnackbarPage() {
             Go offline
           </Button>
           <Button variant="ghost" onClick={() => snackbar.dismiss()}>
-            Dismiss current
+            Dismiss all
           </Button>
         </Preview>
       </Section>
@@ -119,6 +123,59 @@ export default function SnackbarPage() {
             Send three
           </Button>
         </Preview>
+      </Section>
+
+      <Section
+        title="Sonner-style API"
+        description="toast and Toaster are the same functions under sonner's names, with its types, descriptions and promise toasts. Types add an icon; they stay neutral in color, so the message carries the meaning."
+      >
+        <Preview>
+          <Button variant="secondary" onClick={() => toast.success("Changes saved")}>
+            Success
+          </Button>
+          <Button variant="secondary" onClick={() => toast.error("Couldn't save changes", { description: "You're offline. We'll retry when you reconnect." })}>
+            Error
+          </Button>
+          <Button variant="secondary" onClick={() => toast.warning("Storage almost full", { action: { label: "Manage", onClick: () => {} } })}>
+            Warning
+          </Button>
+          <Button variant="secondary" onClick={() => toast.info("Event created", { description: "Friday 14 November, 10:00" })}>
+            Info with description
+          </Button>
+        </Preview>
+        <Preview>
+          <Button
+            onClick={() =>
+              toast.promise(wait(1800, failNext), {
+                loading: "Uploading 24 photos…",
+                success: (n) => `${n} photos uploaded`,
+                error: (e) => `Upload failed: ${e instanceof Error ? e.message : "unknown error"}`,
+              })
+            }
+          >
+            <Icon name="upload" />
+            Upload (promise)
+          </Button>
+          <label className="flex items-center gap-2 type-body-md text-muted-foreground">
+            <Checkbox checked={failNext} onCheckedChange={(v) => setFailNext(v === true)} />
+            Make it fail
+          </label>
+        </Preview>
+        <Code>{`// Coming from shadcn's Sonner? Change the imports:
+- import { toast } from "sonner"
+- import { Toaster } from "@/components/ui/sonner"
++ import { toast, Toaster } from "@/components/ui/snackbar"
+
+toast.success("Changes saved")
+toast.error("Couldn't save", { description: "You're offline." })
+toast.promise(upload(), {
+  loading: "Uploading…",
+  success: (n) => \`\${n} photos uploaded\`,
+  error: "Upload failed",
+})
+
+// Differences: one at a time instead of a stack, bottom positions only,
+// neutral colors (no richColors), a single action (no cancel), no toast.custom.`}</Code>
       </Section>
 
       <Section title="Usage" description="Mount the host once, near the root of your app. Above a navigation bar, pass offset so snackbars clear it.">
@@ -141,13 +198,16 @@ snackbar("Message archived", {
       <Section title="Options">
         <PropsTable
           rows={[
+            ["snackbar / toast", "(message, options?) => id", "", ".success .error .warning .info .loading .message .promise .dismiss"],
+            ["description", "ReactNode", "", "Second line; the message reads as a title"],
             ["action", "{ label, onClick, altText? }", "", "One action; altText describes it for screen readers"],
-            ["icon", "IconName", "", "Leading icon"],
-            ["closable", "boolean", "false", "Close button"],
-            ["duration", "number (ms)", "4000, or 7000 with an action", "Infinity keeps it until dismissed"],
-            ["urgent", "boolean", "false", "Announce assertively"],
-            ["onDismiss", "() => void", "", "After it closes"],
-            ["<Snackbars position>", '"bottom-center" | "bottom-start"', '"bottom-center"', "Start: left on wide screens"],
+            ["icon", "IconName | ReactNode", "", "Leading icon; types set one"],
+            ["id", "number | string", "", "Reuse to update a snackbar in place"],
+            ["closable / closeButton", "boolean", "false", "Close button"],
+            ["duration", "number (ms)", "4000, 7000 with an action", "Infinity keeps it; loading stays until updated"],
+            ["urgent", "boolean", "false (true for errors)", "Announce assertively"],
+            ["onDismiss / onAutoClose", "(id) => void", "", "Closed by the person / by the timer"],
+            ["<Snackbars position>", '"bottom-center" | "bottom-start" | "bottom-end"', '"bottom-center"', "Also bottom-left / bottom-right; <Toaster> is the same"],
             ["<Snackbars offset>", "number (px)", "0", "Extra bottom space"],
           ]}
           note="Notes"
