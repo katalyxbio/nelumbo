@@ -26,7 +26,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
   {
     group: "Components",
     items: [
-      { label: "Input", soon: true },
+      { href: "/components/input", label: "Input" },
       { label: "Card", soon: true },
       { label: "Switch", soon: true },
       { label: "Chip", soon: true, isNew: true },

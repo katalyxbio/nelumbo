@@ -62,6 +62,8 @@ export const themeTokens: Record<string, string> = {
   "radius-xl": "calc(var(--radius) + 6px)",
   "radius-2xl": "calc(var(--radius) + 12px)",
   "radius-3xl": "calc(var(--radius) + 20px)",
+  // text fields stay tight next to pill buttons (6px at the default --radius)
+  "radius-field": "calc(var(--radius) - 8px)",
 
   // elevation: two-layer tinted shadows (contact + ambient)
   "shadow-e1": `0 1px 2px 0 ${mix(7)}, 0 1px 3px 0 ${mix(4)}`,
