@@ -5,6 +5,8 @@ import { Snackbars, snackbar, toast } from "@/registry/velvet/ui/snackbar"
 import { Button } from "@/registry/velvet/ui/button"
 import { Icon } from "@/registry/velvet/ui/icon"
 import { Checkbox } from "@/registry/velvet/ui/checkbox"
+import { Switch } from "@/registry/velvet/ui/switch"
+import { SegmentedButton, SegmentedButtonItem } from "@/registry/velvet/ui/segmented-button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const MESSAGES = ["Weekly report", "Invoice #2024-118", "Design review notes"]
@@ -14,6 +16,8 @@ const wait = (ms: number, fail = false) => new Promise<number>((res, rej) => set
 export default function SnackbarPage() {
   const [inbox, setInbox] = React.useState(MESSAGES)
   const [failNext, setFailNext] = React.useState(false)
+  const [mode, setMode] = React.useState("queue")
+  const [rich, setRich] = React.useState(false)
 
   const archive = () => {
     const [first, ...rest] = inbox
@@ -26,7 +30,7 @@ export default function SnackbarPage() {
 
   return (
     <>
-      <Snackbars />
+      <Snackbars stack={mode === "stack"} richColors={rich} />
 
       <PageHeader eyebrow="Component · 22" title="Snackbar">
         A brief message about something the app just did, with at most one action. It rises in from the bottom on a
@@ -127,7 +131,7 @@ export default function SnackbarPage() {
 
       <Section
         title="Sonner-style API"
-        description="toast and Toaster are the same functions under sonner's names, with its types, descriptions and promise toasts. Types add an icon; they stay neutral in color, so the message carries the meaning."
+        description="toast and Toaster are sonner's names for the same API, with its types, descriptions and promise toasts. Types add an icon; turn on rich colors (below) to tint them too."
       >
         <Preview>
           <Button variant="secondary" onClick={() => toast.success("Changes saved")}>
@@ -174,8 +178,56 @@ toast.promise(upload(), {
   error: "Upload failed",
 })
 
-// Differences: one at a time instead of a stack, bottom positions only,
-// neutral colors (no richColors), a single action (no cancel), no toast.custom.`}</Code>
+// <Toaster /> stacks and takes richColors, like sonner's.
+// Differences: bottom positions only, a single action (no cancel), no toast.custom.`}</Code>
+      </Section>
+
+      <Section
+        title="Stack and colors"
+        description="Stack shows up to three at once like sonner: the newest in front, older ones tucked behind; hover or focus fans them out, and each keeps its own timer. Rich colors tint success, error, warning and info with their container colors. Both are host settings; Toaster stacks by default."
+      >
+        <Preview className="flex-col items-start gap-5">
+          <div className="flex flex-wrap items-center gap-6">
+            <SegmentedButton type="single" value={mode} onValueChange={(v) => v && setMode(v)} aria-label="Layout">
+              <SegmentedButtonItem value="queue">Queue</SegmentedButtonItem>
+              <SegmentedButtonItem value="stack">Stack</SegmentedButtonItem>
+            </SegmentedButton>
+            <label className="flex items-center gap-3 type-body-md">
+              <Switch checked={rich} onCheckedChange={setRich} />
+              Rich colors
+            </label>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Button
+              onClick={() => {
+                toast.success("Changes saved")
+                setTimeout(() => toast.info("Event created", { description: "Friday 14 November, 10:00" }), 300)
+                setTimeout(() => toast.warning("Storage almost full", { action: { label: "Manage", onClick: () => {} } }), 600)
+                setTimeout(() => toast.error("Couldn't sync 2 files", { description: "We'll retry in a minute." }), 900)
+              }}
+            >
+              Send four
+            </Button>
+            <Button variant="secondary" onClick={() => toast.success("Changes saved")}>
+              Success
+            </Button>
+            <Button variant="secondary" onClick={() => toast.error("Couldn't save changes")}>
+              Error
+            </Button>
+            <Button variant="secondary" onClick={() => toast.warning("Storage almost full")}>
+              Warning
+            </Button>
+            <Button variant="secondary" onClick={() => toast.info("New version available")}>
+              Info
+            </Button>
+          </div>
+        </Preview>
+        <Code>{`<Snackbars />                       // one at a time (Material)
+<Snackbars stack richColors />      // sonner-style
+<Toaster />                         // stacks by default, like sonner
+<Toaster richColors visibleToasts={4} />
+
+toast.error("Payment failed", { richColors: true })   // tint just this one`}</Code>
       </Section>
 
       <Section title="Usage" description="Mount the host once, near the root of your app. Above a navigation bar, pass offset so snackbars clear it.">
@@ -207,7 +259,11 @@ snackbar("Message archived", {
             ["duration", "number (ms)", "4000, 7000 with an action", "Infinity keeps it; loading stays until updated"],
             ["urgent", "boolean", "false (true for errors)", "Announce assertively"],
             ["onDismiss / onAutoClose", "(id) => void", "", "Closed by the person / by the timer"],
-            ["<Snackbars position>", '"bottom-center" | "bottom-start" | "bottom-end"', '"bottom-center"', "Also bottom-left / bottom-right; <Toaster> is the same"],
+            ["richColors", "boolean", "", "Per snackbar: tint it with its type's color"],
+            ["<Snackbars position>", '"bottom-center" | "bottom-start" | "bottom-end"', '"bottom-center"', "Also bottom-left / bottom-right"],
+            ["<Snackbars stack>", "boolean", "false (true on <Toaster>)", "Several at once, fanned out on hover"],
+            ["<Snackbars visibleToasts>", "number", "3", "How many a stack shows"],
+            ["<Snackbars richColors>", "boolean", "false", "Tint success, error, warning and info"],
             ["<Snackbars offset>", "number (px)", "0", "Extra bottom space"],
           ]}
           note="Notes"
