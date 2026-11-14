@@ -1,7 +1,6 @@
 import * as React from "react"
 import { Slot } from "radix-ui"
 import { cva, type VariantProps } from "class-variance-authority"
-import { LoaderCircle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -13,6 +12,7 @@ import { cn } from "@/lib/utils"
  *  - `shape`: "pill" (default) | "square". Both morph toward a tighter
  *    radius while pressed, then spring back.
  *  - `loading`: swaps the leading icon for a spinner and blocks interaction.
+ *  - Material Symbols icons (`<Icon />`) size to the label automatically.
  *
  * Interaction is handled by two theme utilities:
  *  - `state-layer`: hover / focus / press overlay in the content color
@@ -25,7 +25,7 @@ const buttonVariants = cva(
     "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
     "disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none data-loading:disabled:opacity-100 aria-disabled:pointer-events-none aria-disabled:opacity-40",
     "aria-invalid:outline-2 aria-invalid:outline-offset-2 aria-invalid:outline-destructive",
-    "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[1.15em]",
+    "[--icon-size:1.3em] [--icon-opsz:20] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[var(--icon-size)]",
   ],
   {
     variants: {
@@ -44,11 +44,11 @@ const buttonVariants = cva(
         link: "h-auto! px-0! text-primary underline-offset-4 after:hidden hover:underline active:scale-100",
       },
       size: {
-        xs: "h-7 px-3 type-label-md [--btn-h:1.75rem] has-[>svg]:px-2.5",
-        sm: "h-8 px-3.5 type-label-md [--btn-h:2rem] has-[>svg]:px-3",
-        default: "h-10 px-5 type-label-lg [--btn-h:2.5rem] has-[>svg]:px-4",
-        lg: "h-12 px-6 text-[0.9375rem] font-[520] tracking-[-0.006em] [--btn-h:3rem] has-[>svg]:px-5",
-        xl: "h-14 gap-2.5 px-8 type-title-sm [--btn-h:3.5rem] has-[>svg]:px-7",
+        xs: "h-7 px-3 type-label-md [--btn-h:1.75rem] has-[>[data-slot=icon]]:px-2.5 has-[>svg]:px-2.5",
+        sm: "h-8 px-3.5 type-label-md [--btn-h:2rem] has-[>[data-slot=icon]]:px-3 has-[>svg]:px-3",
+        default: "h-10 px-5 type-label-lg [--btn-h:2.5rem] has-[>[data-slot=icon]]:px-4 has-[>svg]:px-4",
+        lg: "h-12 px-6 text-[0.9375rem] font-[520] tracking-[-0.006em] [--btn-h:3rem] has-[>[data-slot=icon]]:px-5 has-[>svg]:px-5 [--icon-opsz:24]",
+        xl: "h-14 gap-2.5 px-8 type-title-sm [--btn-h:3.5rem] has-[>[data-slot=icon]]:px-7 has-[>svg]:px-7 [--icon-opsz:24]",
         "icon-xs": "size-7 [--btn-h:1.75rem]",
         "icon-sm": "size-8 [--btn-h:2rem]",
         icon: "size-10 [--btn-h:2.5rem]",
@@ -101,7 +101,7 @@ function Button({
         children
       ) : (
         <>
-          {loading && <LoaderCircle aria-hidden className="animate-spin" />}
+          {loading && <Spinner />}
           {loading ? stripLeadingIcon(children) : children}
         </>
       )}
@@ -117,4 +117,21 @@ function stripLeadingIcon(children: React.ReactNode) {
   return children
 }
 
-export { Button, buttonVariants, type ButtonProps }
+/** Indeterminate spinner that inherits color and icon size. */
+function Spinner({ className, ...props }: React.ComponentProps<"svg">) {
+  return (
+    <svg
+      data-slot="spinner"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+      className={cn("size-[var(--icon-size,1.25em)] shrink-0 animate-spin [animation-duration:900ms]", className)}
+      {...props}
+    >
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.22" strokeWidth="2.5" />
+      <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+export { Button, buttonVariants, Spinner, type ButtonProps }

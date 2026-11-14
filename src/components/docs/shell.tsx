@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Moon, Sun } from "lucide-react"
+import { Icon } from "@/registry/velvet/ui/icon"
 import { Button } from "@/registry/velvet/ui/button"
 import { cn } from "@/lib/utils"
 import { SEED_PRESETS, useStudio } from "./studio"
@@ -13,7 +13,7 @@ const NAV = [
     group: "Components",
     items: [
       { href: "/components/button", label: "Button" },
-      { label: "Icon Button", soon: true },
+      { href: "/components/icon-button", label: "Icon Button" },
       { label: "Input", soon: true },
       { label: "Card", soon: true },
       { label: "Switch", soon: true },
@@ -73,6 +73,9 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
           <Button asChild size="sm" variant={pathname === "/components/button" ? "secondary" : "ghost"}>
             <Link href="/components/button">Button</Link>
           </Button>
+          <Button asChild size="sm" variant={pathname === "/components/icon-button" ? "secondary" : "ghost"}>
+            <Link href="/components/icon-button">Icon Button</Link>
+          </Button>
         </nav>
       </aside>
       <main className="min-w-0 flex-1 px-5 py-8 md:px-12 md:py-12">{children}</main>
@@ -84,7 +87,7 @@ function ThemeToggle() {
   const { dark, setDark } = useStudio()
   return (
     <Button variant="ghost" size="icon-sm" onClick={() => setDark(!dark)} aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}>
-      {dark ? <Sun /> : <Moon />}
+      {dark ? <Icon name="light_mode" /> : <Icon name="dark_mode" />}
     </Button>
   )
 }

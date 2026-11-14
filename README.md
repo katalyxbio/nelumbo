@@ -11,17 +11,42 @@ npm run dev                                         # docs site with live seed p
 npm run theme -- --seed "#0f766e" --vibrance 0.9    # regenerate theme from a seed
 npm run registry:build                              # theme + public/r/*.json
 npm run contrast                                    # WCAG AA audit of every role pair, 22 seeds x 3 vibrances x 2 themes
-node scripts/a11y.cjs                               # axe contrast scan of the running docs (needs :3000)
+node scripts/a11y.cjs                               # axe contrast + missing-icon scan of the running docs (needs :3000)
 ```
 
 ## Install into a project
 
-Install the theme once, then components:
+Add the registry to the project's `components.json` once:
+
+```json
+"registries": { "@velvet": "https://<your-registry>/r/{name}.json" }
+```
+
+Then install the theme, then components (dependencies such as `@velvet/icon` come along):
 
 ```bash
-npx shadcn@latest add https://<your-registry>/r/theme.json
-npx shadcn@latest add https://<your-registry>/r/button.json
+npx shadcn@latest add @velvet/theme
+npx shadcn@latest add @velvet/button @velvet/icon-button
 ```
+
+## Icons
+
+Velvet uses **Material Symbols Rounded** (variable font) instead of lucide.
+`<Icon name="favorite" />` has typed names; `fill`, `weight`, `grade` and `size`
+map to the font axes through CSS variables (`--icon-fill`, `--icon-wght`,
+`--icon-grad`, `--icon-opsz`, `--icon-size`), so components animate icons
+without extra props.
+
+The full font is ~4.6 MB. Load a subset instead:
+
+```tsx
+import { materialSymbolsUrl } from "@/components/ui/icon"
+<link rel="stylesheet" href={materialSymbolsUrl(["favorite", "settings"])} />
+```
+
+In this repo, `npm run icons` (runs before dev and build) collects every symbol
+name used in `src/` and `registry/` into `src/lib/velvet/icons.generated.ts`,
+and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 
 ## Layout
 
@@ -55,7 +80,7 @@ npx shadcn@latest add https://<your-registry>/r/button.json
 
 - [x] Foundations
 - [x] Button
-- [ ] Icon Button (toggle, filled/tonal/outlined)
+- [x] Icon Button (toggle, filled/tonal/outlined) + Icon (Material Symbols)
 - [ ] Input / Textarea (filled + outlined, floating label)
 - [ ] Card (filled, elevated, outlined, interactive)
 - [ ] Switch, Checkbox, Radio

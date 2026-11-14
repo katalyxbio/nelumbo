@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, Copy } from "lucide-react"
+import { Icon } from "@/registry/velvet/ui/icon"
 import { Button } from "@/registry/velvet/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -60,7 +60,7 @@ export function Code({ children, className }: { children: string; className?: st
           )
         }}
       >
-        {copied ? <Check /> : <Copy />}
+        {copied ? <Icon name="check" /> : <Icon name="content_copy" />}
       </Button>
     </div>
   )

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Play } from "lucide-react"
+import { Icon } from "@/registry/velvet/ui/icon"
 import { paletteRamps } from "@/lib/velvet/scheme"
 import { Button } from "@/registry/velvet/ui/button"
 import { Code, PageHeader, Preview, Section } from "@/components/docs/primitives"
@@ -206,7 +206,7 @@ function MotionDemo() {
       </div>
       <div>
         <Button variant="tonal" onClick={() => setOn((v) => !v)}>
-          <Play /> Play
+          <Icon name="play_arrow" /> Play
         </Button>
       </div>
     </div>

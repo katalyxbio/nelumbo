@@ -113,6 +113,8 @@ type CssTree = { [key: string]: string | CssTree }
 export const cssTree: CssTree = {
   "@layer base": {
     "*": { "@apply border-border outline-ring/50": {} },
+    // Material Symbols: slightly lighter grade on dark backgrounds reduces glare
+    ".dark": { "--icon-grad": "-25" },
     body: {
       "@apply bg-background text-foreground": {},
       "font-feature-settings": '"cv11", "ss01"',

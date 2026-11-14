@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ArrowRight, Download, Heart, Plus, Send, Trash2 } from "lucide-react"
+import { Icon } from "@/registry/velvet/ui/icon"
 import { Button } from "@/registry/velvet/ui/button"
 import { Code, PageHeader, Preview, Section } from "@/components/docs/primitives"
 
@@ -61,24 +61,24 @@ export default function ButtonPage() {
           <Preview label="pill">
             <Button size="lg">Continue</Button>
             <Button size="lg" variant="tonal">Save draft</Button>
-            <Button size="icon-lg" variant="tonal" aria-label="Add"><Plus /></Button>
+            <Button size="icon-lg" variant="tonal" aria-label="Add"><Icon name="add" /></Button>
           </Preview>
           <Preview label="square">
             <Button size="lg" shape="square">Continue</Button>
             <Button size="lg" shape="square" variant="tonal">Save draft</Button>
-            <Button size="icon-lg" shape="square" variant="tonal" aria-label="Add"><Plus /></Button>
+            <Button size="icon-lg" shape="square" variant="tonal" aria-label="Add"><Icon name="add" /></Button>
           </Preview>
         </div>
       </Section>
 
       <Section title="With icons" description="Icons size to the label (1.15em) and padding tightens on the icon side automatically.">
         <Preview>
-          <Button><Send /> Send invite</Button>
-          <Button variant="tonal">Continue <ArrowRight /></Button>
-          <Button variant="outline"><Download /> Export CSV</Button>
-          <Button variant="destructive"><Trash2 /> Remove member</Button>
-          <Button variant="ghost" size="icon" aria-label="Like"><Heart /></Button>
-          <Button variant="elevated" size="icon" aria-label="Add"><Plus /></Button>
+          <Button><Icon name="send" /> Send invite</Button>
+          <Button variant="tonal">Continue <Icon name="arrow_forward" /></Button>
+          <Button variant="outline"><Icon name="download" /> Export CSV</Button>
+          <Button variant="destructive"><Icon name="delete" /> Remove member</Button>
+          <Button variant="ghost" size="icon" aria-label="Like"><Icon name="favorite" /></Button>
+          <Button variant="elevated" size="icon" aria-label="Add"><Icon name="add" /></Button>
         </Preview>
       </Section>
 
@@ -91,7 +91,7 @@ export default function ButtonPage() {
               setTimeout(() => setSending(false), 1800)
             }}
           >
-            <Send /> {sending ? "Sending" : "Send invite"}
+            <Icon name="send" /> {sending ? "Sending" : "Send invite"}
           </Button>
           <Button loading variant="tonal">Saving</Button>
           <Button disabled>Disabled</Button>
