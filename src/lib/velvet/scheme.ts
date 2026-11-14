@@ -60,10 +60,11 @@ const ROLES: Role[] = [
   ["muted-foreground", "neutralVariant", 42, 72],
   ["accent", "secondary", 94, 20],
   ["accent-foreground", "secondary", 12, 90],
-  ["destructive", "error", 45, 72],
+  ["destructive", "error", 42, 72],
   ["destructive-foreground", "error", 100, 14],
   ["border", "neutralVariant", 90, 22],
-  ["input", "neutralVariant", 84, 30],
+  // 3:1 against page and card (WCAG 1.4.11): the border is what identifies the field
+  ["input", "neutralVariant", 60, 45],
   ["ring", "primary", 55, 72],
   ["sidebar", "neutral", 97, 9],
   ["sidebar-foreground", "neutral", 10, 93],
@@ -87,8 +88,9 @@ const ROLES: Role[] = [
   ["success-foreground", "success", 100, 16],
   ["success-container", "success", 93, 24],
   ["success-container-foreground", "success", 14, 92],
-  ["warning", "warning", 55, 82],
-  ["warning-foreground", "warning", 10, 16],
+  // amber reads as text only when darkened, so the fill takes a white label
+  ["warning", "warning", 42, 82],
+  ["warning-foreground", "warning", 100, 16],
   ["warning-container", "warning", 93, 24],
   ["warning-container-foreground", "warning", 18, 92],
 

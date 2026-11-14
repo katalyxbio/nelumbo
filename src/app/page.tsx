@@ -109,7 +109,7 @@ export default function FoundationsPage() {
               <span className="w-28 shrink-0 type-label-md text-muted-foreground">{name}</span>
               <div className="flex flex-1 overflow-hidden rounded-xl ring-1 ring-border">
                 {ramp.map((t) => (
-                  <div key={t.tone} title={`${name} ${t.tone}: ${t.color}`} className="flex h-9 flex-1 items-end justify-center pb-1 text-[0.625rem] tabular-nums" style={{ background: t.color, color: t.tone > 55 ? "#0008" : "#fff9" }}>
+                  <div key={t.tone} title={`${name} ${t.tone}: ${t.color}`} className="flex h-9 flex-1 items-end justify-center pb-1 text-[0.625rem] tabular-nums" style={{ background: t.color, color: t.tone >= 50 ? "#000" : "#fff" }}>
                     {t.tone}
                   </div>
                 ))}

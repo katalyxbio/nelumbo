@@ -23,7 +23,7 @@ const buttonVariants = cva(
     "tactile state-layer inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap select-none",
     "rounded-[var(--btn-radius)] active:rounded-[var(--btn-radius-pressed)]",
     "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-    "disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none aria-disabled:pointer-events-none aria-disabled:opacity-40",
+    "disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none data-loading:disabled:opacity-100 aria-disabled:pointer-events-none aria-disabled:opacity-40",
     "aria-invalid:outline-2 aria-invalid:outline-offset-2 aria-invalid:outline-destructive",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[1.15em]",
   ],

@@ -10,6 +10,8 @@ containers, a surface ladder, tinted elevation, spring motion and type roles.
 npm run dev                                         # docs site with live seed picker
 npm run theme -- --seed "#0f766e" --vibrance 0.9    # regenerate theme from a seed
 npm run registry:build                              # theme + public/r/*.json
+npm run contrast                                    # WCAG AA audit of every role pair, 22 seeds x 3 vibrances x 2 themes
+node scripts/a11y.cjs                               # axe contrast scan of the running docs (needs :3000)
 ```
 
 ## Install into a project
@@ -38,6 +40,16 @@ npx shadcn@latest add https://<your-registry>/r/button.json
 - Interactive components use `state-layer` (hover/focus/press overlay) and
   `tactile` (press compression with spring release).
 - Components keep shadcn's prop names and variants; Velvet only adds to them.
+
+## Contrast rules
+
+- Text pairs need 4.5:1, control boundaries, focus ring and chart marks 3:1 (WCAG 2.1 AA).
+- Roles are picked by HCT tone, so contrast holds for any seed; `npm run contrast` proves it.
+- `warning` is a dark amber that works as text and takes a white label. Use
+  `warning-container` when you want the bright amber look.
+- `border` and `outline-variant` are decorative dividers (exempt). Anything that
+  identifies a control uses `input` or `outline`.
+- Disabled controls fade to 40% (exempt). Loading is a busy state, not disabled: full strength.
 
 ## Roadmap
 

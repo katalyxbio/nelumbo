@@ -53,10 +53,12 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
                     {item.label}
                   </Link>
                 ) : (
-                  <span key={item.label} className="flex items-center justify-between px-3 py-2 type-label-lg text-muted-foreground/70">
+                  <span key={item.label} className="flex items-center justify-between px-3 py-2 type-label-lg text-muted-foreground">
                     {item.label}
-                    {"isNew" in item && item.isNew && (
+                    {"isNew" in item && item.isNew ? (
                       <span className="rounded-full bg-tertiary-container px-1.5 py-0.5 type-label-sm text-tertiary-container-foreground">new</span>
+                    ) : (
+                      <span className="type-label-sm text-muted-foreground">soon</span>
                     )}
                   </span>
                 )
