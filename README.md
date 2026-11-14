@@ -2,14 +2,14 @@
 
 A soft, tactile design system for shadcn/ui (Tailwind v4). Neutral first: the
 interface is black, white and true grays, with depth from a surface ladder,
-tinted-free two-layer shadows and spring motion. Color comes from an accent
+two-layer shadows and spring motion. Color comes from an accent
 palette (blue, cyan, green, amber, orange, red, pink, purple) used where it
 means something: status, categories, charts and focus. One accent is the brand.
 
 ## Commands
 
 ```bash
-npm run dev                                         # docs site with live seed picker
+npm run dev                                         # docs site with live brand, neutral and icon controls
 npm run theme -- --brand green --neutral warm       # brand accent (palette name or hex), gray temperature
 npm run registry:build                              # theme + public/r/*.json
 npm run contrast                                    # WCAG AA audit: 130 pairs x 153 brand/neutral/vibrance combos x 2 themes
