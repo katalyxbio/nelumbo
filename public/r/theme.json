@@ -16,6 +16,7 @@
       "radius-2xl": "calc(var(--radius) + 12px)",
       "radius-3xl": "calc(var(--radius) + 20px)",
       "radius-field": "calc(var(--radius) - 8px)",
+      "radius-control": "calc(var(--radius-field) / 2)",
       "shadow-e1": "0 1px 2px 0 color-mix(in oklch, var(--shadow-color) 7%, transparent), 0 1px 3px 0 color-mix(in oklch, var(--shadow-color) 4%, transparent)",
       "shadow-e2": "0 1px 2px 0 color-mix(in oklch, var(--shadow-color) 6%, transparent), 0 4px 12px -2px color-mix(in oklch, var(--shadow-color) 9%, transparent)",
       "shadow-e3": "0 2px 4px -1px color-mix(in oklch, var(--shadow-color) 6%, transparent), 0 12px 28px -6px color-mix(in oklch, var(--shadow-color) 13%, transparent)",

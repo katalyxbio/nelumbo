@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
  *   <Checkbox checked="indeterminate" />
  *   <Checkbox color="brand" defaultChecked />
  *
- * An 18px box with soft corners. The check draws itself in, the box gives a
+ * An 18px box whose corners follow the text field radius (--radius-control). The check draws itself in, the box gives a
  * small springy press, and a 40px halo shows hover and press (the halo is
  * also the click target, so the small box is easy to hit).
  *
@@ -39,7 +39,7 @@ function Checkbox({ className, color = "default", ...props }: CheckboxProps) {
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       className={cn(
-        "group/checkbox peer relative inline-grid size-[18px] shrink-0 cursor-pointer place-items-center rounded-[5px] border-2 border-muted-foreground",
+        "group/checkbox peer relative inline-grid size-[18px] shrink-0 cursor-pointer place-items-center rounded-control border-2 border-muted-foreground",
         "transition-[background-color,border-color,scale] duration-200 ease-(--ease-standard) hover:border-foreground",
         "active:scale-90 active:duration-100",
         COLORS[color],
