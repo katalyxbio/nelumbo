@@ -83,11 +83,13 @@ export const USED_ICONS: IconName[] = [
   "start",
   "storefront",
   "switch",
+  "tune",
   "undo",
   "view_kanban",
   "view_list",
   "visibility",
   "visibility_off",
+  "volume_up",
   "warning",
   "wifi"
 ]

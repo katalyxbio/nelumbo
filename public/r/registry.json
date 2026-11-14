@@ -714,6 +714,25 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "Slider on Radix: thick track with a slim bar handle and gaps, value bubble, range, step marks, a large size with an inset icon, brand color.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/slider.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
