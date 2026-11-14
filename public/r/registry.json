@@ -733,6 +733,44 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "shadcn-compatible Card with elevated, filled and outlined surfaces, a small size, full-bleed or inset media, and interactive cards with hover, focus and a springy press.",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "chip",
+      "type": "registry:ui",
+      "title": "Chip",
+      "description": "Assist, suggestion, filter and input chips: 32px with the field radius, a check that slides in, removable values, and a chip group.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/chip.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

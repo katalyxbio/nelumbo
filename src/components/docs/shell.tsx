@@ -28,12 +28,12 @@ const NAV: { group: string; items: NavItem[] }[] = [
     items: [
       { href: "/components/input", label: "Input" },
       { href: "/components/textarea", label: "Textarea" },
-      { label: "Card", soon: true },
+      { href: "/components/card", label: "Card" },
       { href: "/components/switch", label: "Switch" },
       { href: "/components/checkbox", label: "Checkbox" },
       { href: "/components/radio-group", label: "Radio Group" },
       { href: "/components/slider", label: "Slider" },
-      { label: "Chip", soon: true, isNew: true },
+      { href: "/components/chip", label: "Chip", isNew: true },
     ],
   },
 ]
