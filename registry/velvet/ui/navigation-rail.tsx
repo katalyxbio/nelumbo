@@ -25,7 +25,9 @@ import { Icon, type IconName } from "@/registry/velvet/ui/icon"
  *
  * - Collapsed (80px): the icon sits in a 56 x 32 pill with the label below.
  *   The active pill grows out from the center and its icon fills in.
- * - `expanded` (220px): the label moves beside the icon inside a 56px row.
+ * - `expanded` (220px): the label moves beside the icon in a compact 40px
+ *   row. An item with a `description` (a second line, shown only when
+ *   expanded) grows to 56px to fit it.
  *   The width eases on the smooth spring; labels cross-fade.
  * - Items are links (`href`, or `asChild` with your router's Link) or
  *   buttons (`onClick`). The active one gets aria-current="page".
@@ -80,6 +82,8 @@ function NavigationRailFooter({ className, ...props }: React.ComponentProps<"div
 type NavigationRailItemProps = Omit<React.ComponentProps<"a">, "children"> & {
   icon: IconName
   label: string
+  /** Second line under the label, shown only when expanded (e.g. "3 unread"). Makes the row 56px. */
+  description?: string
   active?: boolean
   badge?: number | boolean
   disabled?: boolean
@@ -89,7 +93,7 @@ type NavigationRailItemProps = Omit<React.ComponentProps<"a">, "children"> & {
   onClick?: React.MouseEventHandler<HTMLElement>
 }
 
-function NavigationRailItem({ className, icon, label, active = false, badge, disabled, asChild, href, children, ...props }: NavigationRailItemProps) {
+function NavigationRailItem({ className, icon, label, description, active = false, badge, disabled, asChild, href, children, ...props }: NavigationRailItemProps) {
   const { expanded } = React.useContext(Ctx)
   const Comp: React.ElementType = asChild ? Slot.Root : href ? "a" : "button"
   const showBadge = badge !== undefined && badge !== false
@@ -111,13 +115,14 @@ function NavigationRailItem({ className, icon, label, active = false, badge, dis
     </span>
   )
 
-  // the pill: 56 x 32 around the icon, or the whole 56px row when expanded
+  // the pill: 56 x 32 around the icon, or the whole row when expanded (40px, 56px with a description)
   const pill = (
     <span
       className={cn(
         "relative flex h-8 w-14 shrink-0 items-center justify-center rounded-full",
         "transition-[width,height,padding] duration-[519ms] ease-(--ease-spring) motion-reduce:transition-none",
-        "group-data-expanded/rail:h-14 group-data-expanded/rail:w-full group-data-expanded/rail:justify-start group-data-expanded/rail:px-4"
+        description ? "group-data-expanded/rail:h-14" : "group-data-expanded/rail:h-10",
+        "group-data-expanded/rail:w-full group-data-expanded/rail:justify-start group-data-expanded/rail:px-4"
       )}
     >
       {/* active indicator: grows from the center */}
@@ -153,11 +158,12 @@ function NavigationRailItem({ className, icon, label, active = false, badge, dis
       <span
         aria-hidden={!expanded || undefined}
         className={cn(
-          "relative min-w-0 truncate text-left type-label-lg text-foreground transition-opacity",
+          "relative flex min-w-0 flex-col text-left transition-opacity",
           expanded ? "ml-3 flex-1 opacity-100 delay-100 duration-300" : "w-0 flex-none opacity-0 duration-100"
         )}
       >
-        {label}
+        <span className="truncate type-label-lg text-foreground">{label}</span>
+        {description && <span className="truncate type-body-sm text-muted-foreground group-data-active/item:text-secondary-foreground/75">{description}</span>}
       </span>
       {expanded && showBadge && <span className="relative ml-2 shrink-0">{badgeEl}</span>}
     </span>

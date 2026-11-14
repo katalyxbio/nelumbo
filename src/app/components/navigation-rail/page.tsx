@@ -7,11 +7,11 @@ import { Fab } from "@/registry/velvet/ui/fab"
 import { type IconName } from "@/registry/velvet/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
-const DESTINATIONS: { id: string; icon: IconName; label: string; badge?: number | boolean }[] = [
-  { id: "inbox", icon: "inbox", label: "Inbox", badge: 12 },
-  { id: "chat", icon: "chat_bubble", label: "Chat", badge: true },
-  { id: "meet", icon: "videocam", label: "Meet" },
-  { id: "files", icon: "folder", label: "Files" },
+const DESTINATIONS: { id: string; icon: IconName; label: string; badge?: number | boolean; description: string }[] = [
+  { id: "inbox", icon: "inbox", label: "Inbox", badge: 12, description: "12 unread" },
+  { id: "chat", icon: "chat_bubble", label: "Chat", badge: true, description: "#design and 2 more" },
+  { id: "meet", icon: "videocam", label: "Meet", description: "Next: 2:30 Standup" },
+  { id: "files", icon: "folder", label: "Files", description: "18.4 of 25 GB" },
 ]
 
 const BLURBS: Record<string, string> = {
@@ -22,9 +22,9 @@ const BLURBS: Record<string, string> = {
   settings: "Theme, notifications, account",
 }
 
-function AppFrame({ expandable = true }: { expandable?: boolean }) {
+function AppFrame({ expandable = true, descriptions = false, defaultExpanded = false }: { expandable?: boolean; descriptions?: boolean; defaultExpanded?: boolean }) {
   const [active, setActive] = React.useState("inbox")
-  const [expanded, setExpanded] = React.useState(false)
+  const [expanded, setExpanded] = React.useState(defaultExpanded)
   const current = [...DESTINATIONS, { id: "settings", label: "Settings" }].find((d) => d.id === active)!
 
   return (
@@ -42,7 +42,13 @@ function AppFrame({ expandable = true }: { expandable?: boolean }) {
           <Fab icon="edit" label="Compose" extended={expanded} color="brand" />
         </NavigationRailHeader>
         {DESTINATIONS.map((d) => (
-          <NavigationRailItem key={d.id} icon={d.icon} label={d.label} badge={d.badge} active={active === d.id} onClick={() => setActive(d.id)} />
+          <NavigationRailItem
+            key={d.id}
+            icon={d.icon}
+            label={d.label}
+            description={descriptions ? d.description : undefined}
+            badge={descriptions ? undefined : d.badge}
+            active={active === d.id} onClick={() => setActive(d.id)} />
         ))}
         <NavigationRailFooter>
           <NavigationRailItem icon="settings" label="Settings" active={active === "settings"} onClick={() => setActive("settings")} />
@@ -75,10 +81,19 @@ export default function NavigationRailPage() {
 
       <Section
         title="Collapsed and expanded"
-        description="The menu button toggles between the 80px rail and the 220px expanded rail. The FAB extends with it. Badges show a count or a dot; settings sit in the footer."
+        description="The menu button toggles between the 80px rail and the 220px expanded rail, where each destination is a compact 40px row. The FAB extends with it. Badges show a count or a dot; settings sit in the footer."
       >
         <Preview className="p-3">
           <AppFrame />
+        </Preview>
+      </Section>
+
+      <Section
+        title="With descriptions"
+        description="Expanded rows are a compact 40px. Give an item a description and its row grows to 56px to fit the second line; it's hidden while collapsed."
+      >
+        <Preview className="p-3">
+          <AppFrame descriptions defaultExpanded />
         </Preview>
       </Section>
 
@@ -113,6 +128,7 @@ export default function NavigationRailPage() {
             ["Item icon / label", "IconName / string", "", "Required"],
             ["Item active", "boolean", "false", "Pill, filled icon, aria-current=page"],
             ["Item badge", "number | boolean", "", "A count (99+ max), or a dot"],
+            ["Item description", "string", "", "Second line when expanded; row grows from 40 to 56px"],
             ["Item href / asChild", "string / boolean", "", "Link instead of button"],
             ["Item disabled", "boolean", "false", ""],
           ]}
