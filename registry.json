@@ -273,16 +273,17 @@
           }
         },
         "@utility tactile": {
-          "transition": "transform 727ms var(--ease-spring-bouncy), box-shadow 200ms var(--ease-standard), background-color 200ms var(--ease-standard), border-color 200ms var(--ease-standard), border-radius 260ms var(--ease-spring), color 200ms var(--ease-standard)",
+          "transition": "scale 727ms var(--ease-spring-bouncy), padding 727ms var(--ease-spring-bouncy), width 727ms var(--ease-spring-bouncy), box-shadow 200ms var(--ease-standard), background-color 200ms var(--ease-standard), border-color 200ms var(--ease-standard), border-radius 260ms var(--ease-spring), color 200ms var(--ease-standard)",
           "&:active:not(:disabled)": {
-            "transform": "scale(0.97)",
+            "scale": "var(--press-scale, 0.97)",
             "transition-duration": "90ms",
             "transition-timing-function": "var(--ease-standard)"
           },
           "@media (prefers-reduced-motion: reduce)": {
             "&:active:not(:disabled)": {
-              "transform": "none"
-            }
+              "scale": "none"
+            },
+            "transition": "none"
           }
         },
         "@utility type-display-lg": {
@@ -431,6 +432,84 @@
       "files": [
         {
           "path": "registry/velvet/ui/icon-button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "segmented-button",
+      "type": "registry:ui",
+      "title": "Segmented Button",
+      "description": "Single or multi select connected options on Radix ToggleGroup; check mark slides in on selection.",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/segmented-button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "button-group",
+      "type": "registry:ui",
+      "title": "Button Group",
+      "description": "Standard (pressed button widens, neighbors yield) and connected (small inner corners, selected rounds out) layouts for Velvet buttons.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/button-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "split-button",
+      "type": "registry:ui",
+      "title": "Split Button",
+      "description": "Main action plus a menu trigger; the trigger rounds out and the chevron turns while the menu is open.",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/button",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/split-button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "fab",
+      "type": "registry:ui",
+      "title": "FAB",
+      "description": "Floating action button in five color roles and three sizes; extended label animates in and out.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/fab.tsx",
           "type": "registry:ui"
         }
       ]

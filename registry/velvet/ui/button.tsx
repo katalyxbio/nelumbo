@@ -21,7 +21,10 @@ import { cn } from "@/lib/utils"
 const buttonVariants = cva(
   [
     "tactile state-layer inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap select-none",
-    "rounded-[var(--btn-radius)] active:rounded-[var(--btn-radius-pressed)]",
+    // Per-side radii let groups square off inner corners (connected / split).
+    "rounded-s-[var(--btn-radius-start,var(--btn-radius))] rounded-e-[var(--btn-radius-end,var(--btn-radius))] active:rounded-[var(--btn-radius-pressed)]",
+    // Padding is a variable so groups can widen the pressed button.
+    "px-[calc(var(--btn-px,0px)+var(--btn-px-delta,0px))]",
     "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
     "disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none data-loading:disabled:opacity-100 aria-disabled:pointer-events-none aria-disabled:opacity-40",
     "aria-invalid:outline-2 aria-invalid:outline-offset-2 aria-invalid:outline-destructive",
@@ -41,18 +44,18 @@ const buttonVariants = cva(
         ghost: "bg-transparent text-foreground",
         destructive:
           "bg-destructive bg-linear-to-b from-white/10 to-transparent text-destructive-foreground shadow-e1 inset-shadow-highlight hover:shadow-e2 focus-visible:outline-destructive",
-        link: "h-auto! px-0! text-primary underline-offset-4 after:hidden hover:underline active:scale-100",
+        link: "h-auto! px-0! text-primary underline-offset-4 [--press-scale:1] after:hidden hover:underline",
       },
       size: {
-        xs: "h-7 px-3 type-label-md [--btn-h:1.75rem] has-[>[data-slot=icon]]:px-2.5 has-[>svg]:px-2.5",
-        sm: "h-8 px-3.5 type-label-md [--btn-h:2rem] has-[>[data-slot=icon]]:px-3 has-[>svg]:px-3",
-        default: "h-10 px-5 type-label-lg [--btn-h:2.5rem] has-[>[data-slot=icon]]:px-4 has-[>svg]:px-4",
-        lg: "h-12 px-6 text-[0.9375rem] font-[520] tracking-[-0.006em] [--btn-h:3rem] has-[>[data-slot=icon]]:px-5 has-[>svg]:px-5 [--icon-opsz:24]",
-        xl: "h-14 gap-2.5 px-8 type-title-sm [--btn-h:3.5rem] has-[>[data-slot=icon]]:px-7 has-[>svg]:px-7 [--icon-opsz:24]",
-        "icon-xs": "size-7 [--btn-h:1.75rem]",
-        "icon-sm": "size-8 [--btn-h:2rem]",
-        icon: "size-10 [--btn-h:2.5rem]",
-        "icon-lg": "size-12 [--btn-h:3rem]",
+        xs: "h-7 type-label-md [--btn-h:1.75rem] [--btn-px:0.75rem] has-[>[data-slot=icon]]:[--btn-px:0.625rem] has-[>svg]:[--btn-px:0.625rem]",
+        sm: "h-8 type-label-md [--btn-h:2rem] [--btn-px:0.875rem] has-[>[data-slot=icon]]:[--btn-px:0.75rem] has-[>svg]:[--btn-px:0.75rem]",
+        default: "h-10 type-label-lg [--btn-h:2.5rem] [--btn-px:1.25rem] has-[>[data-slot=icon]]:[--btn-px:1rem] has-[>svg]:[--btn-px:1rem]",
+        lg: "h-12 text-[0.9375rem] font-[520] tracking-[-0.006em] [--btn-h:3rem] [--btn-px:1.5rem] has-[>[data-slot=icon]]:[--btn-px:1.25rem] has-[>svg]:[--btn-px:1.25rem] [--icon-opsz:24]",
+        xl: "h-14 gap-2.5 type-title-sm [--btn-h:3.5rem] [--btn-px:2rem] has-[>[data-slot=icon]]:[--btn-px:1.75rem] has-[>svg]:[--btn-px:1.75rem] [--icon-opsz:24]",
+        "icon-xs": "size-7 [--btn-h:1.75rem] [--btn-px:0px]",
+        "icon-sm": "size-8 [--btn-h:2rem] [--btn-px:0px]",
+        icon: "size-10 [--btn-h:2.5rem] [--btn-px:0px]",
+        "icon-lg": "size-12 [--btn-h:3rem] [--btn-px:0px]",
       },
       shape: {
         pill: "[--btn-radius:calc(var(--btn-h)/2)] [--btn-radius-pressed:calc(var(--btn-h)/3.2)]",

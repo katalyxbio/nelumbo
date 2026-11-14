@@ -25,7 +25,7 @@ import { Icon, type IconName } from "@/registry/velvet/ui/icon"
 const iconButtonVariants = cva(
   [
     "tactile state-layer inline-flex shrink-0 cursor-pointer items-center justify-center select-none",
-    "h-[var(--btn-h)] rounded-[var(--btn-radius)] active:rounded-[var(--btn-radius-pressed)]",
+    "h-[var(--btn-h)] rounded-s-[var(--btn-radius-start,var(--btn-radius))] rounded-e-[var(--btn-radius-end,var(--btn-radius))] active:rounded-[var(--btn-radius-pressed)]",
     "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
     "disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none data-loading:disabled:opacity-100",
     "aria-invalid:outline-2 aria-invalid:outline-offset-2 aria-invalid:outline-destructive",
@@ -60,9 +60,9 @@ const iconButtonVariants = cva(
         xl: "[--btn-h:3.5rem] [--icon-size:24px] [--icon-opsz:24]",
       },
       width: {
-        narrow: "w-[calc(var(--btn-h)*0.8)]",
-        default: "w-[var(--btn-h)]",
-        wide: "w-[calc(var(--btn-h)*1.4)]",
+        narrow: "w-[calc(var(--btn-h)*0.8+var(--btn-px-delta,0px)*2)]",
+        default: "w-[calc(var(--btn-h)+var(--btn-px-delta,0px)*2)]",
+        wide: "w-[calc(var(--btn-h)*1.4+var(--btn-px-delta,0px)*2)]",
       },
       shape: {
         pill: "[--btn-radius:calc(var(--btn-h)/2)] [--btn-radius-pressed:calc(var(--btn-h)/3.2)] [--btn-radius-selected:calc(var(--btn-h)/3.2)]",

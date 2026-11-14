@@ -147,8 +147,12 @@ export const cssTree: CssTree = {
   },
   // Tactile press: quick compress, spring back on release.
   "@utility tactile": {
+    // Uses the `scale` property (not transform) so it composes with
+    // translate/rotate utilities. Opt out per element with [--press-scale:1].
     transition: [
-      `transform ${springs.bouncy.durationMs}ms var(--ease-spring-bouncy)`,
+      `scale ${springs.bouncy.durationMs}ms var(--ease-spring-bouncy)`,
+      `padding ${springs.bouncy.durationMs}ms var(--ease-spring-bouncy)`,
+      `width ${springs.bouncy.durationMs}ms var(--ease-spring-bouncy)`,
       "box-shadow 200ms var(--ease-standard)",
       "background-color 200ms var(--ease-standard)",
       "border-color 200ms var(--ease-standard)",
@@ -156,12 +160,13 @@ export const cssTree: CssTree = {
       "color 200ms var(--ease-standard)",
     ].join(", "),
     "&:active:not(:disabled)": {
-      transform: "scale(0.97)",
+      scale: "var(--press-scale, 0.97)",
       "transition-duration": "90ms",
       "transition-timing-function": "var(--ease-standard)",
     },
     "@media (prefers-reduced-motion: reduce)": {
-      "&:active:not(:disabled)": { transform: "none" },
+      "&:active:not(:disabled)": { scale: "none" },
+      transition: "none",
     },
   },
 }

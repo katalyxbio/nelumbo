@@ -262,16 +262,17 @@
   }
 }
 @utility tactile {
-  transition: transform 727ms var(--ease-spring-bouncy), box-shadow 200ms var(--ease-standard), background-color 200ms var(--ease-standard), border-color 200ms var(--ease-standard), border-radius 260ms var(--ease-spring), color 200ms var(--ease-standard);
+  transition: scale 727ms var(--ease-spring-bouncy), padding 727ms var(--ease-spring-bouncy), width 727ms var(--ease-spring-bouncy), box-shadow 200ms var(--ease-standard), background-color 200ms var(--ease-standard), border-color 200ms var(--ease-standard), border-radius 260ms var(--ease-spring), color 200ms var(--ease-standard);
   &:active:not(:disabled) {
-    transform: scale(0.97);
+    scale: var(--press-scale, 0.97);
     transition-duration: 90ms;
     transition-timing-function: var(--ease-standard);
   }
   @media (prefers-reduced-motion: reduce) {
     &:active:not(:disabled) {
-      transform: none;
+      scale: none;
     }
+    transition: none;
   }
 }
 @utility type-display-lg {

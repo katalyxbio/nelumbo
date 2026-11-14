@@ -65,6 +65,10 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - Interactive components use `state-layer` (hover/focus/press overlay) and
   `tactile` (press compression with spring release).
 - Components keep shadcn's prop names and variants; Velvet only adds to them.
+- Buttons expose their geometry as CSS variables so wrappers can shape them
+  without extra props: `--btn-h`, `--btn-px` / `--btn-px-delta` (padding),
+  `--btn-radius`, `--btn-radius-start` / `--btn-radius-end` (per-side corners)
+  and `--press-scale` (set to 1 to turn off the press squeeze).
 
 ## Contrast rules
 
@@ -81,10 +85,13 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Foundations
 - [x] Button
 - [x] Icon Button (toggle, filled/tonal/outlined) + Icon (Material Symbols)
+- [x] Segmented Button (single / multiple select)
+- [x] Button Group (standard, connected)
+- [x] Split Button
+- [x] FAB (five colors, three sizes, extended)
 - [ ] Input / Textarea (filled + outlined, floating label)
 - [ ] Card (filled, elevated, outlined, interactive)
 - [ ] Switch, Checkbox, Radio
 - [ ] Chip (new: assist, filter, input, suggestion)
-- [ ] Segmented Control (new)
 - [ ] Dialog, Sheet, Popover, Dropdown Menu, Tooltip
 - [ ] Tabs, Navigation Rail (new), FAB (new), Snackbar (new)

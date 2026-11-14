@@ -65,3 +65,30 @@ export function Code({ children, className }: { children: string; className?: st
     </div>
   )
 }
+
+export function PropsTable({ rows, note }: { rows: [string, string, string, string][]; note?: string }) {
+  return (
+    <div className="overflow-x-auto rounded-2xl border border-border">
+      <table className="w-full min-w-[640px] text-left type-body-sm">
+        <thead className="bg-surface-container-low type-label-md text-muted-foreground dark:bg-surface-container">
+          <tr>
+            <th className="px-4 py-3">Prop</th>
+            <th className="px-4 py-3">Type</th>
+            <th className="px-4 py-3">Default</th>
+            <th className="px-4 py-3">{note ?? "Notes"}</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border">
+          {rows.map(([name, type, def, n]) => (
+            <tr key={name}>
+              <td className="px-4 py-3 font-mono type-label-md">{name}</td>
+              <td className="px-4 py-3 font-mono type-label-sm text-muted-foreground">{type}</td>
+              <td className="px-4 py-3 font-mono type-label-sm">{def}</td>
+              <td className="px-4 py-3 type-body-sm text-muted-foreground">{n}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}

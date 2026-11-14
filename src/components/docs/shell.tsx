@@ -7,18 +7,28 @@ import { Button } from "@/registry/velvet/ui/button"
 import { cn } from "@/lib/utils"
 import { ICON_STYLES, SEED_PRESETS, useStudio } from "./studio"
 
-const NAV = [
+type NavItem = { label: string; href?: string; soon?: boolean; isNew?: boolean }
+
+const NAV: { group: string; items: NavItem[] }[] = [
   { group: "Foundations", items: [{ href: "/", label: "Color, depth & motion" }] },
   {
-    group: "Components",
+    group: "Buttons",
     items: [
       { href: "/components/button", label: "Button" },
       { href: "/components/icon-button", label: "Icon Button" },
+      { href: "/components/segmented-button", label: "Segmented Button" },
+      { href: "/components/button-group", label: "Button Group" },
+      { href: "/components/split-button", label: "Split Button" },
+      { href: "/components/fab", label: "FAB" },
+    ],
+  },
+  {
+    group: "Components",
+    items: [
       { label: "Input", soon: true },
       { label: "Card", soon: true },
       { label: "Switch", soon: true },
       { label: "Chip", soon: true, isNew: true },
-      { label: "Segmented Control", soon: true, isNew: true },
     ],
   },
 ]
@@ -66,16 +76,14 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
             </div>
           ))}
         </nav>
-        <nav className="flex gap-2 md:hidden">
-          <Button asChild size="sm" variant={pathname === "/" ? "secondary" : "ghost"}>
-            <Link href="/">Foundations</Link>
-          </Button>
-          <Button asChild size="sm" variant={pathname === "/components/button" ? "secondary" : "ghost"}>
-            <Link href="/components/button">Button</Link>
-          </Button>
-          <Button asChild size="sm" variant={pathname === "/components/icon-button" ? "secondary" : "ghost"}>
-            <Link href="/components/icon-button">Icon Button</Link>
-          </Button>
+        <nav className="-mx-5 flex gap-1 overflow-x-auto px-5 pb-1 md:hidden">
+          {NAV.flatMap((g) => g.items)
+            .filter((item) => item.href)
+            .map((item) => (
+              <Button key={item.href} asChild size="sm" variant={pathname === item.href ? "secondary" : "ghost"}>
+                <Link href={item.href!}>{item.label}</Link>
+              </Button>
+            ))}
         </nav>
       </aside>
       <main className="min-w-0 flex-1 px-5 py-8 md:px-12 md:py-12">{children}</main>
