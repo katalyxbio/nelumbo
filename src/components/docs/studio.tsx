@@ -1,29 +1,23 @@
 "use client"
 
 import * as React from "react"
-import { buildScheme, schemeToCss } from "@/lib/velvet/scheme"
+import { buildScheme, schemeToCss, type Neutral } from "@/lib/velvet/scheme"
 import { materialSymbolsUrl } from "@/registry/velvet/ui/icon"
 import { USED_ICONS } from "@/lib/velvet/icons.generated"
 
 export type IconStyle = "Rounded" | "Outlined" | "Sharp"
 export const ICON_STYLES: IconStyle[] = ["Rounded", "Outlined", "Sharp"]
 
-export const DEFAULT_SEED = "#5b5bd6"
-
-export const SEED_PRESETS = [
-  { name: "Iris", hex: "#5b5bd6" },
-  { name: "Lagoon", hex: "#0f7c86" },
-  { name: "Moss", hex: "#4f7a3a" },
-  { name: "Amber", hex: "#b86e00" },
-  { name: "Rosewood", hex: "#a4384f" },
-  { name: "Graphite", hex: "#5f6670" },
-]
+export const DEFAULT_BRAND = "blue"
+export const NEUTRALS: Neutral[] = ["pure", "warm", "cool"]
 
 type Studio = {
-  seed: string
+  brand: string
+  neutral: Neutral
   vibrance: number
   dark: boolean
-  setSeed: (s: string) => void
+  setBrand: (s: string) => void
+  setNeutral: (n: Neutral) => void
   setVibrance: (v: number) => void
   setDark: (d: boolean) => void
   iconStyle: IconStyle
@@ -39,7 +33,8 @@ export function useStudio() {
 }
 
 export function StudioProvider({ children }: { children: React.ReactNode }) {
-  const [seed, setSeed] = React.useState(DEFAULT_SEED)
+  const [brand, setBrand] = React.useState(DEFAULT_BRAND)
+  const [neutral, setNeutral] = React.useState<Neutral>("pure")
   const [vibrance, setVibrance] = React.useState(1)
   const [dark, setDark] = React.useState(false)
   const [iconStyle, setIconStyle] = React.useState<IconStyle>("Rounded")
@@ -62,16 +57,16 @@ export function StudioProvider({ children }: { children: React.ReactNode }) {
   }, [dark])
 
   const css = React.useMemo(() => {
-    if (seed === DEFAULT_SEED && vibrance === 1) return ""
+    if (brand === DEFAULT_BRAND && neutral === "pure" && vibrance === 1) return ""
     try {
-      return schemeToCss(buildScheme({ seed, vibrance }))
+      return schemeToCss(buildScheme({ brand, neutral, vibrance }))
     } catch {
       return ""
     }
-  }, [seed, vibrance])
+  }, [brand, neutral, vibrance])
 
   return (
-    <Ctx.Provider value={{ seed, vibrance, dark, setSeed, setVibrance, setDark, iconStyle, setIconStyle }}>
+    <Ctx.Provider value={{ brand, neutral, vibrance, dark, setBrand, setNeutral, setVibrance, setDark, iconStyle, setIconStyle }}>
       {iconStyle !== "Rounded" && <link rel="stylesheet" href={materialSymbolsUrl(USED_ICONS, iconStyle)} />}
       {css && <style id="velvet-live">{css}</style>}
       {children}

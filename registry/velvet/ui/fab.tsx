@@ -8,7 +8,7 @@ import { Icon, type IconName } from "@/registry/velvet/ui/icon"
  * Velvet FAB (floating action button)
  *
  * The screen's primary action, floating above content.
- *  - `color`: primary | secondary | tertiary | surface (container tones,
+ *  - `color`: primary | secondary | brand | surface (container tones,
  *    Material 3 style) and `solid` (the filled primary, for maximum emphasis)
  *  - `size`: sm 40 / default 56 / lg 96, rounded-square shape that tightens on press
  *  - `extended`: shows the label next to the icon. Toggle it (for example
@@ -30,7 +30,7 @@ const fabVariants = cva(
       color: {
         primary: "bg-primary-container text-primary-container-foreground",
         secondary: "bg-secondary text-secondary-foreground",
-        tertiary: "bg-tertiary-container text-tertiary-container-foreground",
+        brand: "bg-brand-container text-brand-container-foreground",
         surface: "bg-surface-container-high text-primary dark:bg-surface-container-highest",
         solid: "bg-primary bg-linear-to-b from-white/10 to-transparent text-primary-foreground inset-shadow-highlight",
       },

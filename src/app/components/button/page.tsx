@@ -128,7 +128,7 @@ export default function ButtonPage() {
                   <td className="px-4 py-3 font-mono type-label-sm text-muted-foreground">{type}</td>
                   <td className="px-4 py-3 font-mono type-label-sm">{def}</td>
                   <td className="px-4 py-3 type-label-md">
-                    {extra && <span className="rounded-full bg-tertiary-container px-2 py-0.5 text-tertiary-container-foreground">{extra}</span>}
+                    {extra && <span className="rounded-full bg-brand-container px-2 py-0.5 text-brand-container-foreground">{extra}</span>}
                   </td>
                 </tr>
               ))}

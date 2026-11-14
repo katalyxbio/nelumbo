@@ -2,18 +2,31 @@
 
 import * as React from "react"
 import { Icon } from "@/registry/velvet/ui/icon"
-import { paletteRamps } from "@/lib/velvet/scheme"
+import { ACCENT_NAMES, paletteRamps } from "@/lib/velvet/scheme"
 import { Button } from "@/registry/velvet/ui/button"
 import { Code, PageHeader, Preview, Section } from "@/components/docs/primitives"
 import { useStudio } from "@/components/docs/studio"
 
-const ROLE_GROUPS = [
-  ["primary", "primary-foreground", "primary-container", "primary-container-foreground"],
-  ["tertiary", "tertiary-foreground", "tertiary-container", "tertiary-container-foreground"],
-  ["destructive", "destructive-foreground", "destructive-container", "destructive-container-foreground"],
-  ["success", "success-foreground", "success-container", "success-container-foreground"],
-  ["warning", "warning-foreground", "warning-container", "warning-container-foreground"],
+const NEUTRAL_ROLES = [
+  ["primary", "primary-foreground", "Primary actions"],
+  ["primary-container", "primary-container-foreground", "Tonal buttons, selection"],
+  ["secondary", "secondary-foreground", "Secondary fills"],
+  ["muted", "muted-foreground", "Quiet areas, secondary text"],
+  ["inverse-surface", "inverse-foreground", "Snackbars, tooltips"],
 ] as const
+
+// sample tags: what an accent is for
+const ACCENT_SAMPLES: Record<string, string> = {
+  brand: "Focus, brand moments",
+  blue: "In review",
+  cyan: "Scheduled",
+  green: "Shipped",
+  amber: "Needs attention",
+  orange: "Blocked",
+  red: "Overdue",
+  pink: "Design",
+  purple: "Research",
+}
 
 const SURFACES = [
   "surface-container-lowest",
@@ -47,51 +60,74 @@ const TYPE_CLASS: Record<string, string> = {
 }
 
 export default function FoundationsPage() {
-  const { seed, vibrance } = useStudio()
-  const ramps = React.useMemo(() => paletteRamps({ seed, vibrance }), [seed, vibrance])
+  const { brand, neutral, vibrance } = useStudio()
+  const ramps = React.useMemo(() => paletteRamps({ brand, neutral, vibrance }), [brand, neutral, vibrance])
+  const themeArgs = [brand !== "blue" && `--brand ${brand.startsWith("#") ? `"${brand}"` : brand}`, neutral !== "pure" && `--neutral ${neutral}`, vibrance !== 1 && `--vibrance ${vibrance}`]
+    .filter(Boolean)
+    .join(" ")
 
   return (
     <>
-      <PageHeader eyebrow="Foundations" title="One seed color. Every token, in both themes.">
-        Velvet keeps Material You&apos;s tonal model and rebuilds the details: calmer chroma, tinted neutrals, a surface
-        ladder for depth, tinted two-layer shadows and spring motion. Every role maps onto shadcn&apos;s variables, so
-        existing components keep working. Pick a seed in the sidebar to regenerate this page.
+      <PageHeader eyebrow="Foundations" title="Black and white by default. Color where it means something.">
+        The interface is built from true neutrals: black, white and a ladder of grays for depth. Color comes from an
+        accent palette, used for status, categories, charts and focus. Every role maps onto shadcn&apos;s variables, so
+        existing components keep working. Change the brand accent or the gray temperature in the sidebar.
       </PageHeader>
 
       <Section
         title="Install"
-        description="Generate a theme from your brand color, then add it to any shadcn project (Tailwind v4)."
+        description="Generate the theme with your brand accent, then add it to any shadcn project (Tailwind v4)."
       >
-        <Code>{`npm run theme -- --seed "${seed}"${vibrance !== 1 ? ` --vibrance ${vibrance}` : ""}\nnpm run registry:build\n\nnpx shadcn@latest add https://<your-registry>/r/theme.json`}</Code>
+        <Code>{`npm run theme${themeArgs ? ` -- ${themeArgs}` : ""}\nnpm run registry:build\n\nnpx shadcn@latest add @velvet/theme`}</Code>
       </Section>
 
       <Section
-        title="Color roles"
+        title="Neutral roles"
+        description="Everything structural is neutral. Primary is near-black in light mode and near-white in dark mode."
+      >
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          {NEUTRAL_ROLES.map(([bg, fg, use]) => (
+            <div key={bg} className="flex h-28 flex-col justify-end gap-0.5 rounded-2xl p-3.5 ring-1 ring-border" style={{ background: `var(--${bg})`, color: `var(--${fg})` }}>
+              <span className="type-label-lg">{bg}</span>
+              <span className="type-body-sm">{use}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section
+        title="Accent palette"
         description={
-          <>Each accent comes as four roles: the color, the content on it, a soft container, and the content on the container. shadcn&apos;s <code className="font-mono type-body-sm">primary</code>, <code className="font-mono type-body-sm">destructive</code> and the rest keep their meaning.</>
+          <>
+            Eight accents plus the brand, each in four roles: the color, the content on it, a soft container and the content on the container. Use them for meaning, never for decoration. <code className="font-mono type-body-sm">destructive</code>, <code className="font-mono type-body-sm">success</code> and <code className="font-mono type-body-sm">warning</code> map to red, green and amber.
+          </>
         }
       >
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {ROLE_GROUPS.map(([base, on, container, onContainer]) => (
-            <div key={base} className="overflow-hidden rounded-2xl border border-border bg-card">
-              <div className="flex h-20 items-end p-3.5 type-label-lg" style={{ background: `var(--${base})`, color: `var(--${on})` }}>
-                {base}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+          {["brand", ...ACCENT_NAMES].map((n) => (
+            <div key={n} className="flex flex-col overflow-hidden rounded-2xl bg-card ring-1 ring-border">
+              <div className="flex h-16 items-end p-3 type-label-lg capitalize" style={{ background: `var(--${n})`, color: `var(--${n}-foreground)` }}>
+                {n}
               </div>
-              <div className="flex h-14 items-end p-3.5 type-label-md" style={{ background: `var(--${container})`, color: `var(--${onContainer})` }}>
-                {container}
+              <div className="flex flex-col gap-2 p-3">
+                <span
+                  className="w-fit rounded-full px-2.5 py-1 type-label-sm"
+                  style={{ background: `var(--${n}-container)`, color: `var(--${n}-container-foreground)` }}
+                >
+                  {ACCENT_SAMPLES[n]}
+                </span>
+                <span className="type-label-md" style={{ color: `var(--${n})` }}>
+                  Text in {n}
+                </span>
               </div>
             </div>
           ))}
-          <div className="overflow-hidden rounded-2xl border border-border bg-card">
-            <div className="flex h-20 items-end bg-secondary p-3.5 type-label-lg text-secondary-foreground">secondary</div>
-            <div className="flex h-14 items-end bg-muted p-3.5 type-label-md text-muted-foreground">muted</div>
-          </div>
         </div>
       </Section>
 
       <Section
         title="Surfaces"
-        description="Five container tones replace flat gray. In light mode they step down from white; in dark mode they step up, so raised layers read as lighter, the way lit objects do."
+        description="Five gray container tones give layers depth. In light mode they step down from white; in dark mode they step up, so raised layers read as lighter, the way lit objects do."
       >
         <div className="grid grid-cols-2 gap-2 rounded-3xl bg-background p-2 ring-1 ring-border sm:grid-cols-5">
           {SURFACES.map((s) => (
@@ -102,7 +138,7 @@ export default function FoundationsPage() {
         </div>
       </Section>
 
-      <Section title="Tonal palettes" description="HCT tones 0 to 100. Roles pick tones from these ramps, so contrast is predictable for any seed.">
+      <Section title="Tonal palettes" description="HCT tones 0 to 100. Roles pick tones from these ramps, so contrast is the same for every accent.">
         <div className="flex flex-col gap-2 overflow-x-auto pb-1">
           {Object.entries(ramps).map(([name, ramp]) => (
             <div key={name} className="flex min-w-[560px] items-center gap-3">
@@ -121,7 +157,7 @@ export default function FoundationsPage() {
 
       <Section
         title="Elevation"
-        description={<>Two layers per level: a tight contact shadow and a soft ambient one, both tinted with the seed&apos;s neutral. Use <code className="font-mono type-body-sm">shadow-e1</code> to <code className="font-mono type-body-sm">shadow-e5</code>; pair with <code className="font-mono type-body-sm">inset-shadow-highlight</code> on filled controls.</>}
+        description={<>Two layers per level: a tight contact shadow and a soft ambient one, both cast in the neutral. Use <code className="font-mono type-body-sm">shadow-e1</code> to <code className="font-mono type-body-sm">shadow-e5</code>; pair with <code className="font-mono type-body-sm">inset-shadow-highlight</code> on filled controls.</>}
       >
         <div className="grid grid-cols-2 gap-5 rounded-3xl bg-surface-container p-6 sm:grid-cols-5 sm:p-8">
           {[1, 2, 3, 4, 5].map((e) => (

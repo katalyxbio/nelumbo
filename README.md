@@ -1,16 +1,18 @@
 # Velvet
 
-A soft, tactile design system for shadcn/ui (Tailwind v4). Material You's tonal
-color model, rebuilt quieter: one seed color generates every shadcn variable plus
-containers, a surface ladder, tinted elevation, spring motion and type roles.
+A soft, tactile design system for shadcn/ui (Tailwind v4). Neutral first: the
+interface is black, white and true grays, with depth from a surface ladder,
+tinted-free two-layer shadows and spring motion. Color comes from an accent
+palette (blue, cyan, green, amber, orange, red, pink, purple) used where it
+means something: status, categories, charts and focus. One accent is the brand.
 
 ## Commands
 
 ```bash
 npm run dev                                         # docs site with live seed picker
-npm run theme -- --seed "#0f766e" --vibrance 0.9    # regenerate theme from a seed
+npm run theme -- --brand green --neutral warm       # brand accent (palette name or hex), gray temperature
 npm run registry:build                              # theme + public/r/*.json
-npm run contrast                                    # WCAG AA audit of every role pair, 22 seeds x 3 vibrances x 2 themes
+npm run contrast                                    # WCAG AA audit: 130 pairs x 153 brand/neutral/vibrance combos x 2 themes
 node scripts/a11y.cjs                               # axe contrast + missing-icon scan of the running docs (needs :3000)
 ```
 
@@ -52,7 +54,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 
 | Path | What |
 | --- | --- |
-| `src/lib/velvet/scheme.ts` | Seed → HCT tonal palettes → color roles (light/dark) |
+| `src/lib/velvet/scheme.ts` | Neutral + accent palettes (HCT) → color roles (light/dark) |
 | `src/lib/velvet/tokens.ts` | Radius, elevation, springs, type roles, `state-layer` / `tactile` utilities |
 | `scripts/build-theme.ts` | Writes `src/styles/velvet.css` and the `theme` item in `registry.json` |
 | `registry/velvet/ui/` | Components shipped through the registry |
@@ -73,9 +75,12 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 ## Contrast rules
 
 - Text pairs need 4.5:1, control boundaries, focus ring and chart marks 3:1 (WCAG 2.1 AA).
-- Roles are picked by HCT tone, so contrast holds for any seed; `npm run contrast` proves it.
-- `warning` is a dark amber that works as text and takes a white label. Use
-  `warning-container` when you want the bright amber look.
+- Roles are picked by HCT tone, so contrast holds for any brand accent; `npm run contrast` proves it.
+- Each accent has four roles: `blue`, `blue-foreground`, `blue-container`,
+  `blue-container-foreground` (same for every hue, plus `brand`, `success`,
+  `warning`, `destructive`). Solids work as text on the page (4.5:1).
+- Amber and orange solids are deep so they work as text; use their
+  `-container` roles for the bright look.
 - `border` and `outline-variant` are decorative dividers (exempt). Anything that
   identifies a control uses `input` or `outline`.
 - Disabled controls fade to 40% (exempt). Loading is a busy state, not disabled: full strength.

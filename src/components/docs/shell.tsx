@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation"
 import { Icon } from "@/registry/velvet/ui/icon"
 import { Button } from "@/registry/velvet/ui/button"
 import { cn } from "@/lib/utils"
-import { ICON_STYLES, SEED_PRESETS, useStudio } from "./studio"
+import { ACCENTS, ACCENT_NAMES } from "@/lib/velvet/scheme"
+import { ICON_STYLES, NEUTRALS, useStudio } from "./studio"
 
 type NavItem = { label: string; href?: string; soon?: boolean; isNew?: boolean }
 
@@ -45,7 +46,7 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
           </Link>
           <ThemeToggle />
         </div>
-        <SeedPicker />
+        <ThemePanel />
         <nav className="flex flex-col gap-5 max-md:hidden">
           {NAV.map((g) => (
             <div key={g.group} className="flex flex-col gap-1">
@@ -66,7 +67,7 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
                   <span key={item.label} className="flex items-center justify-between px-3 py-2 type-label-lg text-muted-foreground">
                     {item.label}
                     {"isNew" in item && item.isNew ? (
-                      <span className="rounded-full bg-tertiary-container px-1.5 py-0.5 type-label-sm text-tertiary-container-foreground">new</span>
+                      <span className="rounded-full bg-brand-container px-1.5 py-0.5 type-label-sm text-brand-container-foreground">new</span>
                     ) : (
                       <span className="type-label-sm text-muted-foreground">soon</span>
                     )}
@@ -100,40 +101,73 @@ function ThemeToggle() {
   )
 }
 
-function SeedPicker() {
-  const { seed, setSeed, vibrance, setVibrance, iconStyle, setIconStyle } = useStudio()
+function Choice<T extends string>({ label, options, value, onChange }: { label: string; options: readonly T[]; value: T; onChange: (v: T) => void }) {
+  const id = `choice-${label.toLowerCase().replace(/\s+/g, "-")}`
   return (
-    <div className="flex flex-col gap-3 rounded-2xl bg-surface-container-low p-3.5 dark:bg-surface-container">
-      <div className="flex items-center justify-between">
-        <label htmlFor="seed" className="type-label-md text-muted-foreground">Seed color</label>
-        <div className="flex items-center gap-2">
-          <code className="font-mono type-label-sm text-muted-foreground uppercase">{seed}</code>
-          <input
-            id="seed"
-            type="color"
-            value={seed}
-            onChange={(e) => setSeed(e.target.value)}
-            className="size-6 cursor-pointer appearance-none overflow-hidden rounded-full border-0 bg-transparent p-0 [&::-moz-color-swatch]:rounded-full [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0"
-          />
-        </div>
-      </div>
-      <div className="flex justify-between">
-        {SEED_PRESETS.map((p) => (
+    <div className="flex flex-col gap-1.5">
+      <span id={id} className="type-label-md text-muted-foreground">{label}</span>
+      <div role="radiogroup" aria-labelledby={id} className="grid auto-cols-fr grid-flow-col gap-1 rounded-full bg-surface-container-high p-1 dark:bg-surface-container-highest">
+        {options.map((o) => (
           <button
-            key={p.hex}
+            key={o}
             type="button"
-            title={p.name}
-            aria-label={`Use ${p.name} seed`}
-            aria-pressed={seed === p.hex}
-            onClick={() => setSeed(p.hex)}
-            className="tactile size-7 cursor-pointer rounded-full shadow-e1 outline-none ring-offset-2 ring-offset-surface-container-low inset-shadow-highlight focus-visible:outline-2 focus-visible:outline-ring aria-pressed:ring-2 aria-pressed:ring-foreground/70"
-            style={{ backgroundColor: p.hex }}
-          />
+            role="radio"
+            aria-checked={value === o}
+            onClick={() => onChange(o)}
+            className="state-layer tactile cursor-pointer rounded-full py-1.5 type-label-sm text-muted-foreground capitalize outline-none focus-visible:outline-2 focus-visible:outline-ring aria-checked:bg-card aria-checked:text-foreground aria-checked:shadow-e1"
+          >
+            {o}
+          </button>
         ))}
       </div>
+    </div>
+  )
+}
+
+function ThemePanel() {
+  const { brand, setBrand, neutral, setNeutral, vibrance, setVibrance, iconStyle, setIconStyle } = useStudio()
+  const custom = !(brand in ACCENTS)
+  return (
+    <div className="flex flex-col gap-4 rounded-2xl bg-surface-container-low p-3.5 dark:bg-surface-container">
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <span className="type-label-md text-muted-foreground">Brand accent</span>
+          <span className="type-label-sm text-foreground capitalize">{custom ? brand.toUpperCase() : brand}</span>
+        </div>
+        <div className="grid grid-cols-9 gap-1.5">
+          {ACCENT_NAMES.map((n) => (
+            <button
+              key={n}
+              type="button"
+              title={n}
+              aria-label={`Use ${n} as brand accent`}
+              aria-pressed={brand === n}
+              onClick={() => setBrand(n)}
+              className="tactile aspect-square cursor-pointer rounded-full bg-(--sw) outline-none ring-offset-2 ring-offset-surface-container-low inset-shadow-highlight focus-visible:outline-2 focus-visible:outline-ring aria-pressed:ring-2 aria-pressed:ring-foreground dark:ring-offset-surface-container"
+              style={{ ["--sw" as string]: `var(--${n})` }}
+            />
+          ))}
+          <label
+            title="Custom color"
+            className="relative grid aspect-square cursor-pointer place-items-center rounded-full border border-dashed border-outline text-muted-foreground has-focus-visible:outline-2 has-focus-visible:outline-ring"
+            style={custom ? { background: brand, borderStyle: "solid" } : undefined}
+          >
+            {!custom && <Icon name="add" size={16} />}
+            <input
+              id="brand-custom"
+              type="color"
+              aria-label="Custom brand color"
+              value={custom ? brand : "#2563eb"}
+              onChange={(e) => setBrand(e.target.value)}
+              className="absolute inset-0 cursor-pointer opacity-0"
+            />
+          </label>
+        </div>
+      </div>
+      <Choice label="Neutrals" options={NEUTRALS} value={neutral} onChange={setNeutral} />
       <div className="flex flex-col gap-1.5">
         <div className="flex justify-between type-label-md text-muted-foreground">
-          <label htmlFor="vibrance">Vibrance</label>
+          <label htmlFor="vibrance">Accent vibrance</label>
           <span className="tabular-nums">{vibrance.toFixed(2)}</span>
         </div>
         <input
@@ -144,26 +178,10 @@ function SeedPicker() {
           step={0.05}
           value={vibrance}
           onChange={(e) => setVibrance(Number(e.target.value))}
-          className="w-full accent-primary"
+          className="w-full accent-(--foreground)"
         />
       </div>
-      <div className="flex flex-col gap-1.5">
-        <span id="icon-style-label" className="type-label-md text-muted-foreground">Icon style</span>
-        <div role="radiogroup" aria-labelledby="icon-style-label" className="grid grid-cols-3 gap-1 rounded-full bg-surface-container-high p-1 dark:bg-surface-container-highest">
-          {ICON_STYLES.map((s) => (
-            <button
-              key={s}
-              type="button"
-              role="radio"
-              aria-checked={iconStyle === s}
-              onClick={() => setIconStyle(s)}
-              className="state-layer tactile cursor-pointer rounded-full py-1.5 type-label-sm text-muted-foreground outline-none focus-visible:outline-2 focus-visible:outline-ring aria-checked:bg-card aria-checked:text-foreground aria-checked:shadow-e1"
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-      </div>
+      <Choice label="Icon style" options={ICON_STYLES} value={iconStyle} onChange={setIconStyle} />
     </div>
   )
 }

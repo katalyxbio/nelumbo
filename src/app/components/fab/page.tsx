@@ -28,11 +28,11 @@ export default function FabPage() {
         <Code>{`npx shadcn@latest add @velvet/fab`}</Code>
       </Section>
 
-      <Section title="Colors" description="Container tones by default, as in Material 3. Solid is the filled primary, for when the action must stand out against busy content.">
+      <Section title="Colors" description="Neutral container by default. Brand uses the accent container; solid is black (white in dark mode), for when the action must stand out against busy content.">
         <Preview className="gap-5">
           <Fab icon="edit" label="Compose" color="primary" />
           <Fab icon="edit" label="Compose" color="secondary" />
-          <Fab icon="edit" label="Compose" color="tertiary" />
+          <Fab icon="edit" label="Compose" color="brand" />
           <Fab icon="edit" label="Compose" color="surface" />
           <Fab icon="edit" label="Compose" color="solid" />
         </Preview>
@@ -86,7 +86,7 @@ export default function FabPage() {
             ["icon", "IconName", "required", ""],
             ["label", "string", "required", "Visible when extended; accessible name always"],
             ["extended", "boolean", "false", "Animates the label in and out"],
-            ["color", '"primary" | "secondary" | "tertiary" | "surface" | "solid"', '"primary"', ""],
+            ["color", '"primary" | "secondary" | "brand" | "surface" | "solid"', '"primary"', ""],
             ["size", '"sm" | "default" | "lg"', '"default"', "40, 56, 96 px"],
           ]}
         />

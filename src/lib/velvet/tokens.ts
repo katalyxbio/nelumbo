@@ -1,5 +1,5 @@
 /**
- * Velvet static tokens: everything that does not depend on the seed color.
+ * Velvet static tokens: everything that does not depend on the color scheme.
  * Shape, depth, motion, type and the tactile utilities.
  *
  * Emitted twice by scripts/build-theme.ts:

@@ -1,153 +1,164 @@
 /**
  * Velvet color engine.
  *
- * One seed color -> tonal palettes (HCT, same color space as Material You)
- * -> every shadcn CSS variable plus Velvet's extra roles, for light and dark.
+ * Neutral first: the interface is black, white and true grays. Color comes
+ * from a curated accent palette, used where it carries meaning (status, tags,
+ * charts, focus), and one accent is the brand.
  *
- * Velvet is deliberately calmer than Material's "tonal spot" scheme:
- * primary chroma is capped, neutrals carry only a whisper of the seed hue,
- * and surfaces step in small tone increments so layers read as soft depth
- * rather than flat color blocks.
+ * Every tone is picked in HCT (Material's color space, where tone tracks
+ * lightness), so contrast holds for any accent: `npm run contrast` proves it.
  *
- * Pure and isomorphic: used by the CLI generator and by the docs' live picker.
+ * Pure and isomorphic: used by the CLI generator and the docs' live controls.
  */
-import {
-  Blend,
-  Hct,
-  TonalPalette,
-  argbFromHex,
-  hexFromArgb,
-} from "@material/material-color-utilities"
+import { Hct, TonalPalette, argbFromHex, hexFromArgb } from "@material/material-color-utilities"
 import { converter } from "culori"
 
+// ---------------------------------------------------------------------------
+// Accent palette. Anchors set each hue; chroma is normalized so the set
+// reads as one family rather than eight unrelated brand colors.
+// ---------------------------------------------------------------------------
+export const ACCENTS = {
+  blue: "#2563eb",
+  cyan: "#0891b2",
+  green: "#16a34a",
+  amber: "#d97706",
+  orange: "#ea580c",
+  red: "#dc2626",
+  pink: "#db2777",
+  purple: "#7c3aed",
+} as const
+
+export type AccentName = keyof typeof ACCENTS
+export const ACCENT_NAMES = Object.keys(ACCENTS) as AccentName[]
+
+export type Neutral = "pure" | "warm" | "cool"
+
 export type SchemeOptions = {
-  /** Seed color as hex, e.g. "#5b5bd6". */
-  seed: string
-  /** Chroma multiplier. 0.6 = muted, 1 = balanced, 1.3 = vivid. */
+  /** Brand accent: a palette name or any hex. Drives focus ring and `brand` roles. */
+  brand?: AccentName | string
+  /** Gray temperature. "pure" has zero chroma: real black and white. */
+  neutral?: Neutral
+  /** Accent chroma multiplier. 0.6 = muted, 1 = balanced, 1.3 = vivid. */
   vibrance?: number
 }
 
-type PaletteKey =
-  | "primary"
-  | "secondary"
-  | "tertiary"
-  | "neutral"
-  | "neutralVariant"
-  | "error"
-  | "success"
-  | "warning"
+const NEUTRAL_TINT: Record<Neutral, { hue: number; chroma: number }> = {
+  pure: { hue: 0, chroma: 0 },
+  warm: { hue: 70, chroma: 2.5 },
+  cool: { hue: 250, chroma: 3 },
+}
 
 /** [role, palette, light tone, dark tone] */
-type Role = [string, PaletteKey, number, number]
+type Role = [string, string, number, number]
 
-// ---------------------------------------------------------------------------
-// Role map. Names on the left are the CSS variables (without "--").
-// The first block is the stock shadcn contract; everything after is Velvet.
-// ---------------------------------------------------------------------------
-const ROLES: Role[] = [
-  // shadcn contract
-  ["background", "neutral", 98.5, 7],
-  ["foreground", "neutral", 10, 93],
-  ["card", "neutral", 100, 10],
-  ["card-foreground", "neutral", 10, 93],
-  ["popover", "neutral", 100, 13],
-  ["popover-foreground", "neutral", 10, 93],
-  ["primary", "primary", 40, 80],
-  ["primary-foreground", "primary", 100, 20],
-  ["secondary", "secondary", 91, 26],
-  ["secondary-foreground", "secondary", 12, 90],
-  ["muted", "neutral", 95, 15],
-  ["muted-foreground", "neutralVariant", 42, 72],
-  ["accent", "secondary", 94, 20],
-  ["accent-foreground", "secondary", 12, 90],
-  ["destructive", "error", 42, 72],
-  ["destructive-foreground", "error", 100, 14],
-  ["border", "neutralVariant", 90, 22],
-  // 3:1 against page and card (WCAG 1.4.11): the border is what identifies the field
-  ["input", "neutralVariant", 60, 45],
-  ["ring", "primary", 55, 72],
-  ["sidebar", "neutral", 97, 9],
-  ["sidebar-foreground", "neutral", 10, 93],
-  ["sidebar-primary", "primary", 40, 80],
-  ["sidebar-primary-foreground", "primary", 100, 20],
-  ["sidebar-accent", "secondary", 92, 20],
-  ["sidebar-accent-foreground", "secondary", 12, 90],
-  ["sidebar-border", "neutralVariant", 90, 20],
-  ["sidebar-ring", "primary", 55, 72],
-
-  // Velvet: containers (Material's tonal fills, tuned softer)
-  ["primary-container", "primary", 91, 28],
-  ["primary-container-foreground", "primary", 12, 92],
-  ["tertiary", "tertiary", 42, 80],
-  ["tertiary-foreground", "tertiary", 100, 20],
-  ["tertiary-container", "tertiary", 92, 28],
-  ["tertiary-container-foreground", "tertiary", 12, 92],
-  ["destructive-container", "error", 93, 26],
-  ["destructive-container-foreground", "error", 14, 92],
-  ["success", "success", 40, 78],
-  ["success-foreground", "success", 100, 16],
-  ["success-container", "success", 93, 24],
-  ["success-container-foreground", "success", 14, 92],
-  // amber reads as text only when darkened, so the fill takes a white label
-  ["warning", "warning", 42, 82],
-  ["warning-foreground", "warning", 100, 16],
-  ["warning-container", "warning", 93, 24],
-  ["warning-container-foreground", "warning", 18, 92],
-
-  // Velvet: surface ladder. Light climbs down from white, dark climbs up.
-  ["surface-dim", "neutral", 92, 6],
-  ["surface-bright", "neutral", 99, 22],
-  ["surface-container-lowest", "neutral", 100, 5],
-  ["surface-container-low", "neutral", 97, 10],
-  ["surface-container", "neutral", 95, 12],
-  ["surface-container-high", "neutral", 93, 16],
-  ["surface-container-highest", "neutral", 91, 20],
-  ["inverse-surface", "neutral", 20, 90],
-  ["inverse-foreground", "neutral", 95, 20],
-  ["inverse-primary", "primary", 80, 40],
-
-  // Velvet: lines and depth
-  ["outline", "neutralVariant", 58, 52],
-  ["outline-variant", "neutralVariant", 86, 28],
-  ["shadow-color", "neutral", 12, 0],
-  ["scrim", "neutral", 6, 0],
+// Tones for each accent's four roles. Solid at 42 keeps the color usable as
+// text on the page (4.5:1) and lets a white label sit on it.
+const accentRoles = (name: string, palette = name): Role[] => [
+  [name, palette, 42, 78],
+  [`${name}-foreground`, palette, 100, 14],
+  [`${name}-container`, palette, 94, 24],
+  [`${name}-container-foreground`, palette, 24, 90],
 ]
 
-const CHART_HUE_OFFSETS = [0, 50, 160, 230, 300]
+const ROLES: Role[] = [
+  // ---- shadcn contract: all neutral ---------------------------------------
+  ["background", "neutral", 99, 6],
+  ["foreground", "neutral", 10, 95],
+  ["card", "neutral", 100, 9],
+  ["card-foreground", "neutral", 10, 95],
+  ["popover", "neutral", 100, 12],
+  ["popover-foreground", "neutral", 10, 95],
+  ["primary", "neutral", 10, 95],
+  ["primary-foreground", "neutral", 100, 10],
+  ["secondary", "neutral", 93, 21],
+  ["secondary-foreground", "neutral", 10, 95],
+  ["muted", "neutral", 96, 14],
+  ["muted-foreground", "neutralVariant", 42, 70],
+  ["accent", "neutral", 95, 18],
+  ["accent-foreground", "neutral", 10, 95],
+  ["border", "neutralVariant", 90, 20],
+  // 3:1 against page and card (WCAG 1.4.11): the border is what identifies the field
+  ["input", "neutralVariant", 60, 45],
+  ["ring", "brand", 50, 70],
+  ["sidebar", "neutral", 98, 8],
+  ["sidebar-foreground", "neutral", 10, 95],
+  ["sidebar-primary", "neutral", 10, 95],
+  ["sidebar-primary-foreground", "neutral", 100, 10],
+  ["sidebar-accent", "neutral", 93, 18],
+  ["sidebar-accent-foreground", "neutral", 10, 95],
+  ["sidebar-border", "neutralVariant", 90, 18],
+  ["sidebar-ring", "brand", 50, 70],
+  // shadcn's destructive = the red accent
+  ["destructive", "red", 42, 72],
+  ["destructive-foreground", "red", 100, 14],
+  ["destructive-container", "red", 94, 24],
+  ["destructive-container-foreground", "red", 24, 90],
+
+  // ---- Velvet: neutral tonal fill (tonal buttons, selected states) -------
+  ["primary-container", "neutral", 90, 25],
+  ["primary-container-foreground", "neutral", 10, 95],
+
+  // ---- Velvet: brand + status, from the accent palette --------------------
+  ...accentRoles("brand"),
+  ...accentRoles("success", "green"),
+  ...accentRoles("warning", "amber"),
+  ...ACCENT_NAMES.flatMap((n) => accentRoles(n)),
+
+  // ---- Velvet: surface ladder. Light steps down from white, dark steps up.
+  ["surface-dim", "neutral", 94, 5],
+  ["surface-bright", "neutral", 99, 22],
+  ["surface-container-lowest", "neutral", 100, 4],
+  ["surface-container-low", "neutral", 98, 9],
+  ["surface-container", "neutral", 96, 11],
+  ["surface-container-high", "neutral", 94, 15],
+  ["surface-container-highest", "neutral", 92, 19],
+  ["inverse-surface", "neutral", 15, 92],
+  ["inverse-foreground", "neutral", 96, 15],
+  ["inverse-primary", "brand", 80, 40],
+
+  // ---- Velvet: lines and depth -------------------------------------------
+  ["outline", "neutralVariant", 58, 52],
+  ["outline-variant", "neutralVariant", 88, 26],
+  ["shadow-color", "neutral", 0, 0],
+  ["scrim", "neutral", 0, 0],
+]
+
+const CHARTS: [AccentName, number, number][] = [
+  ["blue", 55, 72],
+  ["green", 58, 74],
+  ["amber", 56, 78],
+  ["purple", 55, 72],
+  ["pink", 58, 74],
+]
 
 const toOklch = converter("oklch")
 
 function css(argb: number): string {
   const c = toOklch(hexFromArgb(argb))!
-  const l = c.l.toFixed(3)
-  const ch = c.c.toFixed(3)
-  const h = (c.h ?? 0).toFixed(1)
-  return `oklch(${l} ${ch} ${h})`
+  return `oklch(${c.l.toFixed(3)} ${c.c.toFixed(3)} ${(c.h ?? 0).toFixed(1)})`
 }
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v))
-const wrap = (h: number) => ((h % 360) + 360) % 360
 
-export function buildPalettes({ seed, vibrance = 1 }: SchemeOptions) {
-  const seedArgb = argbFromHex(seed)
-  const s = Hct.fromInt(seedArgb)
+function accentPalette(hex: string, vibrance: number) {
+  const h = Hct.fromInt(argbFromHex(hex))
+  return TonalPalette.fromHueAndChroma(h.hue, clamp(h.chroma, 36, 60) * vibrance)
+}
+
+export function resolveBrand(brand: SchemeOptions["brand"] = "blue") {
+  return brand in ACCENTS ? ACCENTS[brand as AccentName] : brand
+}
+
+export function buildPalettes({ brand, neutral = "pure", vibrance = 1 }: SchemeOptions = {}) {
   const v = clamp(vibrance, 0.4, 1.6)
-  const tp = (h: number, c: number) => TonalPalette.fromHueAndChroma(wrap(h), c)
-  const harmonized = (hex: string) => Hct.fromInt(Blend.harmonize(argbFromHex(hex), seedArgb)).hue
-
-  return {
-    seed: s,
-    palettes: {
-      primary: tp(s.hue, clamp(s.chroma, 30, 46) * v),
-      secondary: tp(s.hue, 12 * v),
-      tertiary: tp(s.hue + 55, 24 * v),
-      neutral: tp(s.hue, 3.5),
-      neutralVariant: tp(s.hue, 7),
-      error: tp(harmonized("#d92d20"), 62),
-      success: tp(harmonized("#1f9d55"), 38),
-      warning: tp(harmonized("#e5a000"), 52),
-    } satisfies Record<PaletteKey, TonalPalette>,
+  const tint = NEUTRAL_TINT[neutral]
+  const palettes: Record<string, TonalPalette> = {
+    neutral: TonalPalette.fromHueAndChroma(tint.hue, tint.chroma),
+    neutralVariant: TonalPalette.fromHueAndChroma(tint.hue, tint.chroma * 1.6),
+    brand: accentPalette(resolveBrand(brand), v),
   }
+  for (const n of ACCENT_NAMES) palettes[n] = accentPalette(ACCENTS[n], v)
+  return palettes
 }
 
 export type Scheme = {
@@ -155,8 +166,8 @@ export type Scheme = {
   dark: Record<string, string>
 }
 
-export function buildScheme(options: SchemeOptions): Scheme {
-  const { palettes, seed } = buildPalettes(options)
+export function buildScheme(options: SchemeOptions = {}): Scheme {
+  const palettes = buildPalettes(options)
   const light: Record<string, string> = {}
   const dark: Record<string, string> = {}
 
@@ -164,30 +175,26 @@ export function buildScheme(options: SchemeOptions): Scheme {
     light[name] = css(palettes[key].tone(lt))
     dark[name] = css(palettes[key].tone(dt))
   }
-
-  CHART_HUE_OFFSETS.forEach((offset, i) => {
-    const p = TonalPalette.fromHueAndChroma(wrap(seed.hue + offset), 40)
-    light[`chart-${i + 1}`] = css(p.tone(58))
-    dark[`chart-${i + 1}`] = css(p.tone(72))
+  CHARTS.forEach(([hue, lt, dt], i) => {
+    light[`chart-${i + 1}`] = css(palettes[hue].tone(lt))
+    dark[`chart-${i + 1}`] = css(palettes[hue].tone(dt))
   })
-
   return { light, dark }
 }
 
-/** Tonal ramp for display in docs. */
+/** Tonal ramps for the docs. */
 export const DOC_TONES = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 98, 100]
 
-export function paletteRamps(options: SchemeOptions) {
-  const { palettes } = buildPalettes(options)
-  return Object.fromEntries(
-    Object.entries(palettes).map(([k, p]) => [k, DOC_TONES.map((t) => ({ tone: t, color: css(p.tone(t)) }))])
-  ) as Record<PaletteKey, { tone: number; color: string }[]>
+export function paletteRamps(options: SchemeOptions = {}) {
+  const p = buildPalettes(options)
+  const keys = ["neutral", ...ACCENT_NAMES]
+  return Object.fromEntries(keys.map((k) => [k, DOC_TONES.map((t) => ({ tone: t, color: css(p[k].tone(t)) }))])) as Record<
+    string,
+    { tone: number; color: string }[]
+  >
 }
 
-export const COLOR_ROLE_NAMES = [
-  ...ROLES.map(([n]) => n),
-  ...CHART_HUE_OFFSETS.map((_, i) => `chart-${i + 1}`),
-]
+export const COLOR_ROLE_NAMES = [...ROLES.map(([n]) => n), ...CHARTS.map((_, i) => `chart-${i + 1}`)]
 
 export function schemeToCss(scheme: Scheme, { radius = "0.875rem" } = {}): string {
   const block = (sel: string, vars: Record<string, string>, extra = "") =>

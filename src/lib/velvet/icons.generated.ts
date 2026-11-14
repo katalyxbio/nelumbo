@@ -17,7 +17,6 @@ export const USED_ICONS: IconName[] = [
   "delete",
   "download",
   "edit",
-  "error",
   "favorite",
   "format_align_center",
   "format_align_justify",
