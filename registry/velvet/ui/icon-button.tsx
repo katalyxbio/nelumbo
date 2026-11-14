@@ -51,11 +51,13 @@ const iconButtonVariants = cva(
         ],
       },
       size: {
-        xs: "[--btn-h:1.75rem] [--icon-size:18px] [--icon-opsz:20]",
-        sm: "[--btn-h:2rem] [--icon-size:20px] [--icon-opsz:20]",
-        default: "[--btn-h:2.5rem] [--icon-size:24px] [--icon-opsz:24]",
-        lg: "[--btn-h:3rem] [--icon-size:24px] [--icon-opsz:24]",
-        xl: "[--btn-h:3.5rem] [--icon-size:28px] [--icon-opsz:28]",
+        // Icon-to-button ratio shrinks as buttons grow (0.57 -> 0.43), so
+        // larger buttons gain air around the glyph instead of a bigger glyph.
+        xs: "[--btn-h:1.75rem] [--icon-size:16px] [--icon-opsz:20]",
+        sm: "[--btn-h:2rem] [--icon-size:18px] [--icon-opsz:20]",
+        default: "[--btn-h:2.5rem] [--icon-size:20px] [--icon-opsz:20]",
+        lg: "[--btn-h:3rem] [--icon-size:22px] [--icon-opsz:22]",
+        xl: "[--btn-h:3.5rem] [--icon-size:24px] [--icon-opsz:24]",
       },
       width: {
         narrow: "w-[calc(var(--btn-h)*0.8)]",

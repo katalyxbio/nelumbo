@@ -12,7 +12,7 @@ const PROPS = [
   ["icon", "IconName", "", "Material Symbols name, typed and autocompleted"],
   ["selectedIcon", "IconName", "", "Icon shown while selected (toggle only)"],
   ["variant", '"standard" | "filled" | "tonal" | "outlined"', '"standard"', ""],
-  ["size", '"xs" | "sm" | "default" | "lg" | "xl"', '"default"', "28, 32, 40, 48, 56 px"],
+  ["size", '"xs" | "sm" | "default" | "lg" | "xl"', '"default"', "Buttons 28 to 56 px, icons 16 to 24 px"],
   ["width", '"narrow" | "default" | "wide"', '"default"', ""],
   ["shape", '"pill" | "square"', '"pill"', "Selection swaps pill and square"],
   ["toggle", "boolean", "false", "Makes it a Radix Toggle"],
