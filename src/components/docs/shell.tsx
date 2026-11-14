@@ -29,7 +29,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/input", label: "Input" },
       { href: "/components/textarea", label: "Textarea" },
       { label: "Card", soon: true },
-      { label: "Switch", soon: true },
+      { href: "/components/switch", label: "Switch" },
       { label: "Chip", soon: true, isNew: true },
     ],
   },

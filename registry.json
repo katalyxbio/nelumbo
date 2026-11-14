@@ -657,6 +657,25 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "title": "Switch",
+      "description": "On/off switch on Radix Switch: the thumb grows and slides with a spring, optional check/cross icons, brand color and a small size.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/switch.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

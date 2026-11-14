@@ -5,6 +5,7 @@ export const USED_ICONS: IconName[] = [
   "add",
   "apartment",
   "arrow_forward",
+  "bluetooth",
   "bookmark",
   "bookmark_added",
   "calendar_month",
@@ -19,6 +20,7 @@ export const USED_ICONS: IconName[] = [
   "dark_mode",
   "delete",
   "description",
+  "do_not_disturb_on",
   "download",
   "edit",
   "error",
@@ -77,10 +79,12 @@ export const USED_ICONS: IconName[] = [
   "skip_previous",
   "square",
   "start",
+  "switch",
   "undo",
   "view_kanban",
   "view_list",
   "visibility",
   "visibility_off",
-  "warning"
+  "warning",
+  "wifi"
 ]
