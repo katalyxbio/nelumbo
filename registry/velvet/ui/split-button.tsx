@@ -15,7 +15,7 @@ import { Icon, type IconName } from "@/registry/velvet/ui/icon"
  * Inner corners are small; while the menu is open the trigger rounds out
  * fully and its chevron turns over.
  *
- *   <SplitButton variant="tonal">
+ *   <SplitButton variant="secondary">
  *     <SplitButtonAction onClick={save}>Save</SplitButtonAction>
  *     <SplitButtonMenu label="More save options">
  *       <SplitButtonItem icon="save_as" onSelect={saveAs}>Save as</SplitButtonItem>

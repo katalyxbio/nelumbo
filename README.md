@@ -89,7 +89,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 
 - [x] Foundations
 - [x] Button
-- [x] Icon Button (toggle, filled/tonal/outlined) + Icon (Material Symbols)
+- [x] Icon Button (toggle, filled/secondary/outlined) + Icon (Material Symbols)
 - [x] Segmented Button (single / multiple select)
 - [x] Button Group (standard, connected)
 - [x] Split Button

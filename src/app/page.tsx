@@ -198,7 +198,7 @@ export default function FoundationsPage() {
       <Section title="Interaction" description={<><code className="font-mono type-body-sm">state-layer</code> adds a hover, focus and press overlay in the content color. <code className="font-mono type-body-sm">tactile</code> compresses on press and springs back on release. Every interactive component uses both.</>}>
         <Preview>
           <Button>Press and hold</Button>
-          <Button variant="tonal">Tonal</Button>
+          <Button variant="secondary">Secondary</Button>
           <Button variant="elevated">Elevated</Button>
           <button type="button" className="state-layer tactile cursor-pointer rounded-2xl border border-outline-variant bg-card px-5 py-4 text-left type-label-lg outline-none focus-visible:outline-2 focus-visible:outline-ring">
             Any surface
@@ -241,7 +241,7 @@ function MotionDemo() {
         ))}
       </div>
       <div>
-        <Button variant="tonal" onClick={() => setOn((v) => !v)}>
+        <Button variant="secondary" onClick={() => setOn((v) => !v)}>
           <Icon name="play_arrow" /> Play
         </Button>
       </div>

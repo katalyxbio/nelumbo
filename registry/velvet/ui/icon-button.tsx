@@ -12,7 +12,7 @@ import { Icon, type IconName } from "@/registry/velvet/ui/icon"
  * Velvet IconButton
  *
  * Material 3 icon buttons with Velvet's tactile feel.
- *  - variants: standard, filled, tonal, outlined
+ *  - variants: standard, filled, secondary (Material's "tonal"), outlined
  *  - `toggle`: becomes a Radix Toggle. Selected state fills the icon (the
  *    Material Symbols FILL axis animates) and morphs the shape from pill to
  *    rounded square.
@@ -41,9 +41,9 @@ const iconButtonVariants = cva(
           "bg-primary bg-linear-to-b from-white/10 to-transparent text-primary-foreground shadow-e1 inset-shadow-highlight hover:shadow-e2",
           "data-[state=off]:bg-surface-container-highest data-[state=off]:bg-none data-[state=off]:text-primary data-[state=off]:shadow-none data-[state=off]:inset-shadow-none",
         ],
-        tonal: [
-          "bg-primary-container text-primary-container-foreground hover:shadow-e1",
-          "data-[state=off]:bg-surface-container-highest data-[state=off]:text-muted-foreground",
+        secondary: [
+          "bg-secondary text-secondary-foreground hover:shadow-e1",
+          "data-[state=off]:bg-surface-container-high data-[state=off]:text-muted-foreground dark:data-[state=off]:bg-surface-container-highest",
         ],
         outlined: [
           "border border-outline-variant bg-transparent text-muted-foreground hover:border-outline",

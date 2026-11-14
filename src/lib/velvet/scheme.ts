@@ -70,7 +70,7 @@ const ROLES: Role[] = [
   ["popover-foreground", "neutral", 10, 95],
   ["primary", "neutral", 10, 95],
   ["primary-foreground", "neutral", 100, 10],
-  ["secondary", "neutral", 93, 21],
+  ["secondary", "neutral", 91, 23],
   ["secondary-foreground", "neutral", 10, 95],
   ["muted", "neutral", 96, 14],
   ["muted-foreground", "neutralVariant", 42, 70],
@@ -94,7 +94,7 @@ const ROLES: Role[] = [
   ["destructive-container", "red", 94, 24],
   ["destructive-container-foreground", "red", 24, 90],
 
-  // ---- Velvet: neutral tonal fill (tonal buttons, selected states) -------
+  // ---- Velvet: neutral container (FAB, Material-style containers) --------
   ["primary-container", "neutral", 90, 25],
   ["primary-container-foreground", "neutral", 10, 95],
 

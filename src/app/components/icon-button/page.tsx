@@ -5,13 +5,13 @@ import { IconButton } from "@/registry/velvet/ui/icon-button"
 import { Icon, type IconName } from "@/registry/velvet/ui/icon"
 import { Code, PageHeader, Preview, Section } from "@/components/docs/primitives"
 
-const VARIANTS = ["standard", "filled", "tonal", "outlined"] as const
+const VARIANTS = ["standard", "filled", "secondary", "outlined"] as const
 
 const PROPS = [
   ["label", "string", "required", "Accessible name, read by screen readers"],
   ["icon", "IconName", "", "Material Symbols name, typed and autocompleted"],
   ["selectedIcon", "IconName", "", "Icon shown while selected (toggle only)"],
-  ["variant", '"standard" | "filled" | "tonal" | "outlined"', '"standard"', ""],
+  ["variant", '"standard" | "filled" | "secondary" | "outlined"', '"standard"', ""],
   ["size", '"xs" | "sm" | "default" | "lg" | "xl"', '"default"', "Buttons 28 to 56 px, icons 16 to 24 px"],
   ["width", '"narrow" | "default" | "wide"', '"default"', ""],
   ["shape", '"pill" | "square"', '"pill"', "Selection swaps pill and square"],
@@ -38,7 +38,7 @@ export default function IconButtonPage() {
         <Preview>
           {VARIANTS.map((v) => (
             <div key={v} className="flex flex-col items-center gap-2">
-              <IconButton variant={v} icon={v === "filled" ? "add" : v === "tonal" ? "edit" : v === "outlined" ? "share" : "more_vert"} label={v} />
+              <IconButton variant={v} icon={v === "filled" ? "add" : v === "secondary" ? "edit" : v === "outlined" ? "share" : "more_vert"} label={v} />
               <span className="type-label-sm text-muted-foreground">{v}</span>
             </div>
           ))}
@@ -64,7 +64,7 @@ export default function IconButtonPage() {
       <Section title="Sizes and widths" description="Glyphs use the matching optical size, so a 20px icon is drawn for 20px, with sturdier strokes than a scaled-down 24.">
         <Preview label="size" className="items-end">
           {(["xs", "sm", "default", "lg", "xl"] as const).map((s) => (
-            <IconButton key={s} size={s} variant="tonal" icon="mic" label={`Record (${s})`} />
+            <IconButton key={s} size={s} variant="secondary" icon="mic" label={`Record (${s})`} />
           ))}
         </Preview>
         <Preview label="width">
@@ -100,7 +100,7 @@ export default function IconButtonPage() {
             </div>
           </Preview>
           <Preview className="justify-center gap-2">
-            <IconButton variant="tonal" icon="skip_previous" label="Previous track" />
+            <IconButton variant="secondary" icon="skip_previous" label="Previous track" />
             <IconButton
               toggle
               variant="filled"
@@ -112,7 +112,7 @@ export default function IconButtonPage() {
               pressed={playing}
               onPressedChange={setPlaying}
             />
-            <IconButton variant="tonal" icon="skip_next" label="Next track" />
+            <IconButton variant="secondary" icon="skip_next" label="Next track" />
           </Preview>
         </div>
       </Section>
@@ -120,7 +120,7 @@ export default function IconButtonPage() {
       <Section title="States">
         <Preview>
           <IconButton variant="filled" icon="cloud_upload" label="Uploading" loading />
-          <IconButton variant="tonal" icon="cloud_upload" label="Uploading" loading />
+          <IconButton variant="secondary" icon="cloud_upload" label="Uploading" loading />
           <IconButton variant="filled" icon="delete" label="Delete" disabled />
           <IconButton variant="outlined" icon="delete" label="Delete" disabled />
         </Preview>
@@ -209,7 +209,7 @@ function AxesPlayground() {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <span className="type-label-md">Fill</span>
-          <IconButton toggle variant="tonal" size="sm" icon="format_color_fill" label="Fill icons" pressed={fill} onPressedChange={setFill} />
+          <IconButton toggle variant="secondary" size="sm" icon="format_color_fill" label="Fill icons" pressed={fill} onPressedChange={setFill} />
         </div>
         {sliders.map((s) => (
           <div key={s.id} className="flex flex-col gap-1.5">

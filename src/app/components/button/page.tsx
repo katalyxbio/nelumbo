@@ -6,7 +6,7 @@ import { Button } from "@/registry/velvet/ui/button"
 import { Code, PageHeader, Preview, Section } from "@/components/docs/primitives"
 
 const PROPS = [
-  ["variant", '"default" | "tonal" | "secondary" | "elevated" | "outline" | "ghost" | "destructive" | "link"', '"default"', "tonal, elevated"],
+  ["variant", '"default" | "secondary" | "elevated" | "outline" | "ghost" | "destructive" | "link"', '"default"', "elevated"],
   ["size", '"xs" | "sm" | "default" | "lg" | "xl" | "icon-xs" | "icon-sm" | "icon" | "icon-lg"', '"default"', "xs, xl, icon-xs"],
   ["shape", '"pill" | "square"', '"pill"', "new"],
   ["loading", "boolean", "false", "new"],
@@ -20,7 +20,7 @@ export default function ButtonPage() {
     <>
       <PageHeader eyebrow="Component · 01" title="Button">
         A drop-in replacement for shadcn&apos;s Button. Same props and variant names, so existing code keeps
-        working, with two new variants, a pressed shape morph and a loading state.
+        working, with a new elevated variant, a pressed shape morph and a loading state.
       </PageHeader>
 
       <Section title="Install" description="Install the theme once per project, then the component.">
@@ -29,11 +29,10 @@ export default function ButtonPage() {
 
       <Section
         title="Variants"
-        description="Ordered by emphasis. Use one default button per view for the main action; tonal and elevated sit between it and outline."
+        description="Ordered by emphasis. Use one default button per view for the main action. Secondary is the neutral tonal button, for everything that supports it; elevated lifts off busy backgrounds."
       >
         <Preview>
           <Button>Default</Button>
-          <Button variant="tonal">Tonal</Button>
           <Button variant="secondary">Secondary</Button>
           <Button variant="elevated">Elevated</Button>
           <Button variant="outline">Outline</Button>
@@ -60,13 +59,13 @@ export default function ButtonPage() {
         <div className="grid gap-4 md:grid-cols-2">
           <Preview label="pill">
             <Button size="lg">Continue</Button>
-            <Button size="lg" variant="tonal">Save draft</Button>
-            <Button size="icon-lg" variant="tonal" aria-label="Add"><Icon name="add" /></Button>
+            <Button size="lg" variant="secondary">Save draft</Button>
+            <Button size="icon-lg" variant="secondary" aria-label="Add"><Icon name="add" /></Button>
           </Preview>
           <Preview label="square">
             <Button size="lg" shape="square">Continue</Button>
-            <Button size="lg" shape="square" variant="tonal">Save draft</Button>
-            <Button size="icon-lg" shape="square" variant="tonal" aria-label="Add"><Icon name="add" /></Button>
+            <Button size="lg" shape="square" variant="secondary">Save draft</Button>
+            <Button size="icon-lg" shape="square" variant="secondary" aria-label="Add"><Icon name="add" /></Button>
           </Preview>
         </div>
       </Section>
@@ -74,7 +73,7 @@ export default function ButtonPage() {
       <Section title="With icons" description="Icons size to the label (1.3em, about 18px on a default button) and padding tightens on the icon side automatically.">
         <Preview>
           <Button><Icon name="send" /> Send invite</Button>
-          <Button variant="tonal">Continue <Icon name="arrow_forward" /></Button>
+          <Button variant="secondary">Continue <Icon name="arrow_forward" /></Button>
           <Button variant="outline"><Icon name="download" /> Export CSV</Button>
           <Button variant="destructive"><Icon name="delete" /> Remove member</Button>
           <Button variant="ghost" size="icon" aria-label="Like"><Icon name="favorite" /></Button>
@@ -93,7 +92,7 @@ export default function ButtonPage() {
           >
             <Icon name="send" /> {sending ? "Sending" : "Send invite"}
           </Button>
-          <Button loading variant="tonal">Saving</Button>
+          <Button loading variant="secondary">Saving</Button>
           <Button disabled>Disabled</Button>
           <Button disabled variant="outline">Disabled</Button>
           <Button asChild variant="link">
@@ -105,7 +104,7 @@ export default function ButtonPage() {
       <Section title="Usage">
         <Code>{`import { Button } from "@/components/ui/button"
 
-<Button variant="tonal" shape="square" loading={isSaving}>
+<Button variant="secondary" shape="square" loading={isSaving}>
   <Save /> Save draft
 </Button>`}</Code>
       </Section>

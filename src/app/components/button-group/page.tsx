@@ -27,15 +27,15 @@ export default function ButtonGroupPage() {
       >
         <Preview>
           <ButtonGroup>
-            <Button variant="tonal"><Icon name="reply" /> Reply</Button>
-            <Button variant="tonal"><Icon name="reply_all" /> Reply all</Button>
-            <Button variant="tonal"><Icon name="forward" /> Forward</Button>
+            <Button variant="secondary"><Icon name="reply" /> Reply</Button>
+            <Button variant="secondary"><Icon name="reply_all" /> Reply all</Button>
+            <Button variant="secondary"><Icon name="forward" /> Forward</Button>
           </ButtonGroup>
           <ButtonGroup>
-            <IconButton variant="tonal" icon="undo" label="Undo" />
-            <IconButton variant="tonal" icon="redo" label="Redo" />
-            <IconButton variant="tonal" icon="content_cut" label="Cut" />
-            <IconButton variant="tonal" icon="content_paste" label="Paste" />
+            <IconButton variant="secondary" icon="undo" label="Undo" />
+            <IconButton variant="secondary" icon="redo" label="Redo" />
+            <IconButton variant="secondary" icon="content_cut" label="Cut" />
+            <IconButton variant="secondary" icon="content_paste" label="Paste" />
           </ButtonGroup>
         </Preview>
       </Section>
@@ -57,7 +57,7 @@ export default function ButtonGroupPage() {
               <IconButton
                 key={a}
                 toggle
-                variant="tonal"
+                variant="secondary"
                 icon={icon}
                 label={`Align ${a}`}
                 pressed={align === a}

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
  * Velvet Button
  *
  * API-compatible with shadcn's Button (variant, size, asChild), plus:
- *  - variants: `tonal`, `elevated`
+ *  - variant: `elevated` (and `secondary` is Velvet's neutral tonal button)
  *  - `shape`: "pill" (default) | "square". Both morph toward a tighter
  *    radius while pressed, then spring back.
  *  - `loading`: swaps the leading icon for a spinner and blocks interaction.
@@ -35,7 +35,6 @@ const buttonVariants = cva(
       variant: {
         default:
           "bg-primary bg-linear-to-b from-white/10 to-transparent text-primary-foreground shadow-e1 inset-shadow-highlight hover:shadow-e2",
-        tonal: "bg-primary-container text-primary-container-foreground hover:shadow-e1",
         secondary: "bg-secondary text-secondary-foreground hover:shadow-e1",
         elevated:
           "bg-surface-container-low text-primary shadow-e2 hover:shadow-e3 dark:bg-surface-container-high",

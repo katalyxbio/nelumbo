@@ -25,7 +25,7 @@ export default function SplitButtonPage() {
       >
         <Preview className="flex-col items-start gap-4">
           <div className="flex flex-wrap items-center gap-3">
-            {(["default", "tonal", "elevated", "outline"] as const).map((v) => (
+            {(["default", "secondary", "elevated", "outline"] as const).map((v) => (
               <SplitButton key={v} variant={v}>
                 <SplitButtonAction onClick={() => setLast(`Saved (${v})`)}>
                   <Icon name="save" /> Save
@@ -47,7 +47,7 @@ export default function SplitButtonPage() {
       <Section title="Sizes">
         <Preview className="items-end">
           {(["sm", "default", "lg", "xl"] as const).map((s) => (
-            <SplitButton key={s} size={s} variant="tonal">
+            <SplitButton key={s} size={s} variant="secondary">
               <SplitButtonAction>Merge</SplitButtonAction>
               <SplitButtonMenu label="Merge options">
                 <SplitButtonItem icon="merge">Create a merge commit</SplitButtonItem>
@@ -60,7 +60,7 @@ export default function SplitButtonPage() {
       </Section>
 
       <Section title="Usage">
-        <Code>{`<SplitButton variant="tonal">
+        <Code>{`<SplitButton variant="secondary">
   <SplitButtonAction onClick={save}>Save</SplitButtonAction>
   <SplitButtonMenu label="More save options">
     <SplitButtonItem icon="save_as" onSelect={saveAs}>Save as</SplitButtonItem>
@@ -71,7 +71,7 @@ export default function SplitButtonPage() {
       <Section title="Props">
         <PropsTable
           rows={[
-            ["variant", '"default" | "tonal" | "secondary" | "elevated" | "outline" | "destructive"', '"default"', "Applies to both halves"],
+            ["variant", '"default" | "secondary" | "elevated" | "outline" | "destructive"', '"default"', "Applies to both halves"],
             ["size", '"xs" | "sm" | "default" | "lg" | "xl"', '"default"', ""],
             ["Menu: label", "string", "required", "Accessible name of the trigger"],
             ["Menu: align", '"start" | "end"', '"end"', ""],
