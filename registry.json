@@ -810,6 +810,62 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "shadcn-compatible Popover on Radix: grows out of its trigger on a spring, with header, title and description slots.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/popover.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "registry:ui",
+      "title": "Dropdown Menu",
+      "description": "shadcn-compatible Dropdown Menu on Radix: 40px items with concentric corners, Material Symbols icons, filled radio selection, springy check, submenus and destructive items.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/popover"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/dropdown-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "shadcn-compatible Tooltip on Radix: plain labels with keyboard shortcuts, rich tooltips with a title, works with or without a provider.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/tooltip.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
