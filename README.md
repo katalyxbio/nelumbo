@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Velvet
 
-## Getting Started
+A soft, tactile design system for shadcn/ui (Tailwind v4). Material You's tonal
+color model, rebuilt quieter: one seed color generates every shadcn variable plus
+containers, a surface ladder, tinted elevation, spring motion and type roles.
 
-First, run the development server:
+## Commands
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev                                         # docs site with live seed picker
+npm run theme -- --seed "#0f766e" --vibrance 0.9    # regenerate theme from a seed
+npm run registry:build                              # theme + public/r/*.json
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Install into a project
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Install the theme once, then components:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npx shadcn@latest add https://<your-registry>/r/theme.json
+npx shadcn@latest add https://<your-registry>/r/button.json
+```
 
-## Learn More
+## Layout
 
-To learn more about Next.js, take a look at the following resources:
+| Path | What |
+| --- | --- |
+| `src/lib/velvet/scheme.ts` | Seed → HCT tonal palettes → color roles (light/dark) |
+| `src/lib/velvet/tokens.ts` | Radius, elevation, springs, type roles, `state-layer` / `tactile` utilities |
+| `scripts/build-theme.ts` | Writes `src/styles/velvet.css` and the `theme` item in `registry.json` |
+| `registry/velvet/ui/` | Components shipped through the registry |
+| `src/app/` | Docs site |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Conventions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Type roles are `type-*` utilities (`type-body-md`), not `text-*`, so stock
+  `tailwind-merge` never drops a text color next to them.
+- Interactive components use `state-layer` (hover/focus/press overlay) and
+  `tactile` (press compression with spring release).
+- Components keep shadcn's prop names and variants; Velvet only adds to them.
 
-## Deploy on Vercel
+## Roadmap
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [x] Foundations
+- [x] Button
+- [ ] Icon Button (toggle, filled/tonal/outlined)
+- [ ] Input / Textarea (filled + outlined, floating label)
+- [ ] Card (filled, elevated, outlined, interactive)
+- [ ] Switch, Checkbox, Radio
+- [ ] Chip (new: assist, filter, input, suggestion)
+- [ ] Segmented Control (new)
+- [ ] Dialog, Sheet, Popover, Dropdown Menu, Tooltip
+- [ ] Tabs, Navigation Rail (new), FAB (new), Snackbar (new)
