@@ -5,7 +5,7 @@ const axe = require.resolve("axe-core/axe.min.js")
 ;(async () => {
   const b = await chromium.launch()
   let total = 0
-  for (const path of ["/", "/components/button", "/components/icon-button", "/components/segmented-button", "/components/button-group", "/components/split-button", "/components/fab", "/components/input", "/components/textarea", "/components/switch", "/components/checkbox", "/components/radio-group", "/components/slider", "/components/card", "/components/chip", "/components/dialog", "/components/sheet", "/components/popover", "/components/dropdown-menu", "/components/tooltip"])
+  for (const path of ["/", "/components/button", "/components/icon-button", "/components/segmented-button", "/components/button-group", "/components/split-button", "/components/fab", "/components/input", "/components/textarea", "/components/switch", "/components/checkbox", "/components/radio-group", "/components/slider", "/components/card", "/components/chip", "/components/dialog", "/components/sheet", "/components/popover", "/components/dropdown-menu", "/components/tooltip", "/components/tabs", "/components/navigation-rail"])
     for (const scheme of ["light", "dark"]) {
       const p = await b.newPage({ colorScheme: scheme })
       await p.goto("http://localhost:3000" + path, { waitUntil: "networkidle" })

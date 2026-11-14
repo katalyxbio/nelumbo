@@ -866,6 +866,44 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "shadcn-compatible Tabs on Radix: pill and underline styles with one indicator that slides on a spring, icons that fill in, badges, full width, scrolling.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/tabs.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "navigation-rail",
+      "type": "registry:ui",
+      "title": "Navigation Rail",
+      "description": "Material 3 Expressive navigation rail: active pill grows from the center, icons fill in, badges, header for a menu button and FAB, footer, and an expanded mode.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/navigation-rail.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

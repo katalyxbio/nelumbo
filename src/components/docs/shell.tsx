@@ -37,6 +37,13 @@ const NAV: { group: string; items: NavItem[] }[] = [
     ],
   },
   {
+    group: "Navigation",
+    items: [
+      { href: "/components/tabs", label: "Tabs" },
+      { href: "/components/navigation-rail", label: "Navigation Rail", isNew: true },
+    ],
+  },
+  {
     group: "Overlays",
     items: [
       { href: "/components/dialog", label: "Dialog" },
