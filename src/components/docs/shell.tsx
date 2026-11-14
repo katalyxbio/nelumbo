@@ -30,6 +30,8 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/textarea", label: "Textarea" },
       { label: "Card", soon: true },
       { href: "/components/switch", label: "Switch" },
+      { href: "/components/checkbox", label: "Checkbox" },
+      { href: "/components/radio-group", label: "Radio Group" },
       { label: "Chip", soon: true, isNew: true },
     ],
   },

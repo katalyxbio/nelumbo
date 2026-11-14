@@ -98,7 +98,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Textarea
 - [ ] Card (filled, elevated, outlined, interactive)
 - [x] Switch
-- [ ] Checkbox, Radio
+- [x] Checkbox, Radio Group
 - [ ] Chip (new: assist, filter, input, suggestion)
 - [ ] Dialog, Sheet, Popover, Dropdown Menu, Tooltip
 - [ ] Tabs, Navigation Rail (new), FAB (new), Snackbar (new)
