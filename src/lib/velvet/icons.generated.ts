@@ -45,6 +45,7 @@ export const USED_ICONS: IconName[] = [
   "light_mode",
   "link",
   "list",
+  "location_on",
   "lock",
   "low_priority",
   "mail",

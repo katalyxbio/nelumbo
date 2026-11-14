@@ -612,17 +612,48 @@
       ]
     },
     {
-      "name": "input",
+      "name": "field",
       "type": "registry:ui",
-      "title": "Input",
-      "description": "Text field with a CSS-only floating label, filled (default) or outlined with a notched border; leading icon, trailing slot, help and error text.",
+      "title": "Field",
+      "description": "Shared text field shell for Input and Textarea: filled or outlined container, CSS-only floating label, notched border, icons and help text.",
       "registryDependencies": [
         "utils",
         "@velvet/icon"
       ],
       "files": [
         {
+          "path": "registry/velvet/ui/field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "Text field with a floating label, filled (default) or outlined, in two sizes; leading icon, trailing slot, help and error text.",
+      "registryDependencies": [
+        "@velvet/field"
+      ],
+      "files": [
+        {
           "path": "registry/velvet/ui/input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "Multi-line text field matching Input; grows with its content and shows a character count with maxLength.",
+      "registryDependencies": [
+        "utils",
+        "@velvet/field"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/textarea.tsx",
           "type": "registry:ui"
         }
       ]

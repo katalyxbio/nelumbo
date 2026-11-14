@@ -57,6 +57,22 @@ export default function InputPage() {
       </Section>
 
       <Section
+        title="Sizes"
+        description="Default is 56px. Use sm (48px) for dense forms, filters and settings panels. The label, icons and gap in the border scale with it."
+      >
+        <div className="grid gap-4 md:grid-cols-2">
+          {VARIANTS.map((v) => (
+            <Preview key={v} label={v} className="flex-col items-stretch gap-4 bg-card dark:bg-card">
+              {(["default", "sm"] as const).map((s) => (
+                <Input key={s} variant={v} size={s} label={s === "sm" ? "City (sm)" : "City (default)"} icon="location_on" defaultValue="Stockholm" autoComplete="off" />
+              ))}
+              <Input variant={v} size="sm" label="Discount code (sm)" autoComplete="off" />
+            </Preview>
+          ))}
+        </div>
+      </Section>
+
+      <Section
         title="Trailing actions"
         description="Put an Icon Button in the trailing slot to reveal a password or clear a search. Use size sm so it fits the field."
       >
@@ -127,6 +143,7 @@ export default function InputPage() {
           rows={[
             ["label", "string", "", "Floating label. Leave out for search bars (then set aria-label)"],
             ["variant", '"filled" | "outlined"', '"filled"', ""],
+            ["size", '"default" | "sm"', '"default"', "56px or 48px"],
             ["icon", "IconName", "", "Leading Material Symbol"],
             ["trailing", "ReactNode", "", "Trailing slot, e.g. an Icon Button with size sm"],
             ["description", "ReactNode", "", "Help text, linked with aria-describedby"],

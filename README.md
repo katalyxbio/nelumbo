@@ -95,7 +95,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Split Button
 - [x] FAB (five colors, three sizes, extended)
 - [x] Input (filled + outlined, floating label)
-- [ ] Textarea
+- [x] Textarea
 - [ ] Card (filled, elevated, outlined, interactive)
 - [ ] Switch, Checkbox, Radio
 - [ ] Chip (new: assist, filter, input, suggestion)
