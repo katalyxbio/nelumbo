@@ -904,6 +904,44 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "snackbar",
+      "type": "registry:ui",
+      "title": "Snackbar",
+      "description": "Snackbars on Radix Toast with a sonner-style snackbar() call: one at a time with a queue, a single action, icons, persistent and urgent messages, swipe to dismiss.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/snackbar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "navigation-bar",
+      "type": "registry:ui",
+      "title": "Navigation Bar",
+      "description": "Material 3 Expressive bottom navigation bar: stacked or inline items, active pill grows from the center, filled icons, badges, safe-area padding.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/navigation-bar.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

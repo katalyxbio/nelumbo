@@ -42,7 +42,8 @@ export function Code({ children, className }: { children: string; className?: st
   const [copied, setCopied] = React.useState(false)
   return (
     <div className={cn("relative min-w-0 rounded-2xl bg-inverse-surface text-inverse-foreground dark:bg-surface-container-high dark:text-foreground", className)}>
-      <pre className="overflow-x-auto p-4 pr-14 font-mono text-[0.8125rem] leading-relaxed">
+      {/* focusable so keyboard users can scroll long lines */}
+      <pre tabIndex={0} className="overflow-x-auto rounded-2xl p-4 pr-14 font-mono text-[0.8125rem] leading-relaxed outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
         <code>{children}</code>
       </pre>
       <Button

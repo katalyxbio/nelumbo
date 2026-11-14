@@ -104,4 +104,4 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Dialog, Sheet (drag-to-dismiss bottom sheet)
 - [x] Popover, Dropdown Menu, Tooltip
 - [x] Tabs, Navigation Rail (new)
-- [ ] Snackbar (new), Navigation Bar
+- [x] Snackbar (new), Navigation Bar
