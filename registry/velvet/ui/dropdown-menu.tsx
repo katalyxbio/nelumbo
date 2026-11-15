@@ -5,6 +5,7 @@ import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 import { Icon } from "@/registry/velvet/ui/icon"
+import { KbdShortcut, splitKeys } from "@/registry/velvet/ui/kbd"
 import { floatingSurface } from "@/registry/velvet/ui/popover"
 
 /**
@@ -52,44 +53,17 @@ export const menuSpacer = "my-0 h-2 shrink-0 bg-transparent"
 /** Sub-menu surface: sits beside its trigger. */
 export const menuSubSurface = cn(floatingSurface, PAD, "min-w-44 overflow-hidden")
 
-const keycap =
-  "inline-flex h-6 min-w-6 items-center justify-center rounded-[0.4375rem] bg-surface-container-lowest px-1.5 font-sans type-label-sm text-muted-foreground shadow-[inset_0_-1.5px_0_var(--outline-variant)] dark:bg-surface-container-highest"
-
 /**
  * Shortcut drawn as keycaps, like CommandShortcut ("⌘N" or "⌘ N" become
- * separate caps). Used by ContextMenu and Menubar.
+ * separate caps). Built on KbdShortcut; used by ContextMenu and Menubar.
  */
-/** "⌘⇧P" → ⌘ ⇧ P, "Ctrl+Shift+K" → Ctrl Shift K, "Esc" → Esc. */
-export function splitKeys(shortcut: string): string[] {
-  const t = shortcut.trim()
-  if (t.includes("+") && t.length > 1) return t.split("+").map((k) => k.trim()).filter(Boolean)
-  const keys: string[] = []
-  let rest = t.replace(/\s+/g, "")
-  while (rest && "⌘⇧⌥⌃".includes(rest[0])) {
-    keys.push(rest[0])
-    rest = rest.slice(1)
-  }
-  if (rest) keys.push(rest)
-  return keys
-}
+export { splitKeys }
 
 export function MenuKeycaps({ className, children, slot, ...props }: React.ComponentProps<"span"> & { slot: string }) {
-  const keys = typeof children === "string" ? splitKeys(children) : null
   return (
-    <span data-slot={slot} className={cn("ml-auto inline-flex shrink-0 items-center gap-1 pl-4", className)} {...props}>
-      {keys ? (
-        <>
-          <span className="sr-only">{children}</span>
-          {keys.map((k, i) => (
-            <kbd key={i} aria-hidden className={keycap}>
-              {k}
-            </kbd>
-          ))}
-        </>
-      ) : (
-        <kbd className={keycap}>{children}</kbd>
-      )}
-    </span>
+    <KbdShortcut data-slot={slot} className={cn("ml-auto shrink-0 pl-4", className)} {...props}>
+      {children}
+    </KbdShortcut>
   )
 }
 
