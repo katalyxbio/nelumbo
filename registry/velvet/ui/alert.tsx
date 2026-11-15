@@ -29,8 +29,10 @@ import { IconButton } from "@/registry/velvet/ui/icon-button"
  *   <Alert layout="banner" variant="info" action={<Button size="sm">Update</Button>}>...</Alert>
  *
  * - `variant`: "default" (neutral, no icon unless you pass one), "info",
- *   "success", "warning", "destructive" or "brand". The tonal ones tint the
- *   whole alert with that palette color's container.
+ *   "success", "warning", "destructive" or "brand". The status ones tint the
+ *   whole alert with that palette color's container. "brand" is the one solid
+ *   alert (the brand accent as a fill), so it never looks like "info" even
+ *   when the brand accent is blue.
  * - `icon`: set per variant (info, check_circle, warning, error, campaign).
  *   Pass a Material Symbol name or any node to replace it, or `false` for none.
  * - Actions: an `action` prop, or an <AlertAction> child, for one or two
@@ -60,8 +62,9 @@ const alertVariants = cva("", {
         "bg-warning-container text-warning-container-foreground [--alert-fg:var(--warning-container-foreground)] [--alert-accent:var(--warning-container-foreground)] dark:[--alert-accent:var(--warning)]",
       destructive:
         "bg-destructive-container text-destructive-container-foreground [--alert-fg:var(--destructive-container-foreground)] [--alert-accent:var(--destructive-container-foreground)] dark:[--alert-accent:var(--destructive)]",
-      brand:
-        "bg-brand-container text-brand-container-foreground [--alert-fg:var(--brand-container-foreground)] [--alert-accent:var(--brand-container-foreground)] dark:[--alert-accent:var(--brand)]",
+      // solid, not tinted: with a blue or cyan brand accent a brand-container would be the
+      // same tint as info, so brand is the one filled alert and reads apart for every accent
+      brand: "bg-brand text-brand-foreground [--alert-fg:var(--brand-foreground)] [--alert-accent:var(--brand-foreground)]",
     },
   },
   defaultVariants: { variant: "default" },

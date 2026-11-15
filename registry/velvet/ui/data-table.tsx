@@ -372,7 +372,7 @@ function DataTable<TData, TValue = unknown>({
             <>
               {showSearch && (
                 <Input
-                  size="sm"
+                  size="xs"
                   type="search"
                   icon="search"
                   aria-label={searchPlaceholder}

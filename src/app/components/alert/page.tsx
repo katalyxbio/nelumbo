@@ -167,7 +167,7 @@ export default function AlertPage() {
       <Section title="Props">
         <PropsTable
           rows={[
-            ["variant", '"default" | "info" | "success" | "warning" | "destructive" | "brand"', '"default"', "Neutral, or tonal with a palette color"],
+            ["variant", '"default" | "info" | "success" | "warning" | "destructive" | "brand"', '"default"', "Neutral, tinted with a status color, or brand (a solid fill, distinct from info for any brand accent)"],
             ["layout", '"inline" | "banner"', '"inline"', "Banner: full width, square, actions on the right from sm up"],
             ["icon", "IconName | ReactNode | false", "per variant", "info, check_circle, warning, error, campaign; default has none"],
             ["action", "ReactNode", "", "One or two buttons. <AlertAction> children work the same"],

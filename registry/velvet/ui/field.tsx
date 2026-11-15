@@ -20,8 +20,8 @@ import { Icon, type IconName } from "@/registry/velvet/ui/icon"
 export type FieldProps = {
   label?: string
   variant?: "filled" | "outlined"
-  /** default 56px, sm 48px. */
-  size?: "default" | "sm"
+  /** default 56px, sm 48px, xs 36px (compact: toolbars and filters; the label becomes the placeholder). */
+  size?: "default" | "sm" | "xs"
   /** Leading Material Symbol. */
   icon?: IconName
   /** Trailing slot, for example an IconButton (size="sm") that clears or reveals. */
@@ -59,6 +59,8 @@ const SIZES = {
   // field height, resting label offset, raised label offset (filled), value padding (filled)
   default: "[--field-h:3.5rem] [--label-rest:1rem] [--label-raised:7px] [--value-pt:1.5rem] [--value-pb:0.5rem]",
   sm: "[--field-h:3rem] [--label-rest:0.75rem] [--label-raised:4px] [--value-pt:1.25rem] [--value-pb:0.25rem]",
+  // compact: no floating label, so only the height and the horizontal padding matter
+  xs: "[--field-h:2.25rem] [--label-rest:0.375rem] [--label-raised:0px] [--value-pt:0px] [--value-pb:0px]",
 }
 
 const slide = "transition-[translate] duration-200 ease-(--ease-standard) motion-reduce:transition-none"
@@ -87,7 +89,9 @@ function Field({
   const invalid = Boolean(error) || ariaInvalid === true || ariaInvalid === "true"
   const help = typeof error === "string" || React.isValidElement(error) ? error : description
   const filled = variant === "filled"
-  const floating = Boolean(label)
+  const compact = size === "xs"
+  // compact fields have no floating label: the label names the control and doubles as its placeholder
+  const floating = Boolean(label) && !compact
   // single-line filled fields move icons down with the text when the label rises
   const iconShift = filled && !multiline && "translate-y-[calc(var(--float)*0.5rem)]"
 
@@ -99,13 +103,16 @@ function Field({
         data-invalid={invalid || undefined}
         data-disabled={disabled || undefined}
         className={cn(
-          "group/field relative flex cursor-text gap-3 rounded-field px-4",
+          "group/field relative flex cursor-text rounded-field",
+          compact ? "gap-2 px-3" : "gap-3 px-4",
           SIZES[size],
           multiline
             ? // padding lives on the container, so scrolled text clips below the label
               cn("items-start", filled && floating ? "pt-(--value-pt) pb-[calc(var(--value-pb)+0.25rem)]" : "py-(--label-rest)")
             : cn(grow ? "min-h-(--field-h)" : "h-(--field-h)", "items-center"),
-          "[--icon-size:20px] [--icon-opsz:20] [--label-x:1rem] has-[[data-slot=field-icon]]:[--label-x:3rem]",
+          compact
+            ? "[--icon-size:18px] [--icon-opsz:20] [--label-x:0.75rem] has-[[data-slot=field-icon]]:[--label-x:2.5rem]"
+            : "[--icon-size:20px] [--icon-opsz:20] [--label-x:1rem] has-[[data-slot=field-icon]]:[--label-x:3rem]",
           // the label rests while an input shows its placeholder, or a button control
           // (Select) marks itself data-placeholder and is closed
           floating
@@ -134,11 +141,12 @@ function Field({
           id: controlId,
           disabled,
           // a placeholder is needed for :placeholder-shown, which floats the label
-          placeholder: placeholder ?? (floating ? " " : undefined),
+          placeholder: placeholder ?? (floating ? " " : compact ? label : undefined),
           "aria-invalid": invalid || undefined,
           "aria-describedby": help ? helpId : undefined,
           className: cn(
-            "w-full min-w-0 flex-1 bg-transparent type-body-lg leading-6 text-foreground outline-none",
+            "w-full min-w-0 flex-1 bg-transparent leading-6 text-foreground outline-none",
+            compact ? "type-body-md" : "type-body-lg",
             "placeholder:text-muted-foreground disabled:cursor-not-allowed",
             floating && "placeholder:opacity-0 placeholder:transition-opacity focus:placeholder:opacity-100",
             multiline
@@ -147,7 +155,12 @@ function Field({
           ),
         })}
 
-        {label && (
+        {label && compact && (
+          <label htmlFor={controlId} className="sr-only">
+            {label}
+          </label>
+        )}
+        {label && !compact && (
           <label
             htmlFor={controlId}
             className={cn(
@@ -169,7 +182,7 @@ function Field({
 
         {invalid && !multiline && <Icon name="error" fill className={cn("shrink-0 text-destructive", iconShift, slide)} />}
         {trailing && (
-          <div data-slot="field-trailing" className={cn("-me-2 flex shrink-0 items-center", iconShift, slide)}>
+          <div data-slot="field-trailing" className={cn(compact ? "-me-1.5" : "-me-2", "flex shrink-0 items-center", iconShift, slide)}>
             {trailing}
           </div>
         )}
@@ -209,7 +222,7 @@ function Field({
       </div>
 
       {(help || meta) && (
-        <div className={cn("flex gap-4 px-4 type-body-sm text-muted-foreground", disabled && "opacity-40")}>
+        <div className={cn("flex gap-4 type-body-sm text-muted-foreground", compact ? "px-3" : "px-4", disabled && "opacity-40")}>
           {help && (
             <p id={helpId} data-slot="field-description" className={cn("flex-1", invalid && "text-destructive")}>
               {help}

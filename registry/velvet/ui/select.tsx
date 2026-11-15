@@ -50,12 +50,13 @@ const fieldChevron = (
  * you). It covers the whole field, so a popup anchors to the field. Mark it
  * data-placeholder while empty so the label rests.
  */
-function fieldButtonClass(controlClass: string, { label, invalid }: { label?: boolean; invalid?: boolean }) {
+function fieldButtonClass(controlClass: string, { label, invalid, compact }: { label?: boolean; invalid?: boolean; compact?: boolean }) {
   return cn(
     controlClass,
     "absolute inset-0 z-[1] flex cursor-pointer items-center rounded-field text-left",
-    "ps-(--label-x) pe-12",
-    invalid && "pe-[5.25rem]",
+    "ps-(--label-x)",
+    compact ? "pe-8" : "pe-12",
+    invalid && (compact ? "pe-14" : "pe-[5.25rem]"),
     "data-placeholder:text-muted-foreground",
     // with a label, the placeholder only shows once the label has risen
     label && "data-placeholder:not-data-[state=open]:text-transparent"
@@ -104,7 +105,7 @@ function SelectTrigger({
           {/* The trigger covers the whole field, so the list anchors to the field and any of it opens the list. */}
           <SelectPrimitive.Trigger
             data-slot="select-trigger"
-            className={fieldButtonClass(controlClass, { label: Boolean(label), invalid })}
+            className={fieldButtonClass(controlClass, { label: Boolean(label) && size !== "xs", invalid, compact: size === "xs" })}
             {...control}
             {...props}
           >
