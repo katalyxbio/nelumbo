@@ -1412,6 +1412,193 @@ export function PieCenter({
 /* Owned by the radar gallery. Add helpers below with `export` inline.   */
 /* ================================================================== */
 
+/** Dotted, round, hairline grid for `<PolarGrid {...radarGrid} />`: dots of outline-variant instead of solid gray. */
+export const radarGrid = {
+  stroke: "var(--outline-variant)",
+  strokeWidth: 2,
+  strokeLinecap: "round" as const,
+  strokeDasharray: "0.1 6",
+}
+
+/** What Customized hands a polar chart's children: the axis maps hold the resolved (pixel) center and radius. */
+type RadarChartState = { radiusAxisMap?: Record<string, PolarAxisGeometry>; angleAxisMap?: Record<string, PolarAxisGeometry> }
+type PolarAxisGeometry = { cx?: number; cy?: number; outerRadius?: number }
+function radarGeometry(chart: RadarChartState) {
+  const axis = Object.values(chart.radiusAxisMap ?? {})[0] ?? Object.values(chart.angleAxisMap ?? {})[0]
+  return { cx: axis?.cx ?? 0, cy: axis?.cy ?? 0, outerRadius: axis?.outerRadius ?? 0 }
+}
+
+/**
+ * The polar chart's own grid, for the looks PolarGrid cannot draw: tonal fills.
+ * Place it inside the RadarChart through `<Customized component={<RadarRings count={6} fill="tonal" />} />`
+ * (the center and radius come from the chart's axes, so keep a PolarRadiusAxis in it).
+ *  - fill "tonal": alternating bands of the tint, outermost darkest (Material tonal rings)
+ *  - fill "flat": one tinted body
+ *  - fill "none": dotted rings only
+ * `spokes` adds dotted lines to every vertex; `rings` is how many steps there are.
+ */
+export function RadarRings({
+  count,
+  shape = "polygon",
+  rings = 4,
+  fill = "none",
+  spokes = true,
+  color = "var(--foreground)",
+  ...chart
+}: {
+  /** Number of axes. */
+  count: number
+  shape?: "polygon" | "circle"
+  rings?: number
+  fill?: "none" | "flat" | "tonal"
+  spokes?: boolean
+  /** Tint source: a series color (`var(--color-desktop)`) or the foreground. */
+  color?: string
+} & RadarChartState) {
+  const { cx, cy, outerRadius } = radarGeometry(chart)
+  if (!outerRadius) return null
+  const angle = (i: number) => ((90 - (360 * i) / count) * Math.PI) / 180
+  const pt = (r: number, i: number) => `${cx + Math.cos(angle(i)) * r},${cy - Math.sin(angle(i)) * r}`
+  const path = (r: number) =>
+    shape === "circle"
+      ? `M${cx - r},${cy}a${r},${r} 0 1,0 ${2 * r},0a${r},${r} 0 1,0 ${-2 * r},0`
+      : `M${Array.from({ length: count }, (_, i) => pt(r, i)).join("L")}Z`
+  const steps = Array.from({ length: rings }, (_, k) => ((rings - k) / rings) * outerRadius)
+  const tone = (k: number) =>
+    fill === "flat"
+      ? chartTrackColor(color, 13)
+      : fill === "tonal"
+        ? chartTrackColor(color, k % 2 === 0 ? 11 : 4)
+        : "none"
+  const dotted = { stroke: "var(--outline-variant)", strokeWidth: 2, strokeLinecap: "round" as const, strokeDasharray: "0.1 6", fill: "none" }
+  return (
+    <g data-slot="radar-rings" aria-hidden>
+      {fill !== "none" && (fill === "flat" ? [steps[0]] : steps).map((r, k) => <path key={`f${k}`} d={path(r)} fill={tone(k)} />)}
+      {fill !== "tonal" && steps.map((r, k) => (fill === "flat" && k === 0 ? null : <path key={`r${k}`} d={path(r)} {...dotted} />))}
+      {fill === "tonal" && <path d={path(outerRadius)} {...dotted} />}
+      {spokes &&
+        Array.from({ length: count }, (_, i) => {
+          const [x, y] = pt(outerRadius, i).split(",")
+          return <line key={i} x1={cx} y1={cy} x2={x} y2={y} {...dotted} />
+        })}
+    </g>
+  )
+}
+
+/**
+ * The focused axis on a radar: a spoke from the center to its vertex and a big
+ * ringed dot on each series' value, like the focus line and ring on cartesian
+ * charts. `values` are the focused point's numbers by series key; `domain` is
+ * the radius axis' [min, max] (set it on PolarRadiusAxis, too).
+ * `<Customized component={<RadarFocus count={6} index={focus.index} domain={[0, 320]} values={{ desktop: 186 }} />} />`
+ */
+export function RadarFocus({
+  count,
+  index,
+  domain,
+  values,
+  ...chart
+}: {
+  count: number
+  /** The axis in focus; -1 draws nothing. */
+  index: number
+  domain: [number, number]
+  values: Record<string, number>
+} & RadarChartState) {
+  const { cx, cy, outerRadius } = radarGeometry(chart)
+  if (index < 0 || !outerRadius) return null
+  const a = ((90 - (360 * index) / count) * Math.PI) / 180
+  const at = (r: number) => ({ x: cx + Math.cos(a) * r, y: cy - Math.sin(a) * r })
+  const end = at(outerRadius)
+  return (
+    <g data-slot="radar-focus" aria-hidden style={{ pointerEvents: "none" }}>
+      <line x1={cx} y1={cy} x2={end.x} y2={end.y} stroke="var(--foreground)" strokeWidth={2} strokeLinecap="round" />
+      {Object.entries(values).map(([k, v]) => {
+        const p = at(((v - domain[0]) / (domain[1] - domain[0])) * outerRadius)
+        return <circle key={k} cx={p.x} cy={p.y} r={7} fill="var(--chart-surface)" stroke="var(--foreground)" strokeWidth={2.5} />
+      })}
+    </g>
+  )
+}
+
+/**
+ * A PolarAngleAxis tick: the axis name in muted label text, and under it (optional) the
+ * value in bold. The focused axis turns foreground. Labels at the top of the chart grow
+ * upward so they never run into the plot.
+ * `<PolarAngleAxis dataKey="month" tick={radarAxisTick({ values: data.map((d) => d.desktop), focus: focus.index })} />`
+ */
+export function radarAxisTick({
+  values,
+  focus = -1,
+  format = (v: number) => v.toLocaleString("en-US"),
+  push = 6,
+}: { values?: number[]; focus?: number; format?: (v: number) => string; push?: number } = {}) {
+  // eslint-disable-next-line react/display-name
+  return (p: { x?: number; y?: number; cx?: number; cy?: number; index?: number; payload?: { value?: React.ReactNode } }) => {
+    const { x = 0, y = 0, cx = 0, cy = 0, index = 0, payload } = p
+    const dx = x - cx
+    const dy = y - cy
+    const len = Math.hypot(dx, dy) || 1
+    const px = x + (dx / len) * push
+    const py = y + (dy / len) * push
+    const sin = dy / len
+    const cos = dx / len
+    const anchor = cos > 0.3 ? "start" : cos < -0.3 ? "end" : "middle"
+    const hasValue = values != null && values[index] != null
+    const lines = hasValue ? 2 : 1
+    const lh = 15
+    // top: stack upward; bottom: start below the point; sides: center the block
+    const first = sin < -0.5 ? -(lines - 1) * lh : sin > 0.5 ? 12 : -((lines - 1) * lh) / 2 + 4
+    const on = index === focus
+    return (
+      <text x={px} y={py + first} textAnchor={anchor} className="fill-muted-foreground" style={{ fontSize: 12, fontWeight: 520, letterSpacing: "0.02em" }}>
+        <tspan className={on ? "fill-foreground" : undefined} style={on ? { fontWeight: 700 } : undefined}>
+          {payload?.value}
+        </tspan>
+        {hasValue && (
+          <tspan x={px} dy={lh} className="fill-foreground" style={{ fontWeight: 700, fontSize: 13 }}>
+            {format(values![index])}
+          </tspan>
+        )}
+      </text>
+    )
+  }
+}
+
+/** Radius axis labels (the ring values): muted, with a surface halo so they stay legible over the polygon. `<PolarRadiusAxis tick={radarRadiusTick()} />` */
+export function radarRadiusTick({ highlight, color }: { highlight?: number; color?: string } = {}) {
+  // eslint-disable-next-line react/display-name
+  return (p: { x?: number; y?: number; payload?: { value?: number } }) => {
+    const { x = 0, y = 0, payload } = p
+    const hot = highlight != null && payload?.value === highlight
+    return (
+      <text
+        x={x}
+        y={y}
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="fill-muted-foreground"
+        style={{ fontSize: 11, fontWeight: 560, paintOrder: "stroke", stroke: "var(--chart-surface)", strokeWidth: 4, strokeLinejoin: "round", ...(hot && color ? { fill: color } : {}) }}
+      >
+        {payload?.value}
+      </text>
+    )
+  }
+}
+
+/** Props for a radar polygon: tonal fill, 3px round stroke, ringed dots (`dots: false` for a plain outline). `<Radar {...radarShape("desktop")} />` */
+export const radarShape = (key: string, { fill = 0.24, dots = true }: { fill?: number; dots?: boolean } = {}) => ({
+  dataKey: key,
+  stroke: `var(--color-${key})`,
+  strokeWidth: 3,
+  strokeLinejoin: "round" as const,
+  strokeLinecap: "round" as const,
+  fill: fill > 0 ? `var(--color-${key})` : "none",
+  fillOpacity: fill,
+  dot: dots ? chartDot(key) : (false as const),
+  activeDot: false as const,
+})
+
 /* end radar helpers */
 
 /* ================================================================== */
