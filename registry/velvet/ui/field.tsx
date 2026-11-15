@@ -48,6 +48,8 @@ type FieldShellProps = FieldProps & {
   placeholder?: string
   ariaInvalid?: React.AriaAttributes["aria-invalid"]
   multiline?: boolean
+  /** Single-line field that grows taller when its content wraps (chips). */
+  grow?: boolean
   /** Shown at the end of the help row, e.g. a character count. */
   meta?: React.ReactNode
   children: (control: ControlProps) => React.ReactNode
@@ -75,6 +77,7 @@ function Field({
   placeholder,
   ariaInvalid,
   multiline,
+  grow,
   meta,
   children,
 }: FieldShellProps) {
@@ -101,10 +104,12 @@ function Field({
           multiline
             ? // padding lives on the container, so scrolled text clips below the label
               cn("items-start", filled && floating ? "pt-(--value-pt) pb-[calc(var(--value-pb)+0.25rem)]" : "py-(--label-rest)")
-            : "h-(--field-h) items-center",
+            : cn(grow ? "min-h-(--field-h)" : "h-(--field-h)", "items-center"),
           "[--icon-size:20px] [--icon-opsz:20] [--label-x:1rem] has-[[data-slot=field-icon]]:[--label-x:3rem]",
+          // the label rests while an input shows its placeholder, or a button control
+          // (Select) marks itself data-placeholder and is closed
           floating
-            ? "[--float:1] has-[:is(input,textarea):placeholder-shown:not(:focus)]:[--float:0]"
+            ? "[--float:1] has-[:is(input,textarea):placeholder-shown:not(:focus)]:[--float:0] has-[>button[data-placeholder]:not([data-state=open])]:[--float:0]"
             : "[--float:0]",
           "transition-colors duration-200 ease-(--ease-standard)",
           filled && [
@@ -113,7 +118,8 @@ function Field({
             "dark:hover:bg-surface-bright dark:focus-within:bg-surface-bright",
             "data-invalid:bg-destructive-container/60 dark:data-invalid:bg-destructive-container/40",
           ],
-          "data-disabled:pointer-events-none data-disabled:opacity-40"
+          "data-disabled:pointer-events-none data-disabled:opacity-40",
+          "has-[>button:disabled]:pointer-events-none has-[>button:disabled]:opacity-40"
         )}
       >
         {icon && (

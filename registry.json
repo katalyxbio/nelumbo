@@ -660,6 +660,52 @@
       ]
     },
     {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "shadcn-compatible Select on Radix whose trigger is a Velvet text field (filled or outlined, floating label, help and error text); the list drops from the field at full width with filled selection.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/field",
+        "@velvet/icon",
+        "@velvet/dropdown-menu",
+        "@velvet/popover"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/select.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "combobox",
+      "type": "registry:ui",
+      "title": "Combobox",
+      "description": "Type-to-filter field (ARIA combobox) with accent-insensitive matching and highlighted matches, groups, icons and descriptions, multiple selection as chips in a growing field, async loading and form submission.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/field",
+        "@velvet/icon",
+        "@velvet/icon-button",
+        "@velvet/button",
+        "@velvet/dropdown-menu",
+        "@velvet/popover"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/combobox.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "switch",
       "type": "registry:ui",
       "title": "Switch",

@@ -96,6 +96,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] FAB (five colors, three sizes, extended)
 - [x] Input (filled + outlined, floating label)
 - [x] Textarea
+- [x] Select (field trigger), Combobox (new: type to filter, chips for multiple)
 - [x] Card (filled, elevated, outlined, interactive)
 - [x] Switch
 - [x] Checkbox, Radio Group

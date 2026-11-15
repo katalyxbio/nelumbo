@@ -28,6 +28,8 @@ const NAV: { group: string; items: NavItem[] }[] = [
     items: [
       { href: "/components/input", label: "Input" },
       { href: "/components/textarea", label: "Textarea" },
+      { href: "/components/select", label: "Select", isNew: true },
+      { href: "/components/combobox", label: "Combobox", isNew: true },
       { href: "/components/card", label: "Card" },
       { href: "/components/switch", label: "Switch" },
       { href: "/components/checkbox", label: "Checkbox" },

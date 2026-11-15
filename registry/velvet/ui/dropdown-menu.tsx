@@ -31,12 +31,20 @@ import { floatingSurface } from "@/registry/velvet/ui/popover"
 
 // Item corners: the menu radius minus its padding, so the curves are concentric.
 const PAD = "p-1.5 [--menu-pad:0.375rem]"
-const item = cn(
+export const menuPad = PAD
+export const menuItem = cn(
   "relative flex h-10 cursor-pointer items-center gap-3 rounded-[calc(var(--radius-xl)-var(--menu-pad))] px-3 type-body-md outline-none select-none",
   "[--icon-size:20px] [--icon-opsz:20] [&_[data-slot=icon]]:text-muted-foreground",
   "transition-colors duration-100 data-highlighted:bg-foreground/[0.07] active:bg-foreground/[0.11]",
   "data-disabled:pointer-events-none data-disabled:opacity-40",
   "data-inset:pl-11"
+)
+const item = menuItem
+
+/** The chosen option, filled in with the tonal container (radio items, Select, Combobox). */
+export const menuItemSelected = cn(
+  "data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground data-[state=checked]:data-highlighted:bg-secondary",
+  "data-[state=checked]:data-highlighted:shadow-[inset_0_0_0_100vmax_color-mix(in_oklch,var(--foreground)_6%,transparent)]"
 )
 
 function DropdownMenu(props: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
@@ -134,8 +142,7 @@ function DropdownMenuRadioItem({ className, children, ...props }: React.Componen
       data-slot="dropdown-menu-radio-item"
       className={cn(
         item,
-        "data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground data-[state=checked]:data-highlighted:bg-secondary",
-        "data-[state=checked]:data-highlighted:shadow-[inset_0_0_0_100vmax_color-mix(in_oklch,var(--foreground)_6%,transparent)]",
+        menuItemSelected,
         className
       )}
       {...props}
