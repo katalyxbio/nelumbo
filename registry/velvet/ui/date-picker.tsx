@@ -10,6 +10,7 @@ import { IconButton } from "@/registry/velvet/ui/icon-button"
 import { Button } from "@/registry/velvet/ui/button"
 import { Icon } from "@/registry/velvet/ui/icon"
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "@/registry/velvet/ui/popover"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/registry/velvet/ui/dialog"
 
 /**
  * Velvet DatePicker and DateRangePicker (Material 3 "docked" pickers)
@@ -24,7 +25,11 @@ import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "@/regist
  *
  * DateRangePicker opens two months side by side (one on a phone), with
  * optional presets ("Last 7 days"). The range is a draft until Apply, so
- * looking around doesn't change the value.
+ * looking around doesn't change the value. Once a start date is picked,
+ * hovering a later day previews the range up to it. Under 640px wide the
+ * picker opens as a full-screen dialog instead of a popover: presets as
+ * scrolling chips, months stacked and scrollable, and Cancel / Save pinned
+ * at the bottom. (Decided when it opens, so there is no hydration mismatch.)
  *
  * Both take the field props (label, variant, size, icon, description,
  * error), `min` and `max`, `disabledDays` (any DayPicker matcher, e.g.
@@ -339,6 +344,9 @@ function DateRangePicker({
 }: DateRangePickerProps) {
   const [value, setValue] = useControllable<DateRange | null>(valueProp, defaultValue, onValueChange)
   const [open, setOpen] = React.useState(false)
+  // phones get a full-screen dialog; decided when opening, never during render
+  const [full, setFull] = React.useState(false)
+  const triggerRef = React.useRef<HTMLButtonElement>(null)
   const [draft, setDraft] = React.useState<DateRange | undefined>(value ?? undefined)
   const [month, setMonth] = React.useState<Date>(() => value?.from ?? new Date())
   const narrow = useNarrow()
@@ -349,12 +357,13 @@ function DateRangePicker({
   const describe = (r?: DateRange | null) => {
     if (!r?.from) return null
     const text = r.to ? fmt.formatRange(r.from, r.to) : `${fmt.format(r.from)} – …`
-    return text.replace(/[\u2009\u202f]/g, " ")
+    return text.replace(/[\u2009\u202f\u00a0]/g, " ")
   }
   const nights = draft?.from && draft.to ? Math.round((startOfDay(draft.to).getTime() - startOfDay(draft.from).getTime()) / 86400000) + 1 : 0
 
   const onOpenChange = (o: boolean) => {
     if (o) {
+      setFull(window.matchMedia("(max-width: 639px)").matches)
       setDraft(value ?? undefined)
       setMonth(value?.from ?? new Date())
     }
@@ -374,9 +383,56 @@ function DateRangePicker({
 
   const shownText = describe(value)
   const months = narrow ? 1 : numberOfMonths
+  const unchanged = Boolean(draft?.from) === Boolean(value?.from) && describe(draft) === describe(value)
+
+  // full-screen list: a run of months from a bit before the range (or today), or from `min`
+  const anchor = value?.from ?? new Date()
+  const listStart = min ? new Date(min.getFullYear(), min.getMonth(), 1) : new Date(anchor.getFullYear(), anchor.getMonth() - 1, 1)
+  const listCount = max
+    ? Math.min(60, (max.getFullYear() - listStart.getFullYear()) * 12 + max.getMonth() - listStart.getMonth() + 1)
+    : 18
+  // open scrolled to the month of the current range (or today)
+  const scrollTo = React.useCallback(
+    (el: HTMLDivElement | null) => {
+      if (!el) return
+      const target = el.querySelector<HTMLElement>(`[data-day="${iso(anchor)}"]`)
+      const month = target?.closest("table")?.parentElement
+      if (month) el.scrollTop += month.getBoundingClientRect().top - el.getBoundingClientRect().top
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [open, full]
+  )
+
+  const presetList = (cls: string) =>
+    presets && presets.length > 0 ? (
+      <div role="group" aria-label="Presets" className={cls}>
+        {presets.map((p) => {
+          const r = typeof p.range === "function" ? p.range() : p.range
+          const active = Boolean(draft?.from && draft.to && r.from && r.to && iso(draft.from) === iso(r.from) && iso(draft.to) === iso(r.to))
+          return (
+            <button
+              key={p.label}
+              type="button"
+              aria-pressed={active}
+              onClick={() => {
+                setDraft(r)
+                if (r.from) setMonth(narrow || !r.to ? r.from : new Date(r.to.getFullYear(), r.to.getMonth() - (months - 1), 1))
+              }}
+              className={cn(
+                "state-layer h-9 shrink-0 cursor-pointer rounded-full px-3 text-left type-label-lg whitespace-nowrap outline-none",
+                "focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring",
+                active ? "bg-secondary text-secondary-foreground" : "text-foreground"
+              )}
+            >
+              {p.label}
+            </button>
+          )
+        })}
+      </div>
+    ) : null
 
   return (
-    <Popover open={open} onOpenChange={onOpenChange}>
+    <Popover open={open && !full} onOpenChange={onOpenChange}>
       <Field
         {...{ label, variant, size, icon, description, error, id, className, disabled }}
         trailing={<Icon name="date_range" className="pointer-events-none me-1 text-muted-foreground" />}
@@ -386,6 +442,7 @@ function DateRangePicker({
           <>
             <PopoverTrigger asChild>
               <button
+                ref={triggerRef}
                 type="button"
                 data-slot="date-range-trigger"
                 data-placeholder={shownText ? undefined : ""}
@@ -413,38 +470,11 @@ function DateRangePicker({
       </Field>
       <PopoverContent
         align="start"
-        className="max-h-(--radix-popover-content-available-height) w-auto max-w-[calc(100vw-1rem)] gap-0 overflow-y-auto overscroll-contain p-0" aria-label={label ? `${label}: calendar` : "Calendar"}>
+        className="max-h-(--radix-popover-content-available-height) w-auto max-w-[calc(100vw-1rem)] gap-0 overflow-y-auto overscroll-contain p-0"
+        aria-label={label ? `${label}: calendar` : "Calendar"}
+      >
         <div className="flex flex-col sm:flex-row">
-          {presets && presets.length > 0 && (
-            <div
-              role="group"
-              aria-label="Presets"
-              className="flex gap-1 overflow-x-auto p-2 pb-0 sm:w-44 sm:flex-col sm:overflow-visible sm:pe-0 sm:pb-2"
-            >
-              {presets.map((p) => {
-                const r = typeof p.range === "function" ? p.range() : p.range
-                const active = Boolean(draft?.from && draft.to && r.from && r.to && iso(draft.from) === iso(r.from) && iso(draft.to) === iso(r.to))
-                return (
-                  <button
-                    key={p.label}
-                    type="button"
-                    aria-pressed={active}
-                    onClick={() => {
-                      setDraft(r)
-                      if (r.from) setMonth(narrow || !r.to ? r.from : new Date(r.to.getFullYear(), r.to.getMonth() - (months - 1), 1))
-                    }}
-                    className={cn(
-                      "state-layer h-9 shrink-0 cursor-pointer rounded-full px-3 text-left type-label-lg whitespace-nowrap outline-none",
-                      "focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring",
-                      active ? "bg-secondary text-secondary-foreground" : "text-foreground"
-                    )}
-                  >
-                    {p.label}
-                  </button>
-                )
-              })}
-            </div>
-          )}
+          {presetList("flex gap-1 overflow-x-auto p-2 pb-0 sm:w-44 sm:flex-col sm:overflow-visible sm:pe-0 sm:pb-2")}
           <div className="flex flex-col">
             <div className="flex justify-center p-3">
               <Calendar
@@ -463,7 +493,7 @@ function DateRangePicker({
                 lang={locale}
               />
             </div>
-            {/* stays in view when the popover has to scroll (phones) */}
+            {/* stays in view when the popover has to scroll */}
             <div className="sticky bottom-0 z-10 flex items-center gap-2 bg-card px-4 pt-1 pb-3 dark:bg-surface-container-high">
               <p className="flex min-w-0 flex-1 items-baseline gap-3 type-body-md" aria-live="polite">
                 <span className="truncate">{describe(draft) ?? <span className="text-muted-foreground">Pick a start date</span>}</span>
@@ -482,13 +512,71 @@ function DateRangePicker({
               <Button size="sm" variant="ghost" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button size="sm" onClick={apply} disabled={Boolean(draft?.from) === Boolean(value?.from) && describe(draft) === describe(value)}>
+              <Button size="sm" onClick={apply} disabled={unchanged}>
                 Apply
               </Button>
             </div>
           </div>
         </div>
       </PopoverContent>
+
+      <Dialog open={open && full} onOpenChange={onOpenChange}>
+        <DialogContent
+          showCloseButton={false}
+          onCloseAutoFocus={(e) => {
+            e.preventDefault()
+            triggerRef.current?.focus()
+          }}
+          className="inset-0 h-dvh max-h-none w-full max-w-none translate-none gap-0 rounded-none p-0"
+        >
+          <div className="flex items-center gap-2 px-2 pt-2 pb-1">
+            <DialogClose asChild>
+              <IconButton icon="close" label="Close" />
+            </DialogClose>
+            <div className="min-w-0 flex-1">
+              <DialogTitle className="type-title-md">{label ?? "Select dates"}</DialogTitle>
+              <DialogDescription className="truncate type-body-md text-muted-foreground" aria-live="polite">
+                {describe(draft) ?? "Pick a start date"}
+                {nights > 1 && <span>, {nights} days</span>}
+              </DialogDescription>
+            </div>
+          </div>
+          {presetList("flex shrink-0 gap-1 overflow-x-auto px-3 py-2 [scrollbar-width:none]")}
+          <div ref={scrollTo} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4">
+            <Calendar
+              mode="range"
+              autoFocus
+              selected={draft}
+              onSelect={onSelect}
+              month={listStart}
+              numberOfMonths={listCount}
+              hideNavigation
+              disabled={matchers}
+              excludeDisabled
+              startMonth={min}
+              endMonth={max}
+              weekStartsOn={weekStartsOn}
+              lang={locale}
+              className="mx-auto [--cell:min(3rem,calc((100vw-2rem)/7))]"
+              classNames={{ months: "relative flex flex-col gap-4", month_caption: "flex h-12 items-center ps-2 type-title-sm" }}
+            />
+          </div>
+          <div className="flex shrink-0 items-center gap-2 bg-card px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] dark:bg-surface-container-high">
+            {draft?.from ? (
+              <Button variant="ghost" onClick={() => setDraft(undefined)}>
+                Clear
+              </Button>
+            ) : null}
+            <span className="flex-1" />
+            <Button variant="ghost" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={apply} disabled={unchanged}>
+              Save
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Popover>
   )
 }
