@@ -57,6 +57,13 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/snackbar", label: "Snackbar", isNew: true },
     ],
   },
+  {
+    group: "Feedback",
+    items: [
+      { href: "/components/progress", label: "Progress", isNew: true },
+      { href: "/components/loading-indicator", label: "Loading Indicator", isNew: true },
+    ],
+  },
 ]
 
 export function DocsShell({ children }: { children: React.ReactNode }) {

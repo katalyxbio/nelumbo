@@ -106,3 +106,4 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Popover, Dropdown Menu, Tooltip
 - [x] Tabs, Navigation Rail (new)
 - [x] Snackbar (new, with a sonner-compatible `toast` API), Navigation Bar
+- [x] Progress (new: linear and circular, flat or wavy), Loading Indicator (morphing shapes), Skeleton
