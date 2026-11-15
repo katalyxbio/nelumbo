@@ -1093,6 +1093,49 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "title": "Calendar",
+      "description": "Material 3 calendar on react-day-picker (shadcn's props carry over): filled selection, outlined today, range bands, a year grid behind the title, sliding months, Intl month and weekday names.",
+      "dependencies": [
+        "react-day-picker"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/calendar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "title": "Date Picker",
+      "description": "DatePicker (type a date in the locale's order, or pick from a docked calendar; min, max, disabled days, validation) and DateRangePicker (two months, presets, apply/cancel).",
+      "dependencies": [
+        "react-day-picker"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/field",
+        "@velvet/calendar",
+        "@velvet/icon-button",
+        "@velvet/button",
+        "@velvet/icon",
+        "@velvet/popover"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/date-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
