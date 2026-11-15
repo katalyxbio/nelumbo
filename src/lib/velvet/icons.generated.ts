@@ -122,6 +122,7 @@ export const USED_ICONS: IconName[] = [
   "overview",
   "palette",
   "password",
+  "pattern",
   "pause",
   "person",
   "photo_camera",

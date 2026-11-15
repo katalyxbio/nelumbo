@@ -1370,6 +1370,26 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command",
+      "description": "shadcn-compatible Command on cmdk: search field, grouped items with icons and keycap shortcuts, spacing instead of separators, loading and empty states, and a dialog for ⌘K.",
+      "dependencies": [
+        "cmdk"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/dialog",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/command.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

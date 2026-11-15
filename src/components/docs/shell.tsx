@@ -68,6 +68,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/sheet", label: "Sheet" },
       { href: "/components/popover", label: "Popover" },
       { href: "/components/dropdown-menu", label: "Dropdown Menu" },
+      { href: "/components/command", label: "Command", isNew: true },
       { href: "/components/tooltip", label: "Tooltip" },
       { href: "/components/snackbar", label: "Snackbar", isNew: true },
     ],

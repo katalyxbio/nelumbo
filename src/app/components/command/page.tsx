@@ -15,7 +15,7 @@ import {
 } from "@/registry/velvet/ui/command"
 import { Button } from "@/registry/velvet/ui/button"
 import { Icon, type IconName } from "@/registry/velvet/ui/icon"
-import { Code, PageHeader, Preview, Section } from "@/components/docs/primitives"
+import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 type Action = { label: string; icon: IconName; shortcut?: string; disabled?: boolean }
 
@@ -41,38 +41,6 @@ const ACCOUNT: Action[] = [
 /**
  * The docs' PropsTable, with a focusable scroll region so it passes axe on phones.
  */
-function PropsTable({ rows }: { rows: [string, string, string, string][] }) {
-  return (
-    <div
-      role="region"
-      aria-label="Props"
-      tabIndex={0}
-      className="overflow-x-auto rounded-2xl border border-border outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-    >
-      <table className="w-full min-w-[640px] text-left type-body-sm">
-        <thead className="bg-surface-container-low type-label-md text-muted-foreground dark:bg-surface-container">
-          <tr>
-            <th className="px-4 py-3">Prop</th>
-            <th className="px-4 py-3">Type</th>
-            <th className="px-4 py-3">Default</th>
-            <th className="px-4 py-3">Notes</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
-          {rows.map(([name, type, def, n]) => (
-            <tr key={name}>
-              <td className="px-4 py-3 font-mono type-label-md">{name}</td>
-              <td className="px-4 py-3 font-mono type-label-sm text-muted-foreground">{type}</td>
-              <td className="px-4 py-3 font-mono type-label-sm">{def}</td>
-              <td className="px-4 py-3 type-body-sm text-muted-foreground">{n}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
 function Rows({ items, onRun }: { items: Action[]; onRun?: (label: string) => void }) {
   return items.map((a) => (
     <CommandItem key={a.label} value={a.label} disabled={a.disabled} onSelect={() => onRun?.(a.label)}>
