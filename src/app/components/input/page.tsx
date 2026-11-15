@@ -16,7 +16,7 @@ export default function InputPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 07" title="Input">
+      <PageHeader eyebrow="Component 07" title="Input">
         A text field with a floating label. The label rests inside the field and moves up when you focus or type, so
         the field stays compact and is never left without a name.
       </PageHeader>

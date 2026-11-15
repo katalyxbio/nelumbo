@@ -36,7 +36,7 @@ function Tile({ n, className }: { n: number; className?: string }) {
 export default function ScrollAreaPage() {
   return (
     <>
-      <PageHeader eyebrow="Component · 42" title="Scroll Area">
+      <PageHeader eyebrow="Component 42" title="Scroll Area">
         A region that scrolls inside its box, with thin bars that appear when you hover and fade away after. Use it for
         long lists in a fixed panel, and for galleries that run past the edge. Built on Radix, with shadcn&apos;s API.
       </PageHeader>

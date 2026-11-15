@@ -25,7 +25,7 @@ export default function IconButtonPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 02" title="Icon Button">
+      <PageHeader eyebrow="Component 02" title="Icon Button">
         Material 3&apos;s four icon button styles, drawn with Material Symbols. As a toggle, the selected state fills
         the glyph and morphs the shape, so the change reads at a glance and not only through color.
       </PageHeader>

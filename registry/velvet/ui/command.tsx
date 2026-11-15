@@ -108,7 +108,13 @@ function CommandInput({ className, ...props }: React.ComponentProps<typeof Comma
   return (
     <div
       data-slot="command-input-wrapper"
-      className="mx-2 mt-2 mb-1 flex h-12 shrink-0 items-center gap-3 rounded-lg px-3 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:-outline-offset-2 has-[input:focus-visible]:outline-ring"
+      className={cn(
+        "mx-2 mt-2 mb-1 flex h-12 shrink-0 items-center gap-3 rounded-field px-3",
+        "bg-surface-container-highest",
+        // the palette keeps focus in its field the whole time, so a ring would never
+        // go away; the caret and the icon turning foreground mark it instead
+        "[&>[data-slot=icon]]:transition-[color] has-[input:focus]:[&>[data-slot=icon]]:text-foreground"
+      )}
     >
       <Icon name="search" size={22} className="text-muted-foreground" />
       <CommandPrimitive.Input
@@ -123,16 +129,73 @@ function CommandInput({ className, ...props }: React.ComponentProps<typeof Comma
   )
 }
 
-function CommandList({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.List>) {
+/**
+ * The highlighted row sits on a raised pill that springs from row to row as
+ * the arrow keys or the pointer move, and follows the list as it filters.
+ * Until it is measured, the row draws its own fill.
+ */
+function CommandList({ className, children, ref, ...props }: React.ComponentProps<typeof CommandPrimitive.List>) {
+  const own = React.useRef<HTMLDivElement>(null)
+  const [pill, setPill] = React.useState<{ y: number; x: number; w: number; h: number; moved: boolean } | null>(null)
+
+  React.useLayoutEffect(() => {
+    const list = own.current
+    if (!list) return
+    let frame = 0
+    const measure = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        const sizer = list.querySelector<HTMLElement>("[cmdk-list-sizer]")
+        const row = list.querySelector<HTMLElement>('[cmdk-item][data-selected="true"]')
+        if (!sizer || !row) return setPill(null)
+        const r = row.getBoundingClientRect()
+        const o = sizer.getBoundingClientRect()
+        const next = { x: r.left - o.left, y: r.top - o.top, w: r.width, h: r.height }
+        setPill((p) =>
+          p && p.x === next.x && p.y === next.y && p.w === next.w && p.h === next.h ? p : { ...next, moved: p !== null }
+        )
+      })
+    }
+    measure()
+    const mo = new MutationObserver(measure)
+    mo.observe(list, { subtree: true, childList: true, attributes: true, attributeFilter: ["data-selected", "hidden"] })
+    const ro = new ResizeObserver(measure)
+    ro.observe(list)
+    return () => {
+      cancelAnimationFrame(frame)
+      mo.disconnect()
+      ro.disconnect()
+    }
+  }, [])
+
   return (
     <CommandPrimitive.List
+      ref={(node: HTMLDivElement | null) => {
+        own.current = node
+        if (typeof ref === "function") ref(node)
+        else if (ref) (ref as React.RefObject<HTMLDivElement | null>).current = node
+      }}
       data-slot="command-list"
+      data-pill={pill ? "" : undefined}
       className={cn(
-        "max-h-[min(22rem,70dvh)] scroll-py-2 overflow-x-hidden overflow-y-auto overscroll-contain px-2 pb-2 outline-none transition-[height] duration-200 ease-(--ease-standard)",
+        "group/command-list max-h-[min(22rem,70dvh)] scroll-py-2 overflow-x-hidden overflow-y-auto overscroll-contain px-2 pb-2 outline-none transition-[height] duration-200 ease-(--ease-standard)",
+        "[&>[cmdk-list-sizer]]:relative [&>[cmdk-list-sizer]]:isolate",
         className
       )}
       {...props}
-    />
+    >
+      <div
+        aria-hidden
+        data-slot="command-indicator"
+        className={cn(
+          "pointer-events-none absolute top-0 left-0 -z-10 rounded-[0.875rem] bg-surface-container-lowest shadow-e1 dark:bg-surface-bright",
+          pill?.moved && "transition-[translate,width,height] duration-[420ms] ease-(--ease-spring-bouncy) motion-reduce:transition-none",
+          !pill && "hidden"
+        )}
+        style={pill ? { translate: `${pill.x}px ${pill.y}px`, width: pill.w, height: pill.h } : undefined}
+      />
+      {children}
+    </CommandPrimitive.List>
   )
 }
 
@@ -191,7 +254,7 @@ function CommandGroup({ className, ...props }: React.ComponentProps<typeof Comma
       className={cn(
         "overflow-hidden p-0 text-foreground",
         // heading: a label above the rows, no rule
-        "[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:type-label-md [&_[cmdk-group-heading]]:text-muted-foreground",
+        "[&_[cmdk-group-heading]]:px-2.5 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:type-label-md [&_[cmdk-group-heading]]:text-muted-foreground",
         // groups are separated by space, not lines
         "[&+[data-slot=command-group]]:mt-1",
         className
@@ -201,17 +264,30 @@ function CommandGroup({ className, ...props }: React.ComponentProps<typeof Comma
   )
 }
 
+/**
+ * A row. A leading Icon sits on a tonal tile that turns inverse, fills its
+ * glyph and pops when the row is highlighted.
+ */
 function CommandItem({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Item>) {
   return (
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "state-layer relative flex min-h-12 cursor-default items-center gap-3 rounded-lg px-3 py-2 type-body-lg text-foreground outline-none select-none",
-        // highlighted row: the next surface tone up from the container
-        "data-[selected=true]:bg-surface-container-highest",
-        // leading icon: list-item size and tone
-        "[&>[data-slot=icon]]:shrink-0 [&>[data-slot=icon]]:text-muted-foreground data-[selected=true]:[&>[data-slot=icon]]:text-foreground",
-        "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-40 data-[disabled=true]:after:hidden",
+        "relative flex min-h-13 cursor-default items-center gap-3 rounded-[0.875rem] px-2 py-1.5 type-body-lg text-foreground outline-none select-none",
+        // the row fills itself until the list's sliding pill is measured
+        "data-[selected=true]:bg-surface-container-lowest data-[selected=true]:shadow-e1 dark:data-[selected=true]:bg-surface-bright",
+        "group-data-pill/command-list:data-[selected=true]:bg-transparent group-data-pill/command-list:data-[selected=true]:shadow-none",
+        "dark:group-data-pill/command-list:data-[selected=true]:bg-transparent",
+        // leading icon on a tile
+        "[&>[data-slot=icon]]:box-content [&>[data-slot=icon]]:grid [&>[data-slot=icon]]:size-[var(--icon-size)] [&>[data-slot=icon]]:shrink-0 [&>[data-slot=icon]]:place-items-center",
+        "[&>[data-slot=icon]]:rounded-[0.625rem] [&>[data-slot=icon]]:p-[calc((2.25rem-var(--icon-size))/2)] [--icon-size:20px] [--icon-opsz:20]",
+        "[&>[data-slot=icon]]:bg-surface-container-highest [&>[data-slot=icon]]:text-muted-foreground",
+        "[&>[data-slot=icon]]:transition-[background-color,color,scale,border-radius] [&>[data-slot=icon]]:duration-[200ms,200ms,420ms,420ms]",
+        "[&>[data-slot=icon]]:ease-[var(--ease-standard),var(--ease-standard),var(--ease-spring-bouncy),var(--ease-spring)]",
+        "data-[selected=true]:[&>[data-slot=icon]]:bg-inverse-surface data-[selected=true]:[&>[data-slot=icon]]:text-inverse-foreground",
+        "data-[selected=true]:[&>[data-slot=icon]]:scale-105 data-[selected=true]:[&>[data-slot=icon]]:rounded-full data-[selected=true]:[--icon-fill:1]",
+        "motion-reduce:[&>[data-slot=icon]]:transition-none",
+        "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-40",
         className
       )}
       {...props}
@@ -219,16 +295,26 @@ function CommandItem({ className, ...props }: React.ComponentProps<typeof Comman
   )
 }
 
-function CommandShortcut({ className, ...props }: React.ComponentProps<"span">) {
+function CommandShortcut({ className, children, ...props }: React.ComponentProps<"span">) {
+  // "⌘N" or "⌘ N" become separate keycaps
+  const keys = typeof children === "string" ? Array.from(children.replace(/\s+/g, "")) : null
+  const cap =
+    "inline-flex h-6 min-w-6 items-center justify-center rounded-[0.4375rem] bg-surface-container-lowest px-1.5 font-sans type-label-sm text-muted-foreground shadow-[inset_0_-1.5px_0_var(--outline-variant)] dark:bg-surface-container-highest"
   return (
-    <span
-      data-slot="command-shortcut"
-      className={cn(
-        "ml-auto inline-flex h-6 min-w-6 shrink-0 items-center justify-center rounded-sm bg-surface-container-lowest px-1.5 font-sans type-label-sm tracking-wider text-muted-foreground",
-        className
+    <span data-slot="command-shortcut" className={cn("ml-auto inline-flex shrink-0 items-center gap-1", className)} {...props}>
+      {keys ? (
+        <>
+          <span className="sr-only">{children}</span>
+          {keys.map((k, i) => (
+            <kbd key={i} aria-hidden className={cap}>
+              {k}
+            </kbd>
+          ))}
+        </>
+      ) : (
+        <kbd className={cap}>{children}</kbd>
       )}
-      {...props}
-    />
+    </span>
   )
 }
 

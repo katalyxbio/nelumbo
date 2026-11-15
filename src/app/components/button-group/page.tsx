@@ -12,7 +12,7 @@ export default function ButtonGroupPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 04" title="Button Group">
+      <PageHeader eyebrow="Component 04" title="Button Group">
         Lays out related buttons as one unit. A wrapper only: it works with any Button or Icon Button, and adds no
         JavaScript.
       </PageHeader>

@@ -39,7 +39,7 @@ export default function CardPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 13" title="Card">
+      <PageHeader eyebrow="Component 13" title="Card">
         Groups content and actions about one subject. Three surfaces: elevated, filled and outlined. A card can also be
         one big control, like a link to an article.
       </PageHeader>

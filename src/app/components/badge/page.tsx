@@ -24,7 +24,7 @@ export default function BadgePage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 29" title="Badge">
+      <PageHeader eyebrow="Component 29" title="Badge">
         Two kinds. Badge labels a status or category next to content. NotificationBadge sits on the corner of an
         icon or avatar to say something new is waiting.
       </PageHeader>

@@ -28,7 +28,7 @@ function Row({ icon, label, value }: { icon: IconName; label: string; value: str
 export default function SeparatorPage() {
   return (
     <>
-      <PageHeader eyebrow="Component · 43" title="Separator">
+      <PageHeader eyebrow="Component 43" title="Separator">
         A thin line that splits content into parts. Velvet draws it very faint, and prefers space to lines: start with
         a gap between groups, and reach for a line only when the gap is not enough. Built on Radix, with shadcn&apos;s
         API.

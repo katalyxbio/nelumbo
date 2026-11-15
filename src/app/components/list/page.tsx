@@ -27,7 +27,7 @@ export default function ListPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 30" title="List">
+      <PageHeader eyebrow="Component 30" title="List">
         Rows of related things: people, messages, settings, files. Each row has a title with room on either side
         for an avatar or icon and for a time, a switch or an arrow. A whole row can be one link or button.
       </PageHeader>

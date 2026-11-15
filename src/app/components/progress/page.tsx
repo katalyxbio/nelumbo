@@ -75,7 +75,7 @@ export default function ProgressPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 26" title="Progress">
+      <PageHeader eyebrow="Component 26" title="Progress">
         Shows how far along a task is, or that it&apos;s under way when you can&apos;t tell. Bars for files, steps and
         pages; circles for compact spots. A small gap and a stop dot mark what&apos;s left, so it reads without color.
       </PageHeader>

@@ -135,7 +135,7 @@ export default function DataTablePage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 36" title="Data Table">
+      <PageHeader eyebrow="Component 36" title="Data Table">
         A table you can use as it is, built on TanStack Table: sortable columns, row selection, search, a column
         menu, pagination, and loading and empty states. Define columns the way shadcn&apos;s data table examples do.
       </PageHeader>

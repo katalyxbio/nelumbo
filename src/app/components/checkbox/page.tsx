@@ -23,7 +23,7 @@ export default function CheckboxPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 10" title="Checkbox">
+      <PageHeader eyebrow="Component 10" title="Checkbox">
         Picks any number of options from a list, or confirms a single statement. The check draws itself in; the box
         gives a small press.
       </PageHeader>

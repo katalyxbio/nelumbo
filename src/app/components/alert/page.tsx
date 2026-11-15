@@ -21,7 +21,7 @@ export default function AlertPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 34" title="Alert">
+      <PageHeader eyebrow="Component 34" title="Alert">
         A message that stays in the page until it stops being true: a warning about a form, a notice about the
         account, a note above a table. For something brief that appears after an action, use Snackbar.
       </PageHeader>

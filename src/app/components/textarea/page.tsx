@@ -12,7 +12,7 @@ export default function TextareaPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 08" title="Textarea">
+      <PageHeader eyebrow="Component 08" title="Textarea">
         The multi-line sibling of Input, with the same styles and floating label. It grows as you type, so short notes
         stay small and long ones get room.
       </PageHeader>

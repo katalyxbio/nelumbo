@@ -30,7 +30,7 @@ export default function AccordionPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 33" title="Accordion">
+      <PageHeader eyebrow="Component 33" title="Accordion">
         A stack of headings that each open to show more. Use it for questions and answers, or for settings that
         would otherwise make a long page. Built on Radix, with shadcn&apos;s API.
       </PageHeader>

@@ -81,7 +81,7 @@ export default function PaginationPageDocs() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 39" title="Pagination">
+      <PageHeader eyebrow="Component 39" title="Pagination">
         Move through pages of results. Numbers, previous and next, with ellipses when there are too many pages to show.
         The current page is marked for assistive tech with aria-current. Pagination only moves between pages; it does
         not load them. Pair it with your data or a DataTable.

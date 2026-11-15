@@ -26,7 +26,7 @@ export default function SwitchPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 09" title="Switch">
+      <PageHeader eyebrow="Component 09" title="Switch">
         Turns one setting on or off, right away. Off, the thumb is small and quiet; on, it grows and slides across a
         filled track. Press and hold to feel it swell.
       </PageHeader>

@@ -19,7 +19,7 @@ function Labelled({ children, text }: { children: React.ReactNode; text: string 
 export default function AvatarPage() {
   return (
     <>
-      <PageHeader eyebrow="Component · 28" title="Avatar">
+      <PageHeader eyebrow="Component 28" title="Avatar">
         A person, team or bot at a glance. A photo when there is one; otherwise initials on a tint that stays the
         same for each name, so people are easy to tell apart in a busy list.
       </PageHeader>

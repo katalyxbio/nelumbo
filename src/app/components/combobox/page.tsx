@@ -84,7 +84,7 @@ export default function ComboboxPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 25" title="Combobox">
+      <PageHeader eyebrow="Component 25" title="Combobox">
         A field you type into to find an option in a long list. Typing filters the list and bolds what matched,
         ignoring case and accents, so “cura” finds Curaçao. With multiple, choices become chips inside the field.
       </PageHeader>

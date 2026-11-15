@@ -18,7 +18,7 @@ export default function ButtonPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 01" title="Button">
+      <PageHeader eyebrow="Component 01" title="Button">
         A drop-in replacement for shadcn&apos;s Button. Same props and variant names, so existing code keeps
         working, with a new elevated variant, a pressed shape morph and a loading state.
       </PageHeader>

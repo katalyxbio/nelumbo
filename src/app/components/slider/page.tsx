@@ -26,7 +26,7 @@ export default function SliderPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 12" title="Slider">
+      <PageHeader eyebrow="Component 12" title="Slider">
         Picks a value from a range. A thick rounded track and a slim handle with breathing room on both sides; press
         it and the handle thins, drag it and a bubble shows the value.
       </PageHeader>

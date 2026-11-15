@@ -13,7 +13,7 @@ const CITIES = ["Lisbon", "Kyoto", "Mexico City", "Copenhagen", "Cape Town", "Mo
 export default function TabsPage() {
   return (
     <>
-      <PageHeader eyebrow="Component · 20" title="Tabs">
+      <PageHeader eyebrow="Component 20" title="Tabs">
         Switch between views of the same subject. One indicator slides and stretches between tabs on a spring, rather
         than each tab fading on its own.
       </PageHeader>

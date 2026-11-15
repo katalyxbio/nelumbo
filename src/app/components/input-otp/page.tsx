@@ -25,7 +25,7 @@ export default function InputOtpPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 40" title="Input OTP">
+      <PageHeader eyebrow="Component 40" title="Input OTP">
         A one-time code, typed one character per slot. Typing moves to the next slot, Backspace goes back, and pasting
         a whole code fills every slot. The active slot shows the focus outline and a caret.
       </PageHeader>

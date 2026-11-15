@@ -33,7 +33,7 @@ export default function ChipPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 14" title="Chip">
+      <PageHeader eyebrow="Component 14" title="Chip">
         Small, compact controls: an action, a filter, or a value someone entered. Chips share the small corner radius
         of text fields, so they read as part of a form rather than as buttons.
       </PageHeader>

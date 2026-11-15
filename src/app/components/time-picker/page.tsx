@@ -10,7 +10,7 @@ export default function TimePickerPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 32" title="Time Picker">
+      <PageHeader eyebrow="Component 32" title="Time Picker">
         Type a time into the field, or open the clock under it. The value is always a 24-hour &quot;HH:mm&quot;
         string, whatever the display, so it travels through forms and APIs unchanged.
       </PageHeader>

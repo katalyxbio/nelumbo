@@ -32,7 +32,7 @@ export default function SnackbarPage() {
     <>
       <Snackbars stack={mode === "stack"} richColors={rich} />
 
-      <PageHeader eyebrow="Component · 22" title="Snackbar">
+      <PageHeader eyebrow="Component 22" title="Snackbar">
         A brief message about something the app just did, with at most one action. It rises in from the bottom on a
         spring, waits while you hover it, and can be swiped away.
       </PageHeader>

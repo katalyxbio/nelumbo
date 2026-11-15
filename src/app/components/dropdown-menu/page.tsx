@@ -29,7 +29,7 @@ export default function DropdownMenuPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 18" title="Dropdown Menu">
+      <PageHeader eyebrow="Component 18" title="Dropdown Menu">
         A list of actions or options that opens from a button. Items are roomy, their corners follow the menu&apos;s, and
         the chosen option is filled in rather than just ticked.
       </PageHeader>

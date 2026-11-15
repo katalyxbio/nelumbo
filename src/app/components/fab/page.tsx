@@ -20,7 +20,7 @@ export default function FabPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 06" title="FAB">
+      <PageHeader eyebrow="Component 06" title="FAB">
         The floating action button holds the single most important action on a screen. Use one per screen, at most.
       </PageHeader>
 

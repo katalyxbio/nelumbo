@@ -75,7 +75,7 @@ export default function CommandPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 37" title="Command palette">
+      <PageHeader eyebrow="Component 37" title="Command palette">
         A search box over a list of actions. Type to filter, move with the arrow keys, press Enter to run.
         Groups hold related actions, each row can carry an icon and a shortcut, and the palette can live inline
         on a page or open as a dialog from anywhere.
@@ -87,7 +87,7 @@ export default function CommandPage() {
 
       <Section
         title="Inline"
-        description="Groups are separated by space, not lines. The highlighted row follows the pointer and the arrow keys. Disabled rows stay visible at 40%."
+        description="Groups are separated by space, not lines. The highlighted row sits on a raised pill that springs from row to row with the pointer and the arrow keys, and its icon tile turns inverse. Shortcuts written as one string, like ⌘N, split into keycaps and are read as one. Disabled rows stay visible at 40%."
       >
         <Preview className="justify-center">
           <Command aria-label="Actions" className="w-full max-w-md">

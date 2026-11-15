@@ -10,7 +10,7 @@ export default function SplitButtonPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 05" title="Split Button">
+      <PageHeader eyebrow="Component 05" title="Split Button">
         One main action with related ones a click away. The main side runs the most common choice; the menu holds the
         alternatives.
       </PageHeader>

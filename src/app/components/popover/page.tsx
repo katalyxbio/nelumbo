@@ -26,7 +26,7 @@ export default function PopoverPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 17" title="Popover">
+      <PageHeader eyebrow="Component 17" title="Popover">
         A small panel anchored to its trigger, for quick tasks that don&apos;t deserve a dialog. It grows out of the
         trigger on a spring and is dismissed with Escape or a click outside.
       </PageHeader>

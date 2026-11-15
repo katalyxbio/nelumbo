@@ -33,7 +33,7 @@ export default function DialogPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 15" title="Dialog">
+      <PageHeader eyebrow="Component 15" title="Dialog">
         Asks for a decision, or a few details, without leaving the page. It rises and settles on a spring over a softly
         blurred scrim, and closes quickly and quietly.
       </PageHeader>

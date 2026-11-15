@@ -71,7 +71,7 @@ export default function LoadingIndicatorPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 27" title="Loading Indicator">
+      <PageHeader eyebrow="Component 27" title="Loading Indicator">
         For short waits you can&apos;t measure. A soft shape springs from one form to the next as it turns, so waiting
         feels calm rather than mechanical. Skeletons hold the place of content that&apos;s on its way.
       </PageHeader>

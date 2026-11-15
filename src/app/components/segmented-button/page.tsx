@@ -10,7 +10,7 @@ export default function SegmentedButtonPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 03" title="Segmented Button">
+      <PageHeader eyebrow="Component 03" title="Segmented Button">
         Two to five related options in one connected control. Use it to switch a view or set a filter: choices that
         apply right away, with no submit step.
       </PageHeader>

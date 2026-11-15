@@ -29,7 +29,7 @@ export default function TogglePage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 41" title="Toggle and Toggle Group">
+      <PageHeader eyebrow="Component 41" title="Toggle and Toggle Group">
         A Toggle is one on/off setting, such as bold or pin. A Toggle Group holds several toggles that work together:
         pick one (alignment) or several (text styles). Both keep their state in aria-pressed and data-state, and the
         selected state fills in, tightens from a pill to a rounded square and, for icons, fills the glyph. In a connected group the selected item turns inverse and swells into a full pill while its neighbours give way.

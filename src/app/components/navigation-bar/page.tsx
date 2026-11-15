@@ -53,7 +53,7 @@ function Phone({ inline = false }: { inline?: boolean }) {
 export default function NavigationBarPage() {
   return (
     <>
-      <PageHeader eyebrow="Component · 23" title="Navigation Bar">
+      <PageHeader eyebrow="Component 23" title="Navigation Bar">
         Bottom navigation for phones, with three to five destinations. The phone sibling of the Navigation Rail: same
         items, same pill that grows from the center, same icons that fill in.
       </PageHeader>

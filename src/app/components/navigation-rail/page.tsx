@@ -70,7 +70,7 @@ function AppFrame({ expandable = true, descriptions = false, defaultExpanded = f
 export default function NavigationRailPage() {
   return (
     <>
-      <PageHeader eyebrow="Component · 21" title="Navigation Rail">
+      <PageHeader eyebrow="Component 21" title="Navigation Rail">
         Side navigation for tablets and desktops, with three to seven destinations. The active destination&apos;s pill
         grows out from the center and its icon fills in. Expand it and the labels slide in beside the icons.
       </PageHeader>

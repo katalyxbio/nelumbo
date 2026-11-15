@@ -17,7 +17,7 @@ export default function RadioGroupPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 11" title="Radio Group">
+      <PageHeader eyebrow="Component 11" title="Radio Group">
         Picks exactly one option from a short list. The dot springs in from the center, and arrow keys move the
         selection.
       </PageHeader>

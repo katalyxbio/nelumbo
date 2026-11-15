@@ -44,7 +44,7 @@ export default function DatePickerPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 31" title="Date Picker">
+      <PageHeader eyebrow="Component 31" title="Date Picker">
         Pick a day or a range. Type a date straight into the field, or open the calendar under it. The calendar
         is also its own component, built on react-day-picker like shadcn&apos;s, so its props carry over.
       </PageHeader>

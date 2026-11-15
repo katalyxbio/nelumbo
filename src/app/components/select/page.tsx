@@ -35,7 +35,7 @@ export default function SelectPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Component · 24" title="Select">
+      <PageHeader eyebrow="Component 24" title="Select">
         Pick one option from a list. The trigger is the same field as Input, label and all, so a Select sits in a
         form without looking like a different kind of thing. The list drops from the field at its full width.
       </PageHeader>

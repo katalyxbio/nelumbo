@@ -67,7 +67,7 @@ function InvoiceTable({ density, selected, sticky }: { density?: "comfortable" |
 export default function TablePage() {
   return (
     <>
-      <PageHeader eyebrow="Component · 35" title="Table">
+      <PageHeader eyebrow="Component 35" title="Table">
         Rows and columns for comparing things. The same parts as shadcn&apos;s Table in a rounded, soft-headed
         container that scrolls sideways on small screens. For sorting, search, selection and paging, see Data Table.
       </PageHeader>

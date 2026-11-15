@@ -18,7 +18,7 @@ const TOOLS: { icon: IconName; label: string; shortcut: string }[] = [
 export default function TooltipPage() {
   return (
     <>
-      <PageHeader eyebrow="Component · 19" title="Tooltip">
+      <PageHeader eyebrow="Component 19" title="Tooltip">
         A short label that appears on hover or keyboard focus, for controls whose meaning isn&apos;t obvious, like icon
         buttons. It pops in on a quick spring and never holds anything you can click.
       </PageHeader>

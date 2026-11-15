@@ -20,7 +20,7 @@ const stop = (e: React.MouseEvent) => e.preventDefault()
 export default function BreadcrumbPageDocs() {
   return (
     <>
-      <PageHeader eyebrow="Component · 38" title="Breadcrumb">
+      <PageHeader eyebrow="Component 38" title="Breadcrumb">
         The path to the current page, from the top of the site down. Each step is a link; the last one is the page you
         are on and is not a link. Use it under a page title or in a toolbar, not as navigation on its own.
       </PageHeader>

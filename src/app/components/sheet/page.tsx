@@ -85,7 +85,7 @@ function Filters() {
 export default function SheetPage() {
   return (
     <>
-      <PageHeader eyebrow="Component · 16" title="Sheet">
+      <PageHeader eyebrow="Component 16" title="Sheet">
         A panel that slides in from an edge for supporting content: filters, details, settings, share options. Bottom
         sheets can be dragged down to dismiss.
       </PageHeader>
