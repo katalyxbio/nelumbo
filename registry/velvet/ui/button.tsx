@@ -3,6 +3,7 @@ import { Slot } from "radix-ui"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
+import { Spinner as RingSpinner } from "@/registry/velvet/ui/spinner"
 
 /**
  * Velvet Button
@@ -119,21 +120,12 @@ function stripLeadingIcon(children: React.ReactNode) {
   return children
 }
 
-/** Indeterminate spinner that inherits color and icon size. */
-function Spinner({ className, ...props }: React.ComponentProps<"svg">) {
-  return (
-    <svg
-      data-slot="spinner"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-      className={cn("size-[var(--icon-size,1.25em)] shrink-0 animate-spin [animation-duration:900ms]", className)}
-      {...props}
-    >
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.22" strokeWidth="2.5" />
-      <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-    </svg>
-  )
+/**
+ * The shared Spinner ring, decorative: inside a busy button the button itself
+ * carries aria-busy, so the ring is hidden from assistive tech.
+ */
+function Spinner(props: React.ComponentProps<"svg">) {
+  return <RingSpinner aria-hidden role="presentation" aria-label={undefined} {...props} />
 }
 
 export { Button, buttonVariants, Spinner, type ButtonProps }

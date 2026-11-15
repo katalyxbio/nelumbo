@@ -52,7 +52,7 @@ export default function FabPage() {
       >
         <div className="relative h-80 overflow-hidden rounded-3xl bg-surface-container-low dark:bg-surface-container-lowest">
           <div
-            className="h-full overflow-y-auto p-3 pb-24"
+            tabIndex={0} aria-label="Notes" role="region" className="h-full overflow-y-auto p-3 pb-24 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
             onScroll={(e) => {
               const top = e.currentTarget.scrollTop
               if (Math.abs(top - lastTop.current) > 6) setExtended(top < lastTop.current || top < 8)

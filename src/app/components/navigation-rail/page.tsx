@@ -29,7 +29,7 @@ function AppFrame({ expandable = true, descriptions = false, defaultExpanded = f
 
   return (
     <div className="flex h-[34rem] w-full overflow-hidden rounded-3xl bg-surface-container-low shadow-e1 dark:bg-surface-container-lowest">
-      <NavigationRail aria-label="App" expanded={expanded}>
+      <NavigationRail aria-label="Example app" expanded={expanded}>
         <NavigationRailHeader>
           {expandable && (
             <IconButton
@@ -54,7 +54,7 @@ function AppFrame({ expandable = true, descriptions = false, defaultExpanded = f
           <NavigationRailItem icon="settings" label="Settings" active={active === "settings"} onClick={() => setActive("settings")} />
         </NavigationRailFooter>
       </NavigationRail>
-      <main className="m-2 ml-0 flex flex-1 flex-col gap-2 rounded-2xl bg-card p-8 dark:bg-surface-container">
+      <div className="m-2 ml-0 flex flex-1 flex-col gap-2 rounded-2xl bg-card p-8 dark:bg-surface-container">
         <h3 className="type-headline-sm">{current.label}</h3>
         <p className="type-body-md text-muted-foreground">{BLURBS[active]}</p>
         <div className="mt-6 flex flex-col gap-3">
@@ -62,7 +62,7 @@ function AppFrame({ expandable = true, descriptions = false, defaultExpanded = f
             <div key={i} className="h-3 rounded-full bg-surface-container-high" style={{ width: `${w * 100}%` }} />
           ))}
         </div>
-      </main>
+      </div>
     </div>
   )
 }

@@ -10,7 +10,7 @@ import {
   InputGroupText,
   InputGroupTextarea,
 } from "@/registry/velvet/ui/input-group"
-import { Spinner } from "@/registry/velvet/ui/button"
+import { Spinner } from "@/registry/velvet/ui/spinner"
 import { Icon } from "@/registry/velvet/ui/icon"
 import { IconButton } from "@/registry/velvet/ui/icon-button"
 import {
@@ -269,7 +269,7 @@ export default function InputGroupPage() {
         description="Put aria-invalid on the control (or data-invalid on the group) and the whole group turns red with a thicker line. Disabled on the control dims it."
       >
         <Preview className="flex-col items-stretch gap-4">
-          <div className="flex min-w-0 flex-col gap-1.5">
+          <div className="flex w-full min-w-0 flex-col gap-1.5">
             <InputGroup>
               <InputGroupAddon>
                 <Icon name="mail" />

@@ -504,7 +504,8 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "utils"
+        "utils",
+        "@velvet/spinner"
       ],
       "files": [
         {
@@ -613,9 +614,9 @@
       ]
     },
     {
-      "name": "field",
+      "name": "field-shell",
       "type": "registry:ui",
-      "title": "Field",
+      "title": "Field Shell",
       "description": "Shared text field shell for Input and Textarea: filled or outlined container, CSS-only floating label, notched border, icons and help text.",
       "registryDependencies": [
         "utils",
@@ -623,7 +624,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/field.tsx",
+          "path": "registry/velvet/ui/field-shell.tsx",
           "type": "registry:ui"
         }
       ]
@@ -634,7 +635,7 @@
       "title": "Input",
       "description": "Text field with a floating label, filled (default) or outlined, in two sizes; leading icon, trailing slot, help and error text.",
       "registryDependencies": [
-        "@velvet/field"
+        "@velvet/field-shell"
       ],
       "files": [
         {
@@ -650,7 +651,7 @@
       "description": "Multi-line text field matching Input; grows with its content and shows a character count with maxLength.",
       "registryDependencies": [
         "utils",
-        "@velvet/field"
+        "@velvet/field-shell"
       ],
       "files": [
         {
@@ -669,7 +670,7 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/field",
+        "@velvet/field-shell",
         "@velvet/icon",
         "@velvet/dropdown-menu",
         "@velvet/popover"
@@ -691,7 +692,7 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/field",
+        "@velvet/field-shell",
         "@velvet/icon",
         "@velvet/icon-button",
         "@velvet/button",
@@ -886,7 +887,8 @@
       "registryDependencies": [
         "utils",
         "@velvet/icon",
-        "@velvet/popover"
+        "@velvet/popover",
+        "@velvet/kbd"
       ],
       "files": [
         {
@@ -904,7 +906,8 @@
         "radix-ui"
       ],
       "registryDependencies": [
-        "utils"
+        "utils",
+        "@velvet/kbd"
       ],
       "files": [
         {
@@ -1123,7 +1126,7 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/field",
+        "@velvet/field-shell",
         "@velvet/calendar",
         "@velvet/icon-button",
         "@velvet/button",
@@ -1226,7 +1229,7 @@
       "description": "TimePicker: type a time in the locale's format (12 or 24 hour), or pick from a docked Material 3 clock dial or list columns. Hour and minute chips, AM/PM, min, max, step, validation.",
       "registryDependencies": [
         "utils",
-        "@velvet/field",
+        "@velvet/field-shell",
         "@velvet/popover",
         "@velvet/icon-button",
         "@velvet/button"
@@ -1384,7 +1387,7 @@
         "@velvet/dialog",
         "@velvet/icon",
         "@velvet/search",
-        "@velvet/dropdown-menu"
+        "@velvet/kbd"
       ],
       "files": [
         {
@@ -1482,7 +1485,7 @@
       "registryDependencies": [
         "utils",
         "@velvet/label",
-        "@velvet/field",
+        "@velvet/field-shell",
         "@velvet/icon"
       ],
       "files": [
@@ -1652,6 +1655,217 @@
       "files": [
         {
           "path": "registry/velvet/ui/menubar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "app-bar",
+      "type": "registry:ui",
+      "title": "App Bars",
+      "description": "Material 3 top app bar (small, center, medium, large; elevate, collapse with a settling spring, or hide on scroll) and bottom app bar (actions plus FAB, floating option, hide on scroll).",
+      "dependencies": [
+        "class-variance-authority",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon-button",
+        "@velvet/fab",
+        "@velvet/search",
+        "@velvet/tooltip"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/app-bar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "field",
+      "type": "registry:ui",
+      "title": "Field",
+      "description": "shadcn-compatible Field layout set: fieldsets, legends, descriptions and spring errors; FieldLabel feeds Velvet fields their floating label; choice cards with a tonal selected state.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/label",
+        "@velvet/field-shell"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "item",
+      "type": "registry:ui",
+      "title": "Item",
+      "description": "shadcn-compatible Item sharing List styles: segmented tile groups, icon tiles, outline as a ring, selected state, tactile when interactive.",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/item.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "input-group",
+      "type": "registry:ui",
+      "title": "Input Group",
+      "description": "shadcn-compatible InputGroup that reads as one Velvet field: inline and block addons, text prefixes, keycap hints, tonal buttons, a chat composer layout.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/button",
+        "@velvet/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/input-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "native-select",
+      "type": "registry:ui",
+      "title": "Native Select",
+      "description": "shadcn-compatible NativeSelect: a real select on the Velvet field shell, with floating label, sizes, invalid state and a dark native list.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@velvet/field-shell",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/native-select.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "fab-menu",
+      "type": "registry:ui",
+      "title": "FAB Menu",
+      "description": "Material 3 Expressive FAB menu: the FAB shrinks into a close button while tonal action pills spring out in a stagger; full menu keyboard support, optional scrim.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@velvet/fab",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/fab-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "toolbar",
+      "type": "registry:ui",
+      "title": "Toolbar",
+      "description": "Material 3 Expressive toolbars on Radix Toolbar: docked or floating, horizontal or vertical, standard, vibrant or brand; shape-morphing toggles, a paired FAB, collapse on scroll, overflow into a More menu.",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/icon-button",
+        "@velvet/toggle",
+        "@velvet/fab",
+        "@velvet/tooltip",
+        "@velvet/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/toolbar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "kbd",
+      "type": "registry:ui",
+      "title": "Kbd",
+      "description": "shadcn-compatible Kbd and KbdGroup: raised keycaps, an inverse look inside tooltips, and KbdShortcut that splits a shortcut into caps.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/kbd.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "shadcn-compatible Spinner: a breathing ring, or Velvet morphing shapes; announced as status, reduced-motion safe.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@velvet/loading-indicator"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/spinner.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "empty",
+      "type": "registry:ui",
+      "title": "Empty",
+      "description": "shadcn-compatible Empty state: a large icon tile over softly fanned tiles, avatar media, no dashed border.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/empty.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "aspect-ratio",
+      "type": "registry:ui",
+      "title": "Aspect Ratio",
+      "description": "shadcn-compatible AspectRatio on Radix.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/aspect-ratio.tsx",
           "type": "registry:ui"
         }
       ]

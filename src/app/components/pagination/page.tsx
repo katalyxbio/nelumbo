@@ -34,7 +34,7 @@ function Pager({
   }
   const range = paginationRange(page, count, siblings)
   return (
-    <Pagination>
+    <Pagination aria-label="Pagination example 1">
       <PaginationContent>
         <PaginationItem>
           {compact ? (
@@ -131,7 +131,7 @@ export default function PaginationPageDocs() {
       <Section title="Sizes" description='size works as in shadcn: "sm", "default" and "lg" set the round target; "icon" is the square-ish icon-only size.'>
         <Preview className="flex-col items-stretch gap-4">
           {(["sm", "default", "lg"] as const).map((size) => (
-            <Pagination key={size} className="justify-start">
+            <Pagination aria-label="Pagination example 2" key={size} className="justify-start">
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious href="#" size={size} onClick={(e) => e.preventDefault()} />

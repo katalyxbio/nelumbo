@@ -474,8 +474,7 @@
           "letter-spacing": "0.02em",
           "font-weight": "520"
         }
-      },
-      "registryDependencies": []
+      }
     },
     {
       "name": "icon",
@@ -505,7 +504,8 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "utils"
+        "utils",
+        "@velvet/spinner"
       ],
       "files": [
         {

@@ -29,9 +29,9 @@ export function Section({ title, description, children, id }: { title: string; d
 
 export function Preview({ children, className, label }: { children: React.ReactNode; className?: string; label?: string }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex min-w-0 flex-col gap-2">
       {label && <p className="type-label-md text-muted-foreground">{label}</p>}
-      <div className={cn("flex flex-wrap items-center gap-3 rounded-3xl bg-surface-container-low p-6 dark:bg-surface-container-lowest", className)}>
+      <div className={cn("flex min-w-0 flex-wrap items-center gap-3 rounded-3xl bg-surface-container-low p-6 dark:bg-surface-container-lowest", className)}>
         {children}
       </div>
     </div>

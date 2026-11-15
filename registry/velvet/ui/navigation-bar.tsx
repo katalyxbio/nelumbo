@@ -70,7 +70,8 @@ function NavigationBarItem({ className, icon, label, active = false, badge, disa
   const showBadge = badge !== undefined && badge !== false
   const count = typeof badge === "number" ? (badge > 99 ? "99+" : String(badge)) : null
   // announced with the label, e.g. "Inbox, 3 new"
-  const name = showBadge ? `${label}, ${count ? `${count} new` : "new"}` : undefined
+  // announced from content after the label, e.g. "Inbox, 12 new"
+  const badgeSr = showBadge ? <span className="sr-only">{`, ${count ? `${count} new` : "new"}`}</span> : null
 
   const pill = (
     <span
@@ -122,7 +123,6 @@ function NavigationBarItem({ className, icon, label, active = false, badge, disa
       data-slot="navigation-bar-item"
       data-active={active || undefined}
       aria-current={active ? "page" : undefined}
-      aria-label={name}
       href={asChild ? undefined : href}
       type={!asChild && !href ? "button" : undefined}
       disabled={!asChild && !href ? disabled : undefined}
@@ -149,6 +149,7 @@ function NavigationBarItem({ className, icon, label, active = false, badge, disa
         </span>
       )}
       {asChild && <Slot.Slottable>{children}</Slot.Slottable>}
+      {badgeSr}
     </Comp>
   )
 }

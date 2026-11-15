@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "spinner",
+  "title": "Spinner",
+  "description": "shadcn-compatible Spinner: a breathing ring, or Velvet morphing shapes; announced as status, reduced-motion safe.",
+  "dependencies": [],
+  "registryDependencies": [
+    "utils",
+    "@velvet/loading-indicator"
+  ],
+  "files": [
+    {
+      "path": "registry/velvet/ui/spinner.tsx",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\nimport { LoadingIndicator } from \"@/registry/velvet/ui/loading-indicator\"\n\n/**\n * Velvet Spinner\n *\n * Drop-in for shadcn's Spinner: it announces itself (role=\"status\",\n * aria-label \"Loading\") and takes its size from className, `size-8` and so\n * on. It inherits the text color and, by default, the icon size around it,\n * so it sits in a button, badge or input without any setup.\n *\n *   <Spinner />\n *   <Spinner className=\"size-8\" />\n *   <Spinner variant=\"shapes\" className=\"size-10\" />\n *   <Button disabled><Spinner />Saving</Button>\n *\n * - `variant=\"ring\"` (default): an arc that turns while it grows and\n *   shrinks, like Material's indeterminate circular indicator.\n * - `variant=\"shapes\"`: Velvet's LoadingIndicator, a soft shape that morphs\n *   while it turns. Better from about 32px up, for waits that feel long.\n *\n * For progress you can measure, use CircularProgress. With reduced motion\n * both variants slow right down (ring) or only pulse (shapes).\n */\n\nconst CSS = `\n@keyframes vlv-spin-arc {\n  0% { stroke-dasharray: 1 200; stroke-dashoffset: 0 }\n  50% { stroke-dasharray: 68 200; stroke-dashoffset: -14 }\n  100% { stroke-dasharray: 68 200; stroke-dashoffset: -99 }\n}\n@keyframes vlv-spin-turn { to { transform: rotate(360deg) } }\n.vlv-spin-turn { animation: vlv-spin-turn 2s linear infinite; transform-origin: center }\n.vlv-spin-arc { animation: vlv-spin-arc 1.5s ease-in-out infinite }\n@media (prefers-reduced-motion: reduce) {\n  .vlv-spin-turn, .vlv-spin-arc { animation-duration: 4s }\n}\n`\n\ntype SpinnerProps = Omit<React.ComponentProps<\"svg\">, \"children\"> & {\n  variant?: \"ring\" | \"shapes\"\n}\n\nfunction Spinner({ className, variant = \"ring\", ...props }: SpinnerProps) {\n  const size = \"size-[var(--icon-size,1.25em)] shrink-0\"\n\n  if (variant === \"shapes\") {\n    const { \"aria-label\": label = \"Loading\", style, ...rest } = props as React.ComponentProps<\"span\">\n    return (\n      <span\n        data-slot=\"spinner\"\n        data-variant=\"shapes\"\n        role=\"status\"\n        aria-label={label}\n        className={cn(\"inline-grid\", size, className)}\n        style={style}\n        {...rest}\n      >\n        <LoadingIndicator aria-hidden className=\"text-inherit\" style={{ width: \"100%\", height: \"100%\" }} />\n      </span>\n    )\n  }\n\n  return (\n    <svg\n      data-slot=\"spinner\"\n      data-variant=\"ring\"\n      role=\"status\"\n      aria-label=\"Loading\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      className={cn(size, \"vlv-spin-turn\", className)}\n      {...props}\n    >\n      <style href=\"velvet-spinner\" precedence=\"default\">\n        {CSS}\n      </style>\n      <circle\n        cx=\"12\"\n        cy=\"12\"\n        r=\"9\"\n        pathLength={100}\n        stroke=\"currentColor\"\n        strokeWidth=\"2.5\"\n        strokeLinecap=\"round\"\n        className=\"vlv-spin-arc\"\n      />\n    </svg>\n  )\n}\n\nexport { Spinner, type SpinnerProps }\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

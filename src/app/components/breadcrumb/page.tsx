@@ -34,7 +34,7 @@ export default function BreadcrumbPageDocs() {
         description='The current page is a BreadcrumbPage with aria-current="page", set in a tonal chip. Links are muted pills that fill with the state layer on hover and squeeze when pressed.'
       >
         <Preview className="justify-start">
-          <Breadcrumb>
+          <Breadcrumb aria-label="Breadcrumb example 1">
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink href="#" onClick={stop}>Home</BreadcrumbLink>
@@ -57,7 +57,7 @@ export default function BreadcrumbPageDocs() {
         description='variant="contained" sets the trail on a tonal track and raises the current page on it, like the selected segment of a segmented button. Icons in links and in the page sit at 18px; the page&apos;s icon fills.'
       >
         <Preview className="flex-col items-start gap-4">
-          <Breadcrumb variant="contained">
+          <Breadcrumb aria-label="Breadcrumb example 2" variant="contained">
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink href="#" onClick={stop}>
@@ -81,7 +81,7 @@ export default function BreadcrumbPageDocs() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <Breadcrumb variant="contained">
+          <Breadcrumb aria-label="Breadcrumb example 3" variant="contained">
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink href="#" onClick={stop}>Settings</BreadcrumbLink>
@@ -100,7 +100,7 @@ export default function BreadcrumbPageDocs() {
         description="When the trail is long, fold the middle steps into an ellipsis. The ellipsis is a DropdownMenu trigger, so the hidden steps open in a menu. The trigger is announced as More."
       >
         <Preview className="justify-start">
-          <Breadcrumb>
+          <Breadcrumb aria-label="Breadcrumb example 4">
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink href="#" onClick={stop}>Home</BreadcrumbLink>
@@ -133,7 +133,7 @@ export default function BreadcrumbPageDocs() {
 
       <Section title="Custom separator" description="Pass children to BreadcrumbSeparator to replace the chevron. Separators stay hidden from assistive tech either way.">
         <Preview className="justify-start">
-          <Breadcrumb>
+          <Breadcrumb aria-label="Breadcrumb example 5">
             <BreadcrumbList className="gap-x-2">
               <BreadcrumbItem>
                 <BreadcrumbLink href="#" onClick={stop}>Projects</BreadcrumbLink>
@@ -156,7 +156,7 @@ export default function BreadcrumbPageDocs() {
         description="At 390px the trail wraps onto a second line rather than scrolling sideways. A long page name is capped and cut with an ellipsis, and its full text stays in the DOM for screen readers."
       >
         <Card variant="outlined" className="w-full max-w-sm p-4">
-          <Breadcrumb>
+          <Breadcrumb aria-label="Breadcrumb example 6">
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink href="#" onClick={stop}>Workspace</BreadcrumbLink>
@@ -184,7 +184,7 @@ export default function BreadcrumbPageDocs() {
 
       <Section title="Your own link" description="asChild gives the link styles to your element, such as a router Link. The state layer and focus ring come with it.">
         <Preview className="justify-start">
-          <Breadcrumb>
+          <Breadcrumb aria-label="Breadcrumb example 7">
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>

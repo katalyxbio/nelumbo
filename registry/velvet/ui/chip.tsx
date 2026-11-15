@@ -260,7 +260,7 @@ function ChipGroup({ className, scroll = false, ...props }: ChipGroupProps) {
       data-slot="chip-group"
       className={cn(
         "flex gap-2",
-        scroll ? "-mx-1 overflow-x-auto px-1 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" : "flex-wrap",
+        scroll ? "-mx-1 max-w-[calc(100%+0.5rem)] min-w-0 overflow-x-auto px-1 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" : "flex-wrap",
         className
       )}
       {...props}

@@ -100,7 +100,8 @@ function NavigationRailItem({ className, icon, label, description, active = fals
   const count = typeof badge === "number" ? (badge > 99 ? "99+" : String(badge)) : null
 
   // announced with the label, e.g. "Inbox, 12 new"
-  const name = showBadge ? `${label}, ${count ? `${count} new` : "new"}` : undefined
+  // announced from content after the label, e.g. "Inbox, 12 new"
+  const badgeSr = showBadge ? <span className="sr-only">{`, ${count ? `${count} new` : "new"}`}</span> : null
 
   const badgeEl = showBadge && (
     <span
@@ -187,7 +188,6 @@ function NavigationRailItem({ className, icon, label, description, active = fals
       data-slot="navigation-rail-item"
       data-active={active || undefined}
       aria-current={active ? "page" : undefined}
-      aria-label={name}
       href={asChild ? undefined : href}
       type={!asChild && !href ? "button" : undefined}
       disabled={!asChild && !href ? disabled : undefined}
@@ -206,6 +206,7 @@ function NavigationRailItem({ className, icon, label, description, active = fals
       {pill}
       {below}
       {asChild && <Slot.Slottable>{children}</Slot.Slottable>}
+      {badgeSr}
     </Comp>
   )
 }

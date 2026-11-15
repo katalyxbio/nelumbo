@@ -30,7 +30,7 @@ import { Icon, type IconName } from "@/registry/velvet/ui/icon"
  *   </Tabs>
  */
 function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
-  return <TabsPrimitive.Root data-slot="tabs" className={cn("flex flex-col gap-4", className)} {...props} />
+  return <TabsPrimitive.Root data-slot="tabs" className={cn("flex max-w-full min-w-0 flex-col gap-4", className)} {...props} />
 }
 
 type TabsListProps = React.ComponentProps<typeof TabsPrimitive.List> & {
@@ -126,8 +126,6 @@ function TabsTrigger({ className, icon, badge, children, ...props }: TabsTrigger
   return (
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
-      // announced with the label, e.g. "Inbox, 12 new"
-      aria-label={hasBadge && typeof children === "string" ? `${children}, ${badgeText}` : undefined}
       className={cn(
         "state-layer relative inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap select-none",
         "type-label-lg text-muted-foreground transition-colors duration-200 hover:text-foreground data-[state=active]:text-foreground",
@@ -146,7 +144,8 @@ function TabsTrigger({ className, icon, badge, children, ...props }: TabsTrigger
       <span data-tab-content className="inline-flex items-center gap-2">
         {icon && <Icon name={icon} />}
         {children}
-        {hasBadge && typeof children !== "string" && <span className="sr-only">{badgeText}</span>}
+        {/* announced with the label from content, e.g. "Inbox, 12 new" (an aria-label would hide the visible text) */}
+        {hasBadge && <span className="sr-only">, {badgeText}</span>}
         {hasBadge && (
           <span
             aria-hidden
