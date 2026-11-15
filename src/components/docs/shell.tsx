@@ -40,6 +40,8 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/avatar", label: "Avatar", isNew: true },
       { href: "/components/badge", label: "Badge", isNew: true },
       { href: "/components/list", label: "List", isNew: true },
+      { href: "/components/accordion", label: "Accordion", isNew: true },
+      { href: "/components/alert", label: "Alert", isNew: true },
     ],
   },
   {
