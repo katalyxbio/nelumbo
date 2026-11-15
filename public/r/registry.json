@@ -1175,6 +1175,48 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "table",
+      "type": "registry:ui",
+      "title": "Table",
+      "description": "shadcn-compatible Table in a rounded, scrollable container: soft header, faint row dividers, selected rows, comfortable or compact density and an optional sticky header.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/table.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "data-table",
+      "type": "registry:ui",
+      "title": "Data Table",
+      "description": "TanStack Table data table: sortable headers with aria-sort, row selection with select-all, search, column menu, bulk-action bar, pagination with rows per page, empty and loading states.",
+      "dependencies": [
+        "@tanstack/react-table"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/table",
+        "@velvet/checkbox",
+        "@velvet/input",
+        "@velvet/select",
+        "@velvet/dropdown-menu",
+        "@velvet/skeleton",
+        "@velvet/icon-button",
+        "@velvet/button",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/data-table.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

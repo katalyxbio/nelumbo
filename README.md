@@ -110,3 +110,4 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Avatar (new: auto tints, status, groups), Badge (labels and notification badges), List (plain and segmented)
 - [x] Calendar, Date Picker (new: typed dates, year grid, ranges with presets)
 - [x] Accordion (plain and segmented, Radix), Alert (tonal variants, actions, dismiss, banner)
+- [x] Table, Data Table (new: TanStack; sorting, selection, search, column menu, pagination, loading and empty states)
