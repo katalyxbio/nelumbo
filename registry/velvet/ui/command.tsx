@@ -5,7 +5,7 @@ import { Command as CommandPrimitive, useCommandState } from "cmdk"
 
 import { cn } from "@/lib/utils"
 import { Icon } from "@/registry/velvet/ui/icon"
-import { splitKeys } from "@/registry/velvet/ui/dropdown-menu"
+import { KbdShortcut } from "@/registry/velvet/ui/kbd"
 import { SearchField, searchInputClasses, setNativeValue } from "@/registry/velvet/ui/search"
 import {
   Dialog,
@@ -320,24 +320,10 @@ function CommandItem({ className, ...props }: React.ComponentProps<typeof Comman
 
 function CommandShortcut({ className, children, ...props }: React.ComponentProps<"span">) {
   // "⌘N" or "⌘ N" become separate keycaps
-  const keys = typeof children === "string" ? splitKeys(children) : null
-  const cap =
-    "inline-flex h-6 min-w-6 items-center justify-center rounded-[0.4375rem] bg-surface-container-lowest px-1.5 font-sans type-label-sm text-muted-foreground shadow-[inset_0_-1.5px_0_var(--outline-variant)] dark:bg-surface-container-highest"
   return (
-    <span data-slot="command-shortcut" className={cn("ml-auto inline-flex shrink-0 items-center gap-1", className)} {...props}>
-      {keys ? (
-        <>
-          <span className="sr-only">{children}</span>
-          {keys.map((k, i) => (
-            <kbd key={i} aria-hidden className={cap}>
-              {k}
-            </kbd>
-          ))}
-        </>
-      ) : (
-        <kbd className={cap}>{children}</kbd>
-      )}
-    </span>
+    <KbdShortcut data-slot="command-shortcut" className={cn("ml-auto shrink-0", className)} {...props}>
+      {children}
+    </KbdShortcut>
   )
 }
 
