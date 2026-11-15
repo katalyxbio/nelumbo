@@ -1172,6 +1172,105 @@ export function chartBarLabel({
 /* Owned by the line gallery. Add helpers below with `export` inline.   */
 /* ================================================================== */
 
+/** A scalloped cookie outline as an SVG path (the Material 3 Expressive burst), centered on cx, cy. */
+export function chartCookiePath(cx: number, cy: number, r: number, lobes = 9, depth = 0.085) {
+  const pts: string[] = []
+  const n = lobes * 12
+  for (let i = 0; i <= n; i++) {
+    const a = (i / n) * Math.PI * 2 - Math.PI / 2
+    const rr = r * (1 - depth + depth * Math.cos(lobes * a))
+    pts.push(`${(cx + rr * Math.cos(a)).toFixed(2)},${(cy + rr * Math.sin(a)).toFixed(2)}`)
+  }
+  return `M${pts.join("L")}Z`
+}
+
+type LineDotProps = { cx?: number; cy?: number; index?: number; value?: number | string; payload?: Record<string, unknown> }
+
+/**
+ * A Line `dot` renderer that colors each dot from the data: the series color is
+ * the fallback. Dots are ringed in the chart surface like chartDot.
+ *
+ *   <Line dot={chartColorDot((d) => (d.in ? "var(--color-inRange)" : "var(--color-outRange)"))} />
+ */
+export function chartColorDot(colorOf: (payload: any, index: number) => string, { r = 5 }: { r?: number } = {}) {
+  function ColorDot({ cx, cy, index = 0, payload }: LineDotProps) {
+    if (cx === undefined || cy === undefined || !payload) return <g />
+    return <circle cx={cx} cy={cy} r={r} fill={colorOf(payload, index)} stroke="var(--chart-surface)" strokeWidth={2} />
+  }
+  return ColorDot
+}
+
+/**
+ * A Line `dot` renderer with a shape: points where `when` is true get a
+ * scalloped cookie in the series color with a small `glyph` inside; the rest a
+ * small ringed dot. `glyph` is an SVG path in a 24 by 24 box (a Material Symbols
+ * outline works), drawn in the surface color.
+ *
+ *   <Line dot={chartCookieDot("desktop", { when: (d) => d.desktop >= 300, glyph: "M13 2 4 14h6l-1 8 9-12h-6z" })} />
+ */
+export function chartCookieDot(
+  key: string,
+  { when, glyph, r = 11 }: { when?: (payload: any, index: number) => boolean; glyph?: string; r?: number } = {}
+) {
+  const color = `var(--color-${key})`
+  function CookieDot({ cx, cy, index = 0, payload }: LineDotProps) {
+    if (cx === undefined || cy === undefined || !payload) return <g />
+    if (when && !when(payload, index)) return <circle cx={cx} cy={cy} r={4} fill={color} stroke="var(--chart-surface)" strokeWidth={2} />
+    const s = (r * 1.15) / 24
+    return (
+      <g aria-hidden>
+        <path d={chartCookiePath(cx, cy, r)} fill={color} stroke="var(--chart-surface)" strokeWidth={2} />
+        {glyph && <path d={glyph} transform={`translate(${cx - 12 * s} ${cy - 12 * s}) scale(${s})`} fill="var(--chart-surface)" />}
+      </g>
+    )
+  }
+  return CookieDot
+}
+
+/**
+ * A value label as a small pill above its point, for `<LabelList content={...} />`
+ * on a Line (or Bar). `tone` "inverse" is the dark chip, "tonal" a tint of the
+ * series color. `text` maps the value and the point's index to the label.
+ *
+ *   <Line ...><LabelList content={chartPillLabel("desktop", { text: (v) => String(v) })} /></Line>
+ */
+export function chartPillLabel(
+  key: string,
+  { text = (v: number | string) => String(v), tone = "inverse", offset = 22 }: { text?: (value: any, index: number) => string; tone?: "inverse" | "tonal"; offset?: number } = {}
+) {
+  function PillLabel(props: { x?: number | string; y?: number | string; value?: number | string; index?: number; payload?: unknown }) {
+    const x = Number(props.x)
+    const y = Number(props.y)
+    if (!Number.isFinite(x) || !Number.isFinite(y) || props.value === undefined) return <g />
+    const label = text(props.value, props.index ?? 0)
+    const w = Math.max(28, label.length * 6.6 + 16)
+    const h = 22
+    const color = `var(--color-${key})`
+    return (
+      <g aria-hidden>
+        <rect
+          x={x - w / 2}
+          y={y - offset - h / 2}
+          width={w}
+          height={h}
+          rx={h / 2}
+          fill={tone === "inverse" ? "var(--inverse-surface)" : chartTrackColor(color, 22)}
+        />
+        <text
+          x={x}
+          y={y - offset}
+          dy="0.35em"
+          textAnchor="middle"
+          className={cn("text-[0.75rem] font-[620] tabular-nums", tone === "inverse" ? "fill-inverse-foreground" : "fill-foreground")}
+        >
+          {label}
+        </text>
+      </g>
+    )
+  }
+  return PillLabel
+}
+
 /* end line helpers */
 
 /* ================================================================== */
