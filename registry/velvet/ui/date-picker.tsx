@@ -465,9 +465,14 @@ function DateRangePicker({
             </div>
             {/* stays in view when the popover has to scroll (phones) */}
             <div className="sticky bottom-0 z-10 flex items-center gap-2 bg-card px-4 pt-1 pb-3 dark:bg-surface-container-high">
-              <p className="min-w-0 flex-1 truncate type-body-md" aria-live="polite">
-                {describe(draft) ?? <span className="text-muted-foreground">Pick a start date</span>}
-                {nights > 1 && <span className="text-muted-foreground"> · {nights} days</span>}
+              <p className="flex min-w-0 flex-1 items-baseline gap-3 type-body-md" aria-live="polite">
+                <span className="truncate">{describe(draft) ?? <span className="text-muted-foreground">Pick a start date</span>}</span>
+                {nights > 1 && (
+                  <span className="shrink-0 type-label-md text-muted-foreground">
+                    <span className="sr-only">, </span>
+                    {nights} days
+                  </span>
+                )}
               </p>
               {draft?.from && (
                 <Button size="sm" variant="ghost" onClick={() => setDraft(undefined)}>
