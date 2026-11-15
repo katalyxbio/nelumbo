@@ -27,12 +27,13 @@ import { cn } from "@/lib/utils"
  *   at the corner, cut out from the background with a ring.
  */
 
+// box and initials, badge diameter, ring width, icon size in the avatar and in a badge
 const SIZES = {
-  xs: "size-6 text-[0.625rem] [--badge:8px] [--ring:1.5px]",
-  sm: "size-8 text-xs [--badge:10px] [--ring:2px]",
-  default: "size-10 text-sm [--badge:12px] [--ring:2px]",
-  lg: "size-14 text-xl [--badge:14px] [--ring:2.5px]",
-  xl: "size-20 text-[1.75rem] [--badge:18px] [--ring:3px]",
+  xs: "size-6 text-[0.625rem] [--badge:8px] [--ring:1.5px] [--av-icon:14px] [--badge-icon:8px]",
+  sm: "size-8 text-xs [--badge:10px] [--ring:2px] [--av-icon:18px] [--badge-icon:10px]",
+  default: "size-10 text-sm [--badge:12px] [--ring:2px] [--av-icon:22px] [--badge-icon:12px]",
+  lg: "size-14 text-xl [--badge:14px] [--ring:2.5px] [--av-icon:30px] [--badge-icon:14px]",
+  xl: "size-20 text-[1.75rem] [--badge:18px] [--ring:3px] [--av-icon:44px] [--badge-icon:18px]",
 }
 
 const COLORS = {
@@ -137,7 +138,7 @@ function AvatarFallback({ className, ...props }: React.ComponentProps<typeof Ava
       data-slot="avatar-fallback"
       className={cn(
         "grid size-full place-items-center rounded-(--radius-avatar) bg-(--av-bg) leading-none font-medium tracking-wide text-(--av-fg)",
-        "[&_[data-slot=icon]]:[--icon-size:55%]",
+        "[&_[data-slot=icon]]:[--icon-size:var(--av-icon)] [&_[data-slot=icon]]:[--icon-opsz:24]",
         className
       )}
       {...props}
@@ -175,7 +176,10 @@ function AvatarBadge({ className, status, position = "bottom", children, ...prop
         "shadow-[0_0_0_var(--ring)_var(--avatar-ring,var(--background))]",
         position === "bottom" ? "bottom-0" : "top-0",
         "group-data-[shape=rounded]/avatar:translate-x-1/4 group-data-[shape=rounded]/avatar:data-[pos=bottom]:translate-y-1/4 group-data-[shape=rounded]/avatar:data-[pos=top]:-translate-y-1/4",
-        st ? st.className : "bg-primary text-primary-foreground [&_[data-slot=icon]]:[--icon-size:75%]",
+        st
+          ? st.className
+          : // an icon gets a slightly larger badge, and fills it with even space around
+            "size-[calc(var(--badge)+6px)] bg-primary text-primary-foreground [&_[data-slot=icon]]:[--icon-size:var(--badge-icon)] [&_[data-slot=icon]]:[--icon-opsz:20]",
         className
       )}
       data-pos={position}
