@@ -145,6 +145,13 @@ function accentPalette(hex: string, vibrance: number) {
   return TonalPalette.fromHueAndChroma(h.hue, clamp(h.chroma, 36, 60) * vibrance)
 }
 
+/** Chroma (HCT) a light container may carry; the softest accents sit near this. */
+const CONTAINER_CHROMA = 12
+
+function softTone(p: TonalPalette, tone: number) {
+  return TonalPalette.fromHueAndChroma(p.hue, Math.min(p.chroma, CONTAINER_CHROMA)).tone(tone)
+}
+
 export function resolveBrand(brand: SchemeOptions["brand"] = "blue") {
   return brand in ACCENTS ? ACCENTS[brand as AccentName] : brand
 }
@@ -172,7 +179,10 @@ export function buildScheme(options: SchemeOptions = {}): Scheme {
   const dark: Record<string, string> = {}
 
   for (const [name, key, lt, dt] of ROLES) {
-    light[name] = css(palettes[key].tone(lt))
+    // Light containers are pale tints. Some hues (green above all) hold far more
+    // chroma at that tone than others, so cap it: every tint reads equally soft.
+    const soft = name.endsWith("-container") && key !== "neutral"
+    light[name] = css(soft ? softTone(palettes[key], lt) : palettes[key].tone(lt))
     dark[name] = css(palettes[key].tone(dt))
   }
   CHARTS.forEach(([hue, lt, dt], i) => {
