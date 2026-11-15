@@ -129,3 +129,4 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Input Group (one field with addons; chat composer), Native Select
 - [x] FAB Menu (staggered spring actions, morphing trigger)
 - [x] Toolbar (docked and floating, vertical, vibrant; paired FAB, collapse, overflow)
+- [x] Kbd, Spinner (ring or shapes), Empty (layered icon tile), Aspect Ratio

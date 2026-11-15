@@ -887,7 +887,8 @@
       "registryDependencies": [
         "utils",
         "@velvet/icon",
-        "@velvet/popover"
+        "@velvet/popover",
+        "@velvet/kbd"
       ],
       "files": [
         {
@@ -905,7 +906,8 @@
         "radix-ui"
       ],
       "registryDependencies": [
-        "utils"
+        "utils",
+        "@velvet/kbd"
       ],
       "files": [
         {
@@ -1385,7 +1387,7 @@
         "@velvet/dialog",
         "@velvet/icon",
         "@velvet/search",
-        "@velvet/dropdown-menu"
+        "@velvet/kbd"
       ],
       "files": [
         {
@@ -1795,6 +1797,75 @@
       "files": [
         {
           "path": "registry/velvet/ui/toolbar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "kbd",
+      "type": "registry:ui",
+      "title": "Kbd",
+      "description": "shadcn-compatible Kbd and KbdGroup: raised keycaps, an inverse look inside tooltips, and KbdShortcut that splits a shortcut into caps.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/kbd.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "shadcn-compatible Spinner: a breathing ring, or Velvet morphing shapes; announced as status, reduced-motion safe.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@velvet/loading-indicator"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/spinner.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "empty",
+      "type": "registry:ui",
+      "title": "Empty",
+      "description": "shadcn-compatible Empty state: a large icon tile over softly fanned tiles, avatar media, no dashed border.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/empty.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "aspect-ratio",
+      "type": "registry:ui",
+      "title": "Aspect Ratio",
+      "description": "shadcn-compatible AspectRatio on Radix.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/aspect-ratio.tsx",
           "type": "registry:ui"
         }
       ]

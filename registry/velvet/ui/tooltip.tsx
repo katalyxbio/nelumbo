@@ -4,6 +4,7 @@ import * as React from "react"
 import { Tooltip as TooltipPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import { KbdShortcut } from "@/registry/velvet/ui/kbd"
 
 /**
  * Velvet Tooltip (built on Radix Tooltip)
@@ -74,9 +75,9 @@ function TooltipContent({ className, variant = "plain", shortcut, sideOffset = 6
       >
         {children}
         {shortcut && (
-          <kbd data-slot="tooltip-shortcut" className="font-sans type-label-sm tracking-wider opacity-60">
+          <KbdShortcut data-slot="tooltip-shortcut" className="inline-flex items-center gap-0.5">
             {shortcut}
-          </kbd>
+          </KbdShortcut>
         )}
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>

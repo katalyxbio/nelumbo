@@ -41,6 +41,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/input-otp", label: "Input OTP", isNew: true },
       { href: "/components/card", label: "Card" },
       { href: "/components/carousel", label: "Carousel", isNew: true },
+      { href: "/components/aspect-ratio", label: "Aspect Ratio", isNew: true },
       { href: "/components/switch", label: "Switch" },
       { href: "/components/checkbox", label: "Checkbox" },
       { href: "/components/radio-group", label: "Radio Group" },
@@ -54,6 +55,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/accordion", label: "Accordion", isNew: true },
       { href: "/components/collapsible", label: "Collapsible", isNew: true },
       { href: "/components/alert", label: "Alert", isNew: true },
+      { href: "/components/empty", label: "Empty", isNew: true },
       { href: "/components/table", label: "Table", isNew: true },
       { href: "/components/data-table", label: "Data Table", isNew: true },
       { href: "/components/chart", label: "Chart", isNew: true },
@@ -90,6 +92,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/menubar", label: "Menubar", isNew: true },
       { href: "/components/command", label: "Command", isNew: true },
       { href: "/components/tooltip", label: "Tooltip" },
+      { href: "/components/kbd", label: "Kbd", isNew: true },
       { href: "/components/snackbar", label: "Snackbar", isNew: true },
     ],
   },
@@ -98,6 +101,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
     items: [
       { href: "/components/progress", label: "Progress", isNew: true },
       { href: "/components/loading-indicator", label: "Loading Indicator", isNew: true },
+      { href: "/components/spinner", label: "Spinner", isNew: true },
     ],
   },
 ]
