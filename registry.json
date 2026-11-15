@@ -1679,6 +1679,44 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "field",
+      "type": "registry:ui",
+      "title": "Field",
+      "description": "shadcn-compatible Field layout set: fieldsets, legends, descriptions and spring errors; FieldLabel feeds Velvet fields their floating label; choice cards with a tonal selected state.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/label",
+        "@velvet/field-shell"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "item",
+      "type": "registry:ui",
+      "title": "Item",
+      "description": "shadcn-compatible Item sharing List styles: segmented tile groups, icon tiles, outline as a ring, selected state, tactile when interactive.",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/item.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
