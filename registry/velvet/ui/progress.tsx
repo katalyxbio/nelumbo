@@ -42,7 +42,6 @@ const TONES = {
 const CSS = `
 @keyframes vlv-bar-long { 0% { left: -35%; right: 100% } 60%, 100% { left: 100%; right: -90% } }
 @keyframes vlv-bar-short { 0% { left: -200%; right: 100% } 60%, 100% { left: 107%; right: -8% } }
-@keyframes vlv-wave { from { mask-position: 0 50% } to { mask-position: var(--wl) 50% } }
 @keyframes vlv-arc {
   0% { stroke-dasharray: 1 200; stroke-dashoffset: 0 }
   50% { stroke-dasharray: 68 200; stroke-dashoffset: -14 }
@@ -51,11 +50,9 @@ const CSS = `
 @keyframes vlv-turn { to { transform: rotate(360deg) } }
 .vlv-bar-long { animation: vlv-bar-long 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite }
 .vlv-bar-short { animation: vlv-bar-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) 1.15s infinite }
-.vlv-wave { animation: vlv-wave var(--wave-speed, 1.1s) linear infinite }
 .vlv-arc { animation: vlv-arc 1.5s ease-in-out infinite }
 .vlv-turn { animation: vlv-turn 2s linear infinite; transform-origin: center }
 @media (prefers-reduced-motion: reduce) {
-  .vlv-wave { animation: none }
   .vlv-bar-long, .vlv-bar-short, .vlv-arc, .vlv-turn { animation-duration: 4s }
   .vlv-bar-short { animation-delay: 2.2s }
 }
@@ -76,15 +73,70 @@ function percent(value: number | null | undefined, max: number) {
 
 /* ----------------------------------------------------------------- linear */
 
-/** One wavelength of a sine stroke, tiled along the bar as a mask. */
-function waveMask(wavelength: number, amplitude: number, thickness: number) {
-  const h = thickness + amplitude * 2
-  const m = h / 2
-  const q = wavelength / 4
-  // quadratic control points at twice the amplitude put the crest at the amplitude
-  const d = `M${-wavelength} ${m} Q${-3 * q} ${m - amplitude * 2} ${-wavelength / 2} ${m} T0 ${m} T${wavelength / 2} ${m} T${wavelength} ${m} T${wavelength * 1.5} ${m} T${wavelength * 2} ${m}`
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${wavelength}' height='${h}' viewBox='0 0 ${wavelength} ${h}'><path d='${d}' fill='none' stroke='black' stroke-width='${thickness}'/></svg>`
-  return { image: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`, height: h }
+/**
+ * The wavy indicator, drawn as an SVG stroke with round caps. CSS still
+ * owns the geometry (the indicator's width transition, the indeterminate
+ * bars' keyframes); each frame this reads where the segments are and draws
+ * one continuous wave through them, so both ends are rounded.
+ */
+function WaveStroke({ thickness, amplitude, wavelength, determinate }: { thickness: number; amplitude: number; wavelength: number; determinate: boolean }) {
+  const svgRef = React.useRef<SVGSVGElement>(null)
+  const pathRef = React.useRef<SVGPathElement>(null)
+
+  React.useEffect(() => {
+    const svg = svgRef.current
+    const path = pathRef.current
+    const host = svg?.parentElement
+    if (!svg || !path || !host) return
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const mid = thickness / 2 + amplitude
+    const speed = wavelength / 1.1 // px per second: one wavelength every 1.1s
+    const t0 = performance.now()
+    let raf = 0
+    let visible = true
+
+    const y = (x: number, phase: number) => (mid + amplitude * Math.sin(((x - phase) / wavelength) * Math.PI * 2)).toFixed(2)
+    const draw = (now: number) => {
+      const phase = reduce.matches ? 0 : ((now - t0) / 1000) * speed
+      const w = host.clientWidth
+      const segments: [number, number][] = determinate
+        ? [[0, w]]
+        : Array.from(host.querySelectorAll<HTMLElement>("[data-bar]"), (b) => [Math.max(0, b.offsetLeft), Math.min(w, b.offsetLeft + b.offsetWidth)])
+      let d = ""
+      for (const [x0, x1] of segments) {
+        if (x1 - x0 < 1) continue
+        // keep the round caps inside the segment
+        let from = x0 + thickness / 2
+        let to = x1 - thickness / 2
+        if (to < from) from = to = (x0 + x1) / 2
+        d += `M${from.toFixed(1)} ${y(from, phase)}`
+        for (let x = from + 2; x < to; x += 2) d += `L${x.toFixed(1)} ${y(x, phase)}`
+        d += `L${to.toFixed(1)} ${y(to, phase)}`
+      }
+      path.setAttribute("d", d)
+    }
+    const loop = (now: number) => {
+      draw(now)
+      raf = visible ? requestAnimationFrame(loop) : 0
+    }
+    // stop drawing while it's off screen
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting
+      if (visible && !raf) raf = requestAnimationFrame(loop)
+    })
+    io.observe(host)
+    raf = requestAnimationFrame(loop)
+    return () => {
+      cancelAnimationFrame(raf)
+      io.disconnect()
+    }
+  }, [thickness, amplitude, wavelength, determinate])
+
+  return (
+    <svg ref={svgRef} aria-hidden className="absolute inset-0 size-full overflow-visible">
+      <path ref={pathRef} fill="none" stroke="var(--ind)" strokeWidth={thickness} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
 }
 
 const LINEAR = {
@@ -102,8 +154,7 @@ function Progress({ className, style, value, max = 100, color = "default", shape
   const p = percent(value, max)
   const wavy = shape === "wavy"
   const { t, a, wl } = LINEAR[size]
-  const wave = wavy ? waveMask(wl, a, t) : null
-  const h = wave ? wave.height : t
+  const h = wavy ? t + a * 2 : t
   const determinate = p !== null
 
   const vars = {
@@ -111,15 +162,11 @@ function Progress({ className, style, value, max = 100, color = "default", shape
     "--h": `${h}px`,
     "--p": `${p ?? 0}%`,
     "--gap": p ? `${GAP}px` : "0px",
-    "--wl": `${wl}px`,
     ...style,
   } as React.CSSProperties
 
-  const waveStyle: React.CSSProperties | undefined = wave
-    ? { maskImage: wave.image, maskSize: `${wl}px ${h}px`, maskRepeat: "repeat-x", WebkitMaskImage: wave.image, WebkitMaskSize: `${wl}px ${h}px`, WebkitMaskRepeat: "repeat-x" }
-    : undefined
-
-  const bar = "absolute inset-y-0 rounded-full bg-(--ind)"
+  // with a wave, the bars only carry the keyframes; WaveStroke draws them
+  const bar = cn("absolute inset-y-0 rounded-full", !wavy && "bg-(--ind)")
 
   return (
     <ProgressPrimitive.Root
@@ -150,19 +197,19 @@ function Progress({ className, style, value, max = 100, color = "default", shape
         data-slot="progress-indicator"
         className={cn(
           "absolute left-0 overflow-hidden",
-          wavy ? "inset-y-0 vlv-wave" : "top-1/2 h-(--t) -translate-y-1/2 rounded-full",
+          wavy ? "inset-y-0" : "top-1/2 h-(--t) -translate-y-1/2 rounded-full",
           determinate
-            ? cn("w-(--p) bg-(--ind) transition-[width] duration-500 ease-(--ease-emphasized) motion-reduce:transition-none", p === 0 && "invisible")
+            ? cn("w-(--p) transition-[width] duration-500 ease-(--ease-emphasized) motion-reduce:transition-none", !wavy && "bg-(--ind)", p === 0 && "invisible")
             : "w-full"
         )}
-        style={waveStyle}
       >
         {!determinate && (
           <>
-            <span className={cn(bar, "vlv-bar-long")} />
-            <span className={cn(bar, "vlv-bar-short")} />
+            <span data-bar className={cn(bar, "vlv-bar-long")} />
+            <span data-bar className={cn(bar, "vlv-bar-short")} />
           </>
         )}
+        {wavy && <WaveStroke thickness={t} amplitude={a} wavelength={wl} determinate={determinate} />}
       </ProgressPrimitive.Indicator>
     </ProgressPrimitive.Root>
   )

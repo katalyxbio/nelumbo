@@ -22,35 +22,89 @@ import { cn } from "@/lib/utils"
  * With reduced motion the shape stays still and gently pulses.
  */
 
-const POINTS = 72
+const POINTS = 144
 
 type Radius = (theta: number) => number
 
-const cookie = (lobes: number, depth: number): Radius => (t) => 1 + depth * Math.cos(lobes * t)
-const ellipse = (ratio: number, turn: number): Radius => (t) => {
-  const a = t - turn
-  return ratio / Math.hypot(ratio * Math.cos(a), Math.sin(a))
+/** Radius along each ray of a star-shaped polygon (vertices clockwise from 12 o'clock). */
+const fromVertices = (verts: [number, number][]): Radius => (theta) => {
+  const dx = Math.sin(theta)
+  const dy = -Math.cos(theta)
+  let best = Infinity
+  for (let i = 0; i < verts.length; i++) {
+    const [ax, ay] = verts[i]
+    const [bx, by] = verts[(i + 1) % verts.length]
+    const ex = bx - ax
+    const ey = by - ay
+    const den = dx * ey - dy * ex
+    if (Math.abs(den) < 1e-9) continue
+    const r = (ax * ey - ay * ex) / den
+    const u = (ax * dy - ay * dx) / den
+    if (r > 0 && u >= -1e-9 && u <= 1 + 1e-9) best = Math.min(best, r)
+  }
+  return best
 }
-const polygon = (sides: number, softness: number): Radius => (t) => {
-  const seg = (Math.PI * 2) / sides
-  const m = (((t % seg) + seg) % seg) - seg / 2
-  const sharp = Math.cos(seg / 2) / Math.cos(m)
-  return sharp * (1 - softness) + softness * (1 + Math.cos(seg / 2)) / 2
+const at = (r: number, a: number): [number, number] => [r * Math.sin(a), -r * Math.cos(a)]
+
+/** Rounds every corner of a polygon (convex or concave) with a curve tangent to both edges. */
+function rounded(verts: [number, number][], radius: number): [number, number][] {
+  const out: [number, number][] = []
+  const n = verts.length
+  for (let i = 0; i < n; i++) {
+    const [px, py] = verts[(i + n - 1) % n]
+    const [vx, vy] = verts[i]
+    const [nx, ny] = verts[(i + 1) % n]
+    const l1 = Math.hypot(px - vx, py - vy)
+    const l2 = Math.hypot(nx - vx, ny - vy)
+    const cut = Math.min(radius, l1 / 2, l2 / 2)
+    const a: [number, number] = [vx + ((px - vx) / l1) * cut, vy + ((py - vy) / l1) * cut]
+    const b: [number, number] = [vx + ((nx - vx) / l2) * cut, vy + ((ny - vy) / l2) * cut]
+    for (let k = 0; k <= 12; k++) {
+      const t = k / 12
+      const u = 1 - t
+      out.push([u * u * a[0] + 2 * u * t * vx + t * t * b[0], u * u * a[1] + 2 * u * t * vy + t * t * b[1]])
+    }
+  }
+  return out
+}
+const star = (points: number, inner: number, corner: number) =>
+  fromVertices(rounded(Array.from({ length: points * 2 }, (_, i) => at(i % 2 ? inner : 1, (i * Math.PI) / points)), corner))
+const regular = (sides: number, corner: number) =>
+  fromVertices(rounded(Array.from({ length: sides }, (_, i) => at(1, (i * 2 * Math.PI) / sides)), corner))
+/** A capsule: a rectangle whose short ends are fully round, turned. */
+const pill = (ratio: number, turn: number) => {
+  const c = Math.cos(turn)
+  const s = Math.sin(turn)
+  const rect: [number, number][] = [[-1, -ratio], [1, -ratio], [1, ratio], [-1, ratio]].map(([x, y]) => [x * c - y * s, x * s + y * c])
+  return fromVertices(rounded(rect, ratio * 2))
+}
+/** Round bumps with crisp notches between them. */
+const scallop = (lobes: number, depth: number): Radius => (t) => 1 - depth + depth * Math.abs(Math.cos((lobes * t) / 2))
+/** A superellipse, turned; high exponents give flatter sides and tighter corners. */
+const squircle = (ratio: number, exp: number, turn: number): Radius => (t) => {
+  const a = t - turn
+  return Math.pow(Math.pow(Math.abs(Math.cos(a) / ratio), exp) + Math.pow(Math.abs(Math.sin(a)), exp), -1 / exp)
 }
 
-// The sequence, as radius functions of the angle from 12 o'clock.
-const SHAPES: Radius[] = [
-  cookie(10, 0.085), // soft burst
-  cookie(9, 0.065), // cookie
-  polygon(5, 0.45), // pentagon
-  ellipse(0.56, Math.PI / 4), // pill
-  cookie(8, 0.045), // sunny
-  cookie(4, 0.13), // clover
-  ellipse(0.74, -Math.PI / 4), // oval
+// The sequence: [shape, extra softening (samples to average over)].
+const SHAPES: [Radius, number][] = [
+  [star(10, 0.74, 0.12), 0], // soft burst
+  [scallop(9, 0.16), 2], // cookie
+  [regular(5, 0.32), 0], // pentagon
+  [pill(0.5, Math.PI / 4), 0], // pill
+  [star(8, 0.8, 0.16), 0], // sunny
+  [scallop(4, 0.3), 3], // clover
+  [squircle(0.66, 2, -Math.PI / 4), 0], // oval
 ]
 
-function toPolygon(r: Radius) {
-  const rs = Array.from({ length: POINTS }, (_, k) => r((k / POINTS) * Math.PI * 2))
+/** Sample the radius, round the corners with a circular moving average, and scale to fit. */
+function toPolygon([r, soften]: [Radius, number]) {
+  const raw = Array.from({ length: POINTS }, (_, k) => r((k / POINTS) * Math.PI * 2))
+  const rs = raw.map((_, k) => {
+    let sum = 0
+    for (let j = -soften; j <= soften; j++) sum += raw[(k + j + POINTS) % POINTS]
+    return sum / (soften * 2 + 1)
+  })
   const peak = Math.max(...rs)
   const pts = rs.map((v, k) => {
     const t = (k / POINTS) * Math.PI * 2
