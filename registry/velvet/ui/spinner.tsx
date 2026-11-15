@@ -27,9 +27,10 @@ import { LoadingIndicator } from "@/registry/velvet/ui/loading-indicator"
 
 const CSS = `
 @keyframes vlv-spin-arc {
-  0% { stroke-dasharray: 1 200; stroke-dashoffset: 0 }
-  50% { stroke-dasharray: 68 200; stroke-dashoffset: -14 }
-  100% { stroke-dasharray: 68 200; stroke-dashoffset: -99 }
+  /* the arc never shrinks below 8% of the circle, so it always reads as a spinner */
+  0% { stroke-dasharray: 8 200; stroke-dashoffset: 0 }
+  50% { stroke-dasharray: 70 200; stroke-dashoffset: -14 }
+  100% { stroke-dasharray: 8 200; stroke-dashoffset: -92 }
 }
 @keyframes vlv-spin-turn { to { transform: rotate(360deg) } }
 .vlv-spin-turn { animation: vlv-spin-turn 2s linear infinite; transform-origin: center }
