@@ -22,14 +22,14 @@ const BLURBS: Record<string, string> = {
   settings: "Theme, notifications, account",
 }
 
-function AppFrame({ expandable = true, descriptions = false, defaultExpanded = false }: { expandable?: boolean; descriptions?: boolean; defaultExpanded?: boolean }) {
+function AppFrame({ expandable = true, descriptions = false, defaultExpanded = false, label = "Example app" }: { expandable?: boolean; descriptions?: boolean; defaultExpanded?: boolean; label?: string }) {
   const [active, setActive] = React.useState("inbox")
   const [expanded, setExpanded] = React.useState(defaultExpanded)
   const current = [...DESTINATIONS, { id: "settings", label: "Settings" }].find((d) => d.id === active)!
 
   return (
     <div className="flex h-[34rem] w-full overflow-hidden rounded-3xl bg-surface-container-low shadow-e1 dark:bg-surface-container-lowest">
-      <NavigationRail aria-label="Example app" expanded={expanded}>
+      <NavigationRail aria-label={label} expanded={expanded}>
         <NavigationRailHeader>
           {expandable && (
             <IconButton
@@ -93,13 +93,13 @@ export default function NavigationRailPage() {
         description="Expanded rows are a compact 40px. Give an item a description and its row grows to 56px to fit the second line; it's hidden while collapsed."
       >
         <Preview className="p-3">
-          <AppFrame descriptions defaultExpanded />
+          <AppFrame descriptions defaultExpanded label="Example app with descriptions" />
         </Preview>
       </Section>
 
       <Section title="Rail only" description="Without the menu button, for layouts that never expand.">
         <Preview className="p-3">
-          <AppFrame expandable={false} />
+          <AppFrame expandable={false} label="Example app, fixed rail" />
         </Preview>
       </Section>
 

@@ -21,12 +21,14 @@ function Pager({
   onPage,
   siblings = 1,
   compact = false,
+  label = "Pages",
 }: {
   page: number
   count: number
   onPage: (p: number) => void
   siblings?: number
   compact?: boolean
+  label?: string
 }) {
   const go = (p: number) => (e: React.MouseEvent) => {
     e.preventDefault()
@@ -34,7 +36,7 @@ function Pager({
   }
   const range = paginationRange(page, count, siblings)
   return (
-    <Pagination aria-label="Pagination example 1">
+    <Pagination aria-label={label}>
       <PaginationContent>
         <PaginationItem>
           {compact ? (
@@ -96,7 +98,7 @@ export default function PaginationPageDocs() {
         description="The page lives in your state. Previous and Next stop at the ends (aria-disabled keeps them focusable so the focus does not jump). The status line is announced when the page changes."
       >
         <Preview className="flex-col items-stretch gap-4">
-          <Pager page={page} count={8} onPage={setPage} />
+          <Pager label="Pages" page={page} count={8} onPage={setPage} />
           <p className="text-center type-body-sm text-muted-foreground" aria-live="polite">
             Page {page} of 8
           </p>
@@ -110,11 +112,11 @@ export default function PaginationPageDocs() {
         <Preview className="flex-col items-stretch gap-6">
           <div className="flex flex-col items-center gap-2">
             <p className="type-label-md text-muted-foreground">Siblings 1, page 21 of 42</p>
-            <Pager page={bigPage} count={42} onPage={setBigPage} />
+            <Pager label="Pages, one sibling" page={bigPage} count={42} onPage={setBigPage} />
           </div>
           <div className="flex flex-col items-center gap-2">
             <p className="type-label-md text-muted-foreground">Siblings 2, page 6 of 42</p>
-            <Pager page={widePage} count={42} onPage={setWidePage} siblings={2} />
+            <Pager label="Pages, two siblings" page={widePage} count={42} onPage={setWidePage} siblings={2} />
           </div>
         </Preview>
       </Section>
@@ -124,14 +126,14 @@ export default function PaginationPageDocs() {
         description="Icons only, for toolbars and tight spaces. Give the icon buttons an aria-label; the page links keep their numbers."
       >
         <Preview className="justify-center">
-          <Pager page={compactPage} count={12} onPage={setCompactPage} compact />
+          <Pager label="Pages, compact" page={compactPage} count={12} onPage={setCompactPage} compact />
         </Preview>
       </Section>
 
       <Section title="Sizes" description='size works as in shadcn: "sm", "default" and "lg" set the round target; "icon" is the square-ish icon-only size.'>
         <Preview className="flex-col items-stretch gap-4">
           {(["sm", "default", "lg"] as const).map((size) => (
-            <Pagination aria-label="Pagination example 2" key={size} className="justify-start">
+            <Pagination aria-label={`Pages, ${size} size`} key={size} className="justify-start">
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious href="#" size={size} onClick={(e) => e.preventDefault()} />

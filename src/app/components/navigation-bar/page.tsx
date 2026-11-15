@@ -41,7 +41,7 @@ function Phone({ inline = false }: { inline?: boolean }) {
           </div>
         ))}
       </div>
-      <NavigationBar aria-label="Example app" inline={inline}>
+      <NavigationBar aria-label={inline ? "Example app, inline labels" : "Example app"} inline={inline}>
         {TABS.map((t) => (
           <NavigationBarItem key={t.id} icon={t.icon} label={t.label} badge={t.badge} active={active === t.id} onClick={() => setActive(t.id)} />
         ))}
