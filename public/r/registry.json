@@ -1217,6 +1217,25 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "time-picker",
+      "type": "registry:ui",
+      "title": "Time Picker",
+      "description": "TimePicker: type a time in the locale's format (12 or 24 hour), or pick from a docked Material 3 clock dial or list columns. Hour and minute chips, AM/PM, min, max, step, validation.",
+      "registryDependencies": [
+        "utils",
+        "@velvet/field",
+        "@velvet/popover",
+        "@velvet/icon-button",
+        "@velvet/button"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/time-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

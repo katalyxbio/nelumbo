@@ -31,6 +31,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/select", label: "Select", isNew: true },
       { href: "/components/combobox", label: "Combobox", isNew: true },
       { href: "/components/date-picker", label: "Date Picker", isNew: true },
+      { href: "/components/time-picker", label: "Time Picker", isNew: true },
       { href: "/components/card", label: "Card" },
       { href: "/components/switch", label: "Switch" },
       { href: "/components/checkbox", label: "Checkbox" },
