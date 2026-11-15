@@ -1065,6 +1065,55 @@ function ChartStages({
     </div>
   )
 }
+/* ================================================================== */
+/* AREA HELPERS                                                  */
+/* Owned by the area gallery. Add helpers below with `export` inline.   */
+/* ================================================================== */
+
+/* end area helpers */
+
+/* ================================================================== */
+/* BAR HELPERS                                                  */
+/* Owned by the bar gallery. Add helpers below with `export` inline.   */
+/* ================================================================== */
+
+/* end bar helpers */
+
+/* ================================================================== */
+/* LINE HELPERS                                                  */
+/* Owned by the line gallery. Add helpers below with `export` inline.   */
+/* ================================================================== */
+
+/* end line helpers */
+
+/* ================================================================== */
+/* PIE HELPERS                                                  */
+/* Owned by the pie gallery. Add helpers below with `export` inline.   */
+/* ================================================================== */
+
+/* end pie helpers */
+
+/* ================================================================== */
+/* RADAR HELPERS                                                  */
+/* Owned by the radar gallery. Add helpers below with `export` inline.   */
+/* ================================================================== */
+
+/* end radar helpers */
+
+/* ================================================================== */
+/* RADIAL HELPERS                                                  */
+/* Owned by the radial gallery. Add helpers below with `export` inline.   */
+/* ================================================================== */
+
+/* end radial helpers */
+
+/* ================================================================== */
+/* TOOLTIP HELPERS                                                  */
+/* Owned by the tooltip gallery. Add helpers below with `export` inline.   */
+/* ================================================================== */
+
+/* end tooltip helpers */
+
 export {
   ChartContainer,
   ChartTooltip,
