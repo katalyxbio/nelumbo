@@ -35,6 +35,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/time-picker", label: "Time Picker", isNew: true },
       { href: "/components/input-otp", label: "Input OTP", isNew: true },
       { href: "/components/card", label: "Card" },
+      { href: "/components/carousel", label: "Carousel", isNew: true },
       { href: "/components/switch", label: "Switch" },
       { href: "/components/checkbox", label: "Checkbox" },
       { href: "/components/radio-group", label: "Radio Group" },
@@ -52,6 +53,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/chart", label: "Chart", isNew: true },
       { href: "/components/scroll-area", label: "Scroll Area", isNew: true },
       { href: "/components/separator", label: "Separator", isNew: true },
+      { href: "/components/resizable", label: "Resizable", isNew: true },
     ],
   },
   {

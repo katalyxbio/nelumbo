@@ -1507,6 +1507,43 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "carousel",
+      "type": "registry:ui",
+      "title": "Carousel",
+      "description": "shadcn-compatible Carousel on Embla plus Material 3 layouts: multi-browse and hero cards that resize as they scroll, uncontained, and dots that stretch into a pill.",
+      "dependencies": [
+        "embla-carousel-react"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon-button"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/carousel.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "resizable",
+      "type": "registry:ui",
+      "title": "Resizable",
+      "description": "shadcn-compatible Resizable on react-resizable-panels: rounded tonal panels with a gap instead of a line, a grip that grows and turns primary while dragged.",
+      "dependencies": [
+        "react-resizable-panels"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/resizable.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
