@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { ScrollArea, ScrollBar } from "@/registry/velvet/ui/scroll-area"
-import { Code, PageHeader, Preview, Section } from "@/components/docs/primitives"
+import { Code, PageHeader, Preview, Section, PropsTable } from "@/components/docs/primitives"
 
 const TAGS = [
   "Linen", "Oat", "Sage", "Clay", "Ink", "Dune", "Moss", "Pebble", "Salt", "Birch",
@@ -30,35 +30,6 @@ function Tile({ n, className }: { n: number; className?: string }) {
     >
       {n}
     </div>
-  )
-}
-
-// The props table scrolls sideways on phones. Inside a ScrollArea it gets a
-// focusable, labelled region, which the shared PropsTable does not provide.
-function PropsScroll({ rows, note }: { rows: [string, string, string, string][]; note?: string }) {
-  return (
-    <ScrollArea aria-label="Props" className="rounded-2xl border border-border">
-      <table className="w-full min-w-[640px] text-left type-body-sm">
-        <thead className="bg-surface-container-low type-label-md text-muted-foreground dark:bg-surface-container">
-          <tr>
-            <th className="px-4 py-3">Prop</th>
-            <th className="px-4 py-3">Type</th>
-            <th className="px-4 py-3">Default</th>
-            <th className="px-4 py-3">{note ?? "Notes"}</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
-          {rows.map(([name, type, def, n]) => (
-            <tr key={name}>
-              <td className="px-4 py-3 font-mono type-label-md">{name}</td>
-              <td className="px-4 py-3 font-mono type-label-sm text-muted-foreground">{type}</td>
-              <td className="px-4 py-3 font-mono type-label-sm">{def}</td>
-              <td className="px-4 py-3 type-body-sm text-muted-foreground">{n}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </ScrollArea>
   )
 }
 
@@ -177,7 +148,7 @@ export default function ScrollAreaPage() {
       </Section>
 
       <Section title="Props">
-        <PropsScroll
+        <PropsTable
           note="Radix's own props (type, scrollHideDelay, dir) work as is"
           rows={[
             ["ScrollArea fade", "boolean", "false", "Soft fades at the edges that have more content past them"],

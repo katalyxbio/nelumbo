@@ -3,9 +3,8 @@
 import * as React from "react"
 import { Separator } from "@/registry/velvet/ui/separator"
 import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { ScrollArea } from "@/registry/velvet/ui/scroll-area"
 import { Icon, type IconName } from "@/registry/velvet/ui/icon"
-import { Code, PageHeader, Preview, Section } from "@/components/docs/primitives"
+import { Code, PageHeader, Preview, Section, PropsTable } from "@/components/docs/primitives"
 
 const ROWS: { icon: IconName; label: string; value: string }[] = [
   { icon: "wifi", label: "Wi-Fi", value: "Home network" },
@@ -23,35 +22,6 @@ function Row({ icon, label, value }: { icon: IconName; label: string; value: str
         <span className="type-body-md text-muted-foreground">{value}</span>
       </span>
     </div>
-  )
-}
-
-// The props table scrolls sideways on phones. Inside a ScrollArea it gets a
-// focusable, labelled region, which the shared PropsTable does not provide.
-function PropsScroll({ rows, note }: { rows: [string, string, string, string][]; note?: string }) {
-  return (
-    <ScrollArea aria-label="Props" className="rounded-2xl border border-border">
-      <table className="w-full min-w-[640px] text-left type-body-sm">
-        <thead className="bg-surface-container-low type-label-md text-muted-foreground dark:bg-surface-container">
-          <tr>
-            <th className="px-4 py-3">Prop</th>
-            <th className="px-4 py-3">Type</th>
-            <th className="px-4 py-3">Default</th>
-            <th className="px-4 py-3">{note ?? "Notes"}</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
-          {rows.map(([name, type, def, n]) => (
-            <tr key={name}>
-              <td className="px-4 py-3 font-mono type-label-md">{name}</td>
-              <td className="px-4 py-3 font-mono type-label-sm text-muted-foreground">{type}</td>
-              <td className="px-4 py-3 font-mono type-label-sm">{def}</td>
-              <td className="px-4 py-3 type-body-sm text-muted-foreground">{n}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </ScrollArea>
   )
 }
 
@@ -164,7 +134,7 @@ export default function SeparatorPage() {
       </Section>
 
       <Section title="Props">
-        <PropsScroll
+        <PropsTable
           note="Radix's own props (orientation, decorative) work as is"
           rows={[
             ["variant", '"line" | "inset" | "space"', '"line"', "Faint hairline, a hairline from 72px in (inset), or spacing with no line"],

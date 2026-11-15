@@ -112,3 +112,6 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Time Picker (new: typed times in the locale's format, M3 clock dial with 24-hour rings, list mode)
 - [x] Accordion (plain and segmented, Radix), Alert (tonal variants, actions, dismiss, banner)
 - [x] Table, Data Table (new: TanStack; sorting, selection, search, column menu, pagination, loading and empty states)
+- [x] Input OTP (separate or connected slots), Toggle, Toggle Group (connected, morphing selection)
+- [x] Breadcrumb, Pagination (with a range helper)
+- [x] Scroll Area (auto-hiding thumb, edge fades), Separator (faint, inset or space only)
