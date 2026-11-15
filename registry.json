@@ -1773,6 +1773,31 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "toolbar",
+      "type": "registry:ui",
+      "title": "Toolbar",
+      "description": "Material 3 Expressive toolbars on Radix Toolbar: docked or floating, horizontal or vertical, standard, vibrant or brand; shape-morphing toggles, a paired FAB, collapse on scroll, overflow into a More menu.",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/icon-button",
+        "@velvet/toggle",
+        "@velvet/fab",
+        "@velvet/tooltip",
+        "@velvet/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/toolbar.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
