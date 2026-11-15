@@ -1537,6 +1537,90 @@ export function ChartRadialReadout({
 /* Owned by the tooltip gallery. Add helpers below with `export` inline.   */
 /* ================================================================== */
 
+/**
+ * A tooltip row for `formatter`: marker (a dot, or an icon in a tonal chip), the series label and the value with
+ * its unit in muted text. Use inside ChartTooltipContent's `formatter`, which replaces the whole row.
+ */
+export function ChartTooltipRow({
+  color,
+  icon,
+  label,
+  value,
+  unit,
+}: {
+  color?: string
+  /** A node (an `<Icon />`) shown in a small round chip tinted with `color`, instead of the dot. */
+  icon?: React.ReactNode
+  label: React.ReactNode
+  value: React.ReactNode
+  unit?: React.ReactNode
+}) {
+  return (
+    <div data-slot="chart-tooltip-row" className="flex w-full items-center gap-2">
+      {icon ? (
+        <span
+          aria-hidden
+          className="grid size-6 shrink-0 place-items-center rounded-full [--icon-size:1rem]"
+          style={{ background: `color-mix(in oklab, ${color} 28%, transparent)`, color: `color-mix(in oklab, ${color} 55%, var(--inverse-foreground))` }}
+        >
+          {icon}
+        </span>
+      ) : (
+        <span aria-hidden className="size-2.5 shrink-0 rounded-full ring-2 ring-inverse-foreground/20" style={{ background: color }} />
+      )}
+      <span className="type-label-md text-muted-foreground">{label}</span>
+      <span className="ml-auto flex items-baseline gap-1 pl-3 type-label-md font-semibold text-foreground tabular-nums">
+        {value}
+        {unit && <span className="text-[0.6875rem] font-medium text-muted-foreground">{unit}</span>}
+      </span>
+    </div>
+  )
+}
+
+/** A total row under the series rows: a hairline divider, bold label and value. Render after the last series row. */
+export function ChartTooltipTotal({ label = "Total", value, unit }: { label?: React.ReactNode; value: React.ReactNode; unit?: React.ReactNode }) {
+  return (
+    <div data-slot="chart-tooltip-total" className="mt-0.5 flex w-full basis-full items-baseline gap-2 border-t border-inverse-foreground/15 pt-2">
+      <span className="type-label-md font-semibold text-foreground">{label}</span>
+      <span className="ml-auto flex items-baseline gap-1 type-title-sm font-semibold text-foreground tabular-nums">
+        {value}
+        {unit && <span className="text-[0.6875rem] font-medium text-muted-foreground">{unit}</span>}
+      </span>
+    </div>
+  )
+}
+
+/**
+ * Builds a `formatter` for ChartTooltipContent that renders a ChartTooltipRow per series (label from the config,
+ * color from the bar), `unit` after each value, `icons` (series key to node) in a chip, and optionally a total row
+ * after the last series (the sum of the config keys that hold numbers in the data row).
+ *
+ *   <ChartTooltipContent formatter={chartTooltipFormatter(config, { unit: "min", total: true })} />
+ */
+export function chartTooltipFormatter(
+  config: ChartConfig,
+  { unit, icons, total, totalLabel = "Total" }: { unit?: string; icons?: Record<string, React.ReactNode>; total?: boolean; totalLabel?: React.ReactNode } = {}
+) {
+  return (value: unknown, name: unknown, item: { color?: string }, index: number, row: unknown) => {
+    const key = String(name)
+    const data = (row ?? {}) as Record<string, unknown>
+    const keys = Object.keys(config).filter((k) => typeof data[k] === "number")
+    const sum = keys.reduce((s, k) => s + (data[k] as number), 0)
+    return (
+      <>
+        <ChartTooltipRow
+          color={item.color}
+          icon={icons?.[key]}
+          label={config[key]?.label ?? key}
+          value={typeof value === "number" ? value.toLocaleString() : String(value)}
+          unit={unit}
+        />
+        {total && index === keys.length - 1 && <ChartTooltipTotal label={totalLabel} value={sum.toLocaleString()} unit={unit} />}
+      </>
+    )
+  }
+}
+
 /* end tooltip helpers */
 
 export {
