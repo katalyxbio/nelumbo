@@ -4,6 +4,7 @@ import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
 
 /**
  * Nelumbo Chart (built on Recharts 2.15)
@@ -55,10 +56,12 @@ import { cn } from "@/lib/utils"
 export const chartColorNames = ["blue", "orange", "green", "purple", "pink", "cyan", "amber", "red"] as const
 export const chartColors = chartColorNames.map((n) => `var(--${n})`)
 
-/** Rounded top for vertical bars (square at the baseline). */
-export const chartBarRadius: [number, number, number, number] = [6, 6, 0, 0]
-/** Rounded end for horizontal bars. */
-export const chartBarRadiusHorizontal: [number, number, number, number] = [0, 6, 6, 0]
+/** Bars are full pills: Recharts clamps the radius to half the bar, so any bar size rounds fully. */
+export const chartBarRadius = 999
+/** Horizontal bars are pills too. */
+export const chartBarRadiusHorizontal = 999
+/** Stacked segments: each one rounds and a 3px surface-colored gap separates them. Spread on each stacked Bar. */
+export const chartSegment = { radius: 8, stroke: "var(--chart-surface)", strokeWidth: 3 } as const
 
 const THEMES = { light: "", dark: ".dark" } as const
 
@@ -66,6 +69,8 @@ export type ChartConfig = {
   [k in string]: {
     label?: React.ReactNode
     icon?: React.ComponentType
+    /** Legend marker: a dot (default), a row of n dots (zones: more dots, more intensity), a band (a range) or a line. */
+    swatch?: "dot" | "band" | "line" | number
   } & (
     | { color?: string; theme?: never }
     | { color?: never; theme: Record<keyof typeof THEMES, string> }
@@ -137,9 +142,12 @@ function ChartContainer({
   config,
   "aria-label": ariaLabel,
   initialDimension = { width: 480, height: 270 },
+  focus,
   ...props
 }: React.ComponentProps<"div"> & {
   config: ChartConfig
+  /** From useChartFocus: the chart becomes one keyboard stop (a slider over its points) and the plot is hidden from assistive tech. */
+  focus?: ChartFocus
   children: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>["children"]
   /** Size used for the server render and before the first measure. */
   initialDimension?: { width: number; height: number }
@@ -161,6 +169,12 @@ function ChartContainer({
     const apply = () => {
       const svg = el.querySelector("svg.recharts-surface")
       if (!svg) return
+      if (focus) {
+        // the container is the slider and carries the name; the drawing is decoration
+        if (svg.getAttribute("aria-hidden") !== "true") svg.setAttribute("aria-hidden", "true")
+        svg.removeAttribute("role")
+        return
+      }
       if (svg.getAttribute("aria-label") !== ariaLabel) svg.setAttribute("aria-label", ariaLabel)
       if (!svg.hasAttribute("tabindex") && svg.getAttribute("role") !== "img") svg.setAttribute("role", "img")
       // the plot is one image: Recharts' own per-shape roles would need names of their own
@@ -170,7 +184,7 @@ function ChartContainer({
     const mo = new MutationObserver(apply)
     mo.observe(el, { childList: true, subtree: true, attributes: true, attributeFilter: ["role"] })
     return () => mo.disconnect()
-  }, [ariaLabel])
+  }, [ariaLabel, !!focus])
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -178,17 +192,30 @@ function ChartContainer({
         ref={ref}
         data-slot="chart"
         data-chart={chartId}
+        {...(focus && {
+          tabIndex: 0,
+          role: "slider",
+          "aria-label": ariaLabel,
+          "aria-orientation": "horizontal" as const,
+          "aria-valuemin": 0,
+          "aria-valuemax": Math.max(0, focus.count - 1),
+          "aria-valuenow": Math.max(0, focus.selected),
+          "aria-valuetext": focus.describe?.(focus.selected),
+          onKeyDown: focus.onKeyDown,
+        })}
         className={cn(
+          focus && "cursor-pointer rounded-2xl outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring",
           "relative flex aspect-video w-full min-w-0 justify-center overflow-visible [--chart-surface:var(--card)] type-label-sm",
+          "dark:[--chart-met:66%] dark:[--chart-unmet:100%]",
           // axes: muted label-sm, no strokes
           "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-axis-tick_text]:text-[0.75rem] [&_.recharts-cartesian-axis-tick_text]:font-[520] [&_.recharts-cartesian-axis-tick_text]:tracking-[0.02em]",
           "[&_.recharts-polar-angle-axis-tick_text]:fill-muted-foreground [&_.recharts-polar-radius-axis-tick_text]:fill-muted-foreground",
           // grid: very faint hairlines
-          "[&_.recharts-cartesian-grid_line]:stroke-outline-variant/60 [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-outline-variant/60",
+          "[&_.recharts-cartesian-grid_line]:stroke-outline-variant/70 [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-outline-variant/70 [&_.recharts-cartesian-grid_line]:[stroke-dasharray:1_5] [&_.recharts-cartesian-grid_line]:[stroke-width:1.5] [&_.recharts-cartesian-grid_line]:[stroke-linecap:round]",
           "[&_.recharts-polar-grid_[stroke='#ccc']]:stroke-outline-variant/60",
           // tooltip cursor: a soft band for bars, a hairline for lines
-          "[&_.recharts-rectangle.recharts-tooltip-cursor]:fill-foreground/6",
-          "[&_.recharts-curve.recharts-tooltip-cursor]:stroke-outline [&_.recharts-curve.recharts-tooltip-cursor]:[stroke-dasharray:2_4] [&_.recharts-curve.recharts-tooltip-cursor]:[stroke-linecap:round]",
+          "[&_.recharts-rectangle.recharts-tooltip-cursor]:fill-foreground/5",
+          "[&_.recharts-curve.recharts-tooltip-cursor]:stroke-outline-variant [&_.recharts-curve.recharts-tooltip-cursor]:[stroke-width:2] [&_.recharts-curve.recharts-tooltip-cursor]:[stroke-linecap:round]",
           // the tooltip glides between points on a spring
           "[&_.recharts-tooltip-wrapper]:z-10 [&_.recharts-tooltip-wrapper]:transition-transform! [&_.recharts-tooltip-wrapper]:duration-300! [&_.recharts-tooltip-wrapper]:ease-(--ease-spring)! motion-reduce:[&_.recharts-tooltip-wrapper]:transition-none!",
           "[&_.recharts-sector]:outline-hidden [&_.recharts-surface]:outline-hidden [&_.recharts-layer]:outline-hidden [&_.recharts-dot[stroke='#fff']]:stroke-transparent",
@@ -271,7 +298,9 @@ function ChartTooltipContent({
     <div
       data-slot="chart-tooltip"
       className={cn(
-        "grid min-w-36 max-w-64 items-start gap-2 rounded-xl bg-surface-container-high px-3 py-2.5 text-foreground shadow-e2",
+        "grid min-w-36 max-w-64 items-start gap-2 rounded-2xl bg-inverse-surface px-3.5 py-3 text-inverse-foreground shadow-e2",
+        // muted text on the inverse surface
+        "[--muted-foreground:color-mix(in_oklab,var(--inverse-foreground)_72%,var(--inverse-surface))] [--foreground:var(--inverse-foreground)]",
         className
       )}
     >
@@ -299,10 +328,10 @@ function ChartTooltipContent({
                       !hideIndicator && (
                         <div
                           data-slot="chart-tooltip-indicator"
-                          className={cn("shrink-0 rounded-[3px] bg-(--color-bg)", {
+                          className={cn("shrink-0 rounded-full bg-(--color-bg) ring-2 ring-inverse-foreground/20", {
                             "size-2.5": indicator === "dot",
-                            "w-1 rounded-full": indicator === "line",
-                            "w-0 border-[1.5px] border-dashed bg-transparent border-(--color-bg)": indicator === "dashed",
+                            "w-1 rounded-full ring-0": indicator === "line",
+                            "w-0 border-[1.5px] border-dashed bg-transparent border-(--color-bg) ring-0": indicator === "dashed",
                             "my-0.5": nestLabel && indicator === "dashed",
                           })}
                           style={{ "--color-bg": indicatorColor } as React.CSSProperties}
@@ -340,6 +369,7 @@ function ChartLegendContent({
   nameKey,
   hiddenKeys,
   onToggle,
+  keys,
 }: Omit<React.ComponentProps<"div">, "onToggle"> &
   Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
     hideIcon?: boolean
@@ -348,15 +378,18 @@ function ChartLegendContent({
     hiddenKeys?: string[]
     /** Makes the chips toggle buttons. Called with the series key. */
     onToggle?: (key: string) => void
+    /** List config keys instead of the chart's series, e.g. zones drawn as reference lines. */
+    keys?: string[]
   }) {
   const { config } = useChart()
+  if (keys) payload = keys.map((k) => ({ value: k, dataKey: k, color: `var(--color-${k})`, type: "circle" as const }))
   if (!payload?.length) return null
   const interactive = !!onToggle
 
   return (
     <div
       data-slot="chart-legend"
-      className={cn("flex flex-wrap items-center justify-center gap-1.5", verticalAlign === "top" ? "pb-3" : "pt-3", className)}
+      className={cn("flex flex-wrap items-center justify-center gap-x-2 gap-y-1", verticalAlign === "top" ? "pb-3" : "pt-3", className)}
     >
       {payload
         .filter((item) => item.type !== "none")
@@ -364,13 +397,8 @@ function ChartLegendContent({
           const key = `${nameKey || item.dataKey || "value"}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
           const off = hiddenKeys?.includes(key)
-          const swatch = !hideIcon && (
-            <span
-              aria-hidden
-              className={cn("size-2.5 shrink-0 rounded-[3px] transition-[background-color,box-shadow] duration-200", off && "bg-transparent!")}
-              style={{ backgroundColor: item.color, boxShadow: off ? `inset 0 0 0 1.5px ${item.color}` : undefined }}
-            />
-          )
+          const kind = itemConfig?.swatch ?? "dot"
+          const swatch = !hideIcon && <LegendSwatch kind={kind} color={item.color} off={off} />
           const body = (
             <>
               {itemConfig?.icon && !hideIcon ? <itemConfig.icon /> : swatch}
@@ -403,6 +431,36 @@ function ChartLegendContent({
   )
 }
 
+function LegendSwatch({ kind, color, off }: { kind: NonNullable<ChartConfig[string]["swatch"]>; color?: string; off?: boolean }) {
+  if (typeof kind === "number") {
+    const n = Math.max(1, Math.min(6, Math.round(kind)))
+    return (
+      <svg aria-hidden width={n * 6} height={10} className="shrink-0 overflow-visible" style={{ width: n * 6, height: 10, opacity: off ? 0.4 : 1 }}>
+        {Array.from({ length: n }, (_, i) => (
+          <circle key={i} cx={3 + i * 6} cy={5} r={1.75} fill={color} />
+        ))}
+      </svg>
+    )
+  }
+  if (kind === "band")
+    return (
+      <span
+        aria-hidden
+        className="h-3 w-4 shrink-0 rounded-[4px] border-[1.5px] border-dotted"
+        style={{ borderColor: color, background: off ? "transparent" : `color-mix(in oklab, ${color} 28%, transparent)` }}
+      />
+    )
+  if (kind === "line")
+    return <span aria-hidden className="h-[3px] w-4 shrink-0 rounded-full" style={{ background: color, opacity: off ? 0.4 : 1 }} />
+  return (
+    <span
+      aria-hidden
+      className={cn("size-2.5 shrink-0 rounded-full transition-[background-color,box-shadow] duration-200", off && "bg-transparent!")}
+      style={{ backgroundColor: color, boxShadow: off ? `inset 0 0 0 1.5px ${color}` : undefined }}
+    />
+  )
+}
+
 // Pull the config entry for a tooltip/legend payload item.
 function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key: string) {
   if (typeof payload !== "object" || payload === null) return undefined
@@ -417,6 +475,596 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
   return configLabelKey in config ? config[configLabelKey] : config[key as keyof typeof config]
 }
 
+/* ------------------------------------------------------------------ */
+/* Health-style charts, after Google's Material 3 Expressive health     */
+/* app: a big readout, one point in focus marked by a line and a ring,  */
+/* pill bars with a scalloped badge on goal days, dotted zone lines,    */
+/* lanes for stages. Neutral by default, the series color carries data. */
+/* ------------------------------------------------------------------ */
+
+/** The tonal track behind a bar, lane or ring: the series color, mostly surface. */
+const chartTrackColor = (color: string, amount = 14) => `color-mix(in oklab, ${color} ${amount}%, var(--chart-surface))`
+/** A lighter tint of a series color: days short of the goal, badges. */
+const chartTintColor = (color: string, amount = 52) => `color-mix(in oklab, ${color} ${amount}%, white)`
+/** A series color pushed back, for points out of focus. */
+const chartDimColor = (color: string) => `color-mix(in oklab, ${color} 42%, var(--chart-surface))`
+
+type ChartMouseState = { activeTooltipIndex?: number; isTooltipActive?: boolean } | null | undefined
+
+type ChartFocusOptions = {
+  /** How many points the chart has. */
+  count: number
+  /** The point in focus when nothing is selected. Defaults to the last one (today); -1 starts with none (a summary). */
+  defaultIndex?: number
+  /** Controlled selection. */
+  index?: number
+  onIndexChange?: (index: number) => void
+  /** What a screen reader hears for a point, e.g. "Thu, Nov 12: 8,412 steps". Called with -1 for the summary. */
+  describe?: (index: number) => string
+}
+
+/**
+ * One point in focus: hovering previews a point, a click or tap selects it,
+ * arrow keys move the selection (Home, End, Page Up and Down too), and
+ * leaving the chart falls back to the selection. `reset()` and `isDefault`
+ * drive the readout's clear button.
+ *
+ *   const focus = useChartFocus({ count: data.length, describe })
+ *   <ChartContainer focus={focus} ...>
+ *     <BarChart data={data} {...focus.chartProps}>
+ */
+function useChartFocus({ count, defaultIndex, index: controlled, onIndexChange, describe }: ChartFocusOptions) {
+  const last = Math.max(0, count - 1)
+  const home = defaultIndex === -1 ? -1 : Math.min(defaultIndex ?? last, last)
+  const [own, setOwn] = React.useState(home)
+  const [hover, setHover] = React.useState<number | null>(null)
+  const selected = Math.min(controlled ?? own, last)
+  // index -1: nothing in focus, show the summary
+  const index = hover ?? selected
+
+  const select = React.useCallback(
+    (i: number) => {
+      const next = Math.max(0, Math.min(last, i))
+      setOwn(next)
+      onIndexChange?.(next)
+    },
+    [last, onIndexChange]
+  )
+
+  // the data changed length (week to month): start again from the default
+  React.useEffect(() => {
+    setOwn(home)
+    setHover(null)
+  }, [count, home])
+
+  const chartProps = React.useMemo(
+    () => ({
+      onMouseMove: (s: ChartMouseState) => {
+        const i = s?.activeTooltipIndex
+        if (s?.isTooltipActive && typeof i === "number" && i >= 0) setHover(i)
+      },
+      onMouseLeave: () => setHover(null),
+      onClick: (s: ChartMouseState) => {
+        const i = s?.activeTooltipIndex
+        if (typeof i === "number" && i >= 0) select(i)
+      },
+    }),
+    [select]
+  )
+
+  const onKeyDown = React.useCallback(
+    (e: React.KeyboardEvent) => {
+      const step = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key]
+      let next: number | undefined
+      if (step) next = selected < 0 ? (step > 0 ? 0 : last) : selected + step
+      else if (e.key === "Home") next = 0
+      else if (e.key === "End") next = last
+      else if (e.key === "PageUp") next = selected + 7
+      else if (e.key === "PageDown") next = selected - 7
+      else if (e.key === "Escape" && selected !== home) next = home
+      if (next === undefined) return
+      e.preventDefault()
+      setHover(null)
+      select(next)
+    },
+    [selected, last, home, select]
+  )
+
+  /** Full color for the point in focus, pushed back for the rest (opt in: the health look keeps all bars). */
+  const fill = React.useCallback(
+    (key: string, i: number) => (i === index ? `var(--color-${key})` : chartDimColor(`var(--color-${key})`)),
+    [index]
+  )
+
+  return {
+    index,
+    selected,
+    hovering: hover !== null,
+    /** Nothing picked: the selection is where it started (hovering does not count). */
+    isDefault: selected === home,
+    reset: () => {
+      setHover(null)
+      select(home)
+    },
+    count,
+    select,
+    chartProps,
+    onKeyDown,
+    fill,
+    describe,
+  }
+}
+
+export type ChartFocus = ReturnType<typeof useChartFocus>
+
+/** The focus marker's line: `<ReferenceLine x={data[focus.index].date} {...chartFocusLine} />`, after the series. */
+const chartFocusLine = {
+  stroke: "var(--foreground)",
+  strokeWidth: 2,
+  strokeLinecap: "round" as const,
+  ifOverflow: "visible" as const,
+  className: "recharts-focus-line",
+}
+/** The focus marker's ring: `<ReferenceDot x=… y={value} {...chartFocusDot} />`. */
+const chartFocusDot = {
+  r: 7,
+  fill: "var(--chart-surface)",
+  stroke: "var(--foreground)",
+  strokeWidth: 2.5,
+  ifOverflow: "visible" as const,
+}
+
+/** A soft scalloped "cookie", the Material 3 Expressive burst. */
+function cookiePath(cx: number, cy: number, r: number, lobes = 9, depth = 0.085) {
+  const pts: string[] = []
+  const n = lobes * 12
+  for (let i = 0; i <= n; i++) {
+    const a = (i / n) * Math.PI * 2 - Math.PI / 2
+    const rr = r * (1 - depth + depth * Math.cos(lobes * a))
+    pts.push(`${(cx + rr * Math.cos(a)).toFixed(2)},${(cy + rr * Math.sin(a)).toFixed(2)}`)
+  }
+  return `M${pts.join("L")}Z`
+}
+
+type BarShapeProps = {
+  x?: number
+  y?: number
+  width?: number
+  height?: number
+  value?: number | [number, number]
+  index?: number
+}
+
+/**
+ * A pill bar for health metrics. Days that reach `goal` take the full series
+ * color and wear a scalloped check badge at the top; the rest are a lighter
+ * tint. Without a goal every bar is full color.
+ *
+ *   <Bar dataKey="steps" shape={chartPillBar("steps", { goal: 10000 })} />
+ */
+function chartPillBar(key: string, { goal, badge = true }: { goal?: number; badge?: boolean } = {}) {
+  const color = `var(--color-${key})`
+  function PillBar(props: unknown) {
+    const { x = 0, y = 0, width = 0, height = 0, value } = props as BarShapeProps
+    if (width <= 0 || height <= 0) return <g />
+    const v = Array.isArray(value) ? value[1] : (value ?? 0)
+    const met = goal === undefined || v >= goal
+    const r = Math.min(width, height) / 2
+    const showBadge = badge && goal !== undefined && met && height >= width * 0.9
+    const cx = x + width / 2
+    const cy = y + width / 2
+    const br = width * 0.44
+    return (
+      <g className="recharts-pill-bar">
+        <rect
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          rx={r}
+          // light: goal days full, the rest a pale tint; dark: goal days deepen, the rest stay bright
+          fill={met ? `color-mix(in oklab, ${color} var(--chart-met, 100%), black)` : `color-mix(in oklab, ${color} var(--chart-unmet, 52%), white)`}
+        />
+        {showBadge && (
+          <g aria-hidden>
+            <path d={cookiePath(cx, cy, br)} fill={chartTintColor(color, 46)} />
+            <path
+              d={`M${cx - br * 0.36},${cy + br * 0.02} L${cx - br * 0.08},${cy + br * 0.3} L${cx + br * 0.4},${cy - br * 0.24}`}
+              fill="none"
+              stroke={`color-mix(in oklab, ${color} 55%, black)`}
+              strokeWidth={Math.max(2, br * 0.16)}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </g>
+        )}
+      </g>
+    )
+  }
+  return PillBar
+}
+
+/** The tonal pill track behind each bar, stronger behind the point in focus: `<Bar background={chartTrack("steps", focus)} />`. */
+function chartTrack(key: string, focus?: { index: number }) {
+  function Track(props: unknown) {
+    const { x = 0, y = 0, width = 0, height = 0, index } = props as BarShapeProps
+    if (width <= 0 || height <= 0) return <g />
+    const on = focus && index === focus.index
+    return <rect x={x} y={y} width={width} height={height} rx={Math.min(width, height) / 2} fill={chartTrackColor(`var(--color-${key})`, on ? 24 : 12)} />
+  }
+  return Track
+}
+
+/**
+ * Value axis ticks that call out reference values: `<YAxis orientation="right"
+ * ticks={[0, 4419, 10000, 13256]} tick={chartTicks({ highlight: { 10000: "var(--color-steps)" } })} />`.
+ */
+function chartTicks({ highlight = {}, format = (v: number) => v.toLocaleString() }: { highlight?: Record<number, string>; format?: (v: number) => string } = {}) {
+  function Tick({ x = 0, y = 0, payload, textAnchor = "start" }: { x?: number; y?: number; payload?: { value: number }; textAnchor?: string }) {
+    const v = payload?.value ?? 0
+    const color = highlight[v]
+    return (
+      <text
+        x={x}
+        y={y}
+        dy="0.35em"
+        textAnchor={textAnchor as "start" | "end" | "middle"}
+        className={cn("text-[0.75rem] tracking-[0.02em] tabular-nums", color ? "font-[650]" : "fill-muted-foreground font-[520]")}
+        style={color ? { fill: color } : undefined}
+      >
+        {format(v)}
+      </text>
+    )
+  }
+  return Tick
+}
+
+/** Props for a health-style line: thick, round, smooth, no resting dots. Spread on Line. */
+const chartLine = (key: string) => ({
+  type: "monotone" as const,
+  dataKey: key,
+  stroke: `var(--color-${key})`,
+  strokeWidth: 3,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+  dot: false,
+  activeDot: false as const,
+})
+
+/** A goal or threshold: a thin solid line in the series color, `<ReferenceLine y={10000} {...chartGoalLine("steps")} />`. */
+const chartGoalLine = (key: string) => ({
+  stroke: `var(--color-${key})`,
+  strokeWidth: 2,
+  strokeLinecap: "round" as const,
+  ifOverflow: "extendDomain" as const,
+})
+
+/** A zone boundary: a dotted line of round dots in the zone's color, `<ReferenceLine y={113} {...chartZoneLine("moderate")} />`. */
+const chartZoneLine = (key: string) => ({
+  stroke: `var(--color-${key})`,
+  strokeWidth: 3,
+  strokeDasharray: "0 9",
+  strokeLinecap: "round" as const,
+  ifOverflow: "extendDomain" as const,
+})
+
+/**
+ * A vertical gradient with hard stops at zone boundaries, so a line changes
+ * color as it crosses them. `range` is the series' own [min, max] (the line's
+ * bounding box); `zones` are the lower bounds, lowest first.
+ *
+ *   <defs><ChartZoneGradient id="hr" range={[47, 131]} zones={[{ key: "light", from: 0 }, { key: "moderate", from: 113 }]} /></defs>
+ *   <Line stroke="url(#hr)" ... />
+ */
+function ChartZoneGradient({ id, range, zones }: { id: string; range: [number, number]; zones: { key: string; from: number }[] }) {
+  const [min, max] = range
+  const span = Math.max(1e-6, max - min)
+  const at = (v: number) => Math.min(1, Math.max(0, (max - v) / span))
+  const sorted = [...zones].sort((a, b) => b.from - a.from) // top of the box first
+  const stops: React.ReactNode[] = []
+  let offset = 0
+  sorted.forEach((z, i) => {
+    const color = `var(--color-${z.key})`
+    const end = i === sorted.length - 1 ? 1 : at(z.from)
+    if (end <= offset && i !== sorted.length - 1) return
+    stops.push(<stop key={`${z.key}a`} offset={offset} stopColor={color} />, <stop key={`${z.key}b`} offset={Math.max(offset, end)} stopColor={color} />)
+    offset = Math.max(offset, end)
+  })
+  return (
+    <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
+      {stops}
+    </linearGradient>
+  )
+}
+
+/**
+ * The headline of a health chart: a large value with its unit, and under it
+ * what the value is (the day, a summary). `onClear` adds the round close
+ * button that returns the selection to today.
+ */
+function ChartReadout({
+  label,
+  value,
+  unit,
+  detail,
+  onClear,
+  clearLabel = "Back to the latest",
+  className,
+  ...props
+}: Omit<React.ComponentProps<"div">, "children"> & {
+  /** What the value is: "Today", "Thu, Nov 12". */
+  label?: React.ReactNode
+  value: React.ReactNode
+  unit?: React.ReactNode
+  /** A sentence under the label, or a badge. */
+  detail?: React.ReactNode
+  /** Shows a close button beside the value. Leave undefined to hide it. */
+  onClear?: () => void
+  clearLabel?: string
+}) {
+  const key = `${String(value)}|${String(label)}`
+  return (
+    <div data-slot="chart-readout" className={cn("grid gap-1", className)} {...props}>
+      <style href="nelumbo-chart" precedence="default">
+        {`@keyframes nelumbo-readout-in{0%{opacity:0;translate:0 8px}100%{opacity:1;translate:0 0}}`}
+      </style>
+      <div className="flex min-h-12 items-center gap-4">
+        <div aria-live="polite" aria-atomic className="flex flex-wrap items-baseline gap-x-1.5">
+          <span key={key} className="type-display-md font-[460] tracking-[-0.03em] text-foreground tabular-nums motion-safe:animate-[nelumbo-readout-in_360ms_var(--ease-spring)]">
+            {value}
+          </span>
+          {unit != null && <span className="type-title-lg font-[620] text-foreground">{unit}</span>}
+          {label != null && <span className="sr-only">, {label}</span>}
+        </div>
+        {onClear && (
+          <IconButton
+            variant="secondary"
+            icon="close"
+            label={clearLabel}
+            onClick={onClear}
+            className="motion-safe:animate-[nelumbo-readout-in_300ms_var(--ease-spring)]"
+          />
+        )}
+      </div>
+      {label != null && (
+        <div aria-hidden className="type-body-lg text-muted-foreground">
+          {label}
+        </div>
+      )}
+      {detail != null && <div className="type-body-md text-muted-foreground">{detail}</div>}
+    </div>
+  )
+}
+
+/* Rings ------------------------------------------------------------ */
+
+type ChartRing = {
+  key: string
+  label: string
+  value: number
+  max: number
+  unit?: string
+  /** Defaults to chartColors in order. */
+  color?: string
+}
+
+/**
+ * Concentric progress rings with round caps on tonal tracks. Past the goal a
+ * ring keeps going: the second lap is drawn darker over the first.
+ */
+function ChartRings({
+  rings,
+  size = 200,
+  thickness = 18,
+  gap = 5,
+  className,
+  children,
+  "aria-label": ariaLabel,
+  ...props
+}: Omit<React.ComponentProps<"div">, "children"> & {
+  rings: ChartRing[]
+  size?: number
+  thickness?: number
+  gap?: number
+  /** Content for the middle (a total, an icon). */
+  children?: React.ReactNode
+}) {
+  const [shown, setShown] = React.useState(false)
+  React.useEffect(() => {
+    const id = requestAnimationFrame(() => setShown(true))
+    return () => cancelAnimationFrame(id)
+  }, [])
+  const c = size / 2
+  const label = ariaLabel ?? rings.map((r) => `${r.label} ${r.value.toLocaleString()} of ${r.max.toLocaleString()}${r.unit ? ` ${r.unit}` : ""}`).join(", ")
+
+  return (
+    <div data-slot="chart-rings" className={cn("relative inline-grid shrink-0 place-items-center [--chart-surface:var(--card)]", className)} style={{ width: size, height: size }} {...props}>
+      <svg role="img" aria-label={label} width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
+        {rings.map((r, i) => {
+          const color = r.color ?? chartColors[i % chartColors.length]
+          const radius = c - thickness / 2 - i * (thickness + gap)
+          if (radius <= thickness / 2) return null
+          const len = 2 * Math.PI * radius
+          const p = r.max > 0 ? r.value / r.max : 0
+          const first = Math.min(p, 1)
+          const lap = Math.min(Math.max(p - 1, 0), 1)
+          const arc = (frac: number, delay: number, stroke: string) => (
+            <circle
+              cx={c}
+              cy={c}
+              r={radius}
+              fill="none"
+              stroke={stroke}
+              strokeWidth={thickness}
+              strokeLinecap="round"
+              strokeDasharray={`${len} ${len}`}
+              strokeDashoffset={shown ? len * (1 - frac) : len}
+              // a zero-length arc with round caps still paints a dot
+              opacity={frac > 0.001 ? 1 : 0}
+              style={{ transition: `stroke-dashoffset 1100ms var(--ease-spring) ${delay}ms` }}
+              className="motion-reduce:transition-none!"
+            />
+          )
+          return (
+            <g key={r.key}>
+              <circle cx={c} cy={c} r={radius} fill="none" stroke={chartTrackColor(color, 18)} strokeWidth={thickness} />
+              {arc(first, i * 90, color)}
+              {lap > 0 && arc(lap, 700 + i * 90, `color-mix(in oklab, ${color} 70%, black)`)}
+            </g>
+          )
+        })}
+      </svg>
+      {children != null && <div className="absolute inset-0 grid place-items-center text-center">{children}</div>}
+    </div>
+  )
+}
+
+/* Stages ----------------------------------------------------------- */
+
+type ChartStage = {
+  stage: string
+  start: Date | number
+  /** Leave out for an instant event (a restless moment): drawn as a tick. */
+  end?: Date | number
+}
+
+const fmtDuration = (ms: number) => {
+  const m = Math.round(ms / 60000)
+  const h = Math.floor(m / 60)
+  return h ? `${h}h ${m % 60}m` : `${m} min`
+}
+
+/**
+ * A stage timeline, the sleep chart: one labelled lane per stage, each a
+ * rounded track holding that stage's blocks, thin connectors where one stage
+ * hands over to the next, and the start, middle and end times underneath.
+ *
+ * `levels` lists config keys top to bottom. Keys in `events` are lanes of
+ * moments (restlessness): their items draw as ticks and break no chain.
+ */
+function ChartStages({
+  config,
+  data,
+  levels,
+  events = [],
+  trackHeight = 26,
+  startCaption,
+  endCaption,
+  locale,
+  className,
+  "aria-label": ariaLabel,
+  ...props
+}: Omit<React.ComponentProps<"div">, "children"> & {
+  config: ChartConfig
+  data: ChartStage[]
+  levels: string[]
+  events?: string[]
+  trackHeight?: number
+  /** Under the first time, e.g. "Went to bed". */
+  startCaption?: React.ReactNode
+  /** Under the last time, e.g. "Out of bed". */
+  endCaption?: React.ReactNode
+  locale?: string
+}) {
+  const uid = React.useId().replace(/:/g, "")
+  const chartId = `chart-${uid}`
+  const ref = React.useRef<HTMLDivElement>(null)
+  const [width, setWidth] = React.useState(0)
+  React.useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setWidth(el.clientWidth))
+    ro.observe(el)
+    setWidth(el.clientWidth)
+    return () => ro.disconnect()
+  }, [])
+
+  const t = (d: Date | number | undefined) => (d === undefined ? undefined : typeof d === "number" ? d : d.getTime())
+  const startOf = (d: ChartStage) => t(d.start)!
+  const endOf = (d: ChartStage) => t(d.end) ?? startOf(d)
+  const start = Math.min(...data.map(startOf))
+  const end = Math.max(...data.map(endOf))
+  const span = Math.max(1, end - start)
+  const isEvent = (k: string) => events.includes(k)
+  const totals = levels.map((k) =>
+    data.filter((d) => d.stage === k).reduce((s, d) => s + (isEvent(k) && d.end === undefined ? 60000 : endOf(d) - startOf(d)), 0)
+  )
+  const fmt = new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" })
+  const time = (ms: number) => fmt.format(ms)
+  const name = (k: string) => {
+    const l = config[k]?.label
+    return typeof l === "string" ? l : k
+  }
+
+  const label = ariaLabel ?? `${time(start)} to ${time(end)}. ` + levels.map((k, i) => `${name(k)} ${fmtDuration(totals[i])}`).join(", ")
+
+  const labelH = 26
+  const gapH = 10
+  const laneH = labelH + trackHeight + gapH
+  const h = levels.length * laneH - gapH
+  const x = (ms: number) => ((ms - start) / span) * width
+  const trackY = (k: string) => levels.indexOf(k) * laneH + labelH
+  const chain = [...data].filter((d) => !isEvent(d.stage)).sort((a, b) => startOf(a) - startOf(b))
+  const mid = start + span / 2
+
+  return (
+    <div data-slot="chart" data-chart={chartId} className={cn("grid gap-1 [--chart-surface:var(--card)]", className)} {...props}>
+      <ChartStyle id={chartId} config={config} />
+      <div ref={ref} className="min-w-0">
+        <svg role="img" aria-label={label} width="100%" height={h} className="block overflow-visible">
+          {width > 0 && (
+            <>
+              {levels.map((k, i) => (
+                <g key={k}>
+                  <text x={0} y={i * laneH + labelH / 2} dominantBaseline="central" className="fill-foreground text-[0.9375rem] font-[560] tracking-[-0.005em]">
+                    {name(k)}
+                    <tspan dx={10} className="fill-muted-foreground font-[480] tabular-nums">
+                      {fmtDuration(totals[i])}
+                    </tspan>
+                  </text>
+                  <rect x={0} y={trackY(k)} width={width} height={trackHeight} rx={trackHeight / 2} className="fill-surface-container-high" />
+                </g>
+              ))}
+              {/* hand-over connectors, behind the blocks */}
+              {chain.slice(1).map((d, i) => {
+                const prev = chain[i]
+                const a = trackY(prev.stage) + trackHeight / 2
+                const b = trackY(d.stage) + trackHeight / 2
+                if (a === b) return null
+                const cx = x(startOf(d))
+                return <line key={`c${i}`} x1={cx} x2={cx} y1={Math.min(a, b)} y2={Math.max(a, b)} strokeWidth={1.5} className="stroke-outline-variant" />
+              })}
+              {data.map((d, i) => {
+                const y = trackY(d.stage)
+                const color = `var(--color-${d.stage})`
+                if (isEvent(d.stage)) {
+                  const x1 = x(startOf(d))
+                  const w = Math.max(2, x(endOf(d)) - x1)
+                  return <rect key={i} x={x1 - w / 2} y={y + 4} width={w} height={trackHeight - 8} rx={1} fill={color} />
+                }
+                const x1 = x(startOf(d))
+                const w = Math.max(3, x(endOf(d)) - x1)
+                return <rect key={i} x={x1} y={y} width={w} height={trackHeight} rx={Math.min(trackHeight / 2, w / 2)} fill={color} />
+              })}
+            </>
+          )}
+        </svg>
+      </div>
+      <div aria-hidden className="grid grid-cols-3 pt-2 type-label-md text-muted-foreground">
+        {[
+          { at: start, cap: startCaption, align: "text-start" },
+          { at: mid, cap: null, align: "text-center" },
+          { at: end, cap: endCaption, align: "text-end" },
+        ].map(({ at, cap, align }) => (
+          <div key={at} className={cn("grid gap-0.5", align)}>
+            <span className="tabular-nums">{time(at)}</span>
+            {cap && <span className="type-body-md text-foreground">{cap}</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 export {
   ChartContainer,
   ChartTooltip,
@@ -430,4 +1078,22 @@ export {
   useSeriesVisibility,
   chartDot,
   chartActiveDot,
+  chartLine,
+  chartGoalLine,
+  chartZoneLine,
+  chartFocusLine,
+  chartFocusDot,
+  chartPillBar,
+  chartTicks,
+  chartTrack,
+  chartTrackColor,
+  chartTintColor,
+  chartDimColor,
+  ChartZoneGradient,
+  ChartReadout,
+  ChartRings,
+  ChartStages,
+  useChartFocus,
+  type ChartRing,
+  type ChartStage,
 }
