@@ -1125,6 +1125,105 @@ export const chartArea = (key: string, fill?: string) => ({
 /* Owned by the radial gallery. Add helpers below with `export` inline.   */
 /* ================================================================== */
 
+/**
+ * Draws each radial bar as a tonal track plus a round-capped bar in one shape:
+ * `<RadialBar shape={chartRadialShape({ startAngle: 90, endAngle: -270 })} />`.
+ * Pass the chart's own start and end angle so the track spans the whole arc.
+ * `track: "dots"` draws a dotted round-dot circle through the bar instead of a tonal track (the grid look); `track: false` skips the track (stacked series); `gap` adds the 3px surface
+ * gap between stacked segments. The track takes the bar's own fill.
+ */
+export function chartRadialShape({
+  startAngle = 90,
+  endAngle = -270,
+  track = true,
+  trackAmount = 16,
+  cornerRadius = 999,
+  gap = false,
+}: { startAngle?: number; endAngle?: number; track?: boolean | "dots"; trackAmount?: number; cornerRadius?: number; gap?: boolean } = {}) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function RadialShape(props: any) {
+    const { cx, cy, innerRadius, outerRadius, fill } = props
+    if (props.endAngle === props.startAngle) return <g />
+    return (
+      <g>
+        {track === "dots" && <circle cx={cx} cy={cy} r={(innerRadius + outerRadius) / 2} fill="none" stroke="var(--outline-variant)" strokeWidth={3} strokeDasharray="0 9" strokeLinecap="round" />}
+        {track === true && <RechartsPrimitive.Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius} startAngle={startAngle} endAngle={endAngle} cornerRadius={cornerRadius} fill={chartTrackColor(fill, trackAmount)} stroke="none" />}
+        <RechartsPrimitive.Sector
+          cx={cx}
+          cy={cy}
+          innerRadius={innerRadius}
+          outerRadius={outerRadius}
+          startAngle={props.startAngle}
+          endAngle={props.endAngle}
+          cornerRadius={cornerRadius}
+          fill={fill}
+          stroke={gap ? "var(--chart-surface)" : "none"}
+          strokeWidth={gap ? 3 : 0}
+        />
+      </g>
+    )
+  }
+}
+
+/**
+ * A pill chip at the start of each radial bar (bars that start at 12 o'clock):
+ * `<LabelList dataKey="label" content={chartRadialLabel()} />`. Inverse
+ * colors, so it reads on any bar. `format` turns the label value into text.
+ */
+export function chartRadialLabel({ format = (v: unknown) => String(v), height = 20 }: { format?: (v: unknown) => string; height?: number } = {}) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function RadialLabel(props: any) {
+    const { viewBox, value } = props
+    if (!viewBox || value == null) return null
+    const { cx, cy, innerRadius, outerRadius } = viewBox
+    const text = format(value)
+    const w = text.length * 6.4 + 18
+    const h = height
+    const mid = (innerRadius + outerRadius) / 2
+    return (
+      <g aria-hidden>
+        <rect x={cx + 5} y={cy - mid - h / 2} width={w} height={h} rx={h / 2} fill="var(--foreground)" />
+        <text x={cx + 5 + w / 2} y={cy - mid} textAnchor="middle" dominantBaseline="central" fill="var(--background)" fontSize={height < 20 ? 11 : 12} fontWeight={560}>
+          {text}
+        </text>
+      </g>
+    )
+  }
+}
+
+/**
+ * The number in the middle of a radial chart, in display type like
+ * ChartReadout. Put it beside the chart in a `relative` wrapper; `half`
+ * sits it at the foot of a half ring.
+ */
+export function ChartRadialReadout({
+  value,
+  unit,
+  label,
+  half = false,
+  size = "md",
+  className,
+}: {
+  value: React.ReactNode
+  unit?: React.ReactNode
+  label?: React.ReactNode
+  half?: boolean
+  size?: "sm" | "md"
+  className?: string
+}) {
+  return (
+    <div
+      data-slot="chart-radial-readout"
+      className={cn("pointer-events-none absolute inset-x-0 grid justify-items-center text-center", half ? "bottom-[6%]" : "inset-y-0 content-center", className)}
+    >
+      <div className="flex items-baseline gap-1">
+        <span className={cn("font-[460] tracking-[-0.03em] text-foreground tabular-nums", size === "sm" ? "type-display-sm" : "type-display-md")}>{value}</span>
+        {unit != null && <span className="type-title-md font-[620] text-foreground">{unit}</span>}
+      </div>
+      {label != null && <div className="type-body-md text-muted-foreground">{label}</div>}
+    </div>
+  )
+}
 /* end radial helpers */
 
 /* ================================================================== */
