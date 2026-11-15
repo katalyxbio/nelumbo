@@ -1382,7 +1382,8 @@
       "registryDependencies": [
         "utils",
         "@velvet/dialog",
-        "@velvet/icon"
+        "@velvet/icon",
+        "@velvet/search"
       ],
       "files": [
         {
@@ -1587,6 +1588,27 @@
       "files": [
         {
           "path": "registry/velvet/ui/sidebar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "search",
+      "type": "registry:ui",
+      "title": "Search",
+      "description": "Material 3 search: a pill search bar with a springing clear button, expanding into a docked search view (full screen on phones) with recents, filter chips and a highlight that springs between results.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/icon-button",
+        "@velvet/list"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/search.tsx",
           "type": "registry:ui"
         }
       ]

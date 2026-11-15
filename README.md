@@ -122,3 +122,4 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Carousel (multi-browse, hero, uncontained; spring dots), Resizable (gap instead of a line, growing grip)
 - [x] Navigation Menu (springing pill, morphing viewport, rich links)
 - [x] Sidebar (springing active pill, spring collapse to icons, no lines)
+- [x] Search (Material 3 search bar and view; also the Command palette field)
