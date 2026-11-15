@@ -721,7 +721,7 @@ function SearchViewList({ className, children, ...props }: React.ComponentProps<
       role="listbox"
       data-slot="search-view-list"
       data-pill={pill ? "" : undefined}
-      className={cn("group/search-list relative isolate flex flex-col gap-0.5 outline-none", className)}
+      className={cn("group/search-list relative isolate flex flex-col gap-0.5 px-2 pb-2 outline-none", className)}
       {...props}
     >
       <div

@@ -1,10 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { Collapsible as CollapsiblePrimitive, Slot } from "radix-ui"
+import { Slot } from "radix-ui"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/registry/velvet/ui/collapsible"
 import { Icon } from "@/registry/velvet/ui/icon"
 import { IconButton } from "@/registry/velvet/ui/icon-button"
 import { Input } from "@/registry/velvet/ui/input"
@@ -93,28 +94,6 @@ const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "4rem"
 
-// Keyframes ship with the component (React hoists and dedupes the tag).
-const CSS = `
-@keyframes vlv-sb-down { from { height: 0; opacity: 0 } to { height: var(--radix-collapsible-content-height); opacity: 1 } }
-@keyframes vlv-sb-up { from { height: var(--radix-collapsible-content-height); opacity: 1 } to { height: 0; opacity: 0 } }
-@keyframes vlv-sb-fade-in { from { opacity: 0 } to { opacity: 1 } }
-@keyframes vlv-sb-fade-out { from { opacity: 1 } to { opacity: 0 } }
-.vlv-sb-collapsible { overflow: hidden }
-.vlv-sb-collapsible[data-state="open"] { animation: vlv-sb-down 420ms var(--ease-emphasized) }
-.vlv-sb-collapsible[data-state="closed"] { animation: vlv-sb-up 280ms var(--ease-standard) }
-@media (prefers-reduced-motion: reduce) {
-  .vlv-sb-collapsible[data-state="open"] { animation: vlv-sb-fade-in 120ms linear }
-  .vlv-sb-collapsible[data-state="closed"] { animation: vlv-sb-fade-out 120ms linear }
-}
-`
-
-function Keyframes() {
-  return (
-    <style href="velvet-sidebar" precedence="default">
-      {CSS}
-    </style>
-  )
-}
 
 /* ---------------------------------------------------------------- context */
 
@@ -224,7 +203,6 @@ function SidebarProvider({
 
   return (
     <SidebarContext.Provider value={value}>
-      <Keyframes />
       <TooltipProvider delayDuration={150}>
         <div
           data-slot="sidebar-wrapper"
@@ -797,16 +775,17 @@ function SidebarMenuSubButton({
  *     </SidebarMenuItem>
  *   </SidebarCollapsible>
  */
-function SidebarCollapsible({ className, ...props }: React.ComponentProps<typeof CollapsiblePrimitive.Root>) {
-  return <CollapsiblePrimitive.Root data-slot="sidebar-collapsible" className={cn("group/collapsible", className)} {...props} />
+// Sub-menus use the shared Collapsible, which ships the height-and-fade animation.
+function SidebarCollapsible({ className, ...props }: React.ComponentProps<typeof Collapsible>) {
+  return <Collapsible data-slot="sidebar-collapsible" className={cn("group/collapsible", className)} {...props} />
 }
 
-function SidebarCollapsibleTrigger(props: React.ComponentProps<typeof CollapsiblePrimitive.Trigger>) {
-  return <CollapsiblePrimitive.Trigger data-slot="sidebar-collapsible-trigger" {...props} />
+function SidebarCollapsibleTrigger(props: React.ComponentProps<typeof CollapsibleTrigger>) {
+  return <CollapsibleTrigger data-slot="sidebar-collapsible-trigger" {...props} />
 }
 
-function SidebarCollapsibleContent({ className, ...props }: React.ComponentProps<typeof CollapsiblePrimitive.Content>) {
-  return <CollapsiblePrimitive.Content data-slot="sidebar-collapsible-content" className={cn("vlv-sb-collapsible", className)} {...props} />
+function SidebarCollapsibleContent(props: React.ComponentProps<typeof CollapsibleContent>) {
+  return <CollapsibleContent data-slot="sidebar-collapsible-content" {...props} />
 }
 
 /** The chevron at the end of a collapsible item: turns on a spring as the sub-menu opens. */

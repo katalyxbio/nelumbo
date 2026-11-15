@@ -1383,7 +1383,8 @@
         "utils",
         "@velvet/dialog",
         "@velvet/icon",
-        "@velvet/search"
+        "@velvet/search",
+        "@velvet/dropdown-menu"
       ],
       "files": [
         {

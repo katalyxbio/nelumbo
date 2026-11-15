@@ -122,6 +122,8 @@ function Calendar({
     () => ({
       weekday: new Intl.DateTimeFormat(lang, { weekday: "narrow" }),
       caption: new Intl.DateTimeFormat(lang, { month: "long", year: "numeric" }),
+      // "Sunday, November 1, 2026": the day number reads as it is shown ("1", not "1st")
+      day: new Intl.DateTimeFormat(lang, { weekday: "long", month: "long", day: "numeric", year: "numeric" }),
     }),
     [lang]
   )
@@ -281,6 +283,10 @@ function Calendar({
               formatWeekdayName: (d) => names.weekday.format(d),
               formatCaption: (d) => names.caption.format(d),
               ...formatters,
+            }}
+            labels={{
+              labelDayButton: (d: Date, m?: { today?: boolean; selected?: boolean }) =>
+                [m?.today && "Today", names.day.format(d), m?.selected && "selected"].filter(Boolean).join(", "),
             }}
             components={{
               Chevron: ({ orientation }) => <Icon name={orientation === "left" ? "chevron_left" : orientation === "right" ? "chevron_right" : "keyboard_arrow_down"} />,

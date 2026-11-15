@@ -59,8 +59,22 @@ const keycap =
  * Shortcut drawn as keycaps, like CommandShortcut ("⌘N" or "⌘ N" become
  * separate caps). Used by ContextMenu and Menubar.
  */
+/** "⌘⇧P" → ⌘ ⇧ P, "Ctrl+Shift+K" → Ctrl Shift K, "Esc" → Esc. */
+export function splitKeys(shortcut: string): string[] {
+  const t = shortcut.trim()
+  if (t.includes("+") && t.length > 1) return t.split("+").map((k) => k.trim()).filter(Boolean)
+  const keys: string[] = []
+  let rest = t.replace(/\s+/g, "")
+  while (rest && "⌘⇧⌥⌃".includes(rest[0])) {
+    keys.push(rest[0])
+    rest = rest.slice(1)
+  }
+  if (rest) keys.push(rest)
+  return keys
+}
+
 export function MenuKeycaps({ className, children, slot, ...props }: React.ComponentProps<"span"> & { slot: string }) {
-  const keys = typeof children === "string" ? Array.from(children.replace(/\s+/g, "")) : null
+  const keys = typeof children === "string" ? splitKeys(children) : null
   return (
     <span data-slot={slot} className={cn("ml-auto inline-flex shrink-0 items-center gap-1 pl-4", className)} {...props}>
       {keys ? (
@@ -290,11 +304,11 @@ function DropdownMenuLabel({ className, inset, ...props }: React.ComponentProps<
 }
 
 function DropdownMenuSeparator({ className, ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Separator>) {
-  return <DropdownMenuPrimitive.Separator data-slot="dropdown-menu-separator" className={cn("-mx-1.5 my-1.5 h-px bg-outline-variant", className)} {...props} />
+  return <DropdownMenuPrimitive.Separator data-slot="dropdown-menu-separator" className={cn(menuSpacer, className)} {...props} />
 }
 
 function DropdownMenuShortcut({ className, ...props }: React.ComponentProps<"span">) {
-  return <span data-slot="dropdown-menu-shortcut" className={cn("ml-auto pl-4 type-label-md tracking-wider text-muted-foreground", className)} {...props} />
+  return <MenuKeycaps slot="dropdown-menu-shortcut" className={className} {...props} />
 }
 
 function DropdownMenuSub(props: React.ComponentProps<typeof DropdownMenuPrimitive.Sub>) {

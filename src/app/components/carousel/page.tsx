@@ -32,7 +32,7 @@ function Photo({ scene, caption = true }: { scene: (typeof SCENES)[number]; capt
     <div className="relative size-full min-w-0" style={art(scene)}>
       <Icon name={scene.icon} fill size={64} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-30" />
       {caption && (
-        <div className="absolute inset-x-0 bottom-0 p-5 whitespace-nowrap" style={{ opacity: "var(--carousel-p, 1)" }}>
+        <div className="absolute inset-x-0 bottom-0 truncate p-5" style={{ opacity: "calc((var(--carousel-p, 1) - 0.6) * 2.5)" }}>
           <p className="type-title-md">{scene.title}</p>
           <p className="type-body-sm opacity-80">{scene.place}</p>
         </div>
@@ -215,7 +215,7 @@ export default function CarouselPage() {
 </Carousel>
 
 // Fade a label in as the card grows
-<p style={{ opacity: "var(--carousel-p)" }}>Glacier lake</p>`}</Code>
+<p className="truncate" style={{ opacity: "calc((var(--carousel-p) - 0.6) * 2.5)" }}>Glacier lake</p>`}</Code>
       </Section>
 
       <Section title="Props">

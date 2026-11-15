@@ -44,7 +44,7 @@ import { IconButton } from "@/registry/velvet/ui/icon-button"
  *   Multi-browse and hero lay the items out themselves: each CarouselItem
  *   becomes a card with a large radius (28px) that you fill (`h-full w-full`).
  *   The card sets `--carousel-p` (0 small .. 1 large), so labels can fade in
- *   as the item grows: style={{ opacity: "var(--carousel-p)" }}. Keep labels
+ *   as the item grows: style={{ opacity: "calc((var(--carousel-p) - 0.6) * 2.5)" }} (fully in only near full size). Keep labels
  *   on one line (whitespace-nowrap); the card clips them while it is narrow.
  *   Both work vertically too (give CarouselContent a height).
  * - CarouselPrevious / CarouselNext are tonal IconButtons that float over the

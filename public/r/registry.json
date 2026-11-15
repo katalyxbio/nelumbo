@@ -1382,11 +1382,276 @@
       "registryDependencies": [
         "utils",
         "@velvet/dialog",
-        "@velvet/icon"
+        "@velvet/icon",
+        "@velvet/search",
+        "@velvet/dropdown-menu"
       ],
       "files": [
         {
           "path": "registry/velvet/ui/command.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert Dialog",
+      "description": "shadcn-compatible AlertDialog on Radix: Velvet dialog motion, optional icon tile that pops in, destructive variant, footer that stacks on phones.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/button",
+        "@velvet/dialog",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/alert-dialog.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "title": "Collapsible",
+      "description": "shadcn-compatible Collapsible on Radix with the accordion height-and-fade animation and an optional spring chevron.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/collapsible.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "hover-card",
+      "type": "registry:ui",
+      "title": "Hover Card",
+      "description": "shadcn-compatible HoverCard on Radix: popover surface that springs out of the trigger side.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/popover"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/hover-card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "description": "shadcn-compatible Label on Radix in the label-lg type role; dims when its control is disabled, turns red when invalid.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/label.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "form",
+      "type": "registry:ui",
+      "title": "Form",
+      "description": "shadcn-compatible Form on react-hook-form: one label per control (FormLabel feeds Velvet fields their floating label), wired ids and descriptions, spring error messages, a shake on failed submit.",
+      "dependencies": [
+        "react-hook-form",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/label",
+        "@velvet/field",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/form.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "chart",
+      "type": "registry:ui",
+      "title": "Chart",
+      "description": "shadcn-compatible Chart on recharts: Velvet accent series colors, popover tooltip that glides on a spring, faint grid, rounded bars, legend chips that toggle series, reduced-motion safe.",
+      "dependencies": [
+        "recharts"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/chart.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "carousel",
+      "type": "registry:ui",
+      "title": "Carousel",
+      "description": "shadcn-compatible Carousel on Embla plus Material 3 layouts: multi-browse and hero cards that resize as they scroll, uncontained, and dots that stretch into a pill.",
+      "dependencies": [
+        "embla-carousel-react"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon-button"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/carousel.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "resizable",
+      "type": "registry:ui",
+      "title": "Resizable",
+      "description": "shadcn-compatible Resizable on react-resizable-panels: rounded tonal panels with a gap instead of a line, a grip that grows and turns primary while dragged.",
+      "dependencies": [
+        "react-resizable-panels"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/resizable.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "navigation-menu",
+      "type": "registry:ui",
+      "title": "Navigation Menu",
+      "description": "shadcn-compatible NavigationMenu on Radix: a tonal track with a pill that springs between triggers, a viewport that morphs size between panels, rich links on icon tiles, a featured card.",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/navigation-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "description": "shadcn-compatible Sidebar: no lines, a tonal pill that springs between items and into sub-menus, spring collapse to icons like the navigation rail, animated sub-menus, badges that become dots, mobile sheet.",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/icon-button",
+        "@velvet/input",
+        "@velvet/badge",
+        "@velvet/separator",
+        "@velvet/sheet",
+        "@velvet/tooltip"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/sidebar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "search",
+      "type": "registry:ui",
+      "title": "Search",
+      "description": "Material 3 search: a pill search bar with a springing clear button, expanding into a docked search view (full screen on phones) with recents, filter chips and a highlight that springs between results.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/icon-button",
+        "@velvet/list"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/search.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "context-menu",
+      "type": "registry:ui",
+      "title": "Context Menu",
+      "description": "shadcn-compatible ContextMenu on Radix: springs open from the pointer, a raised highlight that slides between rows, keycap shortcuts, spacing instead of separators.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/popover",
+        "@velvet/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/context-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "menubar",
+      "type": "registry:ui",
+      "title": "Menubar",
+      "description": "shadcn-compatible Menubar on Radix: a tonal track with a raised segment that springs between open menus, sliding row highlight, keycap shortcuts.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/popover",
+        "@velvet/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/menubar.tsx",
           "type": "registry:ui"
         }
       ]

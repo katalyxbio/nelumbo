@@ -5,6 +5,7 @@ import { Command as CommandPrimitive, useCommandState } from "cmdk"
 
 import { cn } from "@/lib/utils"
 import { Icon } from "@/registry/velvet/ui/icon"
+import { splitKeys } from "@/registry/velvet/ui/dropdown-menu"
 import { SearchField, searchInputClasses, setNativeValue } from "@/registry/velvet/ui/search"
 import {
   Dialog,
@@ -319,7 +320,7 @@ function CommandItem({ className, ...props }: React.ComponentProps<typeof Comman
 
 function CommandShortcut({ className, children, ...props }: React.ComponentProps<"span">) {
   // "⌘N" or "⌘ N" become separate keycaps
-  const keys = typeof children === "string" ? Array.from(children.replace(/\s+/g, "")) : null
+  const keys = typeof children === "string" ? splitKeys(children) : null
   const cap =
     "inline-flex h-6 min-w-6 items-center justify-center rounded-[0.4375rem] bg-surface-container-lowest px-1.5 font-sans type-label-sm text-muted-foreground shadow-[inset_0_-1.5px_0_var(--outline-variant)] dark:bg-surface-container-highest"
   return (

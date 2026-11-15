@@ -145,7 +145,7 @@ export default function DropdownMenuPage() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                aria-label="Account"
+                aria-label="ML, account menu"
                 className="tactile grid size-10 cursor-pointer place-items-center rounded-full bg-brand-container type-label-lg text-brand-container-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 ML
