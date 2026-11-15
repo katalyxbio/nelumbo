@@ -152,7 +152,7 @@ export function MultipleBarDemo() {
         <CardHead title="Bar Chart - Multiple" description="Desktop and mobile visitors, January to June 2026" />
         <ChartReadout value={fmtNum(total)} unit="visitors" label={point ? point.month : "Six months"} detail={detail} onClear={focus.isDefault ? undefined : focus.reset} />
         <ChartContainer config={visitorsConfig} focus={focus} aria-label="Desktop and mobile visitors per month, grouped bars" className="aspect-auto h-64">
-          <BarChart data={monthly} margin={{ top: 12, right: 0, left: 0, bottom: 0 }} barCategoryGap="18%" barGap={4} {...focus.chartProps}>
+          <BarChart data={monthly} margin={{ top: 12, right: 0, left: 0, bottom: 0 }} barCategoryGap="10%" barGap={3} {...focus.chartProps}>
             <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={10} interval={0} tickFormatter={(_, i) => monthTick(i)} />
             <YAxis orientation="right" tickLine={false} axisLine={false} width={40} domain={[0, 350]} ticks={[0, 100, 200, 300]} tick={chartTicks()} />
             <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />

@@ -614,18 +614,6 @@ const chartFocusDot = {
   ifOverflow: "visible" as const,
 }
 
-/** A soft scalloped "cookie", the Material 3 Expressive burst. */
-function cookiePath(cx: number, cy: number, r: number, lobes = 9, depth = 0.085) {
-  const pts: string[] = []
-  const n = lobes * 12
-  for (let i = 0; i <= n; i++) {
-    const a = (i / n) * Math.PI * 2 - Math.PI / 2
-    const rr = r * (1 - depth + depth * Math.cos(lobes * a))
-    pts.push(`${(cx + rr * Math.cos(a)).toFixed(2)},${(cy + rr * Math.sin(a)).toFixed(2)}`)
-  }
-  return `M${pts.join("L")}Z`
-}
-
 type BarShapeProps = {
   x?: number
   y?: number
@@ -667,7 +655,7 @@ function chartPillBar(key: string, { goal, badge = true }: { goal?: number; badg
         />
         {showBadge && (
           <g aria-hidden>
-            <path d={cookiePath(cx, cy, br)} fill={chartTintColor(color, 46)} />
+            <path d={chartCookiePath(cx, cy, br)} fill={chartTintColor(color, 46)} />
             <path
               d={`M${cx - br * 0.36},${cy + br * 0.02} L${cx - br * 0.08},${cy + br * 0.3} L${cx + br * 0.4},${cy - br * 0.24}`}
               fill="none"
@@ -1376,7 +1364,7 @@ export function piePillLabel({
  *   <Pie activeIndex={focus.index} activeShape={PieActiveSector} />
  */
 export function PieActiveSector(props: React.ComponentProps<typeof RechartsPrimitive.Sector> & { grow?: number }) {
-  const { grow = 12, cx = 0, cy = 0, outerRadius = 0, ...rest } = props
+  const { grow = 16, cx = 0, cy = 0, outerRadius = 0, ...rest } = props
   const from = Number(outerRadius) / (Number(outerRadius) + grow)
   return (
     <g
@@ -1577,10 +1565,10 @@ export function ChartTooltipRow({
   )
 }
 
-/** A total row under the series rows: a hairline divider, bold label and value. Render after the last series row. */
+/** A total row under the series rows: on a tonal band (spacing, no divider), bold label and value. Render after the last series row. */
 export function ChartTooltipTotal({ label = "Total", value, unit }: { label?: React.ReactNode; value: React.ReactNode; unit?: React.ReactNode }) {
   return (
-    <div data-slot="chart-tooltip-total" className="mt-0.5 flex w-full basis-full items-baseline gap-2 border-t border-inverse-foreground/15 pt-2">
+    <div data-slot="chart-tooltip-total" className="-mx-1.5 mt-1 flex basis-full items-baseline gap-2 rounded-lg bg-inverse-foreground/10 px-1.5 py-1.5">
       <span className="type-label-md font-semibold text-foreground">{label}</span>
       <span className="ml-auto flex items-baseline gap-1 type-title-sm font-semibold text-foreground tabular-nums">
         {value}

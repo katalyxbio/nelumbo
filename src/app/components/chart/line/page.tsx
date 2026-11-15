@@ -17,6 +17,7 @@ import {
 } from "./demos"
 
 const grid = "grid items-start gap-4 lg:grid-cols-2"
+const grid3 = "grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3"
 
 export default function LineChartsPage() {
   return (
@@ -32,7 +33,7 @@ export default function LineChartsPage() {
         title="Default, Linear and Step"
         description="The three curve types. Default is monotone: smooth, and never overshoots a point. Linear joins the points with straight segments, Step holds each value until the next."
       >
-        <Preview className={grid}>
+        <Preview className={grid3}>
           <LineDefault />
           <LineLinear />
           <LineStep />
@@ -52,7 +53,7 @@ export default function LineChartsPage() {
         title="Dots, Custom Dots and Dots Colors"
         description="Dots are ringed in the card surface. Custom dots can be any shape: here the peak month is a scalloped cookie with a bolt. Dots Colors takes each dot's color from a band in the config, and the legend names the bands."
       >
-        <Preview className={grid}>
+        <Preview className={grid3}>
           <LineDots />
           <LineCustomDots />
           <LineDotsColors />
