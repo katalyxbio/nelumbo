@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { Field, type FieldProps } from "@/registry/velvet/ui/field"
+import { FieldShell as Field, type FieldShellOptions as FieldProps } from "@/registry/velvet/ui/field-shell"
 
 /**
  * Velvet Textarea

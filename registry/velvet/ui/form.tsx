@@ -15,7 +15,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Icon } from "@/registry/velvet/ui/icon"
 import { Label } from "@/registry/velvet/ui/label"
-import { FieldWiringContext } from "@/registry/velvet/ui/field"
+import { FieldWiringContext } from "@/registry/velvet/ui/field-shell"
 
 /**
  * Velvet Form (react-hook-form), a drop-in for shadcn's Form

@@ -17,7 +17,7 @@ import { Icon, type IconName } from "@/registry/velvet/ui/icon"
  * `--float` (0 resting, 1 raised), drives the label, the icons and the notch.
  * Size is a set of variables too, so every position below is one formula.
  */
-export type FieldProps = {
+export type FieldShellOptions = {
   label?: string
   variant?: "filled" | "outlined"
   /** default 56px, sm 48px, xs 36px (compact: toolbars and filters; the label becomes the placeholder). */
@@ -50,7 +50,7 @@ type ControlProps = {
   className: string
 }
 
-type FieldShellProps = FieldProps & {
+type FieldShellProps = FieldShellOptions & {
   id?: string
   className?: string
   disabled?: boolean
@@ -74,7 +74,7 @@ const SIZES = {
 
 const slide = "transition-[translate] duration-200 ease-(--ease-standard) motion-reduce:transition-none"
 
-function Field({
+function FieldShell({
   label,
   variant = "filled",
   size = "default",
@@ -245,4 +245,8 @@ function Field({
   )
 }
 
-export { Field, FieldWiringContext }
+/** @deprecated old name; use FieldShell */
+const Field = FieldShell
+export { FieldShell, Field, FieldWiringContext }
+/** @deprecated old name; use FieldShellOptions */
+export type FieldProps = FieldShellOptions

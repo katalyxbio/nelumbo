@@ -474,7 +474,8 @@
           "letter-spacing": "0.02em",
           "font-weight": "520"
         }
-      }
+      },
+      "registryDependencies": []
     },
     {
       "name": "icon",
@@ -613,9 +614,9 @@
       ]
     },
     {
-      "name": "field",
+      "name": "field-shell",
       "type": "registry:ui",
-      "title": "Field",
+      "title": "Field Shell",
       "description": "Shared text field shell for Input and Textarea: filled or outlined container, CSS-only floating label, notched border, icons and help text.",
       "registryDependencies": [
         "utils",
@@ -623,7 +624,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/field.tsx",
+          "path": "registry/velvet/ui/field-shell.tsx",
           "type": "registry:ui"
         }
       ]
@@ -634,7 +635,7 @@
       "title": "Input",
       "description": "Text field with a floating label, filled (default) or outlined, in two sizes; leading icon, trailing slot, help and error text.",
       "registryDependencies": [
-        "@velvet/field"
+        "@velvet/field-shell"
       ],
       "files": [
         {
@@ -650,7 +651,7 @@
       "description": "Multi-line text field matching Input; grows with its content and shows a character count with maxLength.",
       "registryDependencies": [
         "utils",
-        "@velvet/field"
+        "@velvet/field-shell"
       ],
       "files": [
         {
@@ -669,7 +670,7 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/field",
+        "@velvet/field-shell",
         "@velvet/icon",
         "@velvet/dropdown-menu",
         "@velvet/popover"
@@ -691,7 +692,7 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/field",
+        "@velvet/field-shell",
         "@velvet/icon",
         "@velvet/icon-button",
         "@velvet/button",
@@ -1123,7 +1124,7 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/field",
+        "@velvet/field-shell",
         "@velvet/calendar",
         "@velvet/icon-button",
         "@velvet/button",
@@ -1226,7 +1227,7 @@
       "description": "TimePicker: type a time in the locale's format (12 or 24 hour), or pick from a docked Material 3 clock dial or list columns. Hour and minute chips, AM/PM, min, max, step, validation.",
       "registryDependencies": [
         "utils",
-        "@velvet/field",
+        "@velvet/field-shell",
         "@velvet/popover",
         "@velvet/icon-button",
         "@velvet/button"
@@ -1482,7 +1483,7 @@
       "registryDependencies": [
         "utils",
         "@velvet/label",
-        "@velvet/field",
+        "@velvet/field-shell",
         "@velvet/icon"
       ],
       "files": [

@@ -4,7 +4,7 @@ import * as React from "react"
 import { dateMatchModifiers, type DateRange, type Matcher } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
-import { Field, type FieldProps } from "@/registry/velvet/ui/field"
+import { FieldShell as Field, type FieldShellOptions as FieldProps } from "@/registry/velvet/ui/field-shell"
 import { Calendar } from "@/registry/velvet/ui/calendar"
 import { IconButton } from "@/registry/velvet/ui/icon-button"
 import { Button } from "@/registry/velvet/ui/button"

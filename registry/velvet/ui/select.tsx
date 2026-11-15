@@ -4,7 +4,7 @@ import * as React from "react"
 import { Select as SelectPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
-import { Field, type FieldProps } from "@/registry/velvet/ui/field"
+import { FieldShell as Field, type FieldShellOptions as FieldProps } from "@/registry/velvet/ui/field-shell"
 import { Icon, type IconName } from "@/registry/velvet/ui/icon"
 import { menuItem, menuItemSelected, menuPad } from "@/registry/velvet/ui/dropdown-menu"
 import { floatingSurface } from "@/registry/velvet/ui/popover"

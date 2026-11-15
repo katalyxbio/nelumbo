@@ -5,7 +5,7 @@ import { createPortal } from "react-dom"
 import { Popover as PopoverPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
-import { Field, type FieldProps } from "@/registry/velvet/ui/field"
+import { FieldShell as Field, type FieldShellOptions as FieldProps } from "@/registry/velvet/ui/field-shell"
 import { Icon, type IconName } from "@/registry/velvet/ui/icon"
 import { IconButton } from "@/registry/velvet/ui/icon-button"
 import { Spinner } from "@/registry/velvet/ui/button"

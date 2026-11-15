@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { Field, type FieldProps } from "@/registry/velvet/ui/field"
+import { FieldShell as Field, type FieldShellOptions as FieldProps } from "@/registry/velvet/ui/field-shell"
 
 /**
  * Velvet Input (text field)
