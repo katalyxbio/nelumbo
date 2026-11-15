@@ -20,6 +20,8 @@ import { Icon } from "@/registry/velvet/ui/icon"
  * - With one month, the title opens a year grid (as in Material's picker);
  *   `yearPicker={false}` turns that off. With several, each has its title.
  * - Months slide as you page through them (not with reduced motion).
+ * - In range mode, once a start date is picked, hovering or focusing a later
+ *   day previews the band up to it (lighter than the real selection).
  * - Outside days are hidden by default; `showOutsideDays` shows them.
  */
 
@@ -33,6 +35,15 @@ const CSS = `
 .vlv-cal td.vlv-rm:first-child::before, .vlv-cal td.vlv-re:first-child::before { border-radius: 9999px 0 0 9999px }
 .vlv-cal td.vlv-rm:last-child::before, .vlv-cal td.vlv-rs:last-child::before { border-radius: 0 9999px 9999px 0 }
 .vlv-cal td.vlv-rm > button { color: var(--secondary-foreground) }
+/* range preview: a soft band from the picked start to the day under the pointer or focus */
+.vlv-cal { --vlv-preview: color-mix(in oklab, var(--secondary) 55%, transparent) }
+.vlv-cal td.vlv-pm::before, .vlv-cal td.vlv-pe::before, .vlv-cal td.vlv-ps.vlv-ps::before { content: ""; position: absolute; inset: 0; background: var(--vlv-preview) }
+.vlv-cal td.vlv-ps.vlv-ps::before { left: 50% }
+.vlv-cal td.vlv-pe::before { right: 50% }
+.vlv-cal td.vlv-pm:first-child::before, .vlv-cal td.vlv-pe:first-child::before { border-radius: 9999px 0 0 9999px }
+.vlv-cal td.vlv-pm:last-child::before, .vlv-cal td.vlv-ps.vlv-ps:last-child::before { border-radius: 0 9999px 9999px 0 }
+.vlv-cal td.vlv-pm > button { color: var(--secondary-foreground) }
+.vlv-cal td.vlv-pe > button { background: var(--secondary); color: var(--secondary-foreground) }
 .vlv-cal td[data-selected]:not(.vlv-rm) > button { background: var(--primary); color: var(--primary-foreground) }
 .vlv-cal td[data-today]:not([data-selected]) > button { box-shadow: inset 0 0 0 1px var(--foreground); font-weight: 600 }
 .vlv-cal td[data-outside] > button { color: var(--muted-foreground) }
@@ -98,6 +109,12 @@ function Calendar({
   animate = true,
   lang: langProp,
   formatters,
+  modifiers,
+  modifiersClassNames,
+  onDayMouseEnter,
+  onDayMouseLeave,
+  onDayFocus,
+  onDayBlur,
   ...props
 }: CalendarProps) {
   const lang = langProp ?? props.locale?.code ?? "en-US"
@@ -124,6 +141,16 @@ function Calendar({
   const prevDisabled = Boolean(startMonth && prev < monthStart(startMonth))
   const nextDisabled = Boolean(endMonth && monthStart(new Date(month.getFullYear(), month.getMonth() + numberOfMonths - 1, 1)) >= monthStart(endMonth))
   const gridId = React.useId()
+
+  // range preview: only while a start is picked and the range is still open
+  const [hover, setHover] = React.useState<Date | null>(null)
+  const sel = (props as { selected?: unknown }).selected as DateRange | undefined
+  const day0 = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+  const from = props.mode === "range" && sel?.from ? day0(sel.from) : null
+  const open = from !== null && (!sel?.to || day0(sel.to) === from)
+  const end = open && hover && day0(hover) > from! ? day0(hover) : null
+  const previewMods = end === null ? {} : { vlv_ps: (d: Date) => day0(d) === from, vlv_pm: (d: Date) => day0(d) > from! && day0(d) < end, vlv_pe: (d: Date) => day0(d) === end }
+  const enter = (d: Date, m: Parameters<NonNullable<typeof onDayMouseEnter>>[1]) => setHover(m.disabled ? null : d)
 
   return (
     <div data-slot="calendar" className={cn("vlv-cal relative w-fit select-none [--cell:2.5rem]", className)}>
@@ -194,6 +221,24 @@ function Calendar({
             hideNavigation={ownHeader}
             navLayout={ownHeader ? undefined : "around"}
             animate={animate}
+            modifiers={{ ...modifiers, ...previewMods }}
+            modifiersClassNames={{ vlv_ps: "vlv-ps", vlv_pm: "vlv-pm", vlv_pe: "vlv-pe", ...modifiersClassNames }}
+            onDayMouseEnter={(d, m, e) => {
+              enter(d, m)
+              onDayMouseEnter?.(d, m, e)
+            }}
+            onDayMouseLeave={(d, m, e) => {
+              setHover(null)
+              onDayMouseLeave?.(d, m, e)
+            }}
+            onDayFocus={(d, m, e) => {
+              enter(d, m)
+              onDayFocus?.(d, m, e)
+            }}
+            onDayBlur={(d, m, e) => {
+              setHover(null)
+              onDayBlur?.(d, m, e)
+            }}
             classNames={{
               root: "relative",
               months: "relative flex flex-col gap-6 sm:flex-row",

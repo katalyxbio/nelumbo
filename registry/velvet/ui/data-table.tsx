@@ -212,7 +212,7 @@ function DataTablePagination<TData>({
       <div className="flex items-center gap-3">
         <span>Rows per page</span>
         <Select value={String(pageSize)} onValueChange={(v) => table.setPageSize(Number(v))}>
-          <SelectTrigger size="sm" aria-label="Rows per page" className="w-24">
+          <SelectTrigger size="xs" aria-label="Rows per page" className="w-24">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -372,7 +372,7 @@ function DataTable<TData, TValue = unknown>({
             <>
               {showSearch && (
                 <Input
-                  size="sm"
+                  size="xs"
                   type="search"
                   icon="search"
                   aria-label={searchPlaceholder}

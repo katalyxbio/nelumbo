@@ -13,7 +13,9 @@ import { Field, type FieldProps } from "@/registry/velvet/ui/field"
  * - `filled` (default): tonal container with an underline that thickens on focus.
  * - `outlined`: the label sits in a gap cut into the top border, so it works on
  *   any background (the gap is a real hole in the border, not a painted patch).
- * - `size`: default 56px, sm 48px for dense forms and toolbars.
+ * - `size`: default 56px, sm 48px for dense forms, xs 36px for toolbars and filters.
+ *   xs has no floating label: the label becomes the placeholder and the
+ *   control's accessible name.
  *
  * `className` goes on the outer wrapper; every other prop goes to the <input>,
  * and `ref` points at the <input>.

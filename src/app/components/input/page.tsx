@@ -58,7 +58,7 @@ export default function InputPage() {
 
       <Section
         title="Sizes"
-        description="Default is 56px. Use sm (48px) for dense forms, filters and settings panels. The label, icons and gap in the border scale with it."
+        description="Default is 56px. Use sm (48px) for dense forms and settings panels, and xs (36px) for toolbars and filters. xs drops the floating label: the label becomes the placeholder and still names the field for assistive tech. The icons and padding scale with it."
       >
         <div className="grid gap-4 md:grid-cols-2">
           {VARIANTS.map((v) => (
@@ -66,7 +66,7 @@ export default function InputPage() {
               {(["default", "sm"] as const).map((s) => (
                 <Input key={s} variant={v} size={s} label={s === "sm" ? "City (sm)" : "City (default)"} icon="location_on" defaultValue="Stockholm" autoComplete="off" />
               ))}
-              <Input variant={v} size="sm" label="Discount code (sm)" autoComplete="off" />
+              <Input variant={v} size="xs" label="Search people (xs)" icon="search" autoComplete="off" />
             </Preview>
           ))}
         </div>
@@ -143,7 +143,7 @@ export default function InputPage() {
           rows={[
             ["label", "string", "", "Floating label. Leave out for search bars (then set aria-label)"],
             ["variant", '"filled" | "outlined"', '"filled"', ""],
-            ["size", '"default" | "sm"', '"default"', "56px or 48px"],
+            ["size", '"default" | "sm" | "xs"', '"default"', "56px, 48px, or 36px compact with the label as placeholder"],
             ["icon", "IconName", "", "Leading Material Symbol"],
             ["trailing", "ReactNode", "", "Trailing slot, e.g. an Icon Button with size sm"],
             ["description", "ReactNode", "", "Help text, linked with aria-describedby"],
