@@ -120,3 +120,4 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Form (react-hook-form; one label per control, spring errors, shake on failed submit), Label
 - [x] Chart (recharts; accent series, spring tooltip, toggleable legend chips)
 - [x] Carousel (multi-browse, hero, uncontained; spring dots), Resizable (gap instead of a line, growing grip)
+- [x] Navigation Menu (springing pill, morphing viewport, rich links)

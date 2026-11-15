@@ -62,6 +62,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/tabs", label: "Tabs" },
       { href: "/components/navigation-rail", label: "Navigation Rail", isNew: true },
       { href: "/components/navigation-bar", label: "Navigation Bar", isNew: true },
+      { href: "/components/navigation-menu", label: "Navigation Menu", isNew: true },
       { href: "/components/breadcrumb", label: "Breadcrumb", isNew: true },
       { href: "/components/pagination", label: "Pagination", isNew: true },
     ],

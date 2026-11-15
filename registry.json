@@ -1544,6 +1544,26 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "navigation-menu",
+      "type": "registry:ui",
+      "title": "Navigation Menu",
+      "description": "shadcn-compatible NavigationMenu on Radix: a tonal track with a pill that springs between triggers, a viewport that morphs size between panels, rich links on icon tiles, a featured card.",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/navigation-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
