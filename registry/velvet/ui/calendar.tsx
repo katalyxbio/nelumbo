@@ -25,7 +25,7 @@ import { Icon } from "@/registry/velvet/ui/icon"
 
 const CSS = `
 .vlv-cal td { position: relative; padding: 0 }
-.vlv-cal td::before { content: none; position: absolute; inset: 2px 0; background: var(--secondary) }
+.vlv-cal td::before { content: none; position: absolute; inset: 0; background: var(--secondary) }
 .vlv-cal td.vlv-rm::before { content: "" }
 .vlv-cal td.vlv-rs::before { content: ""; left: 50% }
 .vlv-cal td.vlv-re::before { content: ""; right: 50% }
@@ -206,7 +206,7 @@ function Calendar({
               month_grid: "border-collapse",
               weekdays: "flex",
               weekday: "grid size-(--cell) place-items-center type-label-md font-normal text-muted-foreground",
-              weeks: "flex flex-col",
+              weeks: "flex flex-col gap-1",
               week: "flex",
               day: "size-(--cell)",
               day_button: cn(
@@ -286,7 +286,7 @@ function YearGrid({ id, month, from, to, onPick, onClose }: { id: string; month:
       role="group"
       aria-label="Years"
       onKeyDown={onKeyDown}
-      className="grid h-[calc(var(--cell)*7)] w-[calc(var(--cell)*7)] auto-rows-[3.25rem] grid-cols-3 content-start overflow-y-auto overscroll-contain px-1 [scrollbar-width:thin] animate-in fade-in-0 duration-200"
+      className="grid h-[calc(var(--cell)*7+1.5rem)] w-[calc(var(--cell)*7)] auto-rows-[3.25rem] grid-cols-3 content-start overflow-y-auto overscroll-contain px-1 [scrollbar-width:thin] animate-in fade-in-0 duration-200"
     >
       {years.map((y) => (
         <span key={y} className="grid place-items-center">

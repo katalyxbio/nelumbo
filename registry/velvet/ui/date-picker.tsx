@@ -419,7 +419,7 @@ function DateRangePicker({
             <div
               role="group"
               aria-label="Presets"
-              className="flex gap-1 overflow-x-auto border-b border-outline-variant p-2 sm:w-44 sm:flex-col sm:overflow-visible sm:border-e sm:border-b-0"
+              className="flex gap-1 overflow-x-auto p-2 pb-0 sm:w-44 sm:flex-col sm:overflow-visible sm:pe-0 sm:pb-2"
             >
               {presets.map((p) => {
                 const r = typeof p.range === "function" ? p.range() : p.range
@@ -464,7 +464,7 @@ function DateRangePicker({
               />
             </div>
             {/* stays in view when the popover has to scroll (phones) */}
-            <div className="sticky bottom-0 z-10 flex items-center gap-2 border-t border-outline-variant bg-card px-4 py-3 dark:bg-surface-container-high">
+            <div className="sticky bottom-0 z-10 flex items-center gap-2 bg-card px-4 pt-1 pb-3 dark:bg-surface-container-high">
               <p className="min-w-0 flex-1 truncate type-body-md" aria-live="polite">
                 {describe(draft) ?? <span className="text-muted-foreground">Pick a start date</span>}
                 {nights > 1 && <span className="text-muted-foreground"> · {nights} days</span>}
