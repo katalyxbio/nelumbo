@@ -1656,6 +1656,29 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "app-bar",
+      "type": "registry:ui",
+      "title": "App Bars",
+      "description": "Material 3 top app bar (small, center, medium, large; elevate, collapse with a settling spring, or hide on scroll) and bottom app bar (actions plus FAB, floating option, hide on scroll).",
+      "dependencies": [
+        "class-variance-authority",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon-button",
+        "@velvet/fab",
+        "@velvet/search",
+        "@velvet/tooltip"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/app-bar.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

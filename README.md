@@ -124,3 +124,4 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Sidebar (springing active pill, spring collapse to icons, no lines)
 - [x] Search (Material 3 search bar and view; also the Command palette field)
 - [x] Context Menu, Menubar (springing segment; sliding row highlight shared with Dropdown Menu)
+- [x] Top App Bar (four sizes; elevate, collapse, hide on scroll), Bottom App Bar (FAB slot, floating)
