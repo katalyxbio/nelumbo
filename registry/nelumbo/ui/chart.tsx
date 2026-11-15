@@ -1091,6 +1091,145 @@ function ChartStages({
 /* Owned by the pie gallery. Add helpers below with `export` inline.   */
 /* ================================================================== */
 
+const pieRad = Math.PI / 180
+
+type PieLabelProps = {
+  cx: number
+  cy: number
+  midAngle: number
+  innerRadius: number
+  outerRadius: number
+  value: number
+  name?: string | number
+  fill?: string
+  payload?: { fill?: string }
+}
+
+/** Width of a chip's text at 12px (the chart font is proportional, this is a close estimate). */
+const pieTextWidth = (s: string, size = 12) => Math.ceil(s.length * size * 0.56)
+
+/**
+ * A label as a small inverse pill, for Pie's `label` prop. `outside` draws a
+ * round-capped leader line from the slice edge to the chip; `inside` centers
+ * the chip in the slice. `text` builds the chip text from the value and the
+ * config label; `dot` adds a swatch in the slice color.
+ *
+ *   <Pie label={piePillLabel({ config, text: (v, name) => `${name} ${v}`, dot: true })} labelLine={false} />
+ */
+export function piePillLabel({
+  config,
+  position = "outside",
+  offset = 14,
+  text = (value) => String(value),
+  dot = false,
+}: {
+  config?: ChartConfig
+  position?: "outside" | "inside"
+  /** Distance from the slice edge to the chip, in px (outside). */
+  offset?: number
+  text?: (value: number, name: string) => string
+  dot?: boolean
+} = {}) {
+  return function PiePillLabel(p: PieLabelProps) {
+    const { cx, cy, midAngle, innerRadius, outerRadius, value } = p
+    const key = String(p.name ?? "")
+    const name = config?.[key]?.label ? String(config[key].label) : key
+    const label = text(value, name)
+    const size = 12
+    const h = 22
+    const w = pieTextWidth(label, size) + 16 + (dot ? 12 : 0)
+    const cos = Math.cos(-midAngle * pieRad)
+    const sin = Math.sin(-midAngle * pieRad)
+    const color = p.payload?.fill ?? p.fill ?? "currentColor"
+
+    let x: number
+    let y: number
+    let line: React.ReactNode = null
+    if (position === "inside") {
+      const r = (innerRadius + outerRadius) / 2
+      x = cx + r * cos - w / 2
+      y = cy + r * sin - h / 2
+    } else {
+      const sx = cx + (outerRadius + 3) * cos
+      const sy = cy + (outerRadius + 3) * sin
+      const ex = cx + (outerRadius + offset) * cos
+      const ey = cy + (outerRadius + offset) * sin
+      const right = cos >= 0
+      // the chip sits on the leader's end, on the far side of the pie
+      x = right ? ex : ex - w
+      y = ey - h / 2
+      line = <path d={`M${sx},${sy}L${ex},${ey}`} fill="none" stroke="var(--outline)" strokeWidth={1.5} strokeLinecap="round" />
+    }
+    return (
+      <g pointerEvents="none">
+        {line}
+        <rect x={x} y={y} width={w} height={h} rx={h / 2} fill="var(--inverse-surface)" />
+        {dot && <circle cx={x + 11} cy={y + h / 2} r={4} fill={color} stroke="var(--inverse-foreground)" strokeOpacity={0.25} strokeWidth={1.5} />}
+        <text
+          x={x + (dot ? 20 : 8)}
+          y={y + h / 2}
+          dominantBaseline="central"
+          fontSize={size}
+          fontWeight={600}
+          fill="var(--inverse-foreground)"
+          className="tabular-nums"
+        >
+          {label}
+        </text>
+      </g>
+    )
+  }
+}
+
+/**
+ * Active slice for Pie's `activeShape`: the same sector, grown outward by
+ * `grow` px, settling on a spring (off with reduced motion). Pair with a
+ * controlled `activeIndex`.
+ *
+ *   <Pie activeIndex={focus.index} activeShape={PieActiveSector} />
+ */
+export function PieActiveSector(props: React.ComponentProps<typeof RechartsPrimitive.Sector> & { grow?: number }) {
+  const { grow = 12, cx = 0, cy = 0, outerRadius = 0, ...rest } = props
+  const from = Number(outerRadius) / (Number(outerRadius) + grow)
+  return (
+    <g
+      className="nelumbo-pie-grow"
+      style={{ transformOrigin: `${cx}px ${cy}px`, ["--pie-from" as string]: from } as React.CSSProperties}
+    >
+      <style href="nelumbo-pie" precedence="default">
+        {`@keyframes nelumbo-pie-grow{from{transform:scale(var(--pie-from))}to{transform:scale(1)}}@media (prefers-reduced-motion:no-preference){.nelumbo-pie-grow{animation:nelumbo-pie-grow 520ms var(--ease-spring)}}`}
+      </style>
+      <RechartsPrimitive.Sector {...rest} cx={cx} cy={cy} outerRadius={Number(outerRadius) + grow} />
+    </g>
+  )
+}
+
+/**
+ * The center of a donut: a big value with a label under it, centered over
+ * the chart. Place it inside a `relative` wrapper that also holds the
+ * ChartContainer; it ignores the pointer and is hidden from assistive tech
+ * (the chart's aria-label or slider text carries the same words).
+ */
+export function PieCenter({
+  value,
+  label,
+  className,
+  ...props
+}: Omit<React.ComponentProps<"div">, "children"> & { value: React.ReactNode; label?: React.ReactNode }) {
+  const key = `${String(value)}|${String(label)}`
+  return (
+    <div aria-hidden data-slot="pie-center" className={cn("pointer-events-none absolute inset-0 grid place-content-center text-center", className)} {...props}>
+      <style href="nelumbo-chart" precedence="default">
+        {`@keyframes nelumbo-readout-in{0%{opacity:0;translate:0 8px}100%{opacity:1;translate:0 0}}`}
+      </style>
+      <div key={key} className="grid motion-safe:animate-[nelumbo-readout-in_360ms_var(--ease-spring)]">
+        <span className="type-headline-lg font-[480] tracking-[-0.03em] text-foreground tabular-nums">{value}</span>
+        {label != null && <span className="type-label-md text-muted-foreground">{label}</span>}
+      </div>
+    </div>
+  )
+}
+
 /* end pie helpers */
 
 /* ================================================================== */
