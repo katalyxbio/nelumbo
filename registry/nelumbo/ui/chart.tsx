@@ -1070,6 +1070,26 @@ function ChartStages({
 /* Owned by the area gallery. Add helpers below with `export` inline.   */
 /* ================================================================== */
 
+/**
+ * Props for a Material area: a 3px round-capped line over a fill, no resting
+ * dots. `fill` is usually a gradient (`url(#id)` from ChartGradient). Spread
+ * on Area, then pass `type` ("monotone" default, "linear", "step") and motion.
+ *
+ *   <Area {...chartArea("desktop", "url(#fillDesktop)")} type="step" {...motion} />
+ */
+export const chartArea = (key: string, fill?: string) => ({
+  type: "monotone" as const,
+  dataKey: key,
+  stroke: `var(--color-${key})`,
+  strokeWidth: 3,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+  fill: fill ?? `var(--color-${key})`,
+  fillOpacity: fill ? 1 : 0.2,
+  dot: false as const,
+  activeDot: false as const,
+})
+
 /* end area helpers */
 
 /* ================================================================== */
