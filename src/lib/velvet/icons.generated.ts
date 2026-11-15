@@ -115,6 +115,7 @@ export const USED_ICONS: IconName[] = [
   "more_horiz",
   "more_vert",
   "movie",
+  "navigation",
   "north",
   "notifications",
   "open_in_new",
