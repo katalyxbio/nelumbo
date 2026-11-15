@@ -1612,6 +1612,48 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "context-menu",
+      "type": "registry:ui",
+      "title": "Context Menu",
+      "description": "shadcn-compatible ContextMenu on Radix: springs open from the pointer, a raised highlight that slides between rows, keycap shortcuts, spacing instead of separators.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/popover",
+        "@velvet/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/context-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "menubar",
+      "type": "registry:ui",
+      "title": "Menubar",
+      "description": "shadcn-compatible Menubar on Radix: a tonal track with a raised segment that springs between open menus, sliding row highlight, keycap shortcuts.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/popover",
+        "@velvet/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/menubar.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
