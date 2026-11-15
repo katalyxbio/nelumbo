@@ -36,6 +36,9 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/radio-group", label: "Radio Group" },
       { href: "/components/slider", label: "Slider" },
       { href: "/components/chip", label: "Chip", isNew: true },
+      { href: "/components/avatar", label: "Avatar", isNew: true },
+      { href: "/components/badge", label: "Badge", isNew: true },
+      { href: "/components/list", label: "List", isNew: true },
     ],
   },
   {

@@ -1036,6 +1036,63 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "description": "Avatar on Radix Avatar (shadcn API): image with initials fallback, auto palette tint from the name, five sizes, circle or rounded, status badge, overlapping groups with +N.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/avatar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "description": "Label badge (shadcn variants plus brand, success, warning, info; dot and icon) and NotificationBadge: a dot or capped count that springs onto an icon, icon button or avatar.",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/badge.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "type": "registry:ui",
+      "title": "List",
+      "description": "Material 3 list: leading avatar or icon, overline, title, description, meta and trailing control; whole-row links and buttons with stretched targets; plain or segmented tiles; subheaders and dividers.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/list.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
