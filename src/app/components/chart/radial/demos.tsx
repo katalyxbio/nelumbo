@@ -68,7 +68,7 @@ export function RadialSimpleDemo() {
   const motion = useChartAnimation()
   return (
     <Card className={cardCls}>
-      <CardTop title="Radial chart" description="Active minutes by activity, Nov 9 to 15" />
+      <CardTop title="Radial Chart" description="Active minutes by activity, Nov 9 to 15" />
       <CardContent>
         <ChartContainer config={activityConfig} aria-label="Radial chart of active minutes this week: walk 275, run 200, cycle 187, swim 173, yoga 90" className="mx-auto aspect-square max-h-[320px]">
           <RadialBarChart data={activity} innerRadius="26%" outerRadius="100%" barSize={20} startAngle={90} endAngle={-270}>
@@ -92,7 +92,7 @@ export function RadialLabelDemo() {
   const motion = useChartAnimation()
   return (
     <Card className={cardCls}>
-      <CardTop title="Radial chart: label" description="The name sits in a chip at the start of each bar" />
+      <CardTop title="Radial Chart - Label" description="The name sits in a chip at the start of each bar" />
       <CardContent>
         <ChartContainer config={activityConfig} aria-label="Radial chart with labels: walk 275, run 200, cycle 187, swim 173, yoga 90 active minutes" className="mx-auto aspect-square max-h-[320px]">
           <RadialBarChart data={activity} innerRadius="16%" outerRadius="100%" barSize={20} startAngle={90} endAngle={-270}>
@@ -117,7 +117,7 @@ export function RadialGridDemo() {
   const motion = useChartAnimation()
   return (
     <Card className={cardCls}>
-      <CardTop title="Radial chart: grid" description="Dotted round-dot circles guide each bar" />
+      <CardTop title="Radial Chart - Grid" description="Dotted round-dot circles guide each bar" />
       <CardContent>
         <ChartContainer config={activityConfig} aria-label="Radial chart with a dotted grid: walk 275, run 200, cycle 187, swim 173, yoga 90 active minutes" className="mx-auto aspect-square max-h-[320px]">
           <RadialBarChart data={activity} innerRadius="26%" outerRadius="100%" barSize={18} startAngle={90} endAngle={-270}>
@@ -144,7 +144,7 @@ export function RadialTextDemo() {
   const data = [{ key: "steps", steps: 8240, fill: "var(--color-steps)" }]
   return (
     <Card className={cardCls}>
-      <CardTop title="Radial chart: text" description="Today's steps against a 10,000 goal" />
+      <CardTop title="Radial Chart - Text" description="Today's steps against a 10,000 goal" />
       <CardContent>
         <div className="relative mx-auto aspect-square max-h-[320px]">
           <ChartContainer config={stepsConfig} aria-label="Radial chart: 8,240 of 10,000 steps today" className="aspect-square h-full">
@@ -175,7 +175,7 @@ export function RadialShapeDemo() {
   const data = [{ key: "score", score: 84, fill: "var(--color-score)" }]
   return (
     <Card className={cardCls}>
-      <CardTop title="Radial chart: shape" description="A thick tonal track with round caps, like a circular progress" />
+      <CardTop title="Radial Chart - Shape" description="A thick tonal track with round caps, like a circular progress" />
       <CardContent>
         <div className="relative mx-auto aspect-square max-h-[320px]">
           <ChartContainer config={sleepConfig} aria-label="Progress ring: sleep score 84 out of 100" className="aspect-square h-full">
@@ -209,7 +209,7 @@ export function RadialStackedDemo() {
   const angles = { startAngle: 180, endAngle: 0 }
   return (
     <Card className={cardCls}>
-      <CardTop title="Radial chart: stacked" description="Active zone minutes this week, two series in a half ring" />
+      <CardTop title="Radial Chart - Stacked" description="Active zone minutes this week, two series in a half ring" />
       <CardContent>
         <div className="relative mx-auto aspect-[2/1.15] w-full max-w-[380px]">
           <ChartContainer config={zonesConfig} aria-label={`Half ring of active zone minutes: ${fmt(data[0].moderate)} moderate and ${fmt(data[0].vigorous)} vigorous, ${fmt(total)} in total`} className="aspect-auto h-full">

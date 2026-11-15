@@ -50,7 +50,6 @@ const monthly = [
   { desktop: 209, mobile: 130, other: 100 },
   { desktop: 214, mobile: 140, other: 160 },
 ].map((d, i) => ({ ...d, month: MONTHS[i], label: `${MONTHS[i]} 2026` }))
-type Month = (typeof monthly)[number]
 
 const SINGLE = { desktop: { label: "Desktop", color: "var(--blue)" } } satisfies ChartConfig
 const DUO = {

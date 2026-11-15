@@ -84,11 +84,11 @@ function RadarCard({
   )
 }
 
-const chartClass = "mx-auto aspect-square max-h-[340px]"
+const chartClass = "mx-auto aspect-square max-h-[380px]"
 const margin = { top: 22, right: 38, bottom: 22, left: 38 }
-const chartClassLegend = "mx-auto aspect-[10/11] max-h-[360px]"
-const polarLegend = { outerRadius: "74%", margin: { ...margin, bottom: 60 } } as const
-const polar = { outerRadius: "74%", margin } as const
+const chartClassLegend = "mx-auto aspect-[10/11] max-h-[410px]"
+const polarLegend = { outerRadius: "80%", margin: { ...margin, bottom: 60 } } as const
+const polar = { outerRadius: "80%", margin } as const
 const hidden = { domain: DOMAIN, tick: false, axisLine: false, tickLine: false } as const
 const tooltip = <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
 
@@ -133,7 +133,7 @@ export function RadarDefault() {
 export function RadarDots() {
   const motion = useChartAnimation()
   return (
-    <RadarCard title="Radar chart, Dots" description="Showing total visitors for the last 6 months">
+    <RadarCard title="Radar Chart - Dots" description="Showing total visitors for the last 6 months">
       <ChartContainer config={single} aria-label="Radar chart with dots: desktop visitors for each month" className={chartClass}>
         <RadarChart data={months} {...polar}>
           <PolarGrid {...radarGrid} />
@@ -150,7 +150,7 @@ export function RadarDots() {
 export function RadarLinesOnly() {
   const motion = useChartAnimation()
   return (
-    <RadarCard title="Radar chart, Lines Only" description="Desktop and mobile visitors, outlines without fill" trend="down">
+    <RadarCard title="Radar Chart - Lines Only" description="Desktop and mobile visitors, outlines without fill" trend="down">
       <ChartContainer config={double} aria-label="Radar chart with outlines only: desktop and mobile visitors for each month" className={chartClassLegend}>
         <RadarChart data={months} {...polarLegend}>
           <PolarGrid {...radarGrid} />
@@ -171,7 +171,7 @@ export function RadarLinesOnly() {
 export function RadarCustomLabel() {
   const motion = useChartAnimation()
   return (
-    <RadarCard title="Radar chart, Custom Label" description="Each axis shows its value under the month">
+    <RadarCard title="Radar Chart - Custom Label" description="Each axis shows its value under the month">
       <ChartContainer config={single} aria-label="Radar chart with value labels: desktop visitors for each month" className={chartClass}>
         <RadarChart data={months} outerRadius="66%" margin={{ top: 30, right: 44, bottom: 34, left: 44 }}>
           <PolarGrid {...radarGrid} />
@@ -189,12 +189,12 @@ export function RadarCustomLabel() {
 type GridKind = "custom" | "none" | "circle" | "circle-no-lines" | "circle-filled" | "filled"
 
 const gridMeta: Record<GridKind, { title: string; description: string }> = {
-  custom: { title: "Radar chart, Grid Custom", description: "Three dotted rings in the series color, no spokes" },
-  none: { title: "Radar chart, Grid None", description: "No grid, the polygon and its dots carry the chart" },
-  circle: { title: "Radar chart, Grid Circle", description: "Round dotted rings with spokes" },
-  "circle-no-lines": { title: "Radar chart, Grid Circle No Lines", description: "Round dotted rings, spokes removed" },
-  "circle-filled": { title: "Radar chart, Grid Circle Filled", description: "Alternating tonal rings behind the polygon" },
-  filled: { title: "Radar chart, Grid Filled", description: "One tonal body with dotted rings and spokes on top" },
+  custom: { title: "Radar Chart - Grid Custom", description: "Three dotted rings in the series color, no spokes" },
+  none: { title: "Radar Chart - Grid None", description: "No grid, the polygon and its dots carry the chart" },
+  circle: { title: "Radar Chart - Grid Circle", description: "Round dotted rings with spokes" },
+  "circle-no-lines": { title: "Radar Chart - Grid Circle No Lines", description: "Round dotted rings, spokes removed" },
+  "circle-filled": { title: "Radar Chart - Grid Circle Filled", description: "Alternating tonal rings behind the polygon" },
+  filled: { title: "Radar Chart - Grid Filled", description: "One tonal body with dotted rings and spokes on top" },
 }
 
 export function RadarGridDemo({ kind }: { kind: GridKind }) {
@@ -209,7 +209,7 @@ export function RadarGridDemo({ kind }: { kind: GridKind }) {
   if (kind === "filled") grid = <Customized component={<RadarRings count={N} rings={4} fill="flat" color={color} />} />
   return (
     <RadarCard title={meta.title} description={meta.description}>
-      <ChartContainer config={single} aria-label={`Radar chart, ${meta.title.replace("Radar chart, ", "").toLowerCase()}: desktop visitors for each month`} className={chartClass}>
+      <ChartContainer config={single} aria-label={`Radar chart, ${meta.title.replace("Radar Chart - ", "").toLowerCase()}: desktop visitors for each month`} className={chartClass}>
         <RadarChart data={months} {...polar}>
           {grid}
           <PolarAngleAxis dataKey="month" tick={radarAxisTick()} />
@@ -227,7 +227,7 @@ export function RadarGridDemo({ kind }: { kind: GridKind }) {
 export function RadarMultiple() {
   const motion = useChartAnimation()
   return (
-    <RadarCard title="Radar chart, Multiple" description="Desktop and mobile visitors, overlapping tonal polygons">
+    <RadarCard title="Radar Chart - Multiple" description="Desktop and mobile visitors, overlapping tonal polygons">
       <ChartContainer config={double} aria-label="Radar chart: desktop and mobile visitors for each month" className={chartClass}>
         <RadarChart data={months} {...polar}>
           <PolarGrid {...radarGrid} />
@@ -246,7 +246,7 @@ export function RadarLegend() {
   const motion = useChartAnimation()
   const vis = useSeriesVisibility()
   return (
-    <RadarCard title="Radar chart, Legend" description="Tap a chip in the legend to show or hide a series" trend="down">
+    <RadarCard title="Radar Chart - Legend" description="Tap a chip in the legend to show or hide a series" trend="down">
       <ChartContainer config={double} aria-label="Radar chart with legend: desktop and mobile visitors for each month" className={chartClassLegend}>
         <RadarChart data={months} {...polarLegend}>
           <PolarGrid {...radarGrid} />
@@ -265,7 +265,7 @@ export function RadarLegend() {
 export function RadarIcons() {
   const motion = useChartAnimation()
   return (
-    <RadarCard title="Radar chart, Icons" description="Material Symbols stand in for the series in the legend">
+    <RadarCard title="Radar Chart - Icons" description="Material Symbols stand in for the series in the legend">
       <ChartContainer config={iconConfig} aria-label="Radar chart with icons: desktop and mobile visitors for each month" className={chartClassLegend}>
         <RadarChart data={months} {...polarLegend}>
           <PolarGrid {...radarGrid} />
@@ -286,7 +286,7 @@ export function RadarIcons() {
 export function RadarRadiusAxis() {
   const motion = useChartAnimation()
   return (
-    <RadarCard title="Radar chart, Radius Axis" description="The radius axis is labelled along the January spoke">
+    <RadarCard title="Radar Chart - Radius Axis" description="The radius axis is labelled along the January spoke">
       <ChartContainer config={double} aria-label="Radar chart with a radius axis: desktop and mobile visitors for each month, rings at 100, 200 and 300" className={chartClass}>
         <RadarChart data={months} {...polar}>
           <PolarGrid {...radarGrid} />

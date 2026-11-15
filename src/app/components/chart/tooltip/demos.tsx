@@ -101,15 +101,15 @@ function TooltipCard({
 }
 
 export function DefaultTooltipDemo() {
-  return <TooltipCard title="Default" description="Dot indicators, the day as the heading." tooltip={<ChartTooltipContent />} />
+  return <TooltipCard title="Tooltip - Default" description="Dot indicators, the day as the heading." tooltip={<ChartTooltipContent />} />
 }
 
 export function LineIndicatorDemo() {
-  return <TooltipCard title="Line indicator" description="A tall bar marks each series." tooltip={<ChartTooltipContent indicator="line" />} />
+  return <TooltipCard title="Tooltip - Line Indicator" description="A tall bar marks each series." tooltip={<ChartTooltipContent indicator="line" />} />
 }
 
 export function NoIndicatorDemo() {
-  return <TooltipCard title="No indicator" description="Names and values only." tooltip={<ChartTooltipContent hideIndicator />} />
+  return <TooltipCard title="Tooltip - No Indicator" description="Names and values only." tooltip={<ChartTooltipContent hideIndicator />} />
 }
 
 const customConfig = {
@@ -120,7 +120,7 @@ const customConfig = {
 export function CustomLabelDemo() {
   return (
     <TooltipCard
-      title="Custom label"
+      title="Tooltip - Custom Label"
       description="The heading comes from a config entry through labelKey."
       chartConfig={customConfig}
       tooltip={<ChartTooltipContent labelKey="activities" indicator="line" />}
@@ -131,7 +131,7 @@ export function CustomLabelDemo() {
 export function LabelFormatterDemo() {
   return (
     <TooltipCard
-      title="Label formatter"
+      title="Tooltip - Label Formatter"
       description="labelFormatter spells out the full date."
       tooltip={<ChartTooltipContent labelFormatter={(_, payload) => (payload?.[0]?.payload as Day | undefined)?.date} />}
     />
@@ -139,13 +139,13 @@ export function LabelFormatterDemo() {
 }
 
 export function NoLabelDemo() {
-  return <TooltipCard title="No label" description="hideLabel drops the heading." tooltip={<ChartTooltipContent hideLabel />} />
+  return <TooltipCard title="Tooltip - No Label" description="hideLabel drops the heading." tooltip={<ChartTooltipContent hideLabel />} />
 }
 
 export function FormatterDemo() {
   return (
     <TooltipCard
-      title="Formatter"
+      title="Tooltip - Formatter"
       description="Each value carries its unit."
       tooltip={<ChartTooltipContent formatter={chartTooltipFormatter(config, { unit: "min" })} />}
     />
@@ -155,7 +155,7 @@ export function FormatterDemo() {
 export function IconsDemo() {
   return (
     <TooltipCard
-      title="Icons"
+      title="Tooltip - Icons"
       description="A Material Symbol in a tonal chip for each series."
       chartConfig={iconConfig}
       tooltip={<ChartTooltipContent formatter={chartTooltipFormatter(iconConfig, { unit: "min", icons })} />}
@@ -166,7 +166,7 @@ export function IconsDemo() {
 export function AdvancedDemo() {
   return (
     <TooltipCard
-      title="Advanced"
+      title="Tooltip - Advanced"
       description="A per-row formatter with a total underneath."
       tooltip={
         <ChartTooltipContent
