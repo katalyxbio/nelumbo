@@ -27,10 +27,12 @@ const NAV: { group: string; items: NavItem[] }[] = [
     group: "Components",
     items: [
       { href: "/components/input", label: "Input" },
+      { href: "/components/input-group", label: "Input Group", isNew: true },
       { href: "/components/textarea", label: "Textarea" },
       { href: "/components/form", label: "Form", isNew: true },
       { href: "/components/field", label: "Field", isNew: true },
       { href: "/components/select", label: "Select", isNew: true },
+      { href: "/components/native-select", label: "Native Select", isNew: true },
       { href: "/components/combobox", label: "Combobox", isNew: true },
       { href: "/components/search", label: "Search", isNew: true },
       { href: "/components/date-picker", label: "Date Picker", isNew: true },

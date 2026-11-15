@@ -1717,6 +1717,44 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "input-group",
+      "type": "registry:ui",
+      "title": "Input Group",
+      "description": "shadcn-compatible InputGroup that reads as one Velvet field: inline and block addons, text prefixes, keycap hints, tonal buttons, a chat composer layout.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/button",
+        "@velvet/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/input-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "native-select",
+      "type": "registry:ui",
+      "title": "Native Select",
+      "description": "shadcn-compatible NativeSelect: a real select on the Velvet field shell, with floating label, sizes, invalid state and a dark native list.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@velvet/field-shell",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/native-select.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
