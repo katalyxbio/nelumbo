@@ -116,3 +116,4 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Breadcrumb, Pagination (with a range helper)
 - [x] Scroll Area (auto-hiding thumb, edge fades), Separator (faint, inset or space only)
 - [x] Command (cmdk palette with a ⌘K dialog)
+- [x] Alert Dialog (icon tile, destructive), Collapsible (spring chevron), Hover Card

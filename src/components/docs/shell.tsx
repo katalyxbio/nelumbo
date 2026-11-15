@@ -44,6 +44,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/badge", label: "Badge", isNew: true },
       { href: "/components/list", label: "List", isNew: true },
       { href: "/components/accordion", label: "Accordion", isNew: true },
+      { href: "/components/collapsible", label: "Collapsible", isNew: true },
       { href: "/components/alert", label: "Alert", isNew: true },
       { href: "/components/table", label: "Table", isNew: true },
       { href: "/components/data-table", label: "Data Table", isNew: true },
@@ -65,8 +66,10 @@ const NAV: { group: string; items: NavItem[] }[] = [
     group: "Overlays",
     items: [
       { href: "/components/dialog", label: "Dialog" },
+      { href: "/components/alert-dialog", label: "Alert Dialog", isNew: true },
       { href: "/components/sheet", label: "Sheet" },
       { href: "/components/popover", label: "Popover" },
+      { href: "/components/hover-card", label: "Hover Card", isNew: true },
       { href: "/components/dropdown-menu", label: "Dropdown Menu" },
       { href: "/components/command", label: "Command", isNew: true },
       { href: "/components/tooltip", label: "Tooltip" },

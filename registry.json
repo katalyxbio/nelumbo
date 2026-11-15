@@ -1390,6 +1390,65 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert Dialog",
+      "description": "shadcn-compatible AlertDialog on Radix: Velvet dialog motion, optional icon tile that pops in, destructive variant, footer that stacks on phones.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/button",
+        "@velvet/dialog",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/alert-dialog.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "title": "Collapsible",
+      "description": "shadcn-compatible Collapsible on Radix with the accordion height-and-fade animation and an optional spring chevron.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/collapsible.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "hover-card",
+      "type": "registry:ui",
+      "title": "Hover Card",
+      "description": "shadcn-compatible HoverCard on Radix: popover surface that springs out of the trigger side.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/popover"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/hover-card.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
