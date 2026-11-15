@@ -307,28 +307,28 @@ type StackLayout = {
 }
 
 // Light: the type's container color. Dark: a third of it blended into the dark surface, with the
-// bright tone for the icon, the action and a faint edge, so it tints rather than floods.
+// bright tone for the icon and the action, so it tints rather than floods.
 // (Written out in full so Tailwind can find every class.)
 const RICH: Partial<Record<SnackbarType, string>> = {
   success: cn(
     "bg-success-container text-success-container-foreground [--snackbar-accent:var(--success-container-foreground)]",
     "dark:bg-[color-mix(in_oklab,var(--success-container)_35%,var(--surface-container-high))] dark:text-foreground",
-    "dark:inset-ring dark:inset-ring-[color-mix(in_oklab,var(--success)_22%,transparent)] dark:[--snackbar-accent:var(--success)]"
+    "dark:[--snackbar-accent:var(--success)]"
   ),
   error: cn(
     "bg-destructive-container text-destructive-container-foreground [--snackbar-accent:var(--destructive-container-foreground)]",
     "dark:bg-[color-mix(in_oklab,var(--destructive-container)_35%,var(--surface-container-high))] dark:text-foreground",
-    "dark:inset-ring dark:inset-ring-[color-mix(in_oklab,var(--destructive)_22%,transparent)] dark:[--snackbar-accent:var(--destructive)]"
+    "dark:[--snackbar-accent:var(--destructive)]"
   ),
   warning: cn(
     "bg-warning-container text-warning-container-foreground [--snackbar-accent:var(--warning-container-foreground)]",
     "dark:bg-[color-mix(in_oklab,var(--warning-container)_35%,var(--surface-container-high))] dark:text-foreground",
-    "dark:inset-ring dark:inset-ring-[color-mix(in_oklab,var(--warning)_22%,transparent)] dark:[--snackbar-accent:var(--warning)]"
+    "dark:[--snackbar-accent:var(--warning)]"
   ),
   info: cn(
     "bg-brand-container text-brand-container-foreground [--snackbar-accent:var(--brand-container-foreground)]",
     "dark:bg-[color-mix(in_oklab,var(--brand-container)_35%,var(--surface-container-high))] dark:text-foreground",
-    "dark:inset-ring dark:inset-ring-[color-mix(in_oklab,var(--brand)_22%,transparent)] dark:[--snackbar-accent:var(--brand)]"
+    "dark:[--snackbar-accent:var(--brand)]"
   ),
 }
 
