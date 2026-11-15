@@ -5,6 +5,7 @@ import { Command as CommandPrimitive, useCommandState } from "cmdk"
 
 import { cn } from "@/lib/utils"
 import { Icon } from "@/registry/velvet/ui/icon"
+import { SearchField, searchInputClasses, setNativeValue } from "@/registry/velvet/ui/search"
 import {
   Dialog,
   DialogContent,
@@ -46,6 +47,9 @@ import {
  *   </CommandDialog>
  *
  * - The container is a rounded surface-container-high with the menu elevation.
+ * - CommandInput is Velvet's search field (SearchField from search.tsx): a pill with
+ *   the search icon, and a clear button that springs in while there is text. It empties
+ *   cmdk's search, controlled or not, and keeps focus. The input is type="search".
  * - Filtering, arrow keys, Home/End and Enter come from cmdk.
  *   Escape closes CommandDialog (Radix Dialog).
  * - The highlighted item gets a surface-container-highest tone and the state
@@ -104,28 +108,46 @@ function CommandDialog({
   )
 }
 
-function CommandInput({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Input>) {
+function CommandInput({ className, ref, ...props }: React.ComponentProps<typeof CommandPrimitive.Input>) {
+  const own = React.useRef<HTMLInputElement>(null)
+  const hasValue = useCommandState((s) => s.search.length > 0)
+
+  // cmdk renders type="text"; the palette's field is a search field
+  React.useLayoutEffect(() => {
+    if (own.current) own.current.type = "search"
+  }, [])
+
   return (
-    <div
+    <SearchField
       data-slot="command-input-wrapper"
+      size="sm"
+      embedded
+      hasValue={hasValue}
+      // type into it again right away, whether the search is controlled or not
+      onClear={() => {
+        const input = own.current
+        if (!input) return
+        setNativeValue(input, "")
+        input.focus()
+      }}
       className={cn(
-        "mx-2 mt-2 mb-1 flex h-12 shrink-0 items-center gap-3 rounded-field px-3",
-        "bg-surface-container-highest",
+        "mx-2 mt-2 mb-1 w-auto bg-surface-container-highest",
         // the palette keeps focus in its field the whole time, so a ring would never
         // go away; the caret and the icon turning foreground mark it instead
-        "[&>[data-slot=icon]]:transition-[color] has-[input:focus]:[&>[data-slot=icon]]:text-foreground"
+        "has-[input:focus-visible]:outline-none"
       )}
     >
-      <Icon name="search" size={22} className="text-muted-foreground" />
       <CommandPrimitive.Input
         data-slot="command-input"
-        className={cn(
-          "flex h-10 w-full min-w-0 bg-transparent type-body-lg text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-40",
-          className
-        )}
+        ref={(node: HTMLInputElement | null) => {
+          own.current = node
+          if (typeof ref === "function") ref(node)
+          else if (ref) (ref as React.RefObject<HTMLInputElement | null>).current = node
+        }}
+        className={cn(searchInputClasses, "disabled:opacity-40", className)}
         {...props}
       />
-    </div>
+    </SearchField>
   )
 }
 
