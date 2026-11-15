@@ -1489,6 +1489,24 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "chart",
+      "type": "registry:ui",
+      "title": "Chart",
+      "description": "shadcn-compatible Chart on recharts: Velvet accent series colors, popover tooltip that glides on a spring, faint grid, rounded bars, legend chips that toggle series, reduced-motion safe.",
+      "dependencies": [
+        "recharts"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/chart.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

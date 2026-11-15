@@ -49,6 +49,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/alert", label: "Alert", isNew: true },
       { href: "/components/table", label: "Table", isNew: true },
       { href: "/components/data-table", label: "Data Table", isNew: true },
+      { href: "/components/chart", label: "Chart", isNew: true },
       { href: "/components/scroll-area", label: "Scroll Area", isNew: true },
       { href: "/components/separator", label: "Separator", isNew: true },
     ],
