@@ -127,3 +127,4 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Top App Bar (four sizes; elevate, collapse, hide on scroll), Bottom App Bar (FAB slot, floating)
 - [x] Field (shadcn layout set; choice cards), Item (segmented tiles)
 - [x] Input Group (one field with addons; chat composer), Native Select
+- [x] FAB Menu (staggered spring actions, morphing trigger)

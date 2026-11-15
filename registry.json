@@ -1755,6 +1755,24 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "fab-menu",
+      "type": "registry:ui",
+      "title": "FAB Menu",
+      "description": "Material 3 Expressive FAB menu: the FAB shrinks into a close button while tonal action pills spring out in a stagger; full menu keyboard support, optional scrim.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@velvet/fab",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/fab-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

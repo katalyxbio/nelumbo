@@ -21,6 +21,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/button-group", label: "Button Group" },
       { href: "/components/split-button", label: "Split Button" },
       { href: "/components/fab", label: "FAB" },
+      { href: "/components/fab-menu", label: "FAB Menu", isNew: true },
     ],
   },
   {
