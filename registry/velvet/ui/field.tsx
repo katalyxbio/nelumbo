@@ -32,6 +32,15 @@ export type FieldProps = {
   error?: React.ReactNode | boolean
 }
 
+/**
+ * Wiring a parent can hand to the Field below it without touching props: the
+ * control id, extra aria-describedby ids (for a message drawn outside the
+ * field), the invalid state and a label. The Form's FormControl uses this, so
+ * every Field-based component (Input, Select, Combobox, DatePicker ...) joins
+ * a form without new props. Without a provider nothing changes.
+ */
+const FieldWiringContext = React.createContext<{ id?: string; describedBy?: string; invalid?: boolean } | null>(null)
+
 type ControlProps = {
   id: string
   disabled?: boolean
@@ -84,9 +93,10 @@ function Field({
   children,
 }: FieldShellProps) {
   const autoId = React.useId()
-  const controlId = id ?? autoId
+  const wiring = React.useContext(FieldWiringContext)
+  const controlId = wiring?.id ?? id ?? autoId
   const helpId = `${controlId}-help`
-  const invalid = Boolean(error) || ariaInvalid === true || ariaInvalid === "true"
+  const invalid = Boolean(error) || ariaInvalid === true || ariaInvalid === "true" || Boolean(wiring?.invalid)
   const help = typeof error === "string" || React.isValidElement(error) ? error : description
   const filled = variant === "filled"
   const compact = size === "xs"
@@ -143,7 +153,7 @@ function Field({
           // a placeholder is needed for :placeholder-shown, which floats the label
           placeholder: placeholder ?? (floating ? " " : compact ? label : undefined),
           "aria-invalid": invalid || undefined,
-          "aria-describedby": help ? helpId : undefined,
+          "aria-describedby": [wiring?.describedBy, help ? helpId : undefined].filter(Boolean).join(" ") || undefined,
           className: cn(
             "w-full min-w-0 flex-1 bg-transparent leading-6 text-foreground outline-none",
             compact ? "type-body-md" : "type-body-lg",
@@ -235,4 +245,4 @@ function Field({
   )
 }
 
-export { Field }
+export { Field, FieldWiringContext }
