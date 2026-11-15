@@ -69,7 +69,7 @@ export function Code({ children, className }: { children: string; className?: st
 
 export function PropsTable({ rows, note }: { rows: [string, string, string, string][]; note?: string }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-border">
+    <div tabIndex={0} className="overflow-x-auto rounded-2xl border border-border outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
       <table className="w-full min-w-[640px] text-left type-body-sm">
         <thead className="bg-surface-container-low type-label-md text-muted-foreground dark:bg-surface-container">
           <tr>
