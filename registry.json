@@ -1564,6 +1564,32 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "description": "shadcn-compatible Sidebar: no lines, a tonal pill that springs between items and into sub-menus, spring collapse to icons like the navigation rail, animated sub-menus, badges that become dots, mobile sheet.",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/icon",
+        "@velvet/icon-button",
+        "@velvet/input",
+        "@velvet/badge",
+        "@velvet/separator",
+        "@velvet/sheet",
+        "@velvet/tooltip"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/sidebar.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
