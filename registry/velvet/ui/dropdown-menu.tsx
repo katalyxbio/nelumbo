@@ -34,6 +34,8 @@ const PAD = "p-1.5 [--menu-pad:0.375rem]"
 export const menuPad = PAD
 export const menuItem = cn(
   "relative flex h-10 cursor-pointer items-center gap-3 rounded-[calc(var(--radius-xl)-var(--menu-pad))] px-3 type-body-md outline-none select-none",
+  // a hairline of space between rows, so neighbouring highlighted or selected rows stay separate pills
+  "[&:not(:first-child)]:mt-0.5",
   "[--icon-size:20px] [--icon-opsz:20] [&_[data-slot=icon]]:text-muted-foreground",
   "transition-colors duration-100 data-highlighted:bg-foreground/[0.07] active:bg-foreground/[0.11]",
   "data-disabled:pointer-events-none data-disabled:opacity-40",

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Combobox, type ComboboxOption } from "@/registry/velvet/ui/combobox"
+import { LOCATIONS } from "@/components/docs/locations"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const VARIANTS = ["filled", "outlined"] as const
@@ -27,6 +28,15 @@ const PEOPLE: ComboboxOption[] = [
   { value: "sofia", label: "Sofía Ramírez", description: "Platform", group: "Engineering", icon: "person" },
   { value: "tomas", label: "Tomás Novák", description: "On leave until Monday", group: "Engineering", icon: "person", disabled: true },
   { value: "bots", label: "Release bot", description: "Runs the changelog", group: "Automations", icon: "smart_toy" },
+]
+
+const STATUSES: ComboboxOption[] = [
+  { value: "backlog", label: "Backlog", icon: "radio_button_unchecked" },
+  { value: "todo", label: "To do", icon: "circle" },
+  { value: "progress", label: "In progress", icon: "clock_loader_40" },
+  { value: "review", label: "In review", icon: "rate_review" },
+  { value: "done", label: "Done", icon: "check_circle" },
+  { value: "cancelled", label: "Cancelled", icon: "cancel" },
 ]
 
 const CITIES = [
@@ -66,6 +76,8 @@ export default function ComboboxPage() {
   const [assignee, setAssignee] = React.useState<string | null>(null)
   const [city, setCity] = React.useState<string | null>(null)
   const search = useCitySearch()
+  const [office, setOffice] = React.useState<string | null>("Sweden")
+  const [markets, setMarkets] = React.useState(["Japan", "Brazil"])
   const [submitted, setSubmitted] = React.useState<string | null>(null)
 
   return (
@@ -142,6 +154,41 @@ export default function ComboboxPage() {
       </Section>
 
       <Section
+        title="Icons at the end"
+        description='iconPosition="end" puts icons at the far end, opposite the label, for the whole list or per option. In a single choice, the check moves to the start.'
+      >
+        <Preview className="flex-col items-stretch">
+          <Combobox label="Status" options={STATUSES} defaultValue="progress" iconPosition="end" className="max-w-sm" />
+        </Preview>
+      </Section>
+
+      <Section
+        title="Nested"
+        description="Options with children open a panel of their own that slides in, with a back row at the top. Use → or Enter to go in and ← to come back. Typing searches every level at once and groups the matches by path: try “nor” or “nordics”. A parent shows what you chose inside it."
+      >
+        <div className="grid gap-4 md:grid-cols-2">
+          <Preview label="single" className="flex-col items-stretch bg-card dark:bg-card">
+            <Combobox label="Office" icon="location_on" options={LOCATIONS} value={office} onValueChange={setOffice} iconPosition="end" />
+          </Preview>
+          <Preview label="multiple" className="flex-col items-stretch bg-card dark:bg-card">
+            <Combobox multiple label="Markets" options={LOCATIONS} value={markets} onValueChange={setMarkets} iconPosition="end" />
+          </Preview>
+        </div>
+        <Code>{`const locations = [
+  {
+    value: "europe", label: "Europe", icon: "euro",
+    children: [
+      { value: "nordics", label: "Nordics", children: ["Denmark", "Finland", "Sweden"] },
+      { value: "western", label: "Western Europe", children: ["France", "Ireland"] },
+    ],
+  },
+  { value: "remote", label: "Anywhere (remote)" },
+]
+
+<Combobox label="Office" options={locations} value={office} onValueChange={setOffice} />`}</Code>
+      </Section>
+
+      <Section
         title="Searching a server"
         description="Turn off local filtering with filter={false}, search in onInputValueChange, and set loading while the request runs."
       >
@@ -208,7 +255,9 @@ const { data = [], isLoading } = useQuery({ queryKey: ["cities", query], queryFn
       <Section title="Props">
         <PropsTable
           rows={[
-            ["options", "(string | ComboboxOption)[]", "", "{ value, label, description?, icon?, group?, keywords?, disabled? }"],
+            ["options", "(string | ComboboxOption)[]", "", "{ value, label, description?, icon?, iconPosition?, group?, keywords?, disabled?, children? }"],
+            ["option children", "(string | ComboboxOption)[]", "", "Makes it a parent that opens a nested panel"],
+            ["iconPosition", '"start" | "end"', '"start"', "Option icons before the label or at the far end"],
             ["value / defaultValue", "string | null, or string[] with multiple", "", "onValueChange gets the same type"],
             ["multiple", "boolean", "false", "Chips in the field; the list stays open"],
             ["inputValue / onInputValueChange", "string / (text) => void", "", "The typed text"],

@@ -34,6 +34,34 @@ import { floatingSurface } from "@/registry/velvet/ui/popover"
  * that opens over the field instead.
  */
 
+/** The arrow at the end of a field that opens a list; turns over while it's open. */
+const fieldChevron = (
+  <Icon
+    name="arrow_drop_down"
+    className={cn(
+      "pointer-events-none me-1 text-muted-foreground transition-[rotate] duration-[396ms] ease-(--ease-spring)",
+      "group-has-[[data-state=open]]/field:rotate-180 group-has-[[data-state=open]]/field:text-primary motion-reduce:transition-none"
+    )}
+  />
+)
+
+/**
+ * Classes for a button that fills a Field (pass the control class Field gives
+ * you). It covers the whole field, so a popup anchors to the field. Mark it
+ * data-placeholder while empty so the label rests.
+ */
+function fieldButtonClass(controlClass: string, { label, invalid }: { label?: boolean; invalid?: boolean }) {
+  return cn(
+    controlClass,
+    "absolute inset-0 z-[1] flex cursor-pointer items-center rounded-field text-left",
+    "ps-(--label-x) pe-12",
+    invalid && "pe-[5.25rem]",
+    "data-placeholder:text-muted-foreground",
+    // with a label, the placeholder only shows once the label has risen
+    label && "data-placeholder:not-data-[state=open]:text-transparent"
+  )
+}
+
 function Select(props: React.ComponentProps<typeof SelectPrimitive.Root>) {
   return <SelectPrimitive.Root data-slot="select" {...props} />
 }
@@ -67,15 +95,7 @@ function SelectTrigger({
   return (
     <Field
       {...{ label, variant, size, icon, description, error, className, id, disabled, ariaInvalid }}
-      trailing={
-        <Icon
-          name="arrow_drop_down"
-          className={cn(
-            "pointer-events-none me-1 text-muted-foreground transition-[rotate] duration-[396ms] ease-(--ease-spring)",
-            "group-has-[[data-state=open]]/field:rotate-180 group-has-[[data-state=open]]/field:text-primary motion-reduce:transition-none"
-          )}
-        />
-      }
+      trailing={fieldChevron}
     >
       {/* a button has no placeholder attribute; Radix marks it data-placeholder instead */}
       {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
@@ -84,15 +104,7 @@ function SelectTrigger({
           {/* The trigger covers the whole field, so the list anchors to the field and any of it opens the list. */}
           <SelectPrimitive.Trigger
             data-slot="select-trigger"
-            className={cn(
-              controlClass,
-              "absolute inset-0 z-[1] flex cursor-pointer items-center rounded-field text-left",
-              "ps-(--label-x) pe-12",
-              invalid && "pe-[5.25rem]",
-              "data-placeholder:text-muted-foreground",
-              // with a label, the placeholder only shows once the label has risen
-              label && "data-placeholder:not-data-[state=open]:text-transparent"
-            )}
+            className={fieldButtonClass(controlClass, { label: Boolean(label), invalid })}
             {...control}
             {...props}
           >
@@ -156,33 +168,43 @@ function SelectLabel({ className, ...props }: React.ComponentProps<typeof Select
 }
 
 type SelectItemProps = React.ComponentProps<typeof SelectPrimitive.Item> & {
-  /** Leading Material Symbol, shown in the list but not in the field. */
+  /** Material Symbol, shown in the list but not in the field. */
   icon?: IconName
+  /** Put the icon before the label (default) or at the far end, opposite it. */
+  iconPosition?: "start" | "end"
   /** Second line, shown in the list but not in the field. */
   description?: React.ReactNode
 }
 
-function SelectItem({ className, children, icon, description, ...props }: SelectItemProps) {
+const itemCheck = (
+  <Icon
+    name="check"
+    weight={600}
+    className="text-secondary-foreground! animate-in zoom-in-50 fade-in-0 duration-[396ms] ease-(--ease-spring-bouncy)"
+  />
+)
+
+function SelectItem({ className, children, icon, iconPosition = "start", description, ...props }: SelectItemProps) {
+  const end = iconPosition === "end"
+  // the check takes the side the icon doesn't
+  const check = (
+    <span className="grid size-5 shrink-0 place-items-center">
+      <SelectPrimitive.ItemIndicator>{itemCheck}</SelectPrimitive.ItemIndicator>
+    </span>
+  )
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
+      data-icon-position={icon ? iconPosition : undefined}
       className={cn(menuItem, menuItemSelected, description && "h-auto min-h-14 py-2", className)}
       {...props}
     >
-      {icon && <Icon name={icon} />}
+      {end ? check : icon && <Icon name={icon} />}
       <span className="flex min-w-0 flex-1 flex-col">
         <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
         {description && <span className="truncate type-body-sm text-muted-foreground in-data-[state=checked]:text-secondary-foreground/75">{description}</span>}
       </span>
-      <span className="grid size-5 shrink-0 place-items-center">
-        <SelectPrimitive.ItemIndicator>
-          <Icon
-            name="check"
-            weight={600}
-            className="text-secondary-foreground! animate-in zoom-in-50 fade-in-0 duration-[396ms] ease-(--ease-spring-bouncy)"
-          />
-        </SelectPrimitive.ItemIndicator>
-      </span>
+      {end ? icon && <Icon name={icon} /> : check}
     </SelectPrimitive.Item>
   )
 }
@@ -216,6 +238,9 @@ function SelectScrollDownButton({ className, ...props }: React.ComponentProps<ty
 }
 
 export {
+  fieldButtonClass,
+  fieldChevron,
+  itemCheck,
   Select,
   SelectContent,
   SelectGroup,
