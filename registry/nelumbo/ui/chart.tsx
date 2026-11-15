@@ -1097,6 +1097,74 @@ export const chartArea = (key: string, fill?: string) => ({
 /* Owned by the bar gallery. Add helpers below with `export` inline.   */
 /* ================================================================== */
 
+/**
+ * Value labels for bars, as small pills or in-bar text. Pass to LabelList:
+ *   <LabelList dataKey="v" content={chartBarLabel()} />                       // inverse pill above each column
+ *   <LabelList dataKey="v" content={chartBarLabel({ horizontal: true })} />    // pill after each row
+ *   <LabelList dataKey="v" content={chartBarLabel({ horizontal: true, position: "inside-start", onColor: "var(--blue-foreground)", text: (i) => names[i] })} />
+ * Negative values put the pill on the far side of the zero line.
+ * `tone` "tonal" tints the pill with `color`; `onColor` colors in-bar text.
+ */
+export function chartBarLabel({
+  horizontal = false,
+  position = "end",
+  format = (v: number) => v.toLocaleString("en-US"),
+  text,
+  onColor = "var(--foreground)",
+  tone = "inverse",
+  color = "var(--foreground)",
+}: {
+  horizontal?: boolean
+  position?: "end" | "inside-start"
+  format?: (v: number) => string
+  /** Replace the text (e.g. a category name) for the bar at `index`. */
+  text?: (index: number, value: number) => string
+  onColor?: string
+  tone?: "inverse" | "tonal"
+  color?: string
+} = {}) {
+  function BarLabel(props: unknown) {
+    const { x = 0, y = 0, width = 0, height = 0, value, index = 0 } = props as BarShapeProps
+    const v = Array.isArray(value) ? value[1] : Number(value ?? 0)
+    if (!Number.isFinite(v)) return <g />
+    const left = width < 0 ? x + width : x
+    const top = height < 0 ? y + height : y
+    const w = Math.abs(width)
+    const h = Math.abs(height)
+    const label = text ? text(index, v) : format(v)
+    if (position === "inside-start") {
+      if (w < 24) return <g />
+      return (
+        <text x={left + h / 2} y={top + h / 2} dominantBaseline="central" className="text-[0.8125rem] font-[620] tracking-[0.01em]" style={{ fill: onColor }}>
+          {label}
+        </text>
+      )
+    }
+    const pw = label.length * 6.8 + 18
+    const ph = 22
+    const gap = 6
+    const neg = v < 0
+    const px = horizontal ? (neg ? left - gap - pw : left + w + gap) : left + w / 2 - pw / 2
+    const py = horizontal ? top + h / 2 - ph / 2 : neg ? top + h + gap : top - gap - ph
+    const tonal = tone === "tonal"
+    return (
+      <g aria-hidden className="pointer-events-none">
+        <rect x={px} y={py} width={pw} height={ph} rx={ph / 2} className={tonal ? undefined : "fill-inverse-surface"} style={tonal ? { fill: chartTrackColor(color, 24) } : undefined} />
+        <text
+          x={px + pw / 2}
+          y={py + ph / 2}
+          textAnchor="middle"
+          dominantBaseline="central"
+          className={cn("text-[0.75rem] font-[620] tabular-nums", tonal ? "fill-foreground" : "fill-inverse-foreground")}
+        >
+          {label}
+        </text>
+      </g>
+    )
+  }
+  return BarLabel
+}
+
 /* end bar helpers */
 
 /* ================================================================== */
