@@ -76,4 +76,8 @@ function Textarea({
   )
 }
 
+
+// lets FormItem recognise this control without importing it
+Textarea.formControl = "field" as const
+
 export { Textarea, type TextareaProps }

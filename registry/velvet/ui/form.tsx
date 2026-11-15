@@ -16,14 +16,6 @@ import { cn } from "@/lib/utils"
 import { Icon } from "@/registry/velvet/ui/icon"
 import { Label } from "@/registry/velvet/ui/label"
 import { FieldWiringContext } from "@/registry/velvet/ui/field"
-import { Input } from "@/registry/velvet/ui/input"
-import { Textarea } from "@/registry/velvet/ui/textarea"
-import { SelectTrigger } from "@/registry/velvet/ui/select"
-import { Combobox, NestedSelect } from "@/registry/velvet/ui/combobox"
-import { DatePicker, DateRangePicker } from "@/registry/velvet/ui/date-picker"
-import { TimePicker } from "@/registry/velvet/ui/time-picker"
-import { RadioGroup } from "@/registry/velvet/ui/radio-group"
-import { Slider } from "@/registry/velvet/ui/slider"
 
 /**
  * Velvet Form (react-hook-form), a drop-in for shadcn's Form
@@ -108,7 +100,11 @@ const FormItemContext = React.createContext<FormItemContextValue>({
   hasMessage: false,
 })
 
-const FIELD_TYPES = new Set<unknown>([Input, Textarea, SelectTrigger, Combobox, NestedSelect, DatePicker, DateRangePicker, TimePicker])
+/** Velvet controls mark themselves with a static `formControl` ("field" | "radio" | "slider"). */
+const controlKind = (type: unknown): "field" | "radio" | "slider" | "other" => {
+  const k = (type as { formControl?: string } | null)?.formControl
+  return k === "field" || k === "radio" || k === "slider" ? k : "other"
+}
 
 /** Walks FormItem's children (not into other components' output) for its label, control and helper parts. */
 function inspect(children: React.ReactNode) {
@@ -130,7 +126,7 @@ function inspect(children: React.ReactNode) {
         const only = React.Children.toArray(child.props.children)[0]
         if (React.isValidElement<Record<string, unknown>>(only)) {
           found.control = only
-          found.kind = FIELD_TYPES.has(only.type) ? "field" : only.type === RadioGroup ? "radio" : only.type === Slider ? "slider" : "other"
+          found.kind = controlKind(only.type)
         }
       } else visit(child.props.children)
     })

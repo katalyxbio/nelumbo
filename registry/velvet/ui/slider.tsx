@@ -238,4 +238,8 @@ function Slider({
   )
 }
 
+
+// lets FormItem recognise this control without importing it
+Slider.formControl = "slider" as const
+
 export { Slider, type SliderProps }

@@ -53,4 +53,8 @@ function Input({
   )
 }
 
+
+// lets FormItem recognise this control without importing it
+Input.formControl = "field" as const
+
 export { Input, type InputProps }

@@ -581,4 +581,9 @@ function DateRangePicker({
   )
 }
 
+
+// lets FormItem recognise this control without importing it
+DatePicker.formControl = "field" as const
+DateRangePicker.formControl = "field" as const
+
 export { DatePicker, DateRangePicker, type DatePickerProps, type DateRangePickerProps, type DateRange }

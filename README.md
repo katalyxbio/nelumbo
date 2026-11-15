@@ -117,3 +117,4 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] Scroll Area (auto-hiding thumb, edge fades), Separator (faint, inset or space only)
 - [x] Command (cmdk palette with a ⌘K dialog)
 - [x] Alert Dialog (icon tile, destructive), Collapsible (spring chevron), Hover Card
+- [x] Form (react-hook-form; one label per control, spring errors, shake on failed submit), Label

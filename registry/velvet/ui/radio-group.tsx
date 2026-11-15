@@ -61,4 +61,8 @@ function RadioGroupItem({ className, color = "default", ...props }: RadioGroupIt
   )
 }
 
+
+// lets FormItem recognise this control without importing it
+RadioGroup.formControl = "radio" as const
+
 export { RadioGroup, RadioGroupItem, type RadioGroupItemProps }

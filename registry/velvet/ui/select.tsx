@@ -238,6 +238,10 @@ function SelectScrollDownButton({ className, ...props }: React.ComponentProps<ty
   )
 }
 
+
+// lets FormItem recognise this control without importing it
+SelectTrigger.formControl = "field" as const
+
 export {
   fieldButtonClass,
   fieldChevron,

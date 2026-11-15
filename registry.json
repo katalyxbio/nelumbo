@@ -1449,6 +1449,46 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "description": "shadcn-compatible Label on Radix in the label-lg type role; dims when its control is disabled, turns red when invalid.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/label.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "form",
+      "type": "registry:ui",
+      "title": "Form",
+      "description": "shadcn-compatible Form on react-hook-form: one label per control (FormLabel feeds Velvet fields their floating label), wired ids and descriptions, spring error messages, a shake on failed submit.",
+      "dependencies": [
+        "react-hook-form",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@velvet/label",
+        "@velvet/field",
+        "@velvet/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/velvet/ui/form.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

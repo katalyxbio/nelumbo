@@ -833,4 +833,8 @@ function TimePicker({
   )
 }
 
+
+// lets FormItem recognise this control without importing it
+TimePicker.formControl = "field" as const
+
 export { TimePicker, type TimePickerProps }

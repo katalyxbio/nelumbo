@@ -1016,4 +1016,9 @@ function NestedSelect(props: NestedSelectProps) {
   return <Combobox clearable={false} displayPath={!props.multiple} {...(props as ComboboxProps)} searchable={false} />
 }
 
+
+// lets FormItem recognise this control without importing it
+Combobox.formControl = "field" as const
+NestedSelect.formControl = "field" as const
+
 export { Combobox, NestedSelect, type ComboboxOption, type ComboboxProps, type NestedSelectProps }
