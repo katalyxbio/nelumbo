@@ -32,7 +32,7 @@ export default function TogglePage() {
       <PageHeader eyebrow="Component · 41" title="Toggle and Toggle Group">
         A Toggle is one on/off setting, such as bold or pin. A Toggle Group holds several toggles that work together:
         pick one (alignment) or several (text styles). Both keep their state in aria-pressed and data-state, and the
-        selected state fills in with a tonal color and, for icons, a filled glyph.
+        selected state fills in, tightens from a pill to a rounded square and, for icons, fills the glyph. In a connected group the selected item turns inverse and swells into a full pill while its neighbours give way.
       </PageHeader>
 
       <Section title="Install">
@@ -112,7 +112,7 @@ export default function TogglePage() {
 
       <Section
         title="Variants"
-        description="default is a plain toggle. outline adds an outline border that stays visible while the toggle is off; the selected state drops the border for the tonal fill."
+        description="default is a plain toggle. outline adds an outline border that stays visible while the toggle is off; the selected state drops the border for an inverse fill."
       >
         <Preview className="flex-col items-stretch gap-6">
           <div className="flex flex-wrap items-center gap-3">

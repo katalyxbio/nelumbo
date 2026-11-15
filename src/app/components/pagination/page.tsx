@@ -181,7 +181,7 @@ export default function PaginationPageDocs() {
         <PropsTable
           rows={[
             ["Pagination", "nav props", "", 'Labelled "pagination"'],
-            ["PaginationLink", "a props, isActive, size, asChild", "", "isActive sets aria-current=\"page\" and the tonal fill"],
+            ["PaginationLink", "a props, isActive, size, asChild", "", "isActive sets aria-current=\"page\" and moves the inverse pill to it with a spring"],
             ["size", '"sm" | "default" | "lg" | "icon"', '"default"', "Round target; icon is the icon-only size"],
             ["PaginationPrevious / PaginationNext", "a props", "", "Chevron and label; the label hides below sm"],
             ["PaginationEllipsis", "span props", "", "Skipped pages; announced as More pages"],

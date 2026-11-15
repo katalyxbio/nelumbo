@@ -45,8 +45,15 @@ import { Icon } from "@/registry/velvet/ui/icon"
  *   <BreadcrumbLink asChild><Link href="/projects">Projects</Link></BreadcrumbLink>
  */
 
-function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
-  return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />
+type BreadcrumbVariant = "plain" | "contained"
+
+/**
+ * `variant="contained"` sets the trail on a tonal track, with the current
+ * page raised on it like a selected segment. "plain" (default) puts the
+ * current page in a tonal chip and leaves the rest on the page.
+ */
+function Breadcrumb({ variant = "plain", className, ...props }: React.ComponentProps<"nav"> & { variant?: BreadcrumbVariant }) {
+  return <nav aria-label="breadcrumb" data-slot="breadcrumb" data-variant={variant} className={cn("group/breadcrumb", className)} {...props} />
 }
 
 function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
@@ -54,7 +61,11 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
     <ol
       data-slot="breadcrumb-list"
       className={cn(
-        "flex min-w-0 flex-wrap items-center gap-x-1 gap-y-1 break-words text-muted-foreground type-label-lg",
+        "flex min-w-0 flex-wrap items-center gap-0.5 break-words text-muted-foreground type-label-lg",
+        "[--icon-opsz:20] [--icon-size:18px]",
+        "group-data-[variant=contained]/breadcrumb:w-fit group-data-[variant=contained]/breadcrumb:rounded-[1.25rem]",
+        "group-data-[variant=contained]/breadcrumb:bg-surface-container-high group-data-[variant=contained]/breadcrumb:p-1",
+        "dark:group-data-[variant=contained]/breadcrumb:bg-surface-container",
         className
       )}
       {...props}
@@ -71,13 +82,17 @@ type BreadcrumbLinkProps = React.ComponentProps<"a"> & {
   asChild?: boolean
 }
 
+const pill = "inline-flex h-8 min-w-0 items-center gap-1.5 rounded-full px-3 has-[>[data-slot=icon]:first-child]:ps-2"
+
 function BreadcrumbLink({ asChild, className, ...props }: BreadcrumbLinkProps) {
   const Comp = asChild ? Slot.Root : "a"
   return (
     <Comp
       data-slot="breadcrumb-link"
       className={cn(
-        "state-layer inline-flex h-8 items-center gap-1 rounded-full px-2.5 text-muted-foreground no-underline transition-colors duration-150 outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        pill,
+        "tactile state-layer text-muted-foreground no-underline outline-none hover:text-foreground",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className
       )}
       {...props}
@@ -90,7 +105,15 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
     <span
       data-slot="breadcrumb-page"
       aria-current="page"
-      className={cn("inline-flex h-8 min-w-0 items-center px-2.5 font-medium text-foreground type-label-lg", className)}
+      className={cn(
+        pill,
+        "font-medium text-secondary-foreground [--icon-fill:1]",
+        "bg-secondary",
+        // contained: the current page is the raised segment of the track
+        "group-data-[variant=contained]/breadcrumb:bg-surface-container-lowest group-data-[variant=contained]/breadcrumb:text-foreground",
+        "group-data-[variant=contained]/breadcrumb:shadow-e1 dark:group-data-[variant=contained]/breadcrumb:bg-surface-container-highest",
+        className
+      )}
       {...props}
     />
   )
@@ -103,7 +126,7 @@ function BreadcrumbSeparator({ children, className, ...props }: React.ComponentP
       role="presentation"
       aria-hidden="true"
       className={cn(
-        "inline-flex shrink-0 items-center text-muted-foreground [--icon-opsz:20] [--icon-size:16px] [&_[data-slot=icon]]:text-muted-foreground",
+        "inline-flex shrink-0 items-center px-0.5 text-outline [--icon-opsz:20] [--icon-size:16px]",
         className
       )}
       {...props}
@@ -115,7 +138,11 @@ function BreadcrumbSeparator({ children, className, ...props }: React.ComponentP
 
 function BreadcrumbEllipsis({ className, ...props }: React.ComponentProps<"span">) {
   return (
-    <span data-slot="breadcrumb-ellipsis" className={cn("flex size-8 items-center justify-center text-muted-foreground", className)} {...props}>
+    <span
+      data-slot="breadcrumb-ellipsis"
+      className={cn("flex size-8 items-center justify-center rounded-full text-muted-foreground", className)}
+      {...props}
+    >
       <Icon name="more_horiz" size={18} />
       <span className="sr-only">More</span>
     </span>

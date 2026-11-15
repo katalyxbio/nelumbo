@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "separator",
+  "title": "Separator",
+  "description": "shadcn-compatible Separator on Radix: faint line, inset, or space only.",
+  "dependencies": [
+    "radix-ui"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/velvet/ui/separator.tsx",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\nimport { Separator as SeparatorPrimitive } from \"radix-ui\"\n\nimport { cn } from \"@/lib/utils\"\n\n/**\n * Velvet Separator (built on Radix Separator)\n *\n * shadcn's API, so shadcn code works unchanged:\n *\n *   <Separator />\n *   <Separator orientation=\"vertical\" className=\"h-6\" />\n *\n * Velvet additions:\n *\n *   <Separator variant=\"inset\" />          // a line that starts after a list's leading slot\n *   <Separator variant=\"space\" />          // spacing only, no line\n *\n * Velvet prefers spacing to dividers. The default line is 1px and very faint\n * (outline-variant at half strength), so it separates without drawing the\n * eye. Reach for spacing first: a gap between groups usually does the job.\n *\n * - `variant`:\n *   - \"line\" (default): a faint hairline.\n *   - \"inset\": the same line, indented to line up with a List item's text\n *     (72px, past the 40px leading slot), for lines inside a list.\n *   - \"space\": renders only the space (16px across, or along, the axis), with\n *     no line. Use it as a gap between groups.\n * - `decorative` (default true): hidden from assistive tech. Pass false when\n *   the line separates two regions a screen reader user should notice.\n * - `orientation`: \"horizontal\" (default) or \"vertical\". A vertical line\n *   stretches to the height of a flex row (`self-stretch`).\n */\n\ntype SeparatorVariant = \"line\" | \"inset\" | \"space\"\n\ntype SeparatorProps = React.ComponentProps<typeof SeparatorPrimitive.Root> & {\n  variant?: SeparatorVariant\n}\n\nfunction Separator({\n  className,\n  orientation = \"horizontal\",\n  decorative = true,\n  variant = \"line\",\n  ...props\n}: SeparatorProps) {\n  const vertical = orientation === \"vertical\"\n\n  return (\n    <SeparatorPrimitive.Root\n      data-slot=\"separator\"\n      data-variant={variant}\n      data-orientation={orientation}\n      orientation={orientation}\n      decorative={decorative}\n      className={cn(\n        \"shrink-0\",\n        variant === \"space\"\n          ? vertical\n            ? \"w-4 self-stretch\"\n            : \"h-4 w-full\"\n          : [\n              \"bg-outline-variant/50\",\n              vertical ? \"w-px self-stretch\" : variant === \"inset\" ? \"h-px w-auto ms-[4.5rem]\" : \"h-px w-full\",\n            ],\n        className\n      )}\n      {...props}\n    />\n  )\n}\n\nexport { Separator, type SeparatorProps, type SeparatorVariant }\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

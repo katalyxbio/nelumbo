@@ -33,21 +33,27 @@ const toggleVariants = cva(
     "h-[var(--btn-h)] px-[calc(var(--btn-px,0px)+var(--btn-px-delta,0px))] [--btn-radius:calc(var(--btn-h)/2)] [--btn-radius-pressed:calc(var(--btn-h)/3.2)]",
     // Per-side radii let ToggleGroup square off inner corners, as in ButtonGroup.
     "rounded-s-[var(--btn-radius-start,var(--btn-radius))] rounded-e-[var(--btn-radius-end,var(--btn-radius))] active:rounded-[var(--btn-radius-pressed)]",
-    "text-foreground transition-[background-color,color,border-color] duration-200 ease-standard",
-    "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
     "disabled:pointer-events-none disabled:opacity-40",
     "aria-invalid:outline-2 aria-invalid:outline-offset-2 aria-invalid:outline-destructive",
     // icon-only: square, with no side padding
-    "has-[>[data-slot=icon]:only-child]:w-[var(--btn-h)] has-[>[data-slot=icon]:only-child]:px-0",
+    "has-[>[data-slot=icon]:only-child]:w-[calc(var(--btn-h)+var(--btn-px-delta,0px)*2)] has-[>[data-slot=icon]:only-child]:px-0",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[var(--icon-size)]",
-    // selected: filled glyph, tonal fill
-    "data-[state=on]:bg-secondary data-[state=on]:text-secondary-foreground data-[state=on]:[--icon-fill:1]",
+    // selected: the glyph fills and the pill tightens into a rounded square,
+    // so the change reads in shape as well as color
+    "data-[state=on]:[--icon-fill:1] data-[state=on]:[--btn-radius:calc(var(--btn-h)/3.2)]",
   ],
   {
     variants: {
       variant: {
-        default: "bg-transparent",
-        outline: "border border-outline bg-transparent data-[state=on]:border-transparent",
+        default: [
+          "bg-transparent text-muted-foreground hover:text-foreground",
+          "data-[state=on]:bg-secondary data-[state=on]:text-secondary-foreground",
+        ],
+        outline: [
+          "border border-outline bg-transparent text-muted-foreground hover:text-foreground",
+          "data-[state=on]:border-transparent data-[state=on]:bg-inverse-surface data-[state=on]:text-inverse-foreground",
+        ],
       },
       size: {
         sm: "h-8 [--btn-h:2rem] [--btn-px:0.75rem] [--icon-size:18px] [--icon-opsz:20] type-label-md",

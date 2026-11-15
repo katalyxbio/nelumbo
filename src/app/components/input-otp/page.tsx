@@ -86,8 +86,8 @@ export default function InputOtpPage() {
       </Section>
 
       <Section
-        title="Connected and invalid"
-        description="A connected group shares one surface, so the slots read as a single field. aria-invalid draws every slot in the destructive outline; the error text is tied to the input with aria-describedby."
+        title="Verdicts"
+        description="The code checks itself when the last character lands. status=&quot;success&quot; washes the slots green in a wave; status=&quot;error&quot; (or aria-invalid) shakes the code and turns it red, with the error text tied to the input by aria-describedby. Try 123456, then anything else. This one is a connected group: the slots share one bar."
       >
         <Preview className="flex-col items-stretch gap-6">
           <div className="flex flex-col gap-3">
@@ -112,6 +112,8 @@ export default function InputOtpPage() {
                   setCode(v)
                   setSubmitted(null)
                 }}
+                onComplete={(v: string) => setSubmitted(v === CORRECT ? "ok" : "bad")}
+                status={submitted === "ok" ? "success" : undefined}
                 aria-invalid={wrong || undefined}
                 aria-describedby={wrong ? "otp-connected-error" : undefined}
                 className="w-full"
@@ -234,11 +236,12 @@ export default function InputOtpPage() {
             ["value / onChange", "string / (value) => void", "", "Controlled; onChange gets the whole code"],
             ["pattern", "RegExp string", "", "Use REGEXP_ONLY_DIGITS, REGEXP_ONLY_CHARS or REGEXP_ONLY_DIGITS_AND_CHARS"],
             ["onComplete", "() => void", "", "Called once every slot is filled"],
-            ["aria-invalid", "boolean", "false", "Destructive outline on every slot; pair with aria-describedby"],
+            ["status", '"success" | "error"', "", "Verdict on a complete code: a green wave, or a shake in red"],
+            ["aria-invalid", "boolean", "false", "Same as status=\"error\"; pair with aria-describedby"],
             ["disabled", "boolean", "false", "Dims the code and removes it from the tab order"],
             ["autoComplete", "string", "", 'Use "one-time-code" so phones offer the SMS code'],
             ["aria-label / label for", "string", "", "Name the hidden input. A visible label with htmlFor works too"],
-            ["InputOTPGroup connected", "boolean", "false", "Slots touch and share one surface"],
+            ["InputOTPGroup connected", "boolean", "false", "Slots sit on one bar with small inner corners"],
             ["InputOTPSlot index", "number", "", "Position in the code, starting at 0"],
             ["InputOTPSeparator", "", "", "A short dash between groups; not announced as content"],
           ]}

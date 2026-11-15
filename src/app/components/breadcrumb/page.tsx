@@ -12,6 +12,7 @@ import {
 } from "@/registry/velvet/ui/breadcrumb"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/registry/velvet/ui/dropdown-menu"
 import { Card } from "@/registry/velvet/ui/card"
+import { Icon } from "@/registry/velvet/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const stop = (e: React.MouseEvent) => e.preventDefault()
@@ -30,7 +31,7 @@ export default function BreadcrumbPageDocs() {
 
       <Section
         title="Basic"
-        description='The current page is a BreadcrumbPage with aria-current="page", set in foreground and medium weight. Links are muted and fill with the state layer on hover and focus.'
+        description='The current page is a BreadcrumbPage with aria-current="page", set in a tonal chip. Links are muted pills that fill with the state layer on hover and squeeze when pressed.'
       >
         <Preview className="justify-start">
           <Breadcrumb>
@@ -45,6 +46,49 @@ export default function BreadcrumbPageDocs() {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </Preview>
+      </Section>
+
+      <Section
+        title="Contained"
+        description='variant="contained" sets the trail on a tonal track and raises the current page on it, like the selected segment of a segmented button. Icons in links and in the page sit at 18px; the page&apos;s icon fills.'
+      >
+        <Preview className="flex-col items-start gap-4">
+          <Breadcrumb variant="contained">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#" onClick={stop}>
+                  <Icon name="home" />
+                  Home
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#" onClick={stop}>
+                  <Icon name="folder" />
+                  Projects
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>
+                  <Icon name="description" />
+                  Q3 report
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <Breadcrumb variant="contained">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#" onClick={stop}>Settings</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Notifications</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -179,6 +223,7 @@ export default function BreadcrumbPageDocs() {
         <PropsTable
           rows={[
             ["Breadcrumb", "nav props", "", 'Labelled "breadcrumb" by default'],
+            ["Breadcrumb variant", '"plain" | "contained"', '"plain"', "contained sets the trail on a tonal track with the page raised on it"],
             ["BreadcrumbList", "ol props", "", "Wraps onto more lines on narrow screens"],
             ["BreadcrumbItem", "li props", "", ""],
             ["BreadcrumbLink", "a props, asChild", "false", "Muted link; asChild styles your own element"],

@@ -41,14 +41,31 @@ type ToggleGroupProps = React.ComponentProps<typeof ToggleGroupPrimitive.Root> &
     spacing?: number
   }
 
-// Connected: the same corner logic as ButtonGroup's connected variant.
+// Connected: one row of quiet tiles. The selected item turns inverse and
+// swells into a full pill while its neighbours give way; pressing an item
+// widens it and squeezes the rest, as in ButtonGroup.
 const connectedClasses = [
   "gap-0.5",
   "*:[--press-scale:1]",
   "*:[--btn-radius-start:calc(var(--btn-h)/5)] *:[--btn-radius-end:calc(var(--btn-h)/5)]",
   "*:first:[--btn-radius-start:var(--btn-radius)] *:last:[--btn-radius-end:var(--btn-radius)]",
   "[&>[data-state=on][data-state]]:[--btn-radius-start:calc(var(--btn-h)/2)] [&>[data-state=on][data-state]]:[--btn-radius-end:calc(var(--btn-h)/2)]",
+  "[&>[data-state=on]]:[--btn-px-delta:0.375rem]",
+  "*:active:[--btn-px-delta:0.5rem]",
+  "[&:has(>:active)>:not(:active)]:[--btn-px-delta:-0.125rem]",
 ]
+
+// item colors in a connected group; cn() lets these replace the variant's
+const connectedItem = {
+  default: [
+    "bg-surface-container-high text-muted-foreground dark:data-[state=off]:bg-surface-container-highest",
+    "data-[state=on]:bg-inverse-surface data-[state=on]:text-inverse-foreground",
+  ],
+  outline: [
+    "border-outline-variant bg-transparent",
+    "data-[state=on]:bg-inverse-surface data-[state=on]:text-inverse-foreground",
+  ],
+}
 
 function ToggleGroup({ className, variant, size, spacing = 0, style, children, ...props }: ToggleGroupProps) {
   const connected = spacing === 0
@@ -76,7 +93,7 @@ function ToggleGroupItem({ className, children, variant, size, ...props }: React
       data-slot="toggle-group-item"
       data-variant={v ?? "default"}
       data-size={s ?? "default"}
-      className={cn(toggleVariants({ variant: v, size: s }), className)}
+      className={cn(toggleVariants({ variant: v, size: s }), context.spacing === 0 && connectedItem[v ?? "default"], className)}
       {...props}
     >
       {withLabels(children)}

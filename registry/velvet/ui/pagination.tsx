@@ -42,7 +42,7 @@ const paginationLinkVariants = cva(
   [
     "tactile state-layer inline-flex shrink-0 cursor-pointer items-center justify-center gap-1 rounded-full no-underline select-none",
     "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-    "transition-colors duration-150 [&_[data-slot=icon]]:shrink-0",
+    "[&_[data-slot=icon]]:shrink-0",
     "aria-disabled:pointer-events-none aria-disabled:opacity-40",
   ],
   {
@@ -99,13 +99,61 @@ function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   )
 }
 
-function PaginationContent({ className, ...props }: React.ComponentProps<"ul">) {
+/**
+ * The current page sits on an inverse pill that springs from page to page.
+ * The pill is measured from whichever link has aria-current="page", so it
+ * follows any markup; until it is measured the link draws its own fill.
+ */
+function PaginationContent({ className, children, ...props }: React.ComponentProps<"ul">) {
+  const ref = React.useRef<HTMLUListElement>(null)
+  const [pill, setPill] = React.useState<{ x: number; y: number; w: number; h: number; moved: boolean } | null>(null)
+
+  React.useLayoutEffect(() => {
+    const ul = ref.current
+    if (!ul) return
+    const measure = () => {
+      const a = ul.querySelector<HTMLElement>('[aria-current="page"]')
+      if (!a) return setPill(null)
+      const r = a.getBoundingClientRect()
+      const o = ul.getBoundingClientRect()
+      const next = { x: r.left - o.left, y: r.top - o.top, w: r.width, h: r.height }
+      setPill((p) =>
+        p && p.x === next.x && p.y === next.y && p.w === next.w && p.h === next.h ? p : { ...next, moved: p !== null }
+      )
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(ul)
+    const mo = new MutationObserver(measure)
+    mo.observe(ul, { subtree: true, childList: true, attributes: true, attributeFilter: ["aria-current"] })
+    return () => {
+      ro.disconnect()
+      mo.disconnect()
+    }
+  }, [])
+
   return (
     <ul
+      ref={ref}
       data-slot="pagination-content"
-      className={cn("flex flex-row flex-wrap items-center justify-center gap-1", className)}
+      data-pill={pill ? "" : undefined}
+      className={cn("group/pagination relative isolate flex flex-row flex-wrap items-center justify-center gap-1", className)}
       {...props}
-    />
+    >
+      <li
+        aria-hidden
+        role="none"
+        data-slot="pagination-indicator"
+        className={cn(
+          "pointer-events-none absolute top-0 left-0 -z-10 rounded-full bg-inverse-surface",
+          pill?.moved &&
+            "transition-[translate,width,height] duration-500 ease-(--ease-spring-bouncy) motion-reduce:transition-none",
+          !pill && "hidden"
+        )}
+        style={pill ? { translate: `${pill.x}px ${pill.y}px`, width: pill.w, height: pill.h } : undefined}
+      />
+      {children}
+    </ul>
   )
 }
 
@@ -130,7 +178,10 @@ function PaginationLink({ className, isActive, size = "default", asChild, ...pro
       aria-current={isActive ? "page" : undefined}
       className={cn(
         paginationLinkVariants({ size }),
-        isActive ? "bg-secondary text-secondary-foreground" : "bg-transparent text-foreground",
+        isActive
+          ? // the pill behind the list draws the fill once measured
+            "bg-inverse-surface text-inverse-foreground group-data-pill/pagination:bg-transparent [&::after]:hidden"
+          : "bg-transparent text-muted-foreground hover:text-foreground",
         className
       )}
       {...props}
@@ -143,7 +194,7 @@ function PaginationPrevious({ className, ...props }: Omit<PaginationLinkProps, "
     <PaginationLink
       aria-label="Go to previous page"
       data-slot="pagination-previous"
-      className={cn("gap-1 sm:w-auto sm:pr-4 sm:pl-3", className)}
+      className={cn("gap-1 bg-surface-container-high text-foreground hover:text-foreground sm:w-auto sm:pr-4 sm:pl-3 dark:bg-surface-container-highest", className)}
       {...props}
     >
       <Icon name="chevron_left" />
@@ -157,7 +208,7 @@ function PaginationNext({ className, ...props }: Omit<PaginationLinkProps, "isAc
     <PaginationLink
       aria-label="Go to next page"
       data-slot="pagination-next"
-      className={cn("gap-1 sm:w-auto sm:pr-3 sm:pl-4", className)}
+      className={cn("gap-1 bg-surface-container-high text-foreground hover:text-foreground sm:w-auto sm:pr-3 sm:pl-4 dark:bg-surface-container-highest", className)}
       {...props}
     >
       <span className="hidden sm:inline">Next</span>
