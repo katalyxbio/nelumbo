@@ -685,7 +685,7 @@
       "name": "combobox",
       "type": "registry:ui",
       "title": "Combobox",
-      "description": "Type-to-filter field (ARIA combobox) with accent-insensitive matching and highlighted matches, groups, icons and descriptions, multiple selection as chips in a growing field, async loading and form submission.",
+      "description": "Type-to-filter field (ARIA combobox) with accent-insensitive matching, groups, icons at either end, multiple selection as chips, nested options (cascading menus by default, or drill-in panels), async loading and forms. Also exports NestedSelect, a select-only version for nested options.",
       "dependencies": [
         "radix-ui"
       ],

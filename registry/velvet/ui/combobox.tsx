@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { Popover as PopoverPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
@@ -70,6 +71,16 @@ type ComboboxBaseProps = Omit<FieldProps, "trailing"> & {
   loading?: boolean
   /** Where option icons go: before the label, or at the far end. Default "start". */
   iconPosition?: "start" | "end"
+  /**
+   * How nested options open. "cascade" (default): each level in a menu beside
+   * its parent, like a desktop menu. "drill": one panel at a time, with a back
+   * row. Narrow screens always drill, since there's no room beside the list.
+   */
+  nestedStyle?: "cascade" | "drill"
+  /** false makes it a select: no typing, typeahead jumps to an option, Space and Enter open. Default true. */
+  searchable?: boolean
+  /** Show the chosen option's whole path in the field ("Europe › Nordics › Sweden"). */
+  displayPath?: boolean
   /** Show a clear button once there's a value. Default true. */
   clearable?: boolean
   disabled?: boolean
@@ -165,6 +176,7 @@ function toTree(raw: readonly (ComboboxOption | string)[], path: TreeNode[] = []
 const leavesOf = (nodes: TreeNode[]): TreeNode[] => nodes.flatMap((n) => (n.kids ? leavesOf(n.kids) : [n]))
 
 type Section = { group?: string; items: TreeNode[] }
+type Panel = { sections: Section[]; flat: TreeNode[]; parent?: TreeNode; back?: TreeNode }
 
 /** Display sections (by group, in first-seen order) and the same options flat, for the keyboard. */
 function arrange(nodes: TreeNode[], groupOf: (n: TreeNode) => string | undefined) {
@@ -208,6 +220,9 @@ function Combobox(props: ComboboxProps) {
     filter = defaultFilter,
     loading,
     iconPosition = "start",
+    nestedStyle = "cascade",
+    searchable = true,
+    displayPath = false,
     clearable = true,
     disabled,
     required,
@@ -232,20 +247,42 @@ function Combobox(props: ComboboxProps) {
       [multiple, props.onValueChange]
     )
   )
-  const selectedLabel = !multiple && selected[0] !== undefined ? (byValue.get(selected[0])?.label ?? selected[0]) : ""
+  const selectedNode = !multiple && selected[0] !== undefined ? byValue.get(selected[0]) : undefined
+  const selectedLabel = selectedNode
+    ? displayPath
+      ? [...selectedNode.path.map((p) => p.label), selectedNode.label].join(" › ")
+      : selectedNode.label
+    : !multiple && selected[0] !== undefined
+      ? selected[0]
+      : ""
 
   const [text, setTextState] = useControllable(inputValue, selectedLabel, onInputValueChange)
   const [dirty, setDirty] = React.useState(false) // typed since the list opened
   const [open, setOpen] = React.useState(false)
-  const [active, setActive] = React.useState(-1)
-  const [trail, setTrail] = React.useState<string[]>([]) // values of the parents we're inside
+  const [active, setActive] = React.useState(-1) // highlighted row, in column `col`
+  const [col, setCol] = React.useState(0) // cascade: the menu the keyboard is in
+  const [trail, setTrail] = React.useState<string[]>([]) // values of the open parents
   const [dir, setDir] = React.useState<1 | -1>(1)
+  const [narrow, setNarrow] = React.useState(false)
 
   const inputRef = React.useRef<HTMLInputElement>(null)
+  const contentRef = React.useRef<HTMLDivElement>(null)
+  const flyoutRefs = React.useRef<(HTMLDivElement | null)[]>([])
+  const hoverTimer = React.useRef<ReturnType<typeof setTimeout>>(undefined)
+  const typeahead = React.useRef({ text: "", at: 0 })
   const autoId = React.useId()
   const baseId = id ?? autoId
-  const listId = `${baseId}-list`
-  const optionId = (i: number) => `${baseId}-opt-${i}`
+  const listIdOf = (c: number) => (c ? `${baseId}-list-${c}` : `${baseId}-list`)
+  const optionId = (c: number, i: number) => `${baseId}-c${c}-${i}`
+
+  // no room for side menus on a phone: drill instead
+  React.useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)")
+    const update = () => setNarrow(mq.matches)
+    update()
+    mq.addEventListener("change", update)
+    return () => mq.removeEventListener("change", update)
+  }, [])
 
   // keep the text in step with a single selection changed from outside
   React.useEffect(() => {
@@ -255,10 +292,11 @@ function Combobox(props: ComboboxProps) {
 
   const query = dirty ? text : ""
   const searching = Boolean(query.trim() && filter)
+  const cascade = nested && nestedStyle === "cascade" && !narrow
 
-  /** The panel for a trail: a back row (when nested), then that level's options by group. */
+  /** The options inside a trail of parents, by group; with a back row on top when drilling. */
   const browse = React.useCallback(
-    (t: string[]) => {
+    (t: string[], withBack: boolean): Panel => {
       let level = tree
       const parents: TreeNode[] = []
       for (const v of t) {
@@ -269,22 +307,30 @@ function Combobox(props: ComboboxProps) {
       }
       const { sections, flat } = arrange(level, (n) => n.group)
       const parent = parents.at(-1)
-      if (!parent) return { sections, flat, parent }
+      if (!parent || !withBack) return { sections, flat, parent }
       const back: TreeNode = { value: `${parent.value}::back`, label: parent.label, path: parent.path, back: true }
       return { sections, flat: [back, ...flat], parent, back }
     },
     [tree]
   )
 
-  const view = React.useMemo(() => {
+  /** Cascade: one column per open level. Drill or search: a single panel. */
+  const columnsFor = React.useCallback(
+    (t: string[]): Panel[] => (cascade ? t.map((_, k) => browse(t.slice(0, k), false)).concat(browse(t, false)) : [browse(t, true)]),
+    [cascade, browse]
+  )
+
+  const columns: Panel[] = React.useMemo(() => {
     if (searching && filter) {
       const hit = (n: TreeNode) => filter(n, query)
       const found = leaves.filter((l) => hit(l) || l.path.some(hit))
-      return { ...arrange(found, (n) => (n.path.length ? n.path.map((p) => p.label).join(" › ") : n.group)), parent: undefined, back: undefined }
+      return [arrange(found, (n) => (n.path.length ? n.path.map((p) => p.label).join(" › ") : n.group))]
     }
-    return browse(trail)
-  }, [searching, filter, query, leaves, browse, trail])
-  const { flat, sections, parent, back } = view
+    return columnsFor(trail)
+  }, [searching, filter, query, leaves, columnsFor, trail])
+  const c = Math.min(col, columns.length - 1)
+  const flat = columns[c].flat
+  const parent = columns[c].parent
 
   const enabledFrom = (list: TreeNode[], start: number, step: 1 | -1) => {
     const n = list.length
@@ -296,49 +342,63 @@ function Combobox(props: ComboboxProps) {
   }
 
   /** Index of the first selected option in a panel, else its first real option. */
-  const landingIndex = (list: TreeNode[], skipBack: boolean) => {
+  const landingIndex = (list: TreeNode[]) => {
     const sel = list.findIndex((o) => !o.back && (selected.includes(o.value) || (o.kids && leavesOf(o.kids).some((l) => selected.includes(l.value)))))
     if (sel >= 0) return sel
-    return enabledFrom(list, skipBack && list[0]?.back ? 1 : 0, 1)
+    return enabledFrom(list, list[0]?.back ? 1 : 0, 1)
   }
 
   const openList = (highlight: "selected" | "last" | "none" = "selected") => {
     if (disabled) return
-    // open where the current choice lives
-    const sel = !multiple && selected[0] ? byValue.get(selected[0]) : undefined
-    const t = sel ? sel.path.map((p) => p.value) : []
+    // open where the current choice lives (in a cascade, with its menus open)
+    const t = selectedNode ? selectedNode.path.map((p) => p.value) : []
+    const cols = columnsFor(t)
+    const last = cols.length - 1
     setTrail(t)
+    setCol(last)
     setDir(1)
     setOpen(true)
-    const panel = browse(t).flat
+    const panel = cols[last].flat
     if (highlight === "none") return setActive(-1)
     if (highlight === "last") return setActive(enabledFrom(panel, panel.length - 1, -1))
-    setActive(landingIndex(panel, true))
+    setActive(landingIndex(panel))
   }
 
+  /** Open a parent and move into it. */
   const enter = (n: TreeNode) => {
+    clearTimeout(hoverTimer.current)
     const t = [...n.path.map((p) => p.value), n.value]
+    const cols = columnsFor(t)
     setTrail(t)
+    setCol(cols.length - 1)
     setDir(1)
     if (dirty && text) {
       setTextState(multiple ? "" : selectedLabel)
       setDirty(false)
     }
-    setActive(landingIndex(browse(t).flat, true))
+    setActive(landingIndex(cols.at(-1)!.flat))
   }
 
+  /** Close the innermost level and go back to its parent. */
   const goBack = () => {
     if (!trail.length) return
-    const left = trail.at(-1)!
-    const t = trail.slice(0, -1)
+    clearTimeout(hoverTimer.current)
+    const depth = cascade ? c : trail.length
+    if (depth < 1) return
+    const left = trail[depth - 1]
+    const t = trail.slice(0, depth - 1)
+    const cols = columnsFor(t)
     setTrail(t)
+    setCol(cols.length - 1)
     setDir(-1)
-    setActive(browse(t).flat.findIndex((o) => o.value === left))
+    setActive(cols.at(-1)!.flat.findIndex((o) => o.value === left))
   }
 
   const close = () => {
+    clearTimeout(hoverTimer.current)
     setOpen(false)
     setActive(-1)
+    setCol(0)
     // emptying the text of a single combobox clears it
     if (!multiple && dirty && !text.trim() && selected.length) {
       setSelected([])
@@ -359,11 +419,26 @@ function Combobox(props: ComboboxProps) {
       setDirty(false)
     } else {
       setSelected([o.value])
-      setTextState(o.label)
+      setTextState(displayPath ? [...o.path.map((p) => p.label), o.label].join(" › ") : o.label)
       setDirty(false)
       setOpen(false)
       setActive(-1)
+      setCol(0)
     }
+  }
+
+  /** Pointer over a row: highlight it; in a cascade, open (or close) menus after a short pause, so a diagonal move toward an open menu doesn't switch it. */
+  const hover = (o: TreeNode, colIndex: number, i: number) => {
+    if (o.disabled) return
+    if (colIndex !== c || i !== active) {
+      setCol(colIndex)
+      setActive(i)
+    }
+    if (!cascade || searching) return
+    const want = o.kids ? [...o.path.map((p) => p.value), o.value] : trail.slice(0, colIndex)
+    if (want.join("/") === trail.join("/")) return clearTimeout(hoverTimer.current)
+    clearTimeout(hoverTimer.current)
+    hoverTimer.current = setTimeout(() => setTrail(want), 140)
   }
 
   const clear = () => {
@@ -376,18 +451,117 @@ function Combobox(props: ComboboxProps) {
   // after typing (or new async results), keep the highlight on a real option
   React.useEffect(() => {
     if (!open || !dirty) return
+    setCol(0)
     setActive(query.trim() ? enabledFrom(flat, 0, 1) : -1)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, rawOptions])
 
   React.useEffect(() => {
-    if (open && active >= 0) document.getElementById(optionId(active))?.scrollIntoView({ block: "nearest" })
+    if (open && active >= 0) document.getElementById(optionId(c, active))?.scrollIntoView({ block: "nearest" })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, open, trail])
+  }, [active, open, trail, c])
+
+  React.useEffect(() => () => clearTimeout(hoverTimer.current), [])
+
+  // Place each side menu beside the row that opened it, flipping to the left
+  // when there's no room. Measured without the opening animation's scale:
+  // from the Radix wrapper (translated only) and from offsets.
+  const placeFlyouts = React.useCallback(() => {
+    const boxes: { left: number; top: number; width: number; side: "left" | "right" }[] = []
+    const content = contentRef.current
+    const wrapper = content?.parentElement
+    if (!content || !wrapper) return
+    const w0 = wrapper.getBoundingClientRect()
+    boxes[0] = { left: w0.left, top: w0.top, width: content.offsetWidth, side: "right" }
+    for (let k = 1; k < columns.length; k++) {
+      const el = flyoutRefs.current[k]
+      const host = k === 1 ? content : flyoutRefs.current[k - 1]
+      const row = document.getElementById(optionId(k - 1, columns[k - 1].flat.findIndex((o) => o.value === trail[k - 1])))
+      const hb = boxes[k - 1]
+      if (!el || !host || !row || !hb) return
+      let rowTop = 0
+      for (let n: HTMLElement | null = row; n && n !== host; n = n.offsetParent as HTMLElement | null) rowTop += n.offsetTop
+      rowTop = hb.top + rowTop - host.scrollTop
+      const w = el.offsetWidth
+      const ht = el.offsetHeight
+      // keep going the way the chain already goes; switch sides only when there's no room,
+      // and overlap the parent menu only when neither side fits
+      const right = hb.left + hb.width + 4
+      const leftOf = hb.left - w - 4
+      const fitsRight = right + w <= window.innerWidth - 8
+      const fitsLeft = leftOf >= 8
+      let side = k > 1 ? boxes[k - 1].side : "right"
+      if (side === "right" ? !fitsRight && fitsLeft : !fitsLeft && fitsRight) side = side === "right" ? "left" : "right"
+      const fits = side === "right" ? fitsRight : fitsLeft
+      const left = fits
+        ? side === "right"
+          ? right
+          : leftOf
+        : Math.min(Math.max(8, hb.left + 24), window.innerWidth - w - 8)
+      const top = Math.min(Math.max(8, rowTop - 6), window.innerHeight - ht - 8)
+      el.style.left = `${left}px`
+      el.style.top = `${top}px`
+      el.style.transformOrigin = `${side === "right" ? "left" : "right"} ${rowTop - top + row.offsetHeight / 2}px`
+      el.dataset.side = side
+      boxes[k] = { left, top, width: w, side }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columns, trail])
+
+  React.useLayoutEffect(() => {
+    if (!open || columns.length < 2) return
+    placeFlyouts()
+    // Radix positions the root list a moment later, and lists animate in: follow for half a second
+    let frames = 0
+    let raf = requestAnimationFrame(function tick() {
+      placeFlyouts()
+      if (++frames < 30) raf = requestAnimationFrame(tick)
+    })
+    window.addEventListener("scroll", placeFlyouts, true)
+    window.addEventListener("resize", placeFlyouts)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener("scroll", placeFlyouts, true)
+      window.removeEventListener("resize", placeFlyouts)
+    }
+  }, [open, columns.length, placeFlyouts])
+
+  const jumpTo = (key: string) => {
+    const now = Date.now()
+    const t = typeahead.current
+    t.text = now - t.at > 600 ? key : t.text + key
+    t.at = now
+    const q = strip(t.text)
+    const list = flat
+    const from = t.text.length === 1 ? active + 1 : Math.max(active, 0)
+    for (let k = 0; k < list.length; k++) {
+      const i = (from + k) % list.length
+      const o = list[i]
+      if (!o.back && !o.disabled && strip(o.label).startsWith(q)) return setActive(i)
+    }
+  }
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.nativeEvent.isComposing) return
     const current = open && active >= 0 ? flat[active] : undefined
+    // a select (searchable=false): Space and Enter open it, letters jump
+    if (!searchable) {
+      if (!open && (e.key === "Enter" || e.key === " ")) {
+        e.preventDefault()
+        return openList()
+      }
+      if (open && e.key === " ") {
+        e.preventDefault()
+        if (current) pick(current)
+        return
+      }
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault()
+        if (!open) openList()
+        else jumpTo(e.key)
+        return
+      }
+    }
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault()
@@ -408,9 +582,16 @@ function Combobox(props: ComboboxProps) {
         }
         break
       case "ArrowLeft":
-        if (open && trail.length && !searching && !query.trim()) {
+        if (open && trail.length && !searching && !query.trim() && (!cascade || c > 0)) {
           e.preventDefault()
           goBack()
+        }
+        break
+      case "Home":
+      case "End":
+        if (open && !searchable) {
+          e.preventDefault()
+          setActive(e.key === "Home" ? enabledFrom(flat, 0, 1) : enabledFrom(flat, flat.length - 1, -1))
         }
         break
       case "Enter":
@@ -438,7 +619,8 @@ function Combobox(props: ComboboxProps) {
   const floating = Boolean(label)
   const filled = variant === "filled"
   const hasValue = selected.length > 0 || Boolean(text)
-  const results = flat.filter((o) => !o.back).length
+  const results = columns[0].flat.filter((o) => !o.back).length
+  const shown = flat.filter((o) => !o.back).length
   const status = !open
     ? ""
     : dirty && query.trim()
@@ -448,13 +630,13 @@ function Combobox(props: ComboboxProps) {
           ? `${results} ${results === 1 ? "result" : "results"}`
           : String(emptyMessage)
       : parent
-        ? `${parent.label}, ${results} ${results === 1 ? "option" : "options"}`
+        ? `${parent.label}, ${shown} ${shown === 1 ? "option" : "options"}`
         : ""
 
   const trailing = (
     <>
       {loading && <Spinner className="mx-1.5 text-muted-foreground [--icon-size:18px]" />}
-      {clearable && hasValue && !disabled && (
+      {clearable && searchable && hasValue && !disabled && (
         <IconButton
           icon="close"
           label={multiple ? "Clear all" : "Clear"}
@@ -472,7 +654,7 @@ function Combobox(props: ComboboxProps) {
         tabIndex={-1}
         disabled={disabled}
         aria-expanded={open}
-        aria-controls={open ? listId : undefined}
+        aria-controls={open ? listIdOf(c) : undefined}
         onPointerDown={(e) => e.preventDefault()}
         onClick={() => {
           inputRef.current?.focus()
@@ -500,12 +682,14 @@ function Combobox(props: ComboboxProps) {
     autoFocus,
     required: required && selected.length === 0,
     "aria-label": props["aria-label"],
-    "aria-autocomplete": "list" as const,
+    "aria-autocomplete": searchable ? ("list" as const) : undefined,
     "aria-expanded": open,
-    "aria-controls": open ? listId : undefined,
-    "aria-activedescendant": open && active >= 0 ? optionId(active) : undefined,
+    "aria-controls": open ? listIdOf(c) : undefined,
+    "aria-activedescendant": open && active >= 0 ? optionId(c, active) : undefined,
+    readOnly: !searchable,
     value: text,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!searchable) return
       setTextState(e.target.value)
       setDirty(true)
       if (!open) {
@@ -513,7 +697,7 @@ function Combobox(props: ComboboxProps) {
         setOpen(true)
       }
     },
-    onClick: () => !open && openList(),
+    onClick: () => (open ? !searchable && close() : openList()),
     onKeyDown,
     onBlur: () => open && close(),
   })
@@ -525,15 +709,19 @@ function Combobox(props: ComboboxProps) {
     return multiple ? String(under.length) : under[0].label
   }
 
-  const row = (o: TreeNode, i: number) => {
+  /** Does anything in this list use the space before the label? Then parents without an icon keep it too, so labels line up. */
+  const usesLead = (list: TreeNode[]) =>
+    list.some((o) => !o.back && (o.kids ? Boolean(o.icon) : multiple || (o.iconPosition ?? iconPosition) === "end" || Boolean(o.icon)))
+
+  const row = (o: TreeNode, i: number, k = 0, leadSlot = false) => {
     const isSelected = !o.kids && !o.back && selected.includes(o.value)
     const end = (o.iconPosition ?? iconPosition) === "end"
     const iconEl = o.icon && <Icon name={o.icon} />
     const common = {
-      id: optionId(i),
+      id: optionId(k, i),
       role: "option" as const,
-      "data-highlighted": i === active ? "" : undefined,
-      onPointerMove: () => !o.disabled && i !== active && setActive(i),
+      "data-highlighted": k === c && i === active ? "" : undefined,
+      onPointerMove: () => hover(o, k, i),
       onClick: () => pick(o),
     }
 
@@ -571,7 +759,7 @@ function Combobox(props: ComboboxProps) {
     // A parent always keeps its icon on the left, so the right side holds only
     // the chevron; the icon takes the slot a leaf uses for its check, keeping labels aligned.
     const lead = o.kids
-      ? (iconEl ?? (multiple || end ? <span className="size-5 shrink-0" /> : null))
+      ? (iconEl ?? (leadSlot ? <span className="size-5 shrink-0" /> : null))
       : multiple
         ? selectionMark
         : end
@@ -586,8 +774,9 @@ function Combobox(props: ComboboxProps) {
         aria-disabled={o.disabled || undefined}
         data-slot={o.kids ? "combobox-parent" : "combobox-item"}
         data-state={isSelected ? "checked" : "unchecked"}
+        data-open={cascade && o.kids && trail[k] === o.value && columns.length > k + 1 ? "" : undefined}
         data-disabled={o.disabled ? "" : undefined}
-        className={cn(menuItem, menuItemSelected, o.description && "h-auto min-h-14 py-2")}
+        className={cn(menuItem, menuItemSelected, "data-open:bg-foreground/[0.07]", o.description && "h-auto min-h-14 py-2")}
       >
         {lead}
         {!end && !o.kids && iconEl}
@@ -622,6 +811,46 @@ function Combobox(props: ComboboxProps) {
             {!multiple && !end && selectionMark}
           </>
         )}
+      </div>
+    )
+  }
+
+  const listbox = (k: number) => {
+    const { sections, flat: list, parent: p, back } = columns[k]
+    const drillAnim = nested && !cascade && !searching
+    return (
+      <div
+        // drilling: a new panel slides in from the side it came from
+        key={searching ? "search" : cascade ? k : trail.join("/")}
+        id={listIdOf(k)}
+        role="listbox"
+        aria-label={p ? `${label ?? props["aria-label"] ?? "Options"}: ${p.label}` : (label ?? props["aria-label"])}
+        aria-multiselectable={multiple || undefined}
+        className={cn(
+          drillAnim && "animate-in fade-in-0 duration-300 ease-(--ease-spring) motion-reduce:animate-none",
+          drillAnim && (dir === 1 ? "slide-in-from-right-6" : "slide-in-from-left-6")
+        )}
+      >
+        {back && <div className="-mx-1.5 border-b border-outline-variant px-1.5">{row(back, 0, k)}</div>}
+        {sections.map(({ group, items }, si) => {
+          const lead = usesLead(list)
+          const body = items.map((o) => row(o, list.indexOf(o), k, lead))
+          if (group === undefined) return <React.Fragment key={`_${si}`}>{body}</React.Fragment>
+          const gid = `${baseId}-c${k}-g-${si}`
+          return (
+            <div
+              key={group}
+              role="group"
+              aria-labelledby={gid}
+              className={cn((si > 0 || back) && "-mx-1.5 mt-1.5 border-t border-outline-variant px-1.5 pt-1.5", si === 0 && back && "mt-0 border-t-0")}
+            >
+              <div id={gid} className="px-3 pt-2 pb-1.5 type-label-md text-muted-foreground">
+                {group}
+              </div>
+              {body}
+            </div>
+          )
+        })}
       </div>
     )
   }
@@ -676,13 +905,18 @@ function Combobox(props: ComboboxProps) {
                   data-slot="combobox-input"
                   {...inputProps(control)}
                   className={cn(
+                    !searchable && "cursor-pointer caret-transparent select-none",
                     "h-6 min-w-8 flex-1 bg-transparent type-body-lg leading-6 text-foreground outline-none placeholder:text-muted-foreground",
                     floating && "placeholder:opacity-0 placeholder:transition-opacity focus:placeholder:opacity-100"
                   )}
                 />
               </div>
             ) : (
-              <input data-slot="combobox-input" {...inputProps(control)} className={controlClass} />
+              <input
+                data-slot="combobox-input"
+                {...inputProps(control)}
+                className={cn(controlClass, !searchable && "cursor-pointer caret-transparent select-none")}
+              />
             )}
             {name &&
               (selected.length ? selected : [""]).map((v, i) => <input key={i} type="hidden" name={name} value={v} />)}
@@ -695,6 +929,7 @@ function Combobox(props: ComboboxProps) {
 
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
+          ref={contentRef}
           data-slot="combobox-content"
           data-nested={nested || undefined}
           side="bottom"
@@ -704,9 +939,10 @@ function Combobox(props: ComboboxProps) {
           onOpenAutoFocus={(e) => e.preventDefault()}
           onCloseAutoFocus={(e) => e.preventDefault()}
           onInteractOutside={(e) => {
-            // a press on the field itself is not "outside"
+            // a press on the field itself, or on a side menu, is not "outside"
+            const target = e.target as Element
             const field = inputRef.current?.closest("[data-slot=field-container]")
-            if (field?.contains(e.target as Node)) e.preventDefault()
+            if (field?.contains(target) || target.closest?.(`[data-combobox-flyout="${baseId}"]`)) e.preventDefault()
           }}
           // keep focus in the input while the list is pressed or scrolled
           onPointerDown={(e) => e.preventDefault()}
@@ -715,44 +951,11 @@ function Combobox(props: ComboboxProps) {
           className={cn(
             floatingSurface,
             menuPad,
-            "max-h-[min(var(--radix-popover-content-available-height),20rem)] w-(--radix-popover-trigger-width) overflow-x-hidden overflow-y-auto overscroll-contain",
+            "relative max-h-[min(var(--radix-popover-content-available-height),20rem)] w-(--radix-popover-trigger-width) overflow-x-hidden overflow-y-auto overscroll-contain",
             "origin-(--radix-popover-content-transform-origin) scroll-py-1.5"
           )}
         >
-          <div
-            // a new panel slides in from the side it came from
-            key={searching ? "search" : trail.join("/")}
-            id={listId}
-            role="listbox"
-            aria-label={parent ? `${label ?? props["aria-label"] ?? "Options"}: ${parent.label}` : (label ?? props["aria-label"])}
-            aria-multiselectable={multiple || undefined}
-            className={cn(
-              nested && !searching && "animate-in fade-in-0 duration-300 ease-(--ease-spring) motion-reduce:animate-none",
-              nested && !searching && (dir === 1 ? "slide-in-from-right-6" : "slide-in-from-left-6")
-            )}
-          >
-            {back && (
-              <div className="-mx-1.5 border-b border-outline-variant px-1.5">{row(back, 0)}</div>
-            )}
-            {sections.map(({ group, items }, si) => {
-              const body = items.map((o) => row(o, flat.indexOf(o)))
-              if (group === undefined) return <React.Fragment key={`_${si}`}>{body}</React.Fragment>
-              const gid = `${baseId}-g-${si}`
-              return (
-                <div
-                  key={group}
-                  role="group"
-                  aria-labelledby={gid}
-                  className={cn((si > 0 || back) && "-mx-1.5 mt-1.5 border-t border-outline-variant px-1.5 pt-1.5", si === 0 && back && "mt-0 border-t-0")}
-                >
-                  <div id={gid} className="px-3 pt-2 pb-1.5 type-label-md text-muted-foreground">
-                    {group}
-                  </div>
-                  {body}
-                </div>
-              )
-            })}
-          </div>
+          {listbox(0)}
           {!results && (
             <div className="flex h-10 items-center gap-3 px-3 type-body-md text-muted-foreground [--icon-size:18px]">
               {loading ? (
@@ -766,8 +969,51 @@ function Combobox(props: ComboboxProps) {
           )}
         </PopoverPrimitive.Content>
       </PopoverPrimitive.Portal>
+
+      {open &&
+        columns.slice(1).map((_, j) =>
+          createPortal(
+            <div
+              key={j + 1}
+              ref={(el) => {
+                flyoutRefs.current[j + 1] = el
+              }}
+              data-slot="combobox-flyout"
+              data-combobox-flyout={baseId}
+              data-state="open"
+              data-side="right"
+              onPointerDown={(e) => e.preventDefault()}
+              onPointerEnter={() => clearTimeout(hoverTimer.current)}
+              style={{ position: "fixed", left: 0, top: 0 }}
+              className={cn(
+                floatingSurface,
+                menuPad,
+                "max-h-80 w-max max-w-72 min-w-52 overflow-x-hidden overflow-y-auto overscroll-contain scroll-py-1.5"
+              )}
+            >
+              {listbox(j + 1)}
+            </div>,
+            document.body,
+            `${baseId}-flyout-${j + 1}`
+          )
+        )}
     </PopoverPrimitive.Root>
   )
 }
 
-export { Combobox, type ComboboxOption, type ComboboxProps }
+type NestedSelectProps = Omit<ComboboxSingleProps, "filter" | "inputValue" | "onInputValueChange" | "searchable"> |
+  Omit<ComboboxMultipleProps, "filter" | "inputValue" | "onInputValueChange" | "searchable">
+
+/**
+ * A Select for nested options: the same field and lists as Combobox, without
+ * typing. Letters jump to an option; Space or Enter open it. Shows the chosen
+ * option's path in the field. Nested options cascade by default; pass
+ * nestedStyle="drill" for one panel at a time.
+ *
+ *   <NestedSelect label="Office" options={locations} value={office} onValueChange={setOffice} />
+ */
+function NestedSelect(props: NestedSelectProps) {
+  return <Combobox clearable={false} displayPath={!props.multiple} {...(props as ComboboxProps)} searchable={false} />
+}
+
+export { Combobox, NestedSelect, type ComboboxOption, type ComboboxProps, type NestedSelectProps }

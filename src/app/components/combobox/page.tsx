@@ -3,6 +3,7 @@
 import * as React from "react"
 import { Combobox, type ComboboxOption } from "@/registry/velvet/ui/combobox"
 import { LOCATIONS } from "@/components/docs/locations"
+import { SegmentedButton, SegmentedButtonItem } from "@/registry/velvet/ui/segmented-button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const VARIANTS = ["filled", "outlined"] as const
@@ -78,6 +79,7 @@ export default function ComboboxPage() {
   const search = useCitySearch()
   const [office, setOffice] = React.useState<string | null>("Sweden")
   const [markets, setMarkets] = React.useState(["Japan", "Brazil"])
+  const [style, setStyle] = React.useState<"cascade" | "drill">("cascade")
   const [submitted, setSubmitted] = React.useState<string | null>(null)
 
   return (
@@ -164,14 +166,18 @@ export default function ComboboxPage() {
 
       <Section
         title="Nested"
-        description="Options with children open a panel of their own that slides in, with a back row at the top. Use → or Enter to go in and ← to come back. Typing searches every level at once and groups the matches by path: try “nor” or “nordics”. A parent shows what you chose inside it."
+        description="Options with children open level by level. Cascade (the default) opens each level beside its parent, like a desktop menu; drill shows one level at a time with a back row. → or Enter goes in, ← comes back. Typing searches every level at once and groups the matches by path: try “nor” or “nordics”. A parent shows what you chose inside it. On a phone it always drills."
       >
+        <SegmentedButton type="single" value={style} onValueChange={(v) => v && setStyle(v as "cascade" | "drill")} aria-label="Nested style" className="mb-4">
+          <SegmentedButtonItem value="cascade">Cascade</SegmentedButtonItem>
+          <SegmentedButtonItem value="drill">Drill</SegmentedButtonItem>
+        </SegmentedButton>
         <div className="grid gap-4 md:grid-cols-2">
           <Preview label="single" className="flex-col items-stretch bg-card dark:bg-card">
-            <Combobox label="Office" icon="location_on" options={LOCATIONS} value={office} onValueChange={setOffice} iconPosition="end" />
+            <Combobox label="Office" icon="location_on" options={LOCATIONS} value={office} onValueChange={setOffice} iconPosition="end" nestedStyle={style} />
           </Preview>
           <Preview label="multiple" className="flex-col items-stretch bg-card dark:bg-card">
-            <Combobox multiple label="Markets" options={LOCATIONS} value={markets} onValueChange={setMarkets} iconPosition="end" />
+            <Combobox multiple label="Markets" options={LOCATIONS} value={markets} onValueChange={setMarkets} iconPosition="end" nestedStyle={style} />
           </Preview>
         </div>
         <Code>{`const locations = [
@@ -258,6 +264,9 @@ const { data = [], isLoading } = useQuery({ queryKey: ["cities", query], queryFn
             ["options", "(string | ComboboxOption)[]", "", "{ value, label, description?, icon?, iconPosition?, group?, keywords?, disabled?, children? }"],
             ["option children", "(string | ComboboxOption)[]", "", "Makes it a parent that opens a nested panel"],
             ["iconPosition", '"start" | "end"', '"start"', "Option icons before the label or at the far end"],
+            ["nestedStyle", '"cascade" | "drill"', '"cascade"', "Side menus, or one panel at a time; phones always drill"],
+            ["searchable", "boolean", "true", "false makes it a select (NestedSelect)"],
+            ["displayPath", "boolean", "false", "Show the chosen option's path in the field"],
             ["value / defaultValue", "string | null, or string[] with multiple", "", "onValueChange gets the same type"],
             ["multiple", "boolean", "false", "Chips in the field; the list stays open"],
             ["inputValue / onInputValueChange", "string / (text) => void", "", "The typed text"],

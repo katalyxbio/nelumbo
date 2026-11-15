@@ -11,25 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/registry/velvet/ui/select"
-import {
-  fieldButtonClass,
-  fieldChevron,
-} from "@/registry/velvet/ui/select"
-import { Field } from "@/registry/velvet/ui/field"
-import { Icon } from "@/registry/velvet/ui/icon"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/registry/velvet/ui/dropdown-menu"
-import { LOCATIONS, pathTo } from "@/components/docs/locations"
-import type { ComboboxOption } from "@/registry/velvet/ui/combobox"
+import { NestedSelect } from "@/registry/velvet/ui/combobox"
+import { SegmentedButton, SegmentedButtonItem } from "@/registry/velvet/ui/segmented-button"
+import { LOCATIONS } from "@/components/docs/locations"
 import { Input } from "@/registry/velvet/ui/input"
 import { Button } from "@/registry/velvet/ui/button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
@@ -42,88 +26,12 @@ const TIMEZONES: [string, [string, string][]][] = [
   ["Asia and Pacific", [["Asia/Tokyo", "Tokyo (GMT+9)"], ["Asia/Singapore", "Singapore (GMT+8)"], ["Asia/Kolkata", "Mumbai (GMT+5:30)"], ["Australia/Sydney", "Sydney (GMT+11)"]]],
 ]
 
-/**
- * Prototype: a Select whose options nest in cascading submenus. The field is
- * Velvet's Field with a Dropdown Menu behind it (Radix Select has no submenus).
- */
-function CascadeSelect({
-  label,
-  variant,
-  options,
-  value,
-  onValueChange,
-}: {
-  label: string
-  variant?: "filled" | "outlined"
-  options: readonly (ComboboxOption | string)[]
-  value: string | null
-  onValueChange: (v: string) => void
-}) {
-  const path = pathTo(value, options) ?? []
-  const render = (nodes: readonly (ComboboxOption | string)[]) =>
-    nodes.map((n) => {
-      const o = typeof n === "string" ? { value: n, label: n } : n
-      if (!o.children) {
-        return (
-          <DropdownMenuRadioItem key={o.value} value={o.value}>
-            {o.label}
-            {o.icon && <Icon name={o.icon} className="ms-auto" />}
-          </DropdownMenuRadioItem>
-        )
-      }
-      const inside = path.includes(o.label) && path.at(-1) !== o.label
-      return (
-        <DropdownMenuSub key={o.value}>
-          <DropdownMenuSubTrigger className={inside ? "font-medium" : undefined}>
-            {/* the icon stays on the left so the right holds only the chevron; filled when it holds the choice */}
-            {o.icon ? (
-              <Icon name={o.icon} fill={inside} className={inside ? "text-foreground!" : undefined} />
-            ) : (
-              <span className="grid size-5 shrink-0 place-items-center">
-                {inside && <span aria-hidden className="size-1.5 rounded-full bg-primary" />}
-              </span>
-            )}
-            <span className="flex-1 truncate">{o.label}</span>
-            {inside && <span className="sr-only">, contains your choice</span>}
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="max-h-80 min-w-52 overflow-y-auto">{render(o.children)}</DropdownMenuSubContent>
-        </DropdownMenuSub>
-      )
-    })
-
-  return (
-    <DropdownMenu>
-      <Field label={label} variant={variant} trailing={fieldChevron} icon="location_on" className="max-w-sm">
-        {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-        {({ className, placeholder, ...control }) => (
-          <>
-            <DropdownMenuTrigger asChild>
-              <button type="button" {...control} data-placeholder={value ? undefined : ""} className={fieldButtonClass(className, { label: true })}>
-                <span className="truncate">
-                  {path.length > 1 && <span className="text-muted-foreground">{path.slice(0, -1).join(" › ")} › </span>}
-                  {path.at(-1)}
-                </span>
-              </button>
-            </DropdownMenuTrigger>
-            <span aria-hidden className="flex-1" />
-          </>
-        )}
-      </Field>
-      <DropdownMenuContent align="start" className="w-(--radix-dropdown-menu-trigger-width)">
-        <DropdownMenuRadioGroup value={value ?? ""} onValueChange={onValueChange}>
-          {render(options.slice(0, -1))}
-          <DropdownMenuSeparator />
-          {render(options.slice(-1))}
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
-
 export default function SelectPage() {
   const [plan, setPlan] = React.useState("team")
   const [role, setRole] = React.useState<string>("")
   const [office, setOffice] = React.useState<string | null>("Sweden")
+  const [markets, setMarkets] = React.useState(["Japan", "Brazil"])
+  const [style, setStyle] = React.useState<"cascade" | "drill">("cascade")
 
   return (
     <>
@@ -288,12 +196,34 @@ export default function SelectPage() {
       </Section>
 
       <Section
-        title="Nested (prototype)"
-        description="Cascading submenus: hover or press → to open a region, ← to go back. The field shows the path, and a dot marks the menus that hold the choice. Radix Select has no submenus, so this is the field with a Dropdown Menu behind it. Compare it with Combobox's drill-in panels."
+        title="Nested"
+        description="For options that nest, use NestedSelect: the same field, with lists that open level by level. Cascade (the default) opens each level beside its parent, like a desktop menu: hover or press → to open, ← to close. Drill shows one level at a time with a back row. Letters jump to an option; Space or Enter opens it. On a phone it always drills."
       >
-        <Preview className="flex-col items-stretch">
-          <CascadeSelect label="Office" options={LOCATIONS} value={office} onValueChange={setOffice} />
+        <Preview className="flex-col items-stretch gap-5">
+          <SegmentedButton type="single" value={style} onValueChange={(v) => v && setStyle(v as "cascade" | "drill")} aria-label="Nested style" className="self-start">
+            <SegmentedButtonItem value="cascade">Cascade</SegmentedButtonItem>
+            <SegmentedButtonItem value="drill">Drill</SegmentedButtonItem>
+          </SegmentedButton>
+          <div className="grid gap-5 md:grid-cols-2">
+            <NestedSelect label="Office" icon="location_on" options={LOCATIONS} value={office} onValueChange={setOffice} nestedStyle={style} />
+            <NestedSelect multiple variant="outlined" label="Markets" options={LOCATIONS} value={markets} onValueChange={setMarkets} nestedStyle={style} />
+          </div>
         </Preview>
+        <Code>{`import { NestedSelect } from "@/components/ui/combobox"
+
+const locations = [
+  {
+    value: "europe", label: "Europe", icon: "euro",
+    children: [
+      { value: "nordics", label: "Nordics", children: ["Denmark", "Finland", "Sweden"] },
+      { value: "western", label: "Western Europe", children: ["France", "Ireland"] },
+    ],
+  },
+  { value: "remote", label: "Anywhere (remote)" },
+]
+
+<NestedSelect label="Office" options={locations} value={office} onValueChange={setOffice} />
+<NestedSelect label="Office" options={locations} nestedStyle="drill" />   // one level at a time`}</Code>
       </Section>
 
       <Section title="Usage">
@@ -327,6 +257,8 @@ export default function SelectPage() {
             ["SelectItem icon / description", "IconName / ReactNode", "", "Shown in the list only, not in the field"],
             ["SelectItem iconPosition", '"start" | "end"', '"start"', "At the end, the icon sits opposite the label and the check moves to the start"],
             ["SelectContent position", '"popper" | "item-aligned"', '"popper"', "Below the field, or over it like macOS"],
+            ["NestedSelect nestedStyle", '"cascade" | "drill"', '"cascade"', "Side menus, or one panel at a time; phones always drill"],
+            ["NestedSelect options", "(string | ComboboxOption)[]", "", "A tree: options with children; same props as Combobox otherwise"],
           ]}
         />
       </Section>

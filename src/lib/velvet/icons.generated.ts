@@ -121,6 +121,7 @@ export const USED_ICONS: IconName[] = [
   "redo",
   "reply",
   "reply_all",
+  "resize",
   "restart_alt",
   "rounded_corner",
   "save",
