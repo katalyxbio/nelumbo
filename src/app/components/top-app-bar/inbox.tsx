@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Avatar } from "@/registry/velvet/ui/avatar"
+import { Avatar } from "@/registry/nelumbo/ui/avatar"
 import { cn } from "@/lib/utils"
 
 const MAIL = [

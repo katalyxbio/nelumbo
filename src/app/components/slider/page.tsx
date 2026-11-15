@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Slider } from "@/registry/velvet/ui/slider"
-import { Icon } from "@/registry/velvet/ui/icon"
+import { Slider } from "@/registry/nelumbo/ui/slider"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const price = (v: number) => `$${v}`
@@ -32,7 +32,7 @@ export default function SliderPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/slider`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/slider`}</Code>
       </Section>
 
       <Section title="Basic" description="The dot at the end of the track marks where it stops. Tab to the handle and use the arrow keys; Page Up and Down move in bigger steps.">

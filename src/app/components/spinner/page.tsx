@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { Spinner } from "@/registry/velvet/ui/spinner"
-import { Button } from "@/registry/velvet/ui/button"
-import { Badge } from "@/registry/velvet/ui/badge"
-import { Input } from "@/registry/velvet/ui/input"
+import { Spinner } from "@/registry/nelumbo/ui/spinner"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Badge } from "@/registry/nelumbo/ui/badge"
+import { Input } from "@/registry/nelumbo/ui/input"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 function Labelled({ children, text }: { children: React.ReactNode; text: string }) {
@@ -17,7 +17,7 @@ function Labelled({ children, text }: { children: React.ReactNode; text: string 
 }
 
 export default function SpinnerPage() {
-  const [text, setText] = React.useState("velvet")
+  const [text, setText] = React.useState("nelumbo")
 
   return (
     <>
@@ -27,7 +27,7 @@ export default function SpinnerPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/spinner`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/spinner`}</Code>
       </Section>
 
       <Section

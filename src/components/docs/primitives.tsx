@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Icon } from "@/registry/velvet/ui/icon"
-import { Button } from "@/registry/velvet/ui/button"
+import { Icon } from "@/registry/nelumbo/ui/icon"
+import { Button } from "@/registry/nelumbo/ui/button"
 import { cn } from "@/lib/utils"
 
 export function PageHeader({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {

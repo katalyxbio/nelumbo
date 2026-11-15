@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { AspectRatio } from "@/registry/velvet/ui/aspect-ratio"
-import { Icon } from "@/registry/velvet/ui/icon"
+import { AspectRatio } from "@/registry/nelumbo/ui/aspect-ratio"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 function Media({ ratio, label, radius }: { ratio: number; label: string; radius: string }) {
@@ -21,11 +21,11 @@ export default function AspectRatioPage() {
     <>
       <PageHeader eyebrow="Component 59" title="Aspect Ratio">
         A box that keeps its width-to-height ratio at any width. It is shadcn&apos;s AspectRatio, unchanged, and
-        draws nothing itself: round the media with Velvet&apos;s radius.
+        draws nothing itself: round the media with Nelumbo&apos;s radius.
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/aspect-ratio`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/aspect-ratio`}</Code>
       </Section>
 
       <Section title="Ratios" description="Pass ratio as width over height. Photos and video use 16 / 9, square thumbnails 1, portraits 3 / 4.">
@@ -36,7 +36,7 @@ export default function AspectRatioPage() {
         </Preview>
       </Section>
 
-      <Section title="Velvet radius" description="rounded-xl suits photos and cards, rounded-2xl large hero images, rounded-full an avatar-like crop. Add overflow-hidden when the box holds an image.">
+      <Section title="Nelumbo radius" description="rounded-xl suits photos and cards, rounded-2xl large hero images, rounded-full an avatar-like crop. Add overflow-hidden when the box holds an image.">
         <Preview className="items-start gap-6">
           <Media ratio={4 / 3} label="rounded-lg" radius="rounded-lg" />
           <Media ratio={4 / 3} label="rounded-2xl" radius="rounded-2xl" />

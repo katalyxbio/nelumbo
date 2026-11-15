@@ -2,20 +2,20 @@
 
 import * as React from "react"
 import type { ColumnDef } from "@tanstack/react-table"
-import { DataTable, DataTableColumnHeader } from "@/registry/velvet/ui/data-table"
-import { Avatar } from "@/registry/velvet/ui/avatar"
-import { Badge } from "@/registry/velvet/ui/badge"
-import { Button } from "@/registry/velvet/ui/button"
-import { Icon } from "@/registry/velvet/ui/icon"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Switch } from "@/registry/velvet/ui/switch"
+import { DataTable, DataTableColumnHeader } from "@/registry/nelumbo/ui/data-table"
+import { Avatar } from "@/registry/nelumbo/ui/avatar"
+import { Badge } from "@/registry/nelumbo/ui/badge"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Icon } from "@/registry/nelumbo/ui/icon"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Switch } from "@/registry/nelumbo/ui/switch"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/registry/velvet/ui/dropdown-menu"
+} from "@/registry/nelumbo/ui/dropdown-menu"
 import { PEOPLE } from "@/components/docs/people"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
@@ -38,7 +38,7 @@ const MEMBERS: Member[] = Array.from({ length: 48 }, (_, i) => {
   return {
     id: `u${i + 1}`,
     name,
-    email: `${name.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z]+/g, ".")}@velvet.test`,
+    email: `${name.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z]+/g, ".")}@nelumbo.test`,
     src: p?.src,
     role: p ? (["Designer", "Engineer", "Engineer", "Engineer", "Engineer", "Researcher", "Writer", "Analyst"][i] ?? ROLES[i % 6]) : ROLES[(i * 3) % ROLES.length],
     status: STATUSES[(i * 5) % STATUSES.length],
@@ -141,7 +141,7 @@ export default function DataTablePage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/data-table`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/data-table`}</Code>
       </Section>
 
       <Section

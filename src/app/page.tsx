@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { Icon } from "@/registry/velvet/ui/icon"
-import { ACCENT_NAMES, paletteRamps } from "@/lib/velvet/scheme"
-import { Button } from "@/registry/velvet/ui/button"
+import { Icon } from "@/registry/nelumbo/ui/icon"
+import { ACCENT_NAMES, paletteRamps } from "@/lib/nelumbo/scheme"
+import { Button } from "@/registry/nelumbo/ui/button"
 import { Code, PageHeader, Preview, Section } from "@/components/docs/primitives"
 import { useStudio } from "@/components/docs/studio"
 
@@ -78,7 +78,7 @@ export default function FoundationsPage() {
         title="Install"
         description="Generate the theme with your brand accent, then add it to any shadcn project (Tailwind v4)."
       >
-        <Code>{`npm run theme${themeArgs ? ` -- ${themeArgs}` : ""}\nnpm run registry:build\n\nnpx shadcn@latest add @velvet/theme`}</Code>
+        <Code>{`npm run theme${themeArgs ? ` -- ${themeArgs}` : ""}\nnpm run registry:build\n\nnpx shadcn@latest add @nelumbo/theme`}</Code>
       </Section>
 
       <Section

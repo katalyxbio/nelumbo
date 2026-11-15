@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/registry/velvet/ui/carousel"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
-import { Avatar } from "@/registry/velvet/ui/avatar"
+import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/registry/nelumbo/ui/carousel"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
+import { Avatar } from "@/registry/nelumbo/ui/avatar"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 import { PEOPLE } from "@/components/docs/people"
 
@@ -67,7 +67,7 @@ export default function CarouselPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/carousel`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/carousel`}</Code>
       </Section>
 
       <Section
@@ -202,7 +202,7 @@ export default function CarouselPage() {
   <CarouselNext />
 </Carousel>
 
-// Velvet: Material 3 layouts and a dot indicator
+// Nelumbo: Material 3 layouts and a dot indicator
 <Carousel layout="multi-browse" aria-label="Photos">
   <CarouselContent className="h-72">
     <CarouselItem>

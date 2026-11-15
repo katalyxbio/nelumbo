@@ -1,11 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { Badge, NotificationBadge } from "@/registry/velvet/ui/badge"
-import { Avatar } from "@/registry/velvet/ui/avatar"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Button } from "@/registry/velvet/ui/button"
-import { Icon } from "@/registry/velvet/ui/icon"
+import { Badge, NotificationBadge } from "@/registry/nelumbo/ui/badge"
+import { Avatar } from "@/registry/nelumbo/ui/avatar"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const VARIANTS = ["default", "secondary", "outline", "brand", "success", "warning", "destructive", "info"] as const
@@ -30,7 +30,7 @@ export default function BadgePage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/badge`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/badge`}</Code>
       </Section>
 
       <Section title="Badge" description="Black and white for neutral labels; tonal palette colors when the badge carries meaning. shadcn's default, secondary, outline and destructive work as is.">

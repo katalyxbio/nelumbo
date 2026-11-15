@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { Alert, AlertAction, AlertDescription, AlertTitle, type AlertVariant } from "@/registry/velvet/ui/alert"
-import { Button } from "@/registry/velvet/ui/button"
-import { Card } from "@/registry/velvet/ui/card"
+import { Alert, AlertAction, AlertDescription, AlertTitle, type AlertVariant } from "@/registry/nelumbo/ui/alert"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Card } from "@/registry/nelumbo/ui/card"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const VARIANTS: { variant: AlertVariant; title: string; text: string }[] = [
@@ -27,7 +27,7 @@ export default function AlertPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/alert`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/alert`}</Code>
       </Section>
 
       <Section
@@ -150,7 +150,7 @@ export default function AlertPage() {
   <AlertDescription>Your card was declined.</AlertDescription>
 </Alert>
 
-// Velvet: tonal variants, actions, dismiss, banner
+// Nelumbo: tonal variants, actions, dismiss, banner
 <Alert variant="warning" onDismiss={() => setSeen(true)}>
   <AlertTitle>Storage almost full</AlertTitle>
   <AlertDescription>You've used 92% of your space.</AlertDescription>

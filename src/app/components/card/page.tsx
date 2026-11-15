@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardMedia, CardTitle } from "@/registry/velvet/ui/card"
-import { Button } from "@/registry/velvet/ui/button"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardMedia, CardTitle } from "@/registry/nelumbo/ui/card"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 /** Abstract artwork from the theme colors, so it follows the palette and the mode. */
@@ -45,7 +45,7 @@ export default function CardPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/card`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/card`}</Code>
       </Section>
 
       <Section title="Variants" description="Elevated is the default and floats on a soft shadow. Filled sits on a tonal surface, for grouping inside a page. Outlined is flat with a hairline, for dense or repeated layouts.">
@@ -105,7 +105,7 @@ export default function CardPage() {
               <Artwork />
             </CardMedia>
             <CardHeader>
-              <CardTitle>Velvet 1.0</CardTitle>
+              <CardTitle>Nelumbo 1.0</CardTitle>
               <CardDescription>Tokens, springs and the full button family, ready for shadcn.</CardDescription>
               <CardAction>
                 <IconButton toggle icon="bookmark" selectedIcon="bookmark_added" label="Save" pressed={saved} onPressedChange={setSaved} />
@@ -176,7 +176,7 @@ export default function CardPage() {
 <Card>
   <CardMedia><img src="/cover.jpg" alt="" /></CardMedia>
   <CardHeader>
-    <CardTitle>Velvet 1.0</CardTitle>
+    <CardTitle>Nelumbo 1.0</CardTitle>
     <CardDescription>Release notes</CardDescription>
     <CardAction><IconButton icon="more_vert" label="More" /></CardAction>
   </CardHeader>

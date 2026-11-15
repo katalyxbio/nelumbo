@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { RadioGroup, RadioGroupItem } from "@/registry/velvet/ui/radio-group"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
+import { RadioGroup, RadioGroupItem } from "@/registry/nelumbo/ui/radio-group"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 import { cn } from "@/lib/utils"
 
@@ -23,7 +23,7 @@ export default function RadioGroupPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/radio-group`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/radio-group`}</Code>
       </Section>
 
       <Section title="Basic" description="Wrap each item and its text in a label so the whole line is clickable.">

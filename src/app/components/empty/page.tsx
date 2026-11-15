@@ -2,12 +2,12 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/registry/velvet/ui/empty"
-import { Avatar, AvatarGroup } from "@/registry/velvet/ui/avatar"
-import { Button } from "@/registry/velvet/ui/button"
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/registry/velvet/ui/card"
-import { Icon } from "@/registry/velvet/ui/icon"
-import { SearchBar } from "@/registry/velvet/ui/search"
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/registry/nelumbo/ui/empty"
+import { Avatar, AvatarGroup } from "@/registry/nelumbo/ui/avatar"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/registry/nelumbo/ui/card"
+import { Icon } from "@/registry/nelumbo/ui/icon"
+import { SearchBar } from "@/registry/nelumbo/ui/search"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 export default function EmptyPage() {
@@ -21,7 +21,7 @@ export default function EmptyPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/empty`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/empty`}</Code>
       </Section>
 
       <Section

@@ -9,10 +9,10 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/registry/velvet/ui/breadcrumb"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/registry/velvet/ui/dropdown-menu"
-import { Card } from "@/registry/velvet/ui/card"
-import { Icon } from "@/registry/velvet/ui/icon"
+} from "@/registry/nelumbo/ui/breadcrumb"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/registry/nelumbo/ui/dropdown-menu"
+import { Card } from "@/registry/nelumbo/ui/card"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const stop = (e: React.MouseEvent) => e.preventDefault()
@@ -26,7 +26,7 @@ export default function BreadcrumbPageDocs() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/breadcrumb`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/breadcrumb`}</Code>
       </Section>
 
       <Section
@@ -140,7 +140,7 @@ export default function BreadcrumbPageDocs() {
               </BreadcrumbItem>
               <BreadcrumbSeparator>/</BreadcrumbSeparator>
               <BreadcrumbItem>
-                <BreadcrumbLink href="#" onClick={stop}>Velvet</BreadcrumbLink>
+                <BreadcrumbLink href="#" onClick={stop}>Nelumbo</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator>/</BreadcrumbSeparator>
               <BreadcrumbItem>
@@ -167,7 +167,7 @@ export default function BreadcrumbPageDocs() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="#" onClick={stop}>Velvet</BreadcrumbLink>
+                <BreadcrumbLink href="#" onClick={stop}>Nelumbo</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>

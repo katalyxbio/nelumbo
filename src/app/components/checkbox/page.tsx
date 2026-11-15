@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Checkbox } from "@/registry/velvet/ui/checkbox"
+import { Checkbox } from "@/registry/nelumbo/ui/checkbox"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const TOPPINGS = ["Mozzarella", "Basil", "Roasted peppers", "Olives"]
@@ -29,7 +29,7 @@ export default function CheckboxPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/checkbox`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/checkbox`}</Code>
       </Section>
 
       <Section title="States" description="Hover shows a 40px halo, which is also the click target, so the small box is easy to hit.">

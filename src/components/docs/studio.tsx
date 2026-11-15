@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { buildScheme, schemeToCss, type Neutral } from "@/lib/velvet/scheme"
-import { materialSymbolsUrl } from "@/registry/velvet/ui/icon"
-import { USED_ICONS } from "@/lib/velvet/icons.generated"
+import { buildScheme, schemeToCss, type Neutral } from "@/lib/nelumbo/scheme"
+import { materialSymbolsUrl } from "@/registry/nelumbo/ui/icon"
+import { USED_ICONS } from "@/lib/nelumbo/icons.generated"
 
 export type IconStyle = "Rounded" | "Outlined" | "Sharp"
 export const ICON_STYLES: IconStyle[] = ["Rounded", "Outlined", "Sharp"]
@@ -40,7 +40,7 @@ export function StudioProvider({ children }: { children: React.ReactNode }) {
   const [iconStyle, setIconStyle] = React.useState<IconStyle>("Rounded")
 
   // Docs-only preview of the other Material Symbols families. Rounded stays
-  // Velvet's default; this swaps --icon-font and loads the matching subset.
+  // Nelumbo's default; this swaps --icon-font and loads the matching subset.
   React.useEffect(() => {
     const root = document.documentElement
     if (iconStyle === "Rounded") root.style.removeProperty("--icon-font")
@@ -68,7 +68,7 @@ export function StudioProvider({ children }: { children: React.ReactNode }) {
   return (
     <Ctx.Provider value={{ brand, neutral, vibrance, dark, setBrand, setNeutral, setVibrance, setDark, iconStyle, setIconStyle }}>
       {iconStyle !== "Rounded" && <link rel="stylesheet" href={materialSymbolsUrl(USED_ICONS, iconStyle)} />}
-      {css && <style id="velvet-live">{css}</style>}
+      {css && <style id="nelumbo-live">{css}</style>}
       {children}
     </Ctx.Provider>
   )

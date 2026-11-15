@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Calendar, type DateRange } from "@/registry/velvet/ui/calendar"
-import { DatePicker, DateRangePicker } from "@/registry/velvet/ui/date-picker"
+import { Calendar, type DateRange } from "@/registry/nelumbo/ui/calendar"
+import { DatePicker, DateRangePicker } from "@/registry/nelumbo/ui/date-picker"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 // fixed "today" for the examples' defaults, so the page renders the same on the server and the client
@@ -50,7 +50,7 @@ export default function DatePickerPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/date-picker   # adds @velvet/calendar too`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/date-picker   # adds @nelumbo/calendar too`}</Code>
       </Section>
 
       <Section

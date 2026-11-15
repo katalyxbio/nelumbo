@@ -10,8 +10,8 @@ import {
   PaginationNext,
   PaginationPrevious,
   paginationRange,
-} from "@/registry/velvet/ui/pagination"
-import { Icon } from "@/registry/velvet/ui/icon"
+} from "@/registry/nelumbo/ui/pagination"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 /** A pager for `count` pages: previous, the numbers (with ellipses), next. */
@@ -90,7 +90,7 @@ export default function PaginationPageDocs() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/pagination`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/pagination`}</Code>
       </Section>
 
       <Section

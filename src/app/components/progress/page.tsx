@@ -1,11 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { CircularProgress, Progress } from "@/registry/velvet/ui/progress"
-import { Slider } from "@/registry/velvet/ui/slider"
-import { Button } from "@/registry/velvet/ui/button"
-import { Card } from "@/registry/velvet/ui/card"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
+import { CircularProgress, Progress } from "@/registry/nelumbo/ui/progress"
+import { Slider } from "@/registry/nelumbo/ui/slider"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Card } from "@/registry/nelumbo/ui/card"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 function Labelled({ children, text, className }: { children: React.ReactNode; text: string; className?: string }) {
@@ -81,7 +81,7 @@ export default function ProgressPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/progress`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/progress`}</Code>
       </Section>
 
       <Section

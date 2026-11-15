@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { Toolbar, ToolbarButton, ToolbarFab, ToolbarSeparator, ToolbarToggleGroup, ToolbarToggleItem, useToolbarCollapse } from "@/registry/velvet/ui/toolbar"
-import { ToggleGroup, ToggleGroupItem } from "@/registry/velvet/ui/toggle-group"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/registry/velvet/ui/dropdown-menu"
-import { Icon } from "@/registry/velvet/ui/icon"
+import { Toolbar, ToolbarButton, ToolbarFab, ToolbarSeparator, ToolbarToggleGroup, ToolbarToggleItem, useToolbarCollapse } from "@/registry/nelumbo/ui/toolbar"
+import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/registry/nelumbo/ui/dropdown-menu"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { cn } from "@/lib/utils"
 import { Code, PageHeader, PropsTable, Section } from "@/components/docs/primitives"
 
@@ -239,7 +239,7 @@ export default function ToolbarPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/toolbar`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/toolbar`}</Code>
       </Section>
 
       <Section

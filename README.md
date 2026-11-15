@@ -1,4 +1,4 @@
-# Velvet
+# Nelumbo
 
 A soft, tactile design system for shadcn/ui (Tailwind v4). Neutral first: the
 interface is black, white and true grays, with depth from a surface ladder,
@@ -21,19 +21,19 @@ node scripts/a11y.cjs                               # axe contrast + missing-ico
 Add the registry to the project's `components.json` once:
 
 ```json
-"registries": { "@velvet": "https://<your-registry>/r/{name}.json" }
+"registries": { "@nelumbo": "https://<your-registry>/r/{name}.json" }
 ```
 
-Then install the theme, then components (dependencies such as `@velvet/icon` come along):
+Then install the theme, then components (dependencies such as `@nelumbo/icon` come along):
 
 ```bash
-npx shadcn@latest add @velvet/theme
-npx shadcn@latest add @velvet/button @velvet/icon-button
+npx shadcn@latest add @nelumbo/theme
+npx shadcn@latest add @nelumbo/button @nelumbo/icon-button
 ```
 
 ## Icons
 
-Velvet uses **Material Symbols Rounded** (variable font) instead of lucide.
+Nelumbo uses **Material Symbols Rounded** (variable font) instead of lucide.
 `<Icon name="favorite" />` has typed names; `fill`, `weight`, `grade` and `size`
 map to the font axes through CSS variables (`--icon-fill`, `--icon-wght`,
 `--icon-grad`, `--icon-opsz`, `--icon-size`), so components animate icons
@@ -47,17 +47,17 @@ import { materialSymbolsUrl } from "@/components/ui/icon"
 ```
 
 In this repo, `npm run icons` (runs before dev and build) collects every symbol
-name used in `src/` and `registry/` into `src/lib/velvet/icons.generated.ts`,
+name used in `src/` and `registry/` into `src/lib/nelumbo/icons.generated.ts`,
 and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 
 ## Layout
 
 | Path | What |
 | --- | --- |
-| `src/lib/velvet/scheme.ts` | Neutral + accent palettes (HCT) → color roles (light/dark) |
-| `src/lib/velvet/tokens.ts` | Radius, elevation, springs, type roles, `state-layer` / `tactile` utilities |
-| `scripts/build-theme.ts` | Writes `src/styles/velvet.css` and the `theme` item in `registry.json` |
-| `registry/velvet/ui/` | Components shipped through the registry |
+| `src/lib/nelumbo/scheme.ts` | Neutral + accent palettes (HCT) → color roles (light/dark) |
+| `src/lib/nelumbo/tokens.ts` | Radius, elevation, springs, type roles, `state-layer` / `tactile` utilities |
+| `scripts/build-theme.ts` | Writes `src/styles/nelumbo.css` and the `theme` item in `registry.json` |
+| `registry/nelumbo/ui/` | Components shipped through the registry |
 | `src/app/` | Docs site |
 
 ## Conventions
@@ -66,7 +66,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
   `tailwind-merge` never drops a text color next to them.
 - Interactive components use `state-layer` (hover/focus/press overlay) and
   `tactile` (press compression with spring release).
-- Components keep shadcn's prop names and variants; Velvet only adds to them.
+- Components keep shadcn's prop names and variants; Nelumbo only adds to them.
 - Buttons expose their geometry as CSS variables so wrappers can shape them
   without extra props: `--btn-h`, `--btn-px` / `--btn-px-delta` (padding),
   `--btn-radius`, `--btn-radius-start` / `--btn-radius-end` (per-side corners)
@@ -130,3 +130,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - [x] FAB Menu (staggered spring actions, morphing trigger)
 - [x] Toolbar (docked and floating, vertical, vibrant; paired FAB, collapse, overflow)
 - [x] Kbd, Spinner (ring or shapes), Empty (layered icon tile), Aspect Ratio
+
+## License
+
+Nelumbo is released under the [Apache License 2.0](LICENSE).

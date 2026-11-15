@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Fab } from "@/registry/velvet/ui/fab"
+import { Fab } from "@/registry/nelumbo/ui/fab"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const MESSAGES = [
@@ -25,7 +25,7 @@ export default function FabPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/fab`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/fab`}</Code>
       </Section>
 
       <Section title="Colors" description="Neutral container by default. Brand uses the accent container; solid is black (white in dark mode), for when the action must stand out against busy content.">

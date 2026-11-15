@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { Kbd, KbdGroup, KbdShortcut } from "@/registry/velvet/ui/kbd"
-import { Button } from "@/registry/velvet/ui/button"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/registry/velvet/ui/tooltip"
+import { Kbd, KbdGroup, KbdShortcut } from "@/registry/nelumbo/ui/kbd"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/registry/nelumbo/ui/tooltip"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 export default function KbdPage() {
@@ -16,7 +16,7 @@ export default function KbdPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/kbd`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/kbd`}</Code>
       </Section>
 
       <Section title="Keys and groups" description="Kbd is one key. KbdGroup sets several side by side with a small gap.">

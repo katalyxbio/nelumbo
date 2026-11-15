@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { NativeSelect, NativeSelectOptGroup, NativeSelectOption } from "@/registry/velvet/ui/native-select"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/registry/velvet/ui/select"
+import { NativeSelect, NativeSelectOptGroup, NativeSelectOption } from "@/registry/nelumbo/ui/native-select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/registry/nelumbo/ui/select"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const COUNTRIES: [string, string[]][] = [
@@ -16,13 +16,13 @@ export default function NativeSelectPage() {
   return (
     <>
       <PageHeader eyebrow="Component 61" title="Native Select">
-        The browser&apos;s own select, dressed as a Velvet field. It has the same surface, height, chevron and focus
+        The browser&apos;s own select, dressed as a Nelumbo field. It has the same surface, height, chevron and focus
         line as Select, but the list is drawn by the platform: the wheel on iOS, the sheet on Android, the keyboard
         and type-ahead you already know on desktop.
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/native-select`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/native-select`}</Code>
       </Section>
 
       <Section
@@ -112,7 +112,7 @@ export default function NativeSelectPage() {
             <NativeSelectOption value="pro">Pro</NativeSelectOption>
           </NativeSelect>
           <Select defaultValue="pro">
-            <SelectTrigger label="Velvet Select" className="w-56">
+            <SelectTrigger label="Nelumbo Select" className="w-56">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -132,7 +132,7 @@ export default function NativeSelectPage() {
   <NativeSelectOption value="todo">Todo</NativeSelectOption>
 </NativeSelect>
 
-// Velvet: floating label, help and error text
+// Nelumbo: floating label, help and error text
 <NativeSelect label="Country" description="Used for tax." defaultValue="">
   <NativeSelectOption value="" disabled>Choose a country</NativeSelectOption>
   <NativeSelectOptGroup label="Europe">

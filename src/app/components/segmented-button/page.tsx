@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { SegmentedButton, SegmentedButtonItem } from "@/registry/velvet/ui/segmented-button"
+import { SegmentedButton, SegmentedButtonItem } from "@/registry/nelumbo/ui/segmented-button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 export default function SegmentedButtonPage() {
@@ -16,7 +16,7 @@ export default function SegmentedButtonPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/segmented-button`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/segmented-button`}</Code>
       </Section>
 
       <Section title="Single select" description="Exactly one option stays selected, like a radio group. The check mark grows in on the selected segment; arrow keys move between options.">

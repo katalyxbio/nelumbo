@@ -1,12 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { Avatar } from "@/registry/velvet/ui/avatar"
-import { Badge } from "@/registry/velvet/ui/badge"
-import { Button } from "@/registry/velvet/ui/button"
-import { Icon } from "@/registry/velvet/ui/icon"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Switch } from "@/registry/velvet/ui/switch"
+import { Avatar } from "@/registry/nelumbo/ui/avatar"
+import { Badge } from "@/registry/nelumbo/ui/badge"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Icon } from "@/registry/nelumbo/ui/icon"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Switch } from "@/registry/nelumbo/ui/switch"
 import {
   Item,
   ItemActions,
@@ -18,7 +18,7 @@ import {
   ItemMedia,
   ItemSeparator,
   ItemTitle,
-} from "@/registry/velvet/ui/item"
+} from "@/registry/nelumbo/ui/item"
 import { PEOPLE } from "@/components/docs/people"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
@@ -35,7 +35,7 @@ export default function ItemPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/item`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/item`}</Code>
       </Section>
 
       <Section

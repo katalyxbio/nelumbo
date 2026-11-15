@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, Section } from "@/components/docs/primitives"
 
 const VARIANTS = ["standard", "filled", "secondary", "outlined"] as const
@@ -31,7 +31,7 @@ export default function IconButtonPage() {
       </PageHeader>
 
       <Section title="Install" description="Installs Icon and Button with it. Then load the icon font (see Icons below).">
-        <Code>{`npx shadcn@latest add @velvet/icon-button`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/icon-button`}</Code>
       </Section>
 
       <Section title="Variants" description="Ordered by emphasis. Standard suits toolbars and dense rows; filled marks the one key action in a group.">
@@ -131,7 +131,7 @@ export default function IconButtonPage() {
         title="Icons"
         description={
           <>
-            Velvet uses Material Symbols Rounded as a variable font. Every axis is a CSS variable, so components can drive
+            Nelumbo uses Material Symbols Rounded as a variable font. Every axis is a CSS variable, so components can drive
             icons without extra props. Try the axes below.
           </>
         }

@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { NavigationRail, NavigationRailFooter, NavigationRailHeader, NavigationRailItem } from "@/registry/velvet/ui/navigation-rail"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Fab } from "@/registry/velvet/ui/fab"
-import { type IconName } from "@/registry/velvet/ui/icon"
+import { NavigationRail, NavigationRailFooter, NavigationRailHeader, NavigationRailItem } from "@/registry/nelumbo/ui/navigation-rail"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Fab } from "@/registry/nelumbo/ui/fab"
+import { type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const DESTINATIONS: { id: string; icon: IconName; label: string; badge?: number | boolean; description: string }[] = [
@@ -76,7 +76,7 @@ export default function NavigationRailPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/navigation-rail`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/navigation-rail`}</Code>
       </Section>
 
       <Section

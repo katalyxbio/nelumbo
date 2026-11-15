@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { Combobox, type ComboboxOption } from "@/registry/velvet/ui/combobox"
+import { Combobox, type ComboboxOption } from "@/registry/nelumbo/ui/combobox"
 import { LOCATIONS } from "@/components/docs/locations"
-import { SegmentedButton, SegmentedButtonItem } from "@/registry/velvet/ui/segmented-button"
+import { SegmentedButton, SegmentedButtonItem } from "@/registry/nelumbo/ui/segmented-button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const VARIANTS = ["filled", "outlined"] as const
@@ -90,7 +90,7 @@ export default function ComboboxPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/combobox`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/combobox`}</Code>
       </Section>
 
       <Section

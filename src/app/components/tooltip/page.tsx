@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTitle, TooltipTrigger } from "@/registry/velvet/ui/tooltip"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Button } from "@/registry/velvet/ui/button"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTitle, TooltipTrigger } from "@/registry/nelumbo/ui/tooltip"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const TOOLS: { icon: IconName; label: string; shortcut: string }[] = [
@@ -24,7 +24,7 @@ export default function TooltipPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/tooltip`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/tooltip`}</Code>
       </Section>
 
       <Section

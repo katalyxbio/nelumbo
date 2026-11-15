@@ -17,8 +17,8 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger,
-} from "@/registry/velvet/ui/menubar"
-import { Icon } from "@/registry/velvet/ui/icon"
+} from "@/registry/nelumbo/ui/menubar"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 export default function MenubarPage() {
@@ -35,7 +35,7 @@ export default function MenubarPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/menubar`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/menubar`}</Code>
       </Section>
 
       <Section

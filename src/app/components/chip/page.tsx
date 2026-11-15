@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Chip, ChipGroup, FilterChip, InputChip } from "@/registry/velvet/ui/chip"
-import { type IconName } from "@/registry/velvet/ui/icon"
+import { Chip, ChipGroup, FilterChip, InputChip } from "@/registry/nelumbo/ui/chip"
+import { type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const CUISINES: { label: string; icon?: IconName }[] = [
@@ -39,7 +39,7 @@ export default function ChipPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/chip`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/chip`}</Code>
       </Section>
 
       <Section title="Assist" description="A shortcut to a related action, usually with an icon. Elevated chips stand out on images and maps.">

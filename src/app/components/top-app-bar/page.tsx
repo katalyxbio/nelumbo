@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Avatar } from "@/registry/velvet/ui/avatar"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
+import { Avatar } from "@/registry/nelumbo/ui/avatar"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
 import {
   TopAppBar,
   TopAppBarAction,
@@ -11,7 +11,7 @@ import {
   TopAppBarSearch,
   TopAppBarTitle,
   type TopAppBarProps,
-} from "@/registry/velvet/ui/app-bar"
+} from "@/registry/nelumbo/ui/app-bar"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 import { InboxList, PhoneFrame } from "./inbox"
 
@@ -71,7 +71,7 @@ export default function TopAppBarPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/app-bar`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/app-bar`}</Code>
       </Section>
 
       <Section

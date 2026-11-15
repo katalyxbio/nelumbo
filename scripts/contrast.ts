@@ -1,5 +1,5 @@
 /**
- * Contrast audit for Velvet color roles (WCAG 2.1).
+ * Contrast audit for Nelumbo color roles (WCAG 2.1).
  *
  *   npm run contrast                 # every brand x neutral x vibrance, both themes
  *   npm run contrast -- --brand "#0f766e"
@@ -7,7 +7,7 @@
  * Exits non-zero if any required pair fails, so it can run in CI.
  */
 import { wcagContrast } from "culori"
-import { ACCENT_NAMES, buildScheme, type Neutral } from "../src/lib/velvet/scheme"
+import { ACCENT_NAMES, buildScheme, type Neutral } from "../src/lib/nelumbo/scheme"
 
 type Pair = { fg: string; bg: string; min: number; use: string }
 

@@ -10,12 +10,12 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "@/registry/velvet/ui/select"
-import { NestedSelect } from "@/registry/velvet/ui/combobox"
-import { SegmentedButton, SegmentedButtonItem } from "@/registry/velvet/ui/segmented-button"
+} from "@/registry/nelumbo/ui/select"
+import { NestedSelect } from "@/registry/nelumbo/ui/combobox"
+import { SegmentedButton, SegmentedButtonItem } from "@/registry/nelumbo/ui/segmented-button"
 import { LOCATIONS } from "@/components/docs/locations"
-import { Input } from "@/registry/velvet/ui/input"
-import { Button } from "@/registry/velvet/ui/button"
+import { Input } from "@/registry/nelumbo/ui/input"
+import { Button } from "@/registry/nelumbo/ui/button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const VARIANTS = ["filled", "outlined"] as const
@@ -41,7 +41,7 @@ export default function SelectPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/select`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/select`}</Code>
       </Section>
 
       <Section

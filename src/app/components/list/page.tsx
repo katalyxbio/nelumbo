@@ -1,13 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { List, ListDivider, ListItem, ListSubheader } from "@/registry/velvet/ui/list"
-import { Avatar } from "@/registry/velvet/ui/avatar"
-import { Badge } from "@/registry/velvet/ui/badge"
-import { Switch } from "@/registry/velvet/ui/switch"
-import { Checkbox } from "@/registry/velvet/ui/checkbox"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Card } from "@/registry/velvet/ui/card"
+import { List, ListDivider, ListItem, ListSubheader } from "@/registry/nelumbo/ui/list"
+import { Avatar } from "@/registry/nelumbo/ui/avatar"
+import { Badge } from "@/registry/nelumbo/ui/badge"
+import { Switch } from "@/registry/nelumbo/ui/switch"
+import { Checkbox } from "@/registry/nelumbo/ui/checkbox"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Card } from "@/registry/nelumbo/ui/card"
 import { PEOPLE } from "@/components/docs/people"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
@@ -33,7 +33,7 @@ export default function ListPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/list`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/list`}</Code>
       </Section>
 
       <Section

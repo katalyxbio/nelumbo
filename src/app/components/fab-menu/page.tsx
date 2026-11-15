@@ -2,8 +2,8 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { FabMenu, FabMenuContent, FabMenuItem, FabMenuTrigger } from "@/registry/velvet/ui/fab-menu"
-import { Button } from "@/registry/velvet/ui/button"
+import { FabMenu, FabMenuContent, FabMenuItem, FabMenuTrigger } from "@/registry/nelumbo/ui/fab-menu"
+import { Button } from "@/registry/nelumbo/ui/button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const NOTES = [
@@ -47,7 +47,7 @@ export default function FabMenuPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/fab-menu`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/fab-menu`}</Code>
       </Section>
 
       <Section

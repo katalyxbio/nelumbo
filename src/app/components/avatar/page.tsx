@@ -1,7 +1,7 @@
 "use client"
 
-import { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarImage } from "@/registry/velvet/ui/avatar"
-import { Icon } from "@/registry/velvet/ui/icon"
+import { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarImage } from "@/registry/nelumbo/ui/avatar"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { PEOPLE } from "@/components/docs/people"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
@@ -25,7 +25,7 @@ export default function AvatarPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/avatar`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/avatar`}</Code>
       </Section>
 
       <Section title="Image and initials" description="Pass src and name: the initials show until the image loads, or if it fails (the last one points at a missing file). name is also what screen readers hear.">

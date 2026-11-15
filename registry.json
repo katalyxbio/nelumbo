@@ -1,13 +1,13 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
-  "name": "velvet",
+  "name": "nelumbo",
   "homepage": "http://localhost:3000",
   "items": [
     {
       "name": "theme",
       "type": "registry:theme",
-      "title": "Velvet Theme",
-      "description": "Velvet foundations: neutral color roles with an accent palette (brand blue, pure neutrals), surfaces, elevation, spring motion, type roles and tactile utilities.",
+      "title": "Nelumbo Theme",
+      "description": "Nelumbo foundations: neutral color roles with an accent palette (brand blue, pure neutrals), surfaces, elevation, spring motion, type roles and tactile utilities.",
       "dependencies": [
         "tw-animate-css"
       ],
@@ -489,7 +489,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/icon.tsx",
+          "path": "registry/nelumbo/ui/icon.tsx",
           "type": "registry:ui"
         }
       ]
@@ -505,11 +505,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/spinner"
+        "@nelumbo/spinner"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/button.tsx",
+          "path": "registry/nelumbo/ui/button.tsx",
           "type": "registry:ui"
         }
       ]
@@ -525,12 +525,12 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/button",
-        "@velvet/icon"
+        "@nelumbo/button",
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/icon-button.tsx",
+          "path": "registry/nelumbo/ui/icon-button.tsx",
           "type": "registry:ui"
         }
       ]
@@ -546,11 +546,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/segmented-button.tsx",
+          "path": "registry/nelumbo/ui/segmented-button.tsx",
           "type": "registry:ui"
         }
       ]
@@ -559,7 +559,7 @@
       "name": "button-group",
       "type": "registry:ui",
       "title": "Button Group",
-      "description": "Standard (pressed button widens, neighbors yield) and connected (small inner corners, selected rounds out) layouts for Velvet buttons.",
+      "description": "Standard (pressed button widens, neighbors yield) and connected (small inner corners, selected rounds out) layouts for Nelumbo buttons.",
       "dependencies": [
         "class-variance-authority"
       ],
@@ -568,7 +568,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/button-group.tsx",
+          "path": "registry/nelumbo/ui/button-group.tsx",
           "type": "registry:ui"
         }
       ]
@@ -584,12 +584,12 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/button",
-        "@velvet/icon"
+        "@nelumbo/button",
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/split-button.tsx",
+          "path": "registry/nelumbo/ui/split-button.tsx",
           "type": "registry:ui"
         }
       ]
@@ -604,11 +604,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/fab.tsx",
+          "path": "registry/nelumbo/ui/fab.tsx",
           "type": "registry:ui"
         }
       ]
@@ -620,11 +620,11 @@
       "description": "Shared text field shell for Input and Textarea: filled or outlined container, CSS-only floating label, notched border, icons and help text.",
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/field-shell.tsx",
+          "path": "registry/nelumbo/ui/field-shell.tsx",
           "type": "registry:ui"
         }
       ]
@@ -635,11 +635,11 @@
       "title": "Input",
       "description": "Text field with a floating label, filled (default) or outlined, in two sizes; leading icon, trailing slot, help and error text.",
       "registryDependencies": [
-        "@velvet/field-shell"
+        "@nelumbo/field-shell"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/input.tsx",
+          "path": "registry/nelumbo/ui/input.tsx",
           "type": "registry:ui"
         }
       ]
@@ -651,11 +651,11 @@
       "description": "Multi-line text field matching Input; grows with its content and shows a character count with maxLength.",
       "registryDependencies": [
         "utils",
-        "@velvet/field-shell"
+        "@nelumbo/field-shell"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/textarea.tsx",
+          "path": "registry/nelumbo/ui/textarea.tsx",
           "type": "registry:ui"
         }
       ]
@@ -664,20 +664,20 @@
       "name": "select",
       "type": "registry:ui",
       "title": "Select",
-      "description": "shadcn-compatible Select on Radix whose trigger is a Velvet text field (filled or outlined, floating label, help and error text); the list drops from the field at full width with filled selection.",
+      "description": "shadcn-compatible Select on Radix whose trigger is a Nelumbo text field (filled or outlined, floating label, help and error text); the list drops from the field at full width with filled selection.",
       "dependencies": [
         "radix-ui"
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/field-shell",
-        "@velvet/icon",
-        "@velvet/dropdown-menu",
-        "@velvet/popover"
+        "@nelumbo/field-shell",
+        "@nelumbo/icon",
+        "@nelumbo/dropdown-menu",
+        "@nelumbo/popover"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/select.tsx",
+          "path": "registry/nelumbo/ui/select.tsx",
           "type": "registry:ui"
         }
       ]
@@ -692,16 +692,16 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/field-shell",
-        "@velvet/icon",
-        "@velvet/icon-button",
-        "@velvet/button",
-        "@velvet/dropdown-menu",
-        "@velvet/popover"
+        "@nelumbo/field-shell",
+        "@nelumbo/icon",
+        "@nelumbo/icon-button",
+        "@nelumbo/button",
+        "@nelumbo/dropdown-menu",
+        "@nelumbo/popover"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/combobox.tsx",
+          "path": "registry/nelumbo/ui/combobox.tsx",
           "type": "registry:ui"
         }
       ]
@@ -716,11 +716,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/switch.tsx",
+          "path": "registry/nelumbo/ui/switch.tsx",
           "type": "registry:ui"
         }
       ]
@@ -738,7 +738,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/checkbox.tsx",
+          "path": "registry/nelumbo/ui/checkbox.tsx",
           "type": "registry:ui"
         }
       ]
@@ -753,11 +753,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/checkbox"
+        "@nelumbo/checkbox"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/radio-group.tsx",
+          "path": "registry/nelumbo/ui/radio-group.tsx",
           "type": "registry:ui"
         }
       ]
@@ -772,11 +772,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/slider.tsx",
+          "path": "registry/nelumbo/ui/slider.tsx",
           "type": "registry:ui"
         }
       ]
@@ -795,7 +795,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/card.tsx",
+          "path": "registry/nelumbo/ui/card.tsx",
           "type": "registry:ui"
         }
       ]
@@ -810,11 +810,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/chip.tsx",
+          "path": "registry/nelumbo/ui/chip.tsx",
           "type": "registry:ui"
         }
       ]
@@ -829,12 +829,12 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon",
-        "@velvet/icon-button"
+        "@nelumbo/icon",
+        "@nelumbo/icon-button"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/dialog.tsx",
+          "path": "registry/nelumbo/ui/dialog.tsx",
           "type": "registry:ui"
         }
       ]
@@ -849,11 +849,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/dialog"
+        "@nelumbo/dialog"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/sheet.tsx",
+          "path": "registry/nelumbo/ui/sheet.tsx",
           "type": "registry:ui"
         }
       ]
@@ -871,7 +871,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/popover.tsx",
+          "path": "registry/nelumbo/ui/popover.tsx",
           "type": "registry:ui"
         }
       ]
@@ -886,13 +886,13 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon",
-        "@velvet/popover",
-        "@velvet/kbd"
+        "@nelumbo/icon",
+        "@nelumbo/popover",
+        "@nelumbo/kbd"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/dropdown-menu.tsx",
+          "path": "registry/nelumbo/ui/dropdown-menu.tsx",
           "type": "registry:ui"
         }
       ]
@@ -907,11 +907,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/kbd"
+        "@nelumbo/kbd"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/tooltip.tsx",
+          "path": "registry/nelumbo/ui/tooltip.tsx",
           "type": "registry:ui"
         }
       ]
@@ -926,11 +926,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/tabs.tsx",
+          "path": "registry/nelumbo/ui/tabs.tsx",
           "type": "registry:ui"
         }
       ]
@@ -945,11 +945,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/navigation-rail.tsx",
+          "path": "registry/nelumbo/ui/navigation-rail.tsx",
           "type": "registry:ui"
         }
       ]
@@ -964,11 +964,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/snackbar.tsx",
+          "path": "registry/nelumbo/ui/snackbar.tsx",
           "type": "registry:ui"
         }
       ]
@@ -983,11 +983,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/navigation-bar.tsx",
+          "path": "registry/nelumbo/ui/navigation-bar.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1005,7 +1005,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/progress.tsx",
+          "path": "registry/nelumbo/ui/progress.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1020,7 +1020,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/loading-indicator.tsx",
+          "path": "registry/nelumbo/ui/loading-indicator.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1035,7 +1035,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/skeleton.tsx",
+          "path": "registry/nelumbo/ui/skeleton.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1053,7 +1053,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/avatar.tsx",
+          "path": "registry/nelumbo/ui/avatar.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1069,11 +1069,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/badge.tsx",
+          "path": "registry/nelumbo/ui/badge.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1088,11 +1088,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/list.tsx",
+          "path": "registry/nelumbo/ui/list.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1107,11 +1107,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/calendar.tsx",
+          "path": "registry/nelumbo/ui/calendar.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1126,17 +1126,17 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/field-shell",
-        "@velvet/calendar",
-        "@velvet/icon-button",
-        "@velvet/button",
-        "@velvet/icon",
-        "@velvet/popover",
-        "@velvet/dialog"
+        "@nelumbo/field-shell",
+        "@nelumbo/calendar",
+        "@nelumbo/icon-button",
+        "@nelumbo/button",
+        "@nelumbo/icon",
+        "@nelumbo/popover",
+        "@nelumbo/dialog"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/date-picker.tsx",
+          "path": "registry/nelumbo/ui/date-picker.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1151,11 +1151,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/accordion.tsx",
+          "path": "registry/nelumbo/ui/accordion.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1170,12 +1170,12 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon",
-        "@velvet/icon-button"
+        "@nelumbo/icon",
+        "@nelumbo/icon-button"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/alert.tsx",
+          "path": "registry/nelumbo/ui/alert.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1190,7 +1190,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/table.tsx",
+          "path": "registry/nelumbo/ui/table.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1205,19 +1205,19 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/table",
-        "@velvet/checkbox",
-        "@velvet/input",
-        "@velvet/select",
-        "@velvet/dropdown-menu",
-        "@velvet/skeleton",
-        "@velvet/icon-button",
-        "@velvet/button",
-        "@velvet/icon"
+        "@nelumbo/table",
+        "@nelumbo/checkbox",
+        "@nelumbo/input",
+        "@nelumbo/select",
+        "@nelumbo/dropdown-menu",
+        "@nelumbo/skeleton",
+        "@nelumbo/icon-button",
+        "@nelumbo/button",
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/data-table.tsx",
+          "path": "registry/nelumbo/ui/data-table.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1229,14 +1229,14 @@
       "description": "TimePicker: type a time in the locale's format (12 or 24 hour), or pick from a docked Material 3 clock dial or list columns. Hour and minute chips, AM/PM, min, max, step, validation.",
       "registryDependencies": [
         "utils",
-        "@velvet/field-shell",
-        "@velvet/popover",
-        "@velvet/icon-button",
-        "@velvet/button"
+        "@nelumbo/field-shell",
+        "@nelumbo/popover",
+        "@nelumbo/icon-button",
+        "@nelumbo/button"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/time-picker.tsx",
+          "path": "registry/nelumbo/ui/time-picker.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1254,7 +1254,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/input-otp.tsx",
+          "path": "registry/nelumbo/ui/input-otp.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1270,11 +1270,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/toggle.tsx",
+          "path": "registry/nelumbo/ui/toggle.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1290,11 +1290,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/toggle"
+        "@nelumbo/toggle"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/toggle-group.tsx",
+          "path": "registry/nelumbo/ui/toggle-group.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1309,11 +1309,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/breadcrumb.tsx",
+          "path": "registry/nelumbo/ui/breadcrumb.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1329,11 +1329,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/pagination.tsx",
+          "path": "registry/nelumbo/ui/pagination.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1351,7 +1351,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/scroll-area.tsx",
+          "path": "registry/nelumbo/ui/scroll-area.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1369,7 +1369,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/separator.tsx",
+          "path": "registry/nelumbo/ui/separator.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1384,14 +1384,14 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/dialog",
-        "@velvet/icon",
-        "@velvet/search",
-        "@velvet/kbd"
+        "@nelumbo/dialog",
+        "@nelumbo/icon",
+        "@nelumbo/search",
+        "@nelumbo/kbd"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/command.tsx",
+          "path": "registry/nelumbo/ui/command.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1400,19 +1400,19 @@
       "name": "alert-dialog",
       "type": "registry:ui",
       "title": "Alert Dialog",
-      "description": "shadcn-compatible AlertDialog on Radix: Velvet dialog motion, optional icon tile that pops in, destructive variant, footer that stacks on phones.",
+      "description": "shadcn-compatible AlertDialog on Radix: Nelumbo dialog motion, optional icon tile that pops in, destructive variant, footer that stacks on phones.",
       "dependencies": [
         "radix-ui"
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/button",
-        "@velvet/dialog",
-        "@velvet/icon"
+        "@nelumbo/button",
+        "@nelumbo/dialog",
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/alert-dialog.tsx",
+          "path": "registry/nelumbo/ui/alert-dialog.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1427,11 +1427,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/collapsible.tsx",
+          "path": "registry/nelumbo/ui/collapsible.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1446,11 +1446,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/popover"
+        "@nelumbo/popover"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/hover-card.tsx",
+          "path": "registry/nelumbo/ui/hover-card.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1468,7 +1468,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/label.tsx",
+          "path": "registry/nelumbo/ui/label.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1477,20 +1477,20 @@
       "name": "form",
       "type": "registry:ui",
       "title": "Form",
-      "description": "shadcn-compatible Form on react-hook-form: one label per control (FormLabel feeds Velvet fields their floating label), wired ids and descriptions, spring error messages, a shake on failed submit.",
+      "description": "shadcn-compatible Form on react-hook-form: one label per control (FormLabel feeds Nelumbo fields their floating label), wired ids and descriptions, spring error messages, a shake on failed submit.",
       "dependencies": [
         "react-hook-form",
         "radix-ui"
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/label",
-        "@velvet/field-shell",
-        "@velvet/icon"
+        "@nelumbo/label",
+        "@nelumbo/field-shell",
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/form.tsx",
+          "path": "registry/nelumbo/ui/form.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1499,7 +1499,7 @@
       "name": "chart",
       "type": "registry:ui",
       "title": "Chart",
-      "description": "shadcn-compatible Chart on recharts: Velvet accent series colors, popover tooltip that glides on a spring, faint grid, rounded bars, legend chips that toggle series, reduced-motion safe.",
+      "description": "shadcn-compatible Chart on recharts: Nelumbo accent series colors, popover tooltip that glides on a spring, faint grid, rounded bars, legend chips that toggle series, reduced-motion safe.",
       "dependencies": [
         "recharts"
       ],
@@ -1508,7 +1508,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/chart.tsx",
+          "path": "registry/nelumbo/ui/chart.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1523,11 +1523,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon-button"
+        "@nelumbo/icon-button"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/carousel.tsx",
+          "path": "registry/nelumbo/ui/carousel.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1545,7 +1545,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/resizable.tsx",
+          "path": "registry/nelumbo/ui/resizable.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1561,11 +1561,11 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon"
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/navigation-menu.tsx",
+          "path": "registry/nelumbo/ui/navigation-menu.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1581,17 +1581,17 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon",
-        "@velvet/icon-button",
-        "@velvet/input",
-        "@velvet/badge",
-        "@velvet/separator",
-        "@velvet/sheet",
-        "@velvet/tooltip"
+        "@nelumbo/icon",
+        "@nelumbo/icon-button",
+        "@nelumbo/input",
+        "@nelumbo/badge",
+        "@nelumbo/separator",
+        "@nelumbo/sheet",
+        "@nelumbo/tooltip"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/sidebar.tsx",
+          "path": "registry/nelumbo/ui/sidebar.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1606,13 +1606,13 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon",
-        "@velvet/icon-button",
-        "@velvet/list"
+        "@nelumbo/icon",
+        "@nelumbo/icon-button",
+        "@nelumbo/list"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/search.tsx",
+          "path": "registry/nelumbo/ui/search.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1627,13 +1627,13 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon",
-        "@velvet/popover",
-        "@velvet/dropdown-menu"
+        "@nelumbo/icon",
+        "@nelumbo/popover",
+        "@nelumbo/dropdown-menu"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/context-menu.tsx",
+          "path": "registry/nelumbo/ui/context-menu.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1648,13 +1648,13 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon",
-        "@velvet/popover",
-        "@velvet/dropdown-menu"
+        "@nelumbo/icon",
+        "@nelumbo/popover",
+        "@nelumbo/dropdown-menu"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/menubar.tsx",
+          "path": "registry/nelumbo/ui/menubar.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1670,14 +1670,14 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon-button",
-        "@velvet/fab",
-        "@velvet/search",
-        "@velvet/tooltip"
+        "@nelumbo/icon-button",
+        "@nelumbo/fab",
+        "@nelumbo/search",
+        "@nelumbo/tooltip"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/app-bar.tsx",
+          "path": "registry/nelumbo/ui/app-bar.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1686,17 +1686,17 @@
       "name": "field",
       "type": "registry:ui",
       "title": "Field",
-      "description": "shadcn-compatible Field layout set: fieldsets, legends, descriptions and spring errors; FieldLabel feeds Velvet fields their floating label; choice cards with a tonal selected state.",
+      "description": "shadcn-compatible Field layout set: fieldsets, legends, descriptions and spring errors; FieldLabel feeds Nelumbo fields their floating label; choice cards with a tonal selected state.",
       "dependencies": [],
       "registryDependencies": [
         "utils",
-        "@velvet/icon",
-        "@velvet/label",
-        "@velvet/field-shell"
+        "@nelumbo/icon",
+        "@nelumbo/label",
+        "@nelumbo/field-shell"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/field.tsx",
+          "path": "registry/nelumbo/ui/field.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1715,7 +1715,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/item.tsx",
+          "path": "registry/nelumbo/ui/item.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1724,18 +1724,18 @@
       "name": "input-group",
       "type": "registry:ui",
       "title": "Input Group",
-      "description": "shadcn-compatible InputGroup that reads as one Velvet field: inline and block addons, text prefixes, keycap hints, tonal buttons, a chat composer layout.",
+      "description": "shadcn-compatible InputGroup that reads as one Nelumbo field: inline and block addons, text prefixes, keycap hints, tonal buttons, a chat composer layout.",
       "dependencies": [
         "class-variance-authority"
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/button",
-        "@velvet/dropdown-menu"
+        "@nelumbo/button",
+        "@nelumbo/dropdown-menu"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/input-group.tsx",
+          "path": "registry/nelumbo/ui/input-group.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1744,16 +1744,16 @@
       "name": "native-select",
       "type": "registry:ui",
       "title": "Native Select",
-      "description": "shadcn-compatible NativeSelect: a real select on the Velvet field shell, with floating label, sizes, invalid state and a dark native list.",
+      "description": "shadcn-compatible NativeSelect: a real select on the Nelumbo field shell, with floating label, sizes, invalid state and a dark native list.",
       "dependencies": [],
       "registryDependencies": [
         "utils",
-        "@velvet/field-shell",
-        "@velvet/icon"
+        "@nelumbo/field-shell",
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/native-select.tsx",
+          "path": "registry/nelumbo/ui/native-select.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1766,12 +1766,12 @@
       "dependencies": [],
       "registryDependencies": [
         "utils",
-        "@velvet/fab",
-        "@velvet/icon"
+        "@nelumbo/fab",
+        "@nelumbo/icon"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/fab-menu.tsx",
+          "path": "registry/nelumbo/ui/fab-menu.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1787,16 +1787,16 @@
       ],
       "registryDependencies": [
         "utils",
-        "@velvet/icon",
-        "@velvet/icon-button",
-        "@velvet/toggle",
-        "@velvet/fab",
-        "@velvet/tooltip",
-        "@velvet/dropdown-menu"
+        "@nelumbo/icon",
+        "@nelumbo/icon-button",
+        "@nelumbo/toggle",
+        "@nelumbo/fab",
+        "@nelumbo/tooltip",
+        "@nelumbo/dropdown-menu"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/toolbar.tsx",
+          "path": "registry/nelumbo/ui/toolbar.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1812,7 +1812,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/kbd.tsx",
+          "path": "registry/nelumbo/ui/kbd.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1821,15 +1821,15 @@
       "name": "spinner",
       "type": "registry:ui",
       "title": "Spinner",
-      "description": "shadcn-compatible Spinner: a breathing ring, or Velvet morphing shapes; announced as status, reduced-motion safe.",
+      "description": "shadcn-compatible Spinner: a breathing ring, or Nelumbo morphing shapes; announced as status, reduced-motion safe.",
       "dependencies": [],
       "registryDependencies": [
         "utils",
-        "@velvet/loading-indicator"
+        "@nelumbo/loading-indicator"
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/spinner.tsx",
+          "path": "registry/nelumbo/ui/spinner.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1847,7 +1847,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/empty.tsx",
+          "path": "registry/nelumbo/ui/empty.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1865,7 +1865,7 @@
       ],
       "files": [
         {
-          "path": "registry/velvet/ui/aspect-ratio.tsx",
+          "path": "registry/nelumbo/ui/aspect-ratio.tsx",
           "type": "registry:ui"
         }
       ]

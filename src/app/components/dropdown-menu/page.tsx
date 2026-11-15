@@ -16,10 +16,10 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/registry/velvet/ui/dropdown-menu"
-import { Button } from "@/registry/velvet/ui/button"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Icon } from "@/registry/velvet/ui/icon"
+} from "@/registry/nelumbo/ui/dropdown-menu"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 export default function DropdownMenuPage() {
@@ -35,7 +35,7 @@ export default function DropdownMenuPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/dropdown-menu`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/dropdown-menu`}</Code>
       </Section>
 
       <Section

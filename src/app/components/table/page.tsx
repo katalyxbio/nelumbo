@@ -10,8 +10,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/registry/velvet/ui/table"
-import { Badge } from "@/registry/velvet/ui/badge"
+} from "@/registry/nelumbo/ui/table"
+import { Badge } from "@/registry/nelumbo/ui/badge"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" })
@@ -73,7 +73,7 @@ export default function TablePage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/table`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/table`}</Code>
       </Section>
 
       <Section

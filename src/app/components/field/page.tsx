@@ -1,14 +1,14 @@
 "use client"
 
 import * as React from "react"
-import { Button } from "@/registry/velvet/ui/button"
-import { Checkbox } from "@/registry/velvet/ui/checkbox"
-import { Icon } from "@/registry/velvet/ui/icon"
-import { Input } from "@/registry/velvet/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/registry/velvet/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/registry/velvet/ui/select"
-import { Switch } from "@/registry/velvet/ui/switch"
-import { Textarea } from "@/registry/velvet/ui/textarea"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Checkbox } from "@/registry/nelumbo/ui/checkbox"
+import { Icon } from "@/registry/nelumbo/ui/icon"
+import { Input } from "@/registry/nelumbo/ui/input"
+import { RadioGroup, RadioGroupItem } from "@/registry/nelumbo/ui/radio-group"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/registry/nelumbo/ui/select"
+import { Switch } from "@/registry/nelumbo/ui/switch"
+import { Textarea } from "@/registry/nelumbo/ui/textarea"
 import {
   Field,
   FieldContent,
@@ -20,7 +20,7 @@ import {
   FieldSeparator,
   FieldSet,
   FieldTitle,
-} from "@/registry/velvet/ui/field"
+} from "@/registry/nelumbo/ui/field"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const PLANS = [
@@ -41,17 +41,17 @@ export default function FieldPage() {
     <>
       <PageHeader eyebrow="Component 62" title="Field">
         The layout of a form: a label, a control, a description and an error, stacked or in a row, grouped into
-        fieldsets. Drop-in for shadcn&apos;s Field. Velvet text fields keep their floating label, and checkbox,
+        fieldsets. Drop-in for shadcn&apos;s Field. Nelumbo text fields keep their floating label, and checkbox,
         radio and switch rows can become selectable cards.
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/field`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/field`}</Code>
       </Section>
 
       <Section
         title="Payment form"
-        description="FieldSet and FieldLegend name a group, FieldGroup spaces the fields. A FieldLabel beside a Velvet Input or Select becomes its floating label, so nothing is drawn twice, while the id, aria-invalid and aria-describedby are wired for you."
+        description="FieldSet and FieldLegend name a group, FieldGroup spaces the fields. A FieldLabel beside a Nelumbo Input or Select becomes its floating label, so nothing is drawn twice, while the id, aria-invalid and aria-describedby are wired for you."
       >
         <Preview className="justify-center">
           <form className="w-full max-w-md" onSubmit={(e) => e.preventDefault()}>
@@ -256,7 +256,7 @@ export default function FieldPage() {
 
       <Section
         title="Errors"
-        description="Put data-invalid on the Field: the label, the control and a choice card turn red and the Velvet field gets aria-invalid. FieldError is always mounted, so screen readers hear it, and it opens with a spring. Give it an errors array (react-hook-form, Zod; duplicates are merged) or children."
+        description="Put data-invalid on the Field: the label, the control and a choice card turn red and the Nelumbo field gets aria-invalid. FieldError is always mounted, so screen readers hear it, and it opens with a spring. Give it an errors array (react-hook-form, Zod; duplicates are merged) or children."
       >
         <Preview className="items-start justify-center gap-10">
           <FieldGroup className="w-full max-w-sm">
@@ -344,10 +344,10 @@ export default function FieldPage() {
         <PropsTable
           rows={[
             ["Field orientation", '"vertical" | "horizontal" | "responsive"', '"vertical"', "Responsive switches at 28rem of the enclosing FieldGroup."],
-            ["Field data-invalid", "boolean", "false", "Red label, aria-invalid on a Velvet field, error state on cards."],
+            ["Field data-invalid", "boolean", "false", "Red label, aria-invalid on a Nelumbo field, error state on cards."],
             ["Field data-disabled", "boolean", "false", "Dims the label and description."],
-            ["Field floating", "boolean", "true", "false keeps a separate FieldLabel beside a Velvet text field."],
-            ["FieldLabel", "Label props", "", "Wrapping a Field makes it a choice card. Beside a Velvet text field with a string child, it becomes that field's label."],
+            ["Field floating", "boolean", "true", "false keeps a separate FieldLabel beside a Nelumbo text field."],
+            ["FieldLabel", "Label props", "", "Wrapping a Field makes it a choice card. Beside a Nelumbo text field with a string child, it becomes that field's label."],
             ["FieldError errors", "Array<{ message?: string }>", "", "Deduplicated; several messages become a list. Or pass children."],
             ["FieldLegend variant", '"legend" | "label"', '"legend"', "Legend is a title, label is a small label."],
             ["FieldSeparator", "div props", "", "Spacing; children are centered text. No line."],

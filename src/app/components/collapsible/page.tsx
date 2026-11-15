@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { Collapsible, CollapsibleChevron, CollapsibleContent, CollapsibleTrigger } from "@/registry/velvet/ui/collapsible"
-import { Button } from "@/registry/velvet/ui/button"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
+import { Collapsible, CollapsibleChevron, CollapsibleContent, CollapsibleTrigger } from "@/registry/nelumbo/ui/collapsible"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const REVIEWERS = [
@@ -107,7 +107,7 @@ export default function CollapsiblePage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/collapsible`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/collapsible`}</Code>
       </Section>
 
       <Section title="Show more" description="The chevron prop adds a trailing chevron that turns on a spring. The extra rows grow in with a height animation and a fade.">
@@ -124,7 +124,7 @@ export default function CollapsiblePage() {
         </Preview>
       </Section>
 
-      <Section title="With a button" description="Use asChild to make any Velvet button the trigger and drop CollapsibleChevron inside it.">
+      <Section title="With a button" description="Use asChild to make any Nelumbo button the trigger and drop CollapsibleChevron inside it.">
         <Preview className="items-start">
           <Collapsible className="flex w-full max-w-sm flex-col gap-3">
             <CollapsibleTrigger asChild>

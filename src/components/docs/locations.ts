@@ -1,4 +1,4 @@
-import type { ComboboxOption } from "@/registry/velvet/ui/combobox"
+import type { ComboboxOption } from "@/registry/nelumbo/ui/combobox"
 
 /** Three levels deep: continent › region › country. Shared by the nested Select and Combobox demos. */
 export const LOCATIONS: ComboboxOption[] = [

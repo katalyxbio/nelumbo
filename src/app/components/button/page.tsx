@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Icon } from "@/registry/velvet/ui/icon"
-import { Button } from "@/registry/velvet/ui/button"
+import { Icon } from "@/registry/nelumbo/ui/icon"
+import { Button } from "@/registry/nelumbo/ui/button"
 import { Code, PageHeader, Preview, Section } from "@/components/docs/primitives"
 
 const PROPS = [

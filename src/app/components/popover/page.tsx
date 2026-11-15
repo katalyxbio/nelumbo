@@ -1,12 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { Popover, PopoverClose, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "@/registry/velvet/ui/popover"
-import { Button } from "@/registry/velvet/ui/button"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Input } from "@/registry/velvet/ui/input"
-import { Switch } from "@/registry/velvet/ui/switch"
-import { Icon } from "@/registry/velvet/ui/icon"
+import { Popover, PopoverClose, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "@/registry/nelumbo/ui/popover"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Input } from "@/registry/nelumbo/ui/input"
+import { Switch } from "@/registry/nelumbo/ui/switch"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const SWATCHES = [
@@ -32,7 +32,7 @@ export default function PopoverPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/popover`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/popover`}</Code>
       </Section>
 
       <Section title="Share a link" description="A header with a title and a sentence, then the task. Focus moves into the popover and returns to the trigger when it closes.">
@@ -50,7 +50,7 @@ export default function PopoverPage() {
                 <PopoverDescription>Anyone with the link can view this board.</PopoverDescription>
               </PopoverHeader>
               <div className="flex items-center gap-2">
-                <Input size="sm" label="Link" readOnly defaultValue="velvet.design/b/q4-plan" className="flex-1" />
+                <Input size="sm" label="Link" readOnly defaultValue="nelumbo.design/b/q4-plan" className="flex-1" />
                 <IconButton
                   variant="secondary"
                   icon={copied ? "check" : "content_copy"}

@@ -1,11 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/registry/velvet/ui/tabs"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/registry/velvet/ui/card"
-import { Input } from "@/registry/velvet/ui/input"
-import { Button } from "@/registry/velvet/ui/button"
-import { Switch } from "@/registry/velvet/ui/switch"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/registry/nelumbo/ui/tabs"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/registry/nelumbo/ui/card"
+import { Input } from "@/registry/nelumbo/ui/input"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Switch } from "@/registry/nelumbo/ui/switch"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const CITIES = ["Lisbon", "Kyoto", "Mexico City", "Copenhagen", "Cape Town", "Montréal", "Melbourne", "Seoul", "Marrakesh"]
@@ -19,7 +19,7 @@ export default function TabsPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/tabs`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/tabs`}</Code>
       </Section>
 
       <Section title="Pill" description="The default, like shadcn's: a raised pill on a tonal track. Arrow keys move between tabs; Home and End jump to the ends.">

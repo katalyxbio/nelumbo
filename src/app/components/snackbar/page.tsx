@@ -1,12 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { Snackbars, snackbar, toast } from "@/registry/velvet/ui/snackbar"
-import { Button } from "@/registry/velvet/ui/button"
-import { Icon } from "@/registry/velvet/ui/icon"
-import { Checkbox } from "@/registry/velvet/ui/checkbox"
-import { Switch } from "@/registry/velvet/ui/switch"
-import { SegmentedButton, SegmentedButtonItem } from "@/registry/velvet/ui/segmented-button"
+import { Snackbars, snackbar, toast } from "@/registry/nelumbo/ui/snackbar"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Icon } from "@/registry/nelumbo/ui/icon"
+import { Checkbox } from "@/registry/nelumbo/ui/checkbox"
+import { Switch } from "@/registry/nelumbo/ui/switch"
+import { SegmentedButton, SegmentedButtonItem } from "@/registry/nelumbo/ui/segmented-button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const MESSAGES = ["Weekly report", "Invoice #2024-118", "Design review notes"]
@@ -38,7 +38,7 @@ export default function SnackbarPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/snackbar`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/snackbar`}</Code>
       </Section>
 
       <Section title="Message" description="Short and in the past tense: what just happened. Gone after four seconds.">

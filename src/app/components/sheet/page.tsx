@@ -11,13 +11,13 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/registry/velvet/ui/sheet"
-import { Button } from "@/registry/velvet/ui/button"
-import { ChipGroup, FilterChip } from "@/registry/velvet/ui/chip"
-import { Slider } from "@/registry/velvet/ui/slider"
-import { Switch } from "@/registry/velvet/ui/switch"
-import { Checkbox } from "@/registry/velvet/ui/checkbox"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
+} from "@/registry/nelumbo/ui/sheet"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { ChipGroup, FilterChip } from "@/registry/nelumbo/ui/chip"
+import { Slider } from "@/registry/nelumbo/ui/slider"
+import { Switch } from "@/registry/nelumbo/ui/switch"
+import { Checkbox } from "@/registry/nelumbo/ui/checkbox"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const SHARE: { icon: IconName; label: string }[] = [
@@ -91,7 +91,7 @@ export default function SheetPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/sheet`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/sheet`}</Code>
       </Section>
 
       <Section title="Sides" description="Right is the default. The inner corners are rounded so the sheet reads as a layer above the page.">

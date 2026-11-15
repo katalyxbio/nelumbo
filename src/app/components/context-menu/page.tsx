@@ -16,8 +16,8 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
-} from "@/registry/velvet/ui/context-menu"
-import { Icon } from "@/registry/velvet/ui/icon"
+} from "@/registry/nelumbo/ui/context-menu"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const area =
@@ -37,7 +37,7 @@ export default function ContextMenuPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/context-menu`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/context-menu`}</Code>
       </Section>
 
       <Section

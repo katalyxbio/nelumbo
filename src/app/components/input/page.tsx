@@ -1,16 +1,16 @@
 "use client"
 
 import * as React from "react"
-import { Input } from "@/registry/velvet/ui/input"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Button } from "@/registry/velvet/ui/button"
+import { Input } from "@/registry/nelumbo/ui/input"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Button } from "@/registry/nelumbo/ui/button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const VARIANTS = ["filled", "outlined"] as const
 
 export default function InputPage() {
   const [show, setShow] = React.useState(false)
-  const [query, setQuery] = React.useState("velvet")
+  const [query, setQuery] = React.useState("nelumbo")
   const [phone, setPhone] = React.useState("+46 70 12")
   const phoneError = phone.replace(/\D/g, "").length < 10 ? "Enter the full number, with country code." : undefined
 
@@ -22,7 +22,7 @@ export default function InputPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/input`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/input`}</Code>
       </Section>
 
       <Section

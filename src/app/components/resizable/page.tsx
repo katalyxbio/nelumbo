@@ -1,11 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/registry/velvet/ui/resizable"
-import { List, ListItem } from "@/registry/velvet/ui/list"
-import { Badge } from "@/registry/velvet/ui/badge"
-import { Avatar } from "@/registry/velvet/ui/avatar"
-import { Icon } from "@/registry/velvet/ui/icon"
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/registry/nelumbo/ui/resizable"
+import { List, ListItem } from "@/registry/nelumbo/ui/list"
+import { Badge } from "@/registry/nelumbo/ui/badge"
+import { Avatar } from "@/registry/nelumbo/ui/avatar"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { PEOPLE } from "@/components/docs/people"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
@@ -48,7 +48,7 @@ export default function ResizablePage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/resizable`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/resizable`}</Code>
       </Section>
 
       <Section

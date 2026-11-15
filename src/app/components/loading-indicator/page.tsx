@@ -1,11 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { LoadingIndicator } from "@/registry/velvet/ui/loading-indicator"
-import { Skeleton } from "@/registry/velvet/ui/skeleton"
-import { Button } from "@/registry/velvet/ui/button"
-import { Card } from "@/registry/velvet/ui/card"
-import { Icon } from "@/registry/velvet/ui/icon"
+import { LoadingIndicator } from "@/registry/nelumbo/ui/loading-indicator"
+import { Skeleton } from "@/registry/nelumbo/ui/skeleton"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Card } from "@/registry/nelumbo/ui/card"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 function Labelled({ children, text }: { children: React.ReactNode; text: string }) {
@@ -77,7 +77,7 @@ export default function LoadingIndicatorPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/loading-indicator @velvet/skeleton`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/loading-indicator @nelumbo/skeleton`}</Code>
       </Section>
 
       <Section

@@ -12,9 +12,9 @@ import {
   CommandLoading,
   CommandSeparator,
   CommandShortcut,
-} from "@/registry/velvet/ui/command"
-import { Button } from "@/registry/velvet/ui/button"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
+} from "@/registry/nelumbo/ui/command"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 type Action = { label: string; icon: IconName; shortcut?: string; disabled?: boolean }
@@ -82,7 +82,7 @@ export default function CommandPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/command`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/command`}</Code>
       </Section>
 
       <Section

@@ -3,8 +3,8 @@
 import * as React from "react"
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Label, Line, LineChart, Pie, PieChart, PolarAngleAxis, RadialBar, RadialBarChart, XAxis, YAxis } from "recharts"
 
-import { Badge } from "@/registry/velvet/ui/badge"
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/registry/velvet/ui/card"
+import { Badge } from "@/registry/nelumbo/ui/badge"
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/registry/nelumbo/ui/card"
 import {
   ChartContainer,
   ChartGradient,
@@ -19,7 +19,7 @@ import {
   useChartAnimation,
   useSeriesVisibility,
   type ChartConfig,
-} from "@/registry/velvet/ui/chart"
+} from "@/registry/nelumbo/ui/chart"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const compact = (v: number) => (v >= 1000 ? `${v / 1000}k` : String(v))
@@ -371,17 +371,17 @@ export default function ChartPage() {
   return (
     <>
       <PageHeader eyebrow="Component 51" title="Chart">
-        Recharts charts that wear Velvet: faint horizontal grid, quiet label-sm axes, rounded bars, a raised popover
+        Recharts charts that wear Nelumbo: faint horizontal grid, quiet label-sm axes, rounded bars, a raised popover
         tooltip and series colors from the accent roles. API-compatible with shadcn&apos;s Chart.
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/chart`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/chart`}</Code>
       </Section>
 
       <Section
         title="Area"
-        description="Stacked areas with a gradient fill and a 2px line. The legend chips are an interactive Velvet addition: click one to hide a series (pass hiddenKeys and onToggle to ChartLegendContent). The hovered dot gets a ring in the card surface."
+        description="Stacked areas with a gradient fill and a 2px line. The legend chips are an interactive Nelumbo addition: click one to hide a series (pass hiddenKeys and onToggle to ChartLegendContent). The hovered dot gets a ring in the card surface."
       >
         <Preview className="block">
           <AreaDemo />
@@ -431,7 +431,7 @@ export default function ChartPage() {
 
       <Section
         title="Colors"
-        description={`Series without a color in the config take chartColors in order: ${chartColorNames.join(", ")}. These are Velvet's accent roles, checked at 3:1 against the card in light and dark. Keep to five series or fewer, and use the legend and tooltip as the second channel for identity. Override with color or theme: { light, dark }.`}
+        description={`Series without a color in the config take chartColors in order: ${chartColorNames.join(", ")}. These are Nelumbo's accent roles, checked at 3:1 against the card in light and dark. Keep to five series or fewer, and use the legend and tooltip as the second channel for identity. Override with color or theme: { light, dark }.`}
       >
         <Preview>
           {chartColorNames.map((n) => (
@@ -453,10 +453,10 @@ export default function ChartPage() {
             ["hideLabel / hideIndicator", "boolean", "false", "Drop the heading or the markers"],
             ["labelFormatter / formatter", "function", "", "Same as shadcn"],
             ["nameKey / labelKey", "string", "", "Which payload field names the item or the heading (pie and radial use nameKey)"],
-            ["ChartLegendContent hiddenKeys, onToggle", "string[], (key) => void", "", "Velvet: makes chips toggle buttons (aria-pressed). Pair with hide on each series"],
+            ["ChartLegendContent hiddenKeys, onToggle", "string[], (key) => void", "", "Nelumbo: makes chips toggle buttons (aria-pressed). Pair with hide on each series"],
             ["useSeriesVisibility()", "{ hiddenKeys, toggle, isHidden }", "", "State helper for the interactive legend"],
             ["useChartAnimation()", "props", "", "Spread on Bar, Area, Line, Pie, RadialBar: spring-like ease, off with reduced motion"],
-            ["chartBarRadius, chartDot(key), chartActiveDot(key), ChartGradient", "", "", "Helpers for the Velvet marks"],
+            ["chartBarRadius, chartDot(key), chartActiveDot(key), ChartGradient", "", "", "Helpers for the Nelumbo marks"],
             ["chartColors", "string[]", "", "var(--blue), var(--orange), var(--green), ... in series order"],
           ]}
         />

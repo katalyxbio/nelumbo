@@ -29,7 +29,7 @@ import {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
-} from "@/registry/velvet/ui/sidebar"
+} from "@/registry/nelumbo/ui/sidebar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,10 +37,10 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/registry/velvet/ui/dropdown-menu"
-import { Avatar } from "@/registry/velvet/ui/avatar"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
-import { Skeleton } from "@/registry/velvet/ui/skeleton"
+} from "@/registry/nelumbo/ui/dropdown-menu"
+import { Avatar } from "@/registry/nelumbo/ui/avatar"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
+import { Skeleton } from "@/registry/nelumbo/ui/skeleton"
 import { Code, PageHeader, PropsTable, Section } from "@/components/docs/primitives"
 
 type Variant = "sidebar" | "floating" | "inset"
@@ -311,7 +311,7 @@ export default function SidebarPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/sidebar`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/sidebar`}</Code>
       </Section>
 
       <Section
@@ -349,7 +349,7 @@ export default function SidebarPage() {
         <LoadingFrame />
       </Section>
 
-      <Section title="Usage" description="Same structure as shadcn. Put a SidebarProvider at the top of the layout; use Velvet's Icon inside buttons.">
+      <Section title="Usage" description="Same structure as shadcn. Put a SidebarProvider at the top of the layout; use Nelumbo's Icon inside buttons.">
         <Code>{`import {
   Sidebar, SidebarProvider, SidebarTrigger, SidebarInset, SidebarContent,
   SidebarGroup, SidebarGroupLabel, SidebarGroupContent,

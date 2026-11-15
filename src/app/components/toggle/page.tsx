@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
-import { Toggle } from "@/registry/velvet/ui/toggle"
-import { ToggleGroup, ToggleGroupItem } from "@/registry/velvet/ui/toggle-group"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
+import { Toggle } from "@/registry/nelumbo/ui/toggle"
+import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const FORMAT: { value: string; label: string; icon: IconName }[] = [
@@ -36,7 +36,7 @@ export default function TogglePage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/toggle @velvet/toggle-group`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/toggle @nelumbo/toggle-group`}</Code>
       </Section>
 
       <Section
@@ -138,7 +138,7 @@ export default function TogglePage() {
 
       <Section
         title="Sizes"
-        description="sm, default and lg match the heights of Velvet's buttons (32, 40 and 48px). On a Toggle Group, set size once on the group."
+        description="sm, default and lg match the heights of Nelumbo's buttons (32, 40 and 48px). On a Toggle Group, set size once on the group."
       >
         <Preview className="flex-col items-start gap-4">
           {(["sm", "default", "lg"] as const).map((size) => (
@@ -240,7 +240,7 @@ import { Icon } from "@/components/ui/icon"
   <ToggleGroupItem value="center" aria-label="Align center"><Icon name="format_align_center" /></ToggleGroupItem>
 </ToggleGroup>
 
-// Velvet: variants and sizes on the group, spacing for separated items
+// Nelumbo: variants and sizes on the group, spacing for separated items
 <ToggleGroup type="multiple" variant="outline" size="sm" spacing={1} aria-label="Styles">
   ...
 </ToggleGroup>`}</Code>

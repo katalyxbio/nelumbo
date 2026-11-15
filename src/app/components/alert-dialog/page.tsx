@@ -11,9 +11,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/registry/velvet/ui/alert-dialog"
-import { Button } from "@/registry/velvet/ui/button"
-import { Icon } from "@/registry/velvet/ui/icon"
+} from "@/registry/nelumbo/ui/alert-dialog"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 export default function AlertDialogPage() {
@@ -27,7 +27,7 @@ export default function AlertDialogPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/alert-dialog`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/alert-dialog`}</Code>
       </Section>
 
       <Section title="Destructive" description="variant='destructive' on the root makes the action a destructive button and tints the icon tile. The icon centers the header; the actions stay right-aligned (stacked full width on phones).">
@@ -69,7 +69,7 @@ export default function AlertDialogPage() {
             </AlertDialogTrigger>
             <AlertDialogContent size="sm">
               <AlertDialogHeader icon="logout">
-                <AlertDialogTitle>Sign out of Velvet?</AlertDialogTitle>
+                <AlertDialogTitle>Sign out of Nelumbo?</AlertDialogTitle>
                 <AlertDialogDescription>Unsaved changes on this device will be kept as a draft.</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

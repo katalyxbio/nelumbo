@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Switch } from "@/registry/velvet/ui/switch"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
+import { Switch } from "@/registry/nelumbo/ui/switch"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const SETTINGS: { id: string; icon: IconName; title: string; body: string; on: boolean; disabled?: boolean }[] = [
@@ -32,7 +32,7 @@ export default function SwitchPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/switch`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/switch`}</Code>
       </Section>
 
       <Section title="States" description="Black when on, white in dark mode. Hover shows a soft halo around the thumb.">

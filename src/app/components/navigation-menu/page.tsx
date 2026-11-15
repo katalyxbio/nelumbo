@@ -12,8 +12,8 @@ import {
   NavigationMenuRichLink,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "@/registry/velvet/ui/navigation-menu"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
+} from "@/registry/nelumbo/ui/navigation-menu"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 type Entry = { icon: IconName; title: string; description: string }
@@ -70,7 +70,7 @@ function SiteMenu({ viewport = true, indicator = false, current = "Pricing", lab
           <NavigationMenuContent>
             <div className="grid gap-2 sm:w-[37rem] sm:grid-cols-[1fr_13rem]">
               <Links items={PRODUCTS} />
-              <NavigationMenuFeatured asChild icon="stars" title="Velvet 2.0" description="Smarter automations, a new inbox, and a calmer dashboard.">
+              <NavigationMenuFeatured asChild icon="stars" title="Nelumbo 2.0" description="Smarter automations, a new inbox, and a calmer dashboard.">
                 <a href="#" onClick={(e) => e.preventDefault()} />
               </NavigationMenuFeatured>
             </div>
@@ -110,7 +110,7 @@ export default function NavigationMenuPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/navigation-menu`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/navigation-menu`}</Code>
       </Section>
 
       <Section
@@ -169,7 +169,7 @@ export default function NavigationMenuPage() {
               </NavigationMenuRichLink>
             </li>
           </ul>
-          <NavigationMenuFeatured asChild icon="stars" title="Velvet 2.0" description="What's new.">
+          <NavigationMenuFeatured asChild icon="stars" title="Nelumbo 2.0" description="What's new.">
             <Link href="/new" />
           </NavigationMenuFeatured>
         </div>

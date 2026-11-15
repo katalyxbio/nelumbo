@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { Button } from "@/registry/velvet/ui/button"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { ButtonGroup } from "@/registry/velvet/ui/button-group"
-import { Icon } from "@/registry/velvet/ui/icon"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { ButtonGroup } from "@/registry/nelumbo/ui/button-group"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 export default function ButtonGroupPage() {
@@ -18,7 +18,7 @@ export default function ButtonGroupPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/button-group`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/button-group`}</Code>
       </Section>
 
       <Section

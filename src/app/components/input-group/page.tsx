@@ -9,17 +9,17 @@ import {
   InputGroupKeys,
   InputGroupText,
   InputGroupTextarea,
-} from "@/registry/velvet/ui/input-group"
-import { Spinner } from "@/registry/velvet/ui/spinner"
-import { Icon } from "@/registry/velvet/ui/icon"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
+} from "@/registry/nelumbo/ui/input-group"
+import { Spinner } from "@/registry/nelumbo/ui/spinner"
+import { Icon } from "@/registry/nelumbo/ui/icon"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/registry/velvet/ui/dropdown-menu"
+} from "@/registry/nelumbo/ui/dropdown-menu"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 function SearchExample() {
@@ -81,7 +81,7 @@ function PasswordExample() {
 
 function CopyExample() {
   const [copied, setCopied] = React.useState(false)
-  const link = "https://velvet.dev/invite/k3p9-x2m4"
+  const link = "https://nelumbo.dev/invite/k3p9-x2m4"
   return (
     <InputGroup>
       <InputGroupAddon>
@@ -190,7 +190,7 @@ export default function InputGroupPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/input-group`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/input-group`}</Code>
       </Section>
 
       <Section
@@ -202,7 +202,7 @@ export default function InputGroupPage() {
             <InputGroupAddon>
               <InputGroupText>https://</InputGroupText>
             </InputGroupAddon>
-            <InputGroupInput aria-label="Website" placeholder="velvet" />
+            <InputGroupInput aria-label="Website" placeholder="nelumbo" />
             <InputGroupAddon align="inline-end">
               <InputGroupText>.com</InputGroupText>
             </InputGroupAddon>
@@ -276,7 +276,7 @@ export default function InputGroupPage() {
               </InputGroupAddon>
               <InputGroupInput aria-label="Work email" aria-invalid aria-describedby="ig-err" defaultValue="maya@" />
               <InputGroupAddon align="inline-end">
-                <InputGroupText>@velvet.dev</InputGroupText>
+                <InputGroupText>@nelumbo.dev</InputGroupText>
               </InputGroupAddon>
             </InputGroup>
             <p id="ig-err" className="px-3 type-body-sm text-destructive">
@@ -287,7 +287,7 @@ export default function InputGroupPage() {
             <InputGroupAddon>
               <InputGroupText>https://</InputGroupText>
             </InputGroupAddon>
-            <InputGroupInput aria-label="Locked website" disabled defaultValue="velvet" />
+            <InputGroupInput aria-label="Locked website" disabled defaultValue="nelumbo" />
             <InputGroupAddon align="inline-end">
               <InputGroupText>.com</InputGroupText>
             </InputGroupAddon>
@@ -304,11 +304,11 @@ export default function InputGroupPage() {
 // shadcn's API, unchanged
 <InputGroup>
   <InputGroupAddon><InputGroupText>https://</InputGroupText></InputGroupAddon>
-  <InputGroupInput aria-label="Website" placeholder="velvet" />
+  <InputGroupInput aria-label="Website" placeholder="nelumbo" />
   <InputGroupAddon align="inline-end"><InputGroupText>.com</InputGroupText></InputGroupAddon>
 </InputGroup>
 
-// Velvet adds keycaps and tonal pill buttons
+// Nelumbo adds keycaps and tonal pill buttons
 <InputGroup>
   <InputGroupInput aria-label="Search" placeholder="Search" />
   <InputGroupAddon align="inline-end"><InputGroupKeys>⌘K</InputGroupKeys></InputGroupAddon>

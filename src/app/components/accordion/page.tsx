@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/registry/velvet/ui/accordion"
-import { Switch } from "@/registry/velvet/ui/switch"
-import { Badge } from "@/registry/velvet/ui/badge"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/registry/nelumbo/ui/accordion"
+import { Switch } from "@/registry/nelumbo/ui/switch"
+import { Badge } from "@/registry/nelumbo/ui/badge"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const FAQ = [
@@ -36,7 +36,7 @@ export default function AccordionPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/accordion`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/accordion`}</Code>
       </Section>
 
       <Section
@@ -134,7 +134,7 @@ export default function AccordionPage() {
   </AccordionItem>
 </Accordion>
 
-// Velvet: tiles, an icon and a description
+// Nelumbo: tiles, an icon and a description
 <Accordion type="multiple" variant="segmented">
   <AccordionItem value="display">
     <AccordionTrigger icon="palette" description="Theme, text size">Display</AccordionTrigger>

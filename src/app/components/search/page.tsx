@@ -9,11 +9,11 @@ import {
   SearchViewGroup,
   SearchViewItem,
   SearchViewList,
-} from "@/registry/velvet/ui/search"
-import { Avatar } from "@/registry/velvet/ui/avatar"
-import { FilterChip } from "@/registry/velvet/ui/chip"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
+} from "@/registry/nelumbo/ui/search"
+import { Avatar } from "@/registry/nelumbo/ui/avatar"
+import { FilterChip } from "@/registry/nelumbo/ui/chip"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 type Kind = "People" | "Docs" | "Files"
@@ -155,7 +155,7 @@ export default function SearchPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/search`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/search`}</Code>
       </Section>
 
       <Section
@@ -173,7 +173,7 @@ export default function SearchPage() {
             onSubmit={setSubmitted}
           />
           <SearchBar label="Small search" size="sm" placeholder="Search" />
-          <SearchBar label="Extra small search" size="xs" placeholder="Search" defaultValue="Velvet" />
+          <SearchBar label="Extra small search" size="xs" placeholder="Search" defaultValue="Nelumbo" />
         </Preview>
         <p className="type-body-md text-muted-foreground" role="status">
           {submitted !== null ? `Submitted: ${submitted || "(empty)"}` : "Type in the second bar and press Enter."}
@@ -252,7 +252,7 @@ export default function SearchPage() {
             ["SearchViewList", "div props", "", "The listbox, with the raised pill that springs between rows"],
             ["SearchViewGroup heading", "ReactNode", "", "A muted label above a run of options, no rule"],
             ["SearchViewItem onSelect / onRemove", "() => void", "", "Enter or click; a remove button and Shift+Delete"],
-            ["SearchViewItem icon / leading / description / meta / trailing", "", "", "Velvet ListItem props"],
+            ["SearchViewItem icon / leading / description / meta / trailing", "", "", "Nelumbo ListItem props"],
             ["SearchViewEmpty", "ReactNode", "", "Shown when nothing matches, announced politely"],
             ["SearchField / searchFieldClasses", "", "", "The shared pill field and its classes, used by Command"],
           ]}

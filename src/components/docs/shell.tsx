@@ -2,10 +2,10 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Icon } from "@/registry/velvet/ui/icon"
-import { Button } from "@/registry/velvet/ui/button"
+import { Icon } from "@/registry/nelumbo/ui/icon"
+import { Button } from "@/registry/nelumbo/ui/button"
 import { cn } from "@/lib/utils"
-import { ACCENTS, ACCENT_NAMES } from "@/lib/velvet/scheme"
+import { ACCENTS, ACCENT_NAMES } from "@/lib/nelumbo/scheme"
 import { ICON_STYLES, NEUTRALS, useStudio } from "./studio"
 
 type NavItem = { label: string; href?: string; soon?: boolean; isNew?: boolean }
@@ -114,7 +114,7 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
         <div className="flex items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-2.5 rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring">
             <span className="size-6 rounded-[0.55rem] bg-primary bg-linear-to-br from-white/25 to-transparent shadow-e1 inset-shadow-highlight" />
-            <span className="type-title-md">Velvet</span>
+            <span className="type-title-md">Nelumbo</span>
           </Link>
           <ThemeToggle />
         </div>

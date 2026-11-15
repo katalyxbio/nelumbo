@@ -1,10 +1,10 @@
 "use client"
 
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/registry/velvet/ui/hover-card"
-import { Avatar, AvatarBadge } from "@/registry/velvet/ui/avatar"
-import { Badge } from "@/registry/velvet/ui/badge"
-import { Button } from "@/registry/velvet/ui/button"
-import { Icon } from "@/registry/velvet/ui/icon"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/registry/nelumbo/ui/hover-card"
+import { Avatar, AvatarBadge } from "@/registry/nelumbo/ui/avatar"
+import { Badge } from "@/registry/nelumbo/ui/badge"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { PEOPLE } from "@/components/docs/people"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
@@ -19,7 +19,7 @@ export default function HoverCardPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/hover-card`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/hover-card`}</Code>
       </Section>
 
       <Section title="Profile" description="Hover the name or tab to it. A card with an avatar, a status and a short bio.">
@@ -63,7 +63,7 @@ export default function HoverCardPage() {
           <HoverCard>
             <HoverCardTrigger asChild>
               <Button asChild variant="link">
-                <a href="#motion">velvet.design/motion</a>
+                <a href="#motion">nelumbo.design/motion</a>
               </Button>
             </HoverCardTrigger>
             <HoverCardContent side="top" className="w-80 overflow-hidden p-0">
@@ -71,11 +71,11 @@ export default function HoverCardPage() {
               <div className="flex flex-col gap-1 p-4">
                 <p className="type-title-md">Motion principles</p>
                 <p className="type-body-md text-muted-foreground">
-                  How Velvet uses springs to make state changes feel physical, and when to hold still.
+                  How Nelumbo uses springs to make state changes feel physical, and when to hold still.
                 </p>
                 <p className="flex items-center gap-1.5 pt-1 type-label-md text-muted-foreground">
                   <Icon name="public" size={16} />
-                  velvet.design
+                  nelumbo.design
                 </p>
               </div>
             </HoverCardContent>

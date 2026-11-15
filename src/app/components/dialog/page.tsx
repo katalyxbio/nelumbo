@@ -12,10 +12,10 @@ import {
   DialogIcon,
   DialogTitle,
   DialogTrigger,
-} from "@/registry/velvet/ui/dialog"
-import { Button } from "@/registry/velvet/ui/button"
-import { Input } from "@/registry/velvet/ui/input"
-import { Checkbox } from "@/registry/velvet/ui/checkbox"
+} from "@/registry/nelumbo/ui/dialog"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Input } from "@/registry/nelumbo/ui/input"
+import { Checkbox } from "@/registry/nelumbo/ui/checkbox"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const TERMS = [
@@ -39,7 +39,7 @@ export default function DialogPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/dialog`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/dialog`}</Code>
       </Section>
 
       <Section title="Basic" description="A title that asks the question, a sentence of context, and the actions. Put the main action last; Escape or a click on the scrim cancels.">

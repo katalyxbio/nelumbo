@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Textarea } from "@/registry/velvet/ui/textarea"
-import { Button } from "@/registry/velvet/ui/button"
+import { Textarea } from "@/registry/nelumbo/ui/textarea"
+import { Button } from "@/registry/nelumbo/ui/button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const VARIANTS = ["filled", "outlined"] as const
@@ -18,7 +18,7 @@ export default function TextareaPage() {
       </PageHeader>
 
       <Section title="Install" description="Installs Field, the shell it shares with Input.">
-        <Code>{`npx shadcn@latest add @velvet/textarea`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/textarea`}</Code>
       </Section>
 
       <Section

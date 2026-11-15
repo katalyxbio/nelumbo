@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { Separator } from "@/registry/velvet/ui/separator"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Icon, type IconName } from "@/registry/velvet/ui/icon"
+import { Separator } from "@/registry/nelumbo/ui/separator"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, Section, PropsTable } from "@/components/docs/primitives"
 
 const ROWS: { icon: IconName; label: string; value: string }[] = [
@@ -29,13 +29,13 @@ export default function SeparatorPage() {
   return (
     <>
       <PageHeader eyebrow="Component 43" title="Separator">
-        A thin line that splits content into parts. Velvet draws it very faint, and prefers space to lines: start with
+        A thin line that splits content into parts. Nelumbo draws it very faint, and prefers space to lines: start with
         a gap between groups, and reach for a line only when the gap is not enough. Built on Radix, with shadcn&apos;s
         API.
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/separator`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/separator`}</Code>
       </Section>
 
       <Section
@@ -126,10 +126,10 @@ export default function SeparatorPage() {
 <Separator />
 <Separator orientation="vertical" className="h-6" />
 
-// Velvet: a line that starts after a list's leading slot
+// Nelumbo: a line that starts after a list's leading slot
 <Separator variant="inset" />
 
-// Velvet: spacing only, no line
+// Nelumbo: spacing only, no line
 <Separator variant="space" />`}</Code>
       </Section>
 

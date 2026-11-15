@@ -1,11 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "../styles/velvet.css";
+@import "../styles/nelumbo.css";
 
 @source "../../registry";
 @custom-variant dark (&:is(.dark *));
 
-/* Docs site fonts. Velvet itself leaves font choice to the host project. */
+/* Docs site fonts. Nelumbo itself leaves font choice to the host project. */
 @theme inline {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;

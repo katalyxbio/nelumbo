@@ -11,8 +11,8 @@
   ],
   "files": [
     {
-      "path": "registry/velvet/ui/aspect-ratio.tsx",
-      "content": "\"use client\"\n\nimport { AspectRatio as AspectRatioPrimitive } from \"radix-ui\"\nimport * as React from \"react\"\n\n/**\n * Velvet AspectRatio (built on Radix AspectRatio)\n *\n * shadcn's AspectRatio, unchanged: a box that keeps a width-to-height\n * ratio whatever its width. It draws nothing itself, so give the media\n * Velvet's radius (`rounded-xl` for photos, `rounded-2xl` for hero images)\n * and `object-cover` so it fills the box.\n *\n *   <AspectRatio ratio={16 / 9} className=\"overflow-hidden rounded-xl bg-surface-container-high\">\n *     <img src=\"/cover.jpg\" alt=\"\" className=\"size-full object-cover\" />\n *   </AspectRatio>\n */\nfunction AspectRatio(props: React.ComponentProps<typeof AspectRatioPrimitive.Root>) {\n  return <AspectRatioPrimitive.Root data-slot=\"aspect-ratio\" {...props} />\n}\n\nexport { AspectRatio }\n",
+      "path": "registry/nelumbo/ui/aspect-ratio.tsx",
+      "content": "\"use client\"\n\nimport { AspectRatio as AspectRatioPrimitive } from \"radix-ui\"\nimport * as React from \"react\"\n\n/**\n * Nelumbo AspectRatio (built on Radix AspectRatio)\n *\n * shadcn's AspectRatio, unchanged: a box that keeps a width-to-height\n * ratio whatever its width. It draws nothing itself, so give the media\n * Nelumbo's radius (`rounded-xl` for photos, `rounded-2xl` for hero images)\n * and `object-cover` so it fills the box.\n *\n *   <AspectRatio ratio={16 / 9} className=\"overflow-hidden rounded-xl bg-surface-container-high\">\n *     <img src=\"/cover.jpg\" alt=\"\" className=\"size-full object-cover\" />\n *   </AspectRatio>\n */\nfunction AspectRatio(props: React.ComponentProps<typeof AspectRatioPrimitive.Root>) {\n  return <AspectRatioPrimitive.Root data-slot=\"aspect-ratio\" {...props} />\n}\n\nexport { AspectRatio }\n",
       "type": "registry:ui"
     }
   ],

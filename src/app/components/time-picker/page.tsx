@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { TimePicker } from "@/registry/velvet/ui/time-picker"
+import { TimePicker } from "@/registry/nelumbo/ui/time-picker"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 export default function TimePickerPage() {
@@ -16,7 +16,7 @@ export default function TimePickerPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/time-picker`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/time-picker`}</Code>
       </Section>
 
       <Section

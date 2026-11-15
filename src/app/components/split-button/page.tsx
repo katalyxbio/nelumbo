@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { SplitButton, SplitButtonAction, SplitButtonItem, SplitButtonMenu } from "@/registry/velvet/ui/split-button"
-import { Icon } from "@/registry/velvet/ui/icon"
+import { SplitButton, SplitButtonAction, SplitButtonItem, SplitButtonMenu } from "@/registry/nelumbo/ui/split-button"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 export default function SplitButtonPage() {
@@ -16,7 +16,7 @@ export default function SplitButtonPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/split-button`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/split-button`}</Code>
       </Section>
 
       <Section

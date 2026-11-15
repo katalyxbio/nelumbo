@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { NavigationBar, NavigationBarItem } from "@/registry/velvet/ui/navigation-bar"
-import { type IconName } from "@/registry/velvet/ui/icon"
+import { NavigationBar, NavigationBarItem } from "@/registry/nelumbo/ui/navigation-bar"
+import { type IconName } from "@/registry/nelumbo/ui/icon"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const TABS: { id: string; icon: IconName; label: string; badge?: number | boolean }[] = [
@@ -59,7 +59,7 @@ export default function NavigationBarPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/navigation-bar`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/navigation-bar`}</Code>
       </Section>
 
       <Section title="Stacked" description="The default: icon in a pill, label below, 64px tall plus the home-indicator inset. Badges show a count or a dot.">

@@ -9,7 +9,7 @@ import {
   TopAppBar,
   TopAppBarNavigation,
   TopAppBarTitle,
-} from "@/registry/velvet/ui/app-bar"
+} from "@/registry/nelumbo/ui/app-bar"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 import { InboxList, PhoneFrame } from "../top-app-bar/inbox"
 
@@ -54,7 +54,7 @@ export default function BottomAppBarPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/app-bar`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/app-bar`}</Code>
         <p className="type-body-sm text-muted-foreground">
           Top and bottom bars share one scroll engine, so they ship together in the app-bar item.
         </p>

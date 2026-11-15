@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ScrollArea, ScrollBar } from "@/registry/velvet/ui/scroll-area"
+import { ScrollArea, ScrollBar } from "@/registry/nelumbo/ui/scroll-area"
 import { Code, PageHeader, Preview, Section, PropsTable } from "@/components/docs/primitives"
 
 const TAGS = [
@@ -42,7 +42,7 @@ export default function ScrollAreaPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/scroll-area`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/scroll-area`}</Code>
       </Section>
 
       <Section
@@ -143,7 +143,7 @@ export default function ScrollAreaPage() {
   <ScrollBar orientation="horizontal" />
 </ScrollArea>
 
-// Velvet: soft edge fades that show only where there is more to see
+// Nelumbo: soft edge fades that show only where there is more to see
 <ScrollArea fade aria-label="Tags" className="h-72">…</ScrollArea>`}</Code>
       </Section>
 
@@ -152,7 +152,7 @@ export default function ScrollAreaPage() {
           note="Radix's own props (type, scrollHideDelay, dir) work as is"
           rows={[
             ["ScrollArea fade", "boolean", "false", "Soft fades at the edges that have more content past them"],
-            ["ScrollArea type", '"auto" | "always" | "scroll" | "hover"', '"hover"', "Velvet default: bars show on hover and fade out. Use always to keep them"],
+            ["ScrollArea type", '"auto" | "always" | "scroll" | "hover"', '"hover"', "Nelumbo default: bars show on hover and fade out. Use always to keep them"],
             ["ScrollArea scrollHideDelay", "number", "600", "Milliseconds before the bars fade after the pointer leaves"],
             ["ScrollArea aria-label", "string", "", "Names the scrollable region (the viewport gets role region)"],
             ["ScrollBar orientation", '"vertical" | "horizontal"', '"vertical"', "A vertical bar is always there unless you pass one yourself"],

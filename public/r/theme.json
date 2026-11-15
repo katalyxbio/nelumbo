@@ -1,8 +1,8 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "theme",
-  "title": "Velvet Theme",
-  "description": "Velvet foundations: neutral color roles with an accent palette (brand blue, pure neutrals), surfaces, elevation, spring motion, type roles and tactile utilities.",
+  "title": "Nelumbo Theme",
+  "description": "Nelumbo foundations: neutral color roles with an accent palette (brand blue, pure neutrals), surfaces, elevation, spring motion, type roles and tactile utilities.",
   "dependencies": [
     "tw-animate-css"
   ],

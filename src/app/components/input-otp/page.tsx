@@ -8,8 +8,8 @@ import {
   InputOTPSlot,
   REGEXP_ONLY_DIGITS,
   REGEXP_ONLY_DIGITS_AND_CHARS,
-} from "@/registry/velvet/ui/input-otp"
-import { Button } from "@/registry/velvet/ui/button"
+} from "@/registry/nelumbo/ui/input-otp"
+import { Button } from "@/registry/nelumbo/ui/button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const CORRECT = "123456"
@@ -31,7 +31,7 @@ export default function InputOtpPage() {
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/input-otp`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/input-otp`}</Code>
       </Section>
 
       <Section

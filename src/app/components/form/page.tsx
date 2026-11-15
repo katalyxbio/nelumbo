@@ -5,19 +5,19 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 
-import { Button } from "@/registry/velvet/ui/button"
-import { Checkbox } from "@/registry/velvet/ui/checkbox"
-import { DatePicker } from "@/registry/velvet/ui/date-picker"
-import { Icon } from "@/registry/velvet/ui/icon"
-import { IconButton } from "@/registry/velvet/ui/icon-button"
-import { Input } from "@/registry/velvet/ui/input"
-import { Label } from "@/registry/velvet/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/registry/velvet/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/registry/velvet/ui/select"
-import { Slider } from "@/registry/velvet/ui/slider"
-import { Snackbars, toast } from "@/registry/velvet/ui/snackbar"
-import { Switch } from "@/registry/velvet/ui/switch"
-import { Textarea } from "@/registry/velvet/ui/textarea"
+import { Button } from "@/registry/nelumbo/ui/button"
+import { Checkbox } from "@/registry/nelumbo/ui/checkbox"
+import { DatePicker } from "@/registry/nelumbo/ui/date-picker"
+import { Icon } from "@/registry/nelumbo/ui/icon"
+import { IconButton } from "@/registry/nelumbo/ui/icon-button"
+import { Input } from "@/registry/nelumbo/ui/input"
+import { Label } from "@/registry/nelumbo/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/registry/nelumbo/ui/radio-group"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/registry/nelumbo/ui/select"
+import { Slider } from "@/registry/nelumbo/ui/slider"
+import { Snackbars, toast } from "@/registry/nelumbo/ui/snackbar"
+import { Switch } from "@/registry/nelumbo/ui/switch"
+import { Textarea } from "@/registry/nelumbo/ui/textarea"
 import {
   Form,
   FormControl,
@@ -26,7 +26,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/registry/velvet/ui/form"
+} from "@/registry/nelumbo/ui/form"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const RULES = [
@@ -322,12 +322,12 @@ export default function FormPage() {
       <Snackbars />
 
       <PageHeader eyebrow="Component 50" title="Form">
-        react-hook-form wiring for Velvet, with the same parts as shadcn&apos;s Form. Velvet&apos;s text fields keep one
+        react-hook-form wiring for Nelumbo, with the same parts as shadcn&apos;s Form. Nelumbo&apos;s text fields keep one
         floating label, errors open with a spring and are announced, and a failed submit shakes what needs fixing.
       </PageHeader>
 
       <Section title="Install">
-        <Code>{`npx shadcn@latest add @velvet/form @velvet/label`}</Code>
+        <Code>{`npx shadcn@latest add @nelumbo/form @nelumbo/label`}</Code>
       </Section>
 
       <Section
@@ -354,13 +354,13 @@ export default function FormPage() {
 
 {/* keep a separate label above a field: */}
 <FormItem field={false}>...</FormItem>
-{/* the control is a Velvet field inside your own component: */}
+{/* the control is a Nelumbo field inside your own component: */}
 <FormItem field>...</FormItem>`}</Code>
       </Section>
 
       <Section
         title="Accessibility"
-        description="FormControl gives the control its id, aria-invalid and an aria-describedby that lists the description and, while there is an error, the message. FormMessage is a polite live region, so a screen reader reads the error as it opens. A radio group is named through aria-labelledby and a slider through aria-label. Fields that expose a ref get focus from react-hook-form after a failed submit; the date and time pickers are focused by Velvet."
+        description="FormControl gives the control its id, aria-invalid and an aria-describedby that lists the description and, while there is an error, the message. FormMessage is a polite live region, so a screen reader reads the error as it opens. A radio group is named through aria-labelledby and a slider through aria-label. Fields that expose a ref get focus from react-hook-form after a failed submit; the date and time pickers are focused by Nelumbo."
       >
         <Code>{`<input id="…-form-item" aria-invalid="true" aria-describedby="…-form-item-description …-form-item-message">
 <div id="…-form-item-message" aria-live="polite">Enter your email.</div>`}</Code>
@@ -428,8 +428,8 @@ const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) })
         <PropsTable
           note="Everything else matches shadcn's Form"
           rows={[
-            ["FormItem field", "boolean", "auto", "true: treat the control as a Velvet field; false: keep a separate FormLabel"],
-            ["FormLabel", "Label props", "", "Hidden when a Velvet field shows its text as the floating label"],
+            ["FormItem field", "boolean", "auto", "true: treat the control as a Nelumbo field; false: keep a separate FormLabel"],
+            ["FormLabel", "Label props", "", "Hidden when a Nelumbo field shows its text as the floating label"],
             ["FormControl", "Slot props", "", "Adds id, aria-invalid, aria-describedby (and aria-labelledby or aria-label where needed)"],
             ["FormMessage", "div props", "", "Error text or children. Always mounted, polite live region, spring open and close"],
             ["FormDescription", "p props", "", "Help text, linked through aria-describedby"],
