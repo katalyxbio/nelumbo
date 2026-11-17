@@ -24,6 +24,7 @@ import {
  *   <Nucleotide base="A" />
  *   <NucleotideSequence sequence="ATGGCC..." ruler complement selectable />
  *   <NucleotideChange from="GACGTC" to="GAAGTC" />     // the changed base as a capsule in both
+ *   <NucleotideChange from="GACGTC" to="GAAGTC" compact position={3} />  // [3|C] → [A]
  *
  * Schemes (all drawn in Nelumbo's tone system, so they share one lightness):
  * - "nelumbo" (default): A green, C blue, G amber, T and U red, on the palette's own hues.
@@ -234,25 +235,98 @@ export function alignChange(from: string, to: string) {
 }
 
 type NucleotideChangeProps = Omit<React.ComponentProps<"div">, "children"> & {
-  /** The reference sequence, with some context around the change. */
+  /** The reference sequence, with some context around the change (or only the changed bases). */
   from: string
   /** The same stretch, changed. */
   to: string
   scheme?: NucleotideScheme
   size?: ResidueSize
+  /**
+   * Only the bases that changed, A → T or CTT → -, as small connected tonal
+   * tiles without the context (matching AminoAcidChange): for tables, lists
+   * and inline text.
+   */
+  compact?: boolean
+  /** Compact only: the position, as a neutral segment joined to the original bases (20 A → T). */
+  position?: number | string
 }
 
 /**
  * A DNA or RNA change: the reference, an arrow, the changed sequence. The
  * bases that differ are found and drawn as a solid capsule in both; a
  * deletion or an insertion is padded with gaps so the two line up.
+ * `compact` keeps only the changed bases.
  */
-function NucleotideChange({ from, to, scheme = "nelumbo", size = "default", className, ...props }: NucleotideChangeProps) {
+function NucleotideChange({
+  from,
+  to,
+  scheme = "nelumbo",
+  size = "default",
+  compact = false,
+  position,
+  className,
+  ...props
+}: NucleotideChangeProps) {
   const c = React.useMemo(() => alignChange(from, to), [from, to])
-  const said =
-    c.kind === "none"
-      ? `${cleanSequence(from)}, unchanged`
-      : `${c.kind === "delins" ? "Change" : c.kind[0].toUpperCase() + c.kind.slice(1)}: ${cleanSequence(from)} to ${cleanSequence(to)}`
+  const gap = size === "lg" ? "gap-3" : size === "sm" ? "gap-1.5" : "gap-2"
+  const arrow = <Icon name="arrow_forward" aria-hidden size={size === "lg" ? 24 : size === "sm" ? 14 : 18} className="text-muted-foreground" />
+  const kind = c.kind === "delins" ? "Change" : c.kind[0].toUpperCase() + c.kind.slice(1)
+
+  if (compact && c.changed) {
+    const was = c.from.slice(c.changed.start - 1, c.changed.end).replace(/-/g, "")
+    const now = c.to.slice(c.changed.start - 1, c.changed.end).replace(/-/g, "")
+    const said = `${kind}${position != null ? ` at ${position}` : ""}: ${was || "nothing"} to ${now || "nothing"}`
+    // one connected run of tonal tiles, as AminoAcidChange draws; an empty side is a single gap tile
+    const run = (bases: string, lead?: React.ReactNode) => {
+      const items = bases ? [...bases] : ["-"]
+      return (
+        <span className="inline-flex gap-0.5">
+          {lead}
+          {items.map((b, k) => {
+            const join = { start: k > 0 || !!lead, end: k < items.length - 1 }
+            return b === "-" ? (
+              <Residue key={k} tone={null} size={size} join={join} label="Gap">
+                -
+              </Residue>
+            ) : (
+              <Nucleotide key={k} base={b} scheme={scheme} size={size} join={join} title={undefined} />
+            )
+          })}
+        </span>
+      )
+    }
+    return (
+      <span
+        data-slot="nucleotide-change"
+        data-compact
+        role="img"
+        aria-label={said}
+        className={cn("inline-flex items-center align-middle", size === "lg" ? "gap-2" : size === "sm" ? "gap-1" : "gap-1.5", className)}
+        {...(props as React.ComponentProps<"span">)}
+      >
+        {run(
+          was,
+          position != null && (
+            <Residue
+              tone={null}
+              size={size}
+              join={{ end: true }}
+              className={cn(
+                "bg-surface-container-highest font-medium text-foreground dark:bg-surface-container-highest",
+                size === "sm" ? "px-1.5" : size === "lg" ? "px-3.5" : "px-2.5"
+              )}
+            >
+              {position}
+            </Residue>
+          )
+        )}
+        {arrow}
+        {run(now)}
+      </span>
+    )
+  }
+
+  const said = c.kind === "none" ? `${cleanSequence(from)}, unchanged` : `${kind}: ${cleanSequence(from)} to ${cleanSequence(to)}`
   const seq = (s: string) => (
     <NucleotideSequence sequence={s} scheme={scheme} size={size} groupSize={0} selection={c.changed} aria-hidden aria-label={undefined} />
   )
@@ -261,13 +335,13 @@ function NucleotideChange({ from, to, scheme = "nelumbo", size = "default", clas
       data-slot="nucleotide-change"
       role="img"
       aria-label={said}
-      className={cn("inline-flex flex-wrap items-center", size === "lg" ? "gap-3" : size === "sm" ? "gap-1.5" : "gap-2", className)}
+      className={cn("inline-flex flex-wrap items-center", gap, className)}
       {...props}
     >
       {seq(c.from)}
       {/* the arrow travels with the changed sequence when the two wrap */}
-      <span className={cn("inline-flex items-center", size === "lg" ? "gap-3" : size === "sm" ? "gap-1.5" : "gap-2")}>
-        <Icon name="arrow_forward" aria-hidden size={size === "lg" ? 24 : size === "sm" ? 14 : 18} className="text-muted-foreground" />
+      <span className={cn("inline-flex items-center", gap)}>
+        {arrow}
         {seq(c.to)}
       </span>
     </div>

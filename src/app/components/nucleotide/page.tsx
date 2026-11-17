@@ -11,7 +11,7 @@ import {
   reverseComplement,
   translateCodon,
 } from "@/registry/nelumbo/ui/nucleotide"
-import { AminoAcid } from "@/registry/nelumbo/ui/amino-acid"
+import { AminoAcid, AminoAcidChange } from "@/registry/nelumbo/ui/amino-acid"
 import type { ResidueRange } from "@/registry/nelumbo/ui/residue"
 import { ChartReadout } from "@/registry/nelumbo/ui/chart"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
@@ -152,6 +152,40 @@ export default function NucleotidePage() {
       </Section>
 
       <Section
+        title="Compact mutations"
+        description="compact keeps only the bases that changed, as small connected tiles like AminoAcidChange: A to T, CTT to a gap. position joins a neutral segment in front, so it reads like c.20A>T. Pass the full context or just the bases; the change is found the same way."
+      >
+        <Preview className="grid gap-6 sm:grid-cols-[minmax(11rem,auto)_1fr] sm:items-center">
+          <span className="type-label-lg text-muted-foreground">Substitution, deletion, insertion</span>
+          <div className="flex flex-wrap items-center gap-5">
+            <NucleotideChange from="CCTGAGGAG" to="CCTGTGGAG" compact />
+            <NucleotideChange from="CATCTTTGGT" to="CATTGGT" compact />
+            <NucleotideChange from="GGCACGTTAC" to="GGCACGTTTAC" compact />
+            <NucleotideChange from="AG" to="T" compact />
+          </div>
+          <span className="type-label-lg text-muted-foreground">With position</span>
+          <div className="flex flex-wrap items-center gap-5">
+            <NucleotideChange from="A" to="T" compact position={20} />
+            <NucleotideChange from="CTT" to="" compact position="1521_1523" />
+          </div>
+          <span className="type-label-lg text-muted-foreground">Sizes</span>
+          <div className="flex flex-wrap items-center gap-5">
+            <NucleotideChange from="G" to="A" compact position={524} size="sm" />
+            <NucleotideChange from="G" to="A" compact position={524} />
+            <NucleotideChange from="G" to="A" compact position={524} size="lg" />
+          </div>
+          <span className="type-label-lg text-muted-foreground">In text</span>
+          <p className="type-body-md">
+            The sickle cell allele, <NucleotideChange from="A" to="T" compact size="sm" position={20} />, swaps one base in
+            the sixth codon of HBB.
+          </p>
+        </Preview>
+        <Preview className="block">
+          <VariantsDemo />
+        </Preview>
+      </Section>
+
+      <Section
         title="Highlight"
         description="highlight brings stretches forward and fades the rest. Here, the EcoRI and BamHI sites in a cloning site."
       >
@@ -195,6 +229,8 @@ export default function NucleotidePage() {
             ["selection / onSelectionChange", "{ start, end } | null", "", "Controlled selection. defaultSelection for uncontrolled."],
             ["onActiveChange", "(position | null) => void", "", "The base under the pointer, or the keyboard cursor."],
             ["NucleotideChange from, to", "string, string", "", "Reference and changed sequence, with context. scheme and size as above."],
+            ["NucleotideChange compact", "boolean", "false", "Only the changed bases, as small connected tiles."],
+            ["NucleotideChange position", "number | string", "", "Compact only: a neutral segment joined in front of the original bases."],
             ["Helpers", "alignChange, complement, reverseComplement, gcContent, translate, translateCodon, cleanSequence", "", "Standard genetic code; RNA pairs A with U."],
           ]}
         />
@@ -239,6 +275,32 @@ function SelectionDemo() {
         onActiveChange={setActive}
         aria-label="TP53 coding sequence"
       />
+    </div>
+  )
+}
+
+// Known variants: the coding change and what it does to the protein.
+const VARIANTS = [
+  { gene: "TP53", c: 524, from: "G", to: "A", p: { from: "R", at: 175, to: "H" } },
+  { gene: "TP53", c: 743, from: "G", to: "A", p: { from: "R", at: 248, to: "Q" } },
+  { gene: "TP53", c: 818, from: "G", to: "A", p: { from: "R", at: 273, to: "H" } },
+  { gene: "BRAF", c: 1799, from: "T", to: "A", p: { from: "V", at: 600, to: "E" } },
+  { gene: "HBB", c: 20, from: "A", to: "T", p: { from: "E", at: 7, to: "V" } },
+]
+
+function VariantsDemo() {
+  return (
+    <div className="grid grid-cols-[auto_auto_1fr] items-center gap-x-8 gap-y-3">
+      <span className="type-label-md text-muted-foreground">Gene</span>
+      <span className="type-label-md text-muted-foreground">DNA</span>
+      <span className="type-label-md text-muted-foreground">Protein</span>
+      {VARIANTS.map((v) => (
+        <React.Fragment key={v.gene + v.c}>
+          <span className="type-title-sm">{v.gene}</span>
+          <NucleotideChange from={v.from} to={v.to} compact position={v.c} size="sm" />
+          <AminoAcidChange from={v.p.from} position={v.p.at} to={v.p.to} size="sm" />
+        </React.Fragment>
+      ))}
     </div>
   )
 }
