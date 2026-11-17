@@ -5,7 +5,7 @@ import { GeneModel, type GeneModelFocus, type GeneModelMarker } from "@/registry
 import { ChartReadout } from "@/registry/nelumbo/ui/chart"
 import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
-import { HBB_201, TP53_201, TP53_202, TP53_204, TP53_209 } from "./data"
+import { HBB_201, P53_DOMAINS, TP53_201, TP53_202, TP53_204, TP53_209 } from "./data"
 
 // TP53 hotspots, placed by their GRCh38 positions (checked against the canonical CDS).
 const HOTSPOTS: GeneModelMarker[] = [
@@ -80,6 +80,16 @@ export default function GeneModelPage() {
       </Section>
 
       <Section
+        title="Protein domains"
+        description="domains takes residue ranges, as UniProt gives them, and maps them through the coding sequence onto the exons that encode them. A domain split by an intron keeps tight corners at the cut and round ones at its true ends, with a dotted line across the gap. Here, p53's domains on TP53."
+      >
+        <Preview className="grid gap-8">
+          <GeneModel transcripts={[TP53_201]} exonNumbers introns="compressed" domains={P53_DOMAINS} markers={HOTSPOTS} />
+          <GeneModel transcripts={ISOFORMS} introns="compressed" domains={P53_DOMAINS} domainLegend={false} aria-label="TP53 isoforms with p53 domains" />
+        </Preview>
+      </Section>
+
+      <Section
         title="Selection"
         description="selectable makes the model one keyboard stop, like a chart: Left and Right move between exons, Up and Down between transcripts, Escape clears. The readout follows the pointer."
       >
@@ -110,7 +120,9 @@ export default function GeneModelPage() {
             ["size", '"sm" | "default"', '"default"', "14 or 20 px coding blocks."],
             ["region", "{ start, end }", "the transcripts' span", "The stretch shown."],
             ["selectable / onActiveChange", "boolean, (focus | null) => void", "", "Keyboard and pointer focus on exons; focus has transcript, exon and count."],
-            ["Helpers", "numberExons, formatGenomic", "", "Exons in transcription order with their kind; coordinates as 7,675,088."],
+            ["domains", "ProteinDomain[]", "", "Residue ranges (start, end, name, color), mapped through the coding sequence."],
+            ["domainsOn / domainLegend", "string, boolean", "canonical, true", "The transcript whose protein the domains are on; the legend under the model."],
+            ["Helpers", "numberExons, domainSegments, formatGenomic", "", "Exons in transcription order; a domain's genomic stretches; coordinates as 7,675,088."],
           ]}
         />
       </Section>
@@ -145,6 +157,7 @@ function SelectionDemo() {
           detail={
             <span className="type-body-sm text-muted-foreground">
               {kind(focus)}, {focus.exon.length.toLocaleString("en-US")} bp, chr17:{focus.exon.start.toLocaleString("en-US")}
+              {focus.domains.length ? `, ${focus.domains.map((d) => d.name).join(" and ")}` : ""}
             </span>
           }
         />
@@ -154,6 +167,8 @@ function SelectionDemo() {
       <GeneModel
         transcripts={ISOFORMS}
         exonNumbers
+        domains={P53_DOMAINS}
+        domainLegend={false}
         introns="compressed"
         orientation="transcript"
         selectable

@@ -3,6 +3,13 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import {
+  DomainLegend,
+  domainColors,
+  domainFill,
+  domainLanes,
+  type ProteinDomain,
+} from "@/registry/nelumbo/ui/protein-domains"
 
 /**
  * Nelumbo Gene Model
@@ -20,6 +27,9 @@ import { cn } from "@/lib/utils"
  * - `introns="compressed"` shrinks every intron to a short stretch so the
  *   exons get the room; the true scale keeps a ruler in genomic coordinates.
  * - Variants are lollipops above a transcript, with pill labels.
+ * - `domains` (residue ranges, as UniProt gives them) are mapped through the
+ *   coding sequence and drawn as a band under the transcript: split where an
+ *   intron cuts a domain, tight corners at the cut, round at the true ends.
  * - `selectable` makes the model one keyboard stop, like a chart: Left and
  *   Right move between exons, Up and Down between transcripts.
  *
@@ -65,7 +75,37 @@ export type GeneModelExon = {
   kind: "coding" | "utr" | "partial"
 }
 
-export type GeneModelFocus = { transcript: GeneModelTranscript; exon: GeneModelExon; of: number }
+export type GeneModelFocus = {
+  transcript: GeneModelTranscript
+  exon: GeneModelExon
+  of: number
+  /** The protein domains this exon encodes part of (for the transcript the domains are on). */
+  domains: ProteinDomain[]
+}
+
+/**
+ * Where a protein domain lies in the genome: its residues mapped through the
+ * transcript's coding sequence, one stretch per exon it touches, in
+ * transcription order.
+ */
+export function domainSegments(t: GeneModelTranscript, d: { start: number; end: number }) {
+  if (!t.cds) return []
+  const from = (d.start - 1) * 3
+  const to = d.end * 3 - 1
+  const out: { start: number; end: number }[] = []
+  let off = 0
+  for (const e of numberExons(t)) {
+    const lo = Math.max(e.start, t.cds.start)
+    const hi = Math.min(e.end, t.cds.end)
+    if (hi < lo) continue
+    const n = hi - lo + 1
+    const a = Math.max(from, off)
+    const b = Math.min(to, off + n - 1)
+    if (b >= a) out.push(t.strand === "+" ? { start: lo + (a - off), end: lo + (b - off) } : { start: hi - (b - off), end: hi - (a - off) })
+    off += n
+  }
+  return out
+}
 
 /** A transcript's exons in transcription order, numbered, with how much of each codes. */
 export function numberExons(t: GeneModelTranscript): GeneModelExon[] {
@@ -122,6 +162,12 @@ type GeneModelProps = Omit<React.ComponentProps<"div">, "children"> & {
   markers?: GeneModelMarker[]
   /** The transcript the markers stand on. Default: the first. */
   markersOn?: string
+  /** Protein domains in residues, drawn under the transcript that encodes them. */
+  domains?: ProteinDomain[]
+  /** The transcript whose protein the domains are on. Default: the canonical one, or the first. */
+  domainsOn?: string
+  /** A legend of the domains under the model. Default true when there are domains. */
+  domainLegend?: boolean
   /** Pointer and keyboard focus on exons. */
   selectable?: boolean
   /** The exon under the pointer, the keyboard cursor, or the one clicked. */
@@ -140,6 +186,9 @@ function GeneModel({
   ruler = false,
   markers,
   markersOn,
+  domains,
+  domainsOn,
+  domainLegend = true,
   selectable = false,
   onActiveChange,
   defaultSelected,
@@ -234,16 +283,38 @@ function GeneModel({
   }, [markers, width, x])
   const markerLevels = placed.length ? Math.max(...placed.map((p) => p.level)) + 1 : 0
 
+  // ---- domains: mapped through the coding sequence of one transcript
+  const domainRow = (() => {
+    const byId = transcripts.findIndex((t) => t.id === domainsOn)
+    if (byId >= 0) return byId
+    const canon = transcripts.findIndex((t) => t.canonical)
+    return canon >= 0 ? canon : 0
+  })()
+  const domainColorList = React.useMemo(() => domainColors(domains ?? []), [domains])
+  const domainLaneList = React.useMemo(() => domainLanes(domains ?? []), [domains])
+  const mapped = React.useMemo(
+    () => (domains ?? []).map((d) => domainSegments(transcripts[domainRow], d)),
+    [domains, transcripts, domainRow]
+  )
+  const DOMAIN = size === "sm" ? 6 : 8
+  const LANE = DOMAIN + 4
+  const domainH = domains?.length ? 6 + (Math.max(0, ...domainLaneList) + 1) * LANE : 0
+
   // ---- vertical layout
   const rulerH = ruler && introns === "scaled" ? 26 : 0
   const markerH = markerLevels ? 14 + markerLevels * 24 : 0
   const numbersBelow = exonNumbers ? 14 : 0
-  const rowH = S.label + S.cds + numbersBelow + S.gap
-  // each row: its name, the markers if they stand on it, then the track
-  const rowTop = (r: number) => rulerH + r * rowH + (r > markerAt ? markerH : 0)
+  // each row: its name, the markers if they stand on it, the track, then the domains if they are on it
+  const rowHeight = (r: number) =>
+    S.label + (r === markerAt ? markerH : 0) + S.cds + numbersBelow + (r === domainRow ? domainH : 0) + S.gap
+  const rowTop = (r: number) => {
+    let y = rulerH
+    for (let i = 0; i < r; i++) y += rowHeight(i)
+    return y
+  }
   const trackTop = (r: number) => rowTop(r) + S.label + (r === markerAt ? markerH : 0)
-  const rowEnd = (r: number) => trackTop(r) + S.cds + numbersBelow + S.gap
-  const height = rulerH + markerH + transcripts.length * rowH - S.gap + 4
+  const rowEnd = (r: number) => rowTop(r) + rowHeight(r)
+  const height = rowTop(transcripts.length) - S.gap + 4
 
   // ---- focus
   const [hover, setHover] = React.useState<{ t: number; e: number } | null>(null)
@@ -256,8 +327,12 @@ function GeneModel({
   const [cursor, setCursor] = React.useState<{ t: number; e: number }>(initial ?? { t: 0, e: 0 })
   const [focused, setFocused] = React.useState(false)
   const active = hover ?? (focused && selectable ? cursor : selected)
-  const focusOf = (a: { t: number; e: number } | null): GeneModelFocus | null =>
-    a && numbered[a.t]?.[a.e] ? { transcript: transcripts[a.t], exon: numbered[a.t][a.e], of: numbered[a.t].length } : null
+  const focusOf = (a: { t: number; e: number } | null): GeneModelFocus | null => {
+    const exon = a && numbered[a.t]?.[a.e]
+    if (!a || !exon) return null
+    const here = a.t === domainRow ? (domains ?? []).filter((_, i) => mapped[i].some((g) => g.end >= exon.start && g.start <= exon.end)) : []
+    return { transcript: transcripts[a.t], exon, of: numbered[a.t].length, domains: here }
+  }
   const cb = React.useRef(onActiveChange)
   cb.current = onActiveChange
   const activeKey = active ? `${active.t}:${active.e}` : ""
@@ -270,7 +345,8 @@ function GeneModel({
     const f = focusOf(a)
     if (!f) return ""
     const kind = f.exon.kind === "coding" ? "coding" : f.exon.kind === "utr" ? "untranslated" : "partly coding"
-    return `${f.transcript.name ?? f.transcript.id}, exon ${f.exon.number} of ${f.of}, ${kind}, ${f.exon.length.toLocaleString("en-US")} bp`
+    const dom = f.domains.length ? `, ${f.domains.map((d) => d.name).join(" and ")}` : ""
+    return `${f.transcript.name ?? f.transcript.id}, exon ${f.exon.number} of ${f.of}, ${kind}, ${f.exon.length.toLocaleString("en-US")} bp${dom}`
   }
 
   // exons left to right on screen, for arrow keys
@@ -337,245 +413,285 @@ function GeneModel({
       .join("; ")}`
 
   return (
-    <div
-      ref={wrap}
-      data-slot="gene-model"
-      className={cn(
-        "relative w-full select-none outline-none",
-        selectable && "cursor-pointer rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring",
-        className
-      )}
-      style={{ height }}
-      {...(selectable
-        ? {
-            role: "slider",
-            tabIndex: 0,
-            "aria-label": label,
-            "aria-valuemin": 1,
-            "aria-valuemax": numbered[cursor.t]?.length ?? 1,
-            "aria-valuenow": (numbered[cursor.t]?.[cursor.e]?.number ?? 1) as number,
-            "aria-valuetext": say(selected ?? cursor) || label,
-            onKeyDown,
-            onFocus: () => setFocused(true),
-            onBlur: () => setFocused(false),
-            onPointerMove: (ev: React.PointerEvent) => setHover(hit(ev)),
-            onPointerLeave: () => setHover(null),
-            onPointerDown: (ev: React.PointerEvent) => {
-              const h = hit(ev)
-              if (h) {
-                setSelected(h)
-                setCursor(h)
-              }
-            },
-          }
-        : { role: "img", "aria-label": label })}
-      {...props}
-    >
-      {width > 0 && (
-        <svg width={width} height={height} aria-hidden className="block overflow-visible">
-          {/* ruler */}
-          {ticks.map(({ bp, step }) => (
-            <g key={bp}>
-              <text x={x(bp)} y={11} textAnchor="middle" className="fill-muted-foreground text-[0.6875rem] tabular-nums">
-                {formatGenomic(bp, step)}
-              </text>
-              <line
-                x1={x(bp)}
-                x2={x(bp)}
-                y1={18}
-                y2={height}
-                stroke="var(--outline-variant)"
-                strokeWidth={1.5}
-                strokeDasharray="0 5"
-                strokeLinecap="round"
-              />
-            </g>
-          ))}
-
-          {transcripts.map((t, ti) => {
-            const top = rowTop(ti)
-            const cy = trackTop(ti) + S.cds / 2
-            const c = colorOf(t)
-            const fill = COLOR_VAR(c)
-            const tonal = `color-mix(in oklab, ${fill} 34%, var(--background))`
-            const exons = numbered[ti]
-            const byPos = [...exons].sort((a, b) => a.start - b.start)
-            const dir = (t.strand === "+") !== flip ? 1 : -1
-            return (
-              <g key={t.id}>
-                <text x={pad} y={top + S.label - 7} className="fill-foreground text-[0.75rem] font-medium">
-                  {t.name ?? t.id}
-                  {t.description && (
-                    <tspan className="fill-muted-foreground font-normal" dx={8}>
-                      {t.description}
-                    </tspan>
-                  )}
+    <div data-slot="gene-model" className={cn("grid w-full gap-3", className)} {...props}>
+      <div
+        ref={wrap}
+        className={cn(
+          "relative w-full select-none outline-none",
+          selectable && "cursor-pointer rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+        )}
+        style={{ height }}
+        {...(selectable
+          ? {
+              role: "slider",
+              tabIndex: 0,
+              "aria-label": label,
+              "aria-valuemin": 1,
+              "aria-valuemax": numbered[cursor.t]?.length ?? 1,
+              "aria-valuenow": (numbered[cursor.t]?.[cursor.e]?.number ?? 1) as number,
+              "aria-valuetext": say(selected ?? cursor) || label,
+              onKeyDown,
+              onFocus: () => setFocused(true),
+              onBlur: () => setFocused(false),
+              onPointerMove: (ev: React.PointerEvent) => setHover(hit(ev)),
+              onPointerLeave: () => setHover(null),
+              onPointerDown: (ev: React.PointerEvent) => {
+                const h = hit(ev)
+                if (h) {
+                  setSelected(h)
+                  setCursor(h)
+                }
+              },
+            }
+          : { role: "img", "aria-label": label })}
+      >
+        {width > 0 && (
+          <svg width={width} height={height} aria-hidden className="block overflow-visible">
+            {/* ruler */}
+            {ticks.map(({ bp, step }) => (
+              <g key={bp}>
+                <text x={x(bp)} y={11} textAnchor="middle" className="fill-muted-foreground text-[0.6875rem] tabular-nums">
+                  {formatGenomic(bp, step)}
                 </text>
+                <line
+                  x1={x(bp)}
+                  x2={x(bp)}
+                  y1={18}
+                  y2={height}
+                  stroke="var(--outline-variant)"
+                  strokeWidth={1.5}
+                  strokeDasharray="0 5"
+                  strokeLinecap="round"
+                />
+              </g>
+            ))}
 
-                {/* introns: dotted, with chevrons the way the gene is read */}
-                {byPos.slice(1).map((e, i) => {
-                  const [, a] = span(byPos[i].start, byPos[i].end)
-                  const [b] = span(e.start, e.end)
-                  const [x0, x1] = [Math.min(a, b), Math.max(a, b)]
-                  if (x1 - x0 < 4) return null
-                  const n = Math.floor((x1 - x0) / 44)
-                  return (
-                    <g key={e.start}>
-                      <line
-                        x1={x0 + 3}
-                        x2={x1 - 3}
-                        y1={cy}
-                        y2={cy}
-                        stroke="var(--muted-foreground)"
-                        strokeOpacity={0.6}
-                        strokeWidth={2}
-                        strokeDasharray="0 5"
-                        strokeLinecap="round"
-                      />
-                      {Array.from({ length: n }, (_, k) => {
-                        const cx = x0 + ((k + 1) * (x1 - x0)) / (n + 1)
-                        return (
-                          <path
-                            key={k}
-                            d={`M${cx - 2 * dir},${cy - 4}L${cx + 2 * dir},${cy}L${cx - 2 * dir},${cy + 4}`}
-                            fill="none"
-                            stroke="var(--muted-foreground)"
-                            strokeWidth={1.75}
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        )
-                      })}
-                    </g>
-                  )
-                })}
+            {transcripts.map((t, ti) => {
+              const top = rowTop(ti)
+              const cy = trackTop(ti) + S.cds / 2
+              const c = colorOf(t)
+              const fill = COLOR_VAR(c)
+              const tonal = `color-mix(in oklab, ${fill} 34%, var(--background))`
+              const exons = numbered[ti]
+              const byPos = [...exons].sort((a, b) => a.start - b.start)
+              const dir = (t.strand === "+") !== flip ? 1 : -1
+              return (
+                <g key={t.id}>
+                  <text x={pad} y={top + S.label - 7} className="fill-foreground text-[0.75rem] font-medium">
+                    {t.name ?? t.id}
+                    {t.description && (
+                      <tspan className="fill-muted-foreground font-normal" dx={8}>
+                        {t.description}
+                      </tspan>
+                    )}
+                  </text>
 
-                {/* exons: UTR and coding parts, connected */}
-                {exons.map((e, ei) => {
-                  const parts: { s: number; e: number; coding: boolean }[] = []
-                  const cs = t.cds ? Math.max(e.start, t.cds.start) : 0
-                  const ce = t.cds ? Math.min(e.end, t.cds.end) : -1
-                  if (ce >= cs) {
-                    if (cs > e.start) parts.push({ s: e.start, e: cs - 1, coding: false })
-                    parts.push({ s: cs, e: ce, coding: true })
-                    if (ce < e.end) parts.push({ s: ce + 1, e: e.end, coding: false })
-                  } else parts.push({ s: e.start, e: e.end, coding: false })
-                  const px = parts.map((p) => ({ ...p, px: span(p.s, p.e) })).sort((a, b) => a.px[0] - b.px[0])
-                  const [ex0, ex1] = span(e.start, e.end)
-                  const isActive = active?.t === ti && active?.e === ei
-                  const isSel = selected?.t === ti && selected?.e === ei
-                  const codingPart = px.find((p) => p.coding)
-                  const inside = exonNumbers && codingPart && codingPart.px[1] - codingPart.px[0] >= String(e.number).length * 6.5 + 10
-                  return (
-                    <g key={e.start}>
-                      {px.map((p, k) => {
-                        const h = p.coding ? S.cds : S.utr
-                        const join = 2
-                        const gapL = k > 0 ? 1 : 0
-                        const gapR = k < px.length - 1 ? 1 : 0
-                        const x0 = p.px[0] + gapL
-                        const w = Math.max(1.5, p.px[1] - p.px[0] - gapL - gapR)
-                        const r = p.coding ? S.ro : Math.min(S.ro, h / 2)
-                        const left = k > 0 ? join : r
-                        const right = k < px.length - 1 ? join : r
-                        return (
-                          <path
-                            key={k}
-                            d={roundedRect(x0, cy - h / 2, w, h, [left, right, right, left])}
-                            fill={p.coding ? fill : tonal}
-                          />
-                        )
-                      })}
-                      {(isActive || isSel) && (
-                        <rect
-                          x={ex0 - 3.5}
-                          y={cy - S.cds / 2 - 3.5}
-                          width={Math.max(ex1 - ex0, 2) + 7}
-                          height={S.cds + 7}
-                          rx={S.ro + 3}
-                          fill="none"
-                          stroke="var(--foreground)"
-                          strokeOpacity={isSel ? 0.9 : 0.45}
-                          strokeWidth={2}
-                        />
-                      )}
-                      {exonNumbers && inside && codingPart && (
-                        <text
-                          x={(codingPart.px[0] + codingPart.px[1]) / 2}
-                          y={cy + 3.5}
-                          textAnchor="middle"
-                          fill={ON_VAR(c)}
-                          className="text-[0.625rem] font-semibold tabular-nums"
-                        >
-                          {e.number}
-                        </text>
-                      )}
-                      {exonNumbers && !inside && (
-                        <text
-                          x={(ex0 + ex1) / 2}
-                          y={cy + S.cds / 2 + 12}
-                          textAnchor="middle"
-                          className="fill-muted-foreground text-[0.625rem] tabular-nums"
-                        >
-                          {e.number}
-                        </text>
-                      )}
-                    </g>
-                  )
-                })}
-
-                {/* markers stand on this transcript: stems first, so no stem crosses a pill */}
-                {ti === markerAt &&
-                  placed.map(({ m, px: mx, level }) => (
-                    <line
-                      key={`stem-${m.position}-${m.label}`}
-                      x1={mx}
-                      x2={mx}
-                      y1={trackTop(ti) - 14 - level * 24}
-                      y2={cy - S.cds / 2 - 1}
-                      stroke={COLOR_VAR(m.color ?? "red")}
-                      strokeOpacity={0.55}
-                      strokeWidth={1.5}
-                    />
-                  ))}
-                {ti === markerAt &&
-                  placed.map(({ m, px: mx, level }) => {
-                    const mc = m.color ?? "red"
-                    const headY = trackTop(ti) - 14 - level * 24
+                  {/* introns: dotted, with chevrons the way the gene is read */}
+                  {byPos.slice(1).map((e, i) => {
+                    const [, a] = span(byPos[i].start, byPos[i].end)
+                    const [b] = span(e.start, e.end)
+                    const [x0, x1] = [Math.min(a, b), Math.max(a, b)]
+                    if (x1 - x0 < 4) return null
+                    const n = Math.floor((x1 - x0) / 44)
                     return (
-                      <g key={`${m.position}-${m.label}`}>
-                        <title>{m.description ?? m.label ?? `Position ${m.position.toLocaleString("en-US")}`}</title>
-                        {m.label ? (
-                          <g>
-                            <rect
-                              x={mx - (m.label.length * 6.4 + 14) / 2}
-                              y={headY - 9}
-                              width={m.label.length * 6.4 + 14}
-                              height={18}
-                              rx={9}
-                              fill={COLOR_VAR(mc)}
+                      <g key={e.start}>
+                        <line
+                          x1={x0 + 3}
+                          x2={x1 - 3}
+                          y1={cy}
+                          y2={cy}
+                          stroke="var(--muted-foreground)"
+                          strokeOpacity={0.6}
+                          strokeWidth={2}
+                          strokeDasharray="0 5"
+                          strokeLinecap="round"
+                        />
+                        {Array.from({ length: n }, (_, k) => {
+                          const cx = x0 + ((k + 1) * (x1 - x0)) / (n + 1)
+                          return (
+                            <path
+                              key={k}
+                              d={`M${cx - 2 * dir},${cy - 4}L${cx + 2 * dir},${cy}L${cx - 2 * dir},${cy + 4}`}
+                              fill="none"
+                              stroke="var(--muted-foreground)"
+                              strokeWidth={1.75}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             />
-                            <text
-                              x={mx}
-                              y={headY + 3.5}
-                              textAnchor="middle"
-                              fill={ON_VAR(mc)}
-                              className="font-mono text-[0.6875rem] font-semibold"
-                            >
-                              {m.label}
-                            </text>
-                          </g>
-                        ) : (
-                          <circle cx={mx} cy={headY} r={5} fill={COLOR_VAR(mc)} stroke="var(--background)" strokeWidth={2} />
+                          )
+                        })}
+                      </g>
+                    )
+                  })}
+
+                  {/* exons: UTR and coding parts, connected */}
+                  {exons.map((e, ei) => {
+                    const parts: { s: number; e: number; coding: boolean }[] = []
+                    const cs = t.cds ? Math.max(e.start, t.cds.start) : 0
+                    const ce = t.cds ? Math.min(e.end, t.cds.end) : -1
+                    if (ce >= cs) {
+                      if (cs > e.start) parts.push({ s: e.start, e: cs - 1, coding: false })
+                      parts.push({ s: cs, e: ce, coding: true })
+                      if (ce < e.end) parts.push({ s: ce + 1, e: e.end, coding: false })
+                    } else parts.push({ s: e.start, e: e.end, coding: false })
+                    const px = parts.map((p) => ({ ...p, px: span(p.s, p.e) })).sort((a, b) => a.px[0] - b.px[0])
+                    const [ex0, ex1] = span(e.start, e.end)
+                    const isActive = active?.t === ti && active?.e === ei
+                    const isSel = selected?.t === ti && selected?.e === ei
+                    const codingPart = px.find((p) => p.coding)
+                    const inside = exonNumbers && codingPart && codingPart.px[1] - codingPart.px[0] >= String(e.number).length * 6.5 + 10
+                    return (
+                      <g key={e.start}>
+                        {px.map((p, k) => {
+                          const h = p.coding ? S.cds : S.utr
+                          const join = 2
+                          const gapL = k > 0 ? 1 : 0
+                          const gapR = k < px.length - 1 ? 1 : 0
+                          const x0 = p.px[0] + gapL
+                          const w = Math.max(1.5, p.px[1] - p.px[0] - gapL - gapR)
+                          const r = p.coding ? S.ro : Math.min(S.ro, h / 2)
+                          const left = k > 0 ? join : r
+                          const right = k < px.length - 1 ? join : r
+                          return (
+                            <path
+                              key={k}
+                              d={roundedRect(x0, cy - h / 2, w, h, [left, right, right, left])}
+                              fill={p.coding ? fill : tonal}
+                            />
+                          )
+                        })}
+                        {(isActive || isSel) && (
+                          <rect
+                            x={ex0 - 3.5}
+                            y={cy - S.cds / 2 - 3.5}
+                            width={Math.max(ex1 - ex0, 2) + 7}
+                            height={S.cds + 7}
+                            rx={S.ro + 3}
+                            fill="none"
+                            stroke="var(--foreground)"
+                            strokeOpacity={isSel ? 0.9 : 0.45}
+                            strokeWidth={2}
+                          />
+                        )}
+                        {exonNumbers && inside && codingPart && (
+                          <text
+                            x={(codingPart.px[0] + codingPart.px[1]) / 2}
+                            y={cy + 3.5}
+                            textAnchor="middle"
+                            fill={ON_VAR(c)}
+                            className="text-[0.625rem] font-semibold tabular-nums"
+                          >
+                            {e.number}
+                          </text>
+                        )}
+                        {exonNumbers && !inside && (
+                          <text
+                            x={(ex0 + ex1) / 2}
+                            y={cy + S.cds / 2 + 12}
+                            textAnchor="middle"
+                            className="fill-muted-foreground text-[0.625rem] tabular-nums"
+                          >
+                            {e.number}
+                          </text>
                         )}
                       </g>
                     )
                   })}
-              </g>
-            )
-          })}
-        </svg>
-      )}
+
+                  {/* domains: a band under the track, split where introns cut a domain */}
+                  {ti === domainRow &&
+                    (domains ?? []).map((d, di) => {
+                      const segs = mapped[di].map((g) => span(g.start, g.end)).sort((a, b) => a[0] - b[0])
+                      if (!segs.length) return null
+                      const y = cy + S.cds / 2 + numbersBelow + 6 + domainLaneList[di] * LANE
+                      const fill = domainFill(domainColorList[di])
+                      const full = DOMAIN / 2
+                      return (
+                        <g key={`${d.name}-${d.start}`}>
+                          <title>{d.description ?? `${d.name}, residues ${d.start} to ${d.end}`}</title>
+                          {segs.slice(1).map(([a], k) => (
+                            <line
+                              key={`c${k}`}
+                              x1={segs[k][1] + 3}
+                              x2={a - 3}
+                              y1={y + DOMAIN / 2}
+                              y2={y + DOMAIN / 2}
+                              stroke={fill}
+                              strokeOpacity={0.5}
+                              strokeWidth={1.5}
+                              strokeDasharray="0 4"
+                              strokeLinecap="round"
+                            />
+                          ))}
+                          {segs.map(([a, b], k) => {
+                            const left = k === 0 ? full : 2
+                            const right = k === segs.length - 1 ? full : 2
+                            return (
+                              <path
+                                key={k}
+                                d={roundedRect(a, y, Math.max(b - a, 2), DOMAIN, [left, right, right, left])}
+                                fill={fill}
+                              />
+                            )
+                          })}
+                        </g>
+                      )
+                    })}
+
+                  {/* markers stand on this transcript: stems first, so no stem crosses a pill */}
+                  {ti === markerAt &&
+                    placed.map(({ m, px: mx, level }) => (
+                      <line
+                        key={`stem-${m.position}-${m.label}`}
+                        x1={mx}
+                        x2={mx}
+                        y1={trackTop(ti) - 14 - level * 24}
+                        y2={cy - S.cds / 2 - 1}
+                        stroke={COLOR_VAR(m.color ?? "red")}
+                        strokeOpacity={0.55}
+                        strokeWidth={1.5}
+                      />
+                    ))}
+                  {ti === markerAt &&
+                    placed.map(({ m, px: mx, level }) => {
+                      const mc = m.color ?? "red"
+                      const headY = trackTop(ti) - 14 - level * 24
+                      return (
+                        <g key={`${m.position}-${m.label}`}>
+                          <title>{m.description ?? m.label ?? `Position ${m.position.toLocaleString("en-US")}`}</title>
+                          {m.label ? (
+                            <g>
+                              <rect
+                                x={mx - (m.label.length * 6.4 + 14) / 2}
+                                y={headY - 9}
+                                width={m.label.length * 6.4 + 14}
+                                height={18}
+                                rx={9}
+                                fill={COLOR_VAR(mc)}
+                              />
+                              <text
+                                x={mx}
+                                y={headY + 3.5}
+                                textAnchor="middle"
+                                fill={ON_VAR(mc)}
+                                className="font-mono text-[0.6875rem] font-semibold"
+                              >
+                                {m.label}
+                              </text>
+                            </g>
+                          ) : (
+                            <circle cx={mx} cy={headY} r={5} fill={COLOR_VAR(mc)} stroke="var(--background)" strokeWidth={2} />
+                          )}
+                        </g>
+                      )
+                    })}
+                </g>
+              )
+            })}
+          </svg>
+        )}
+      </div>
+      {domains?.length && domainLegend ? <DomainLegend domains={domains} /> : null}
     </div>
   )
 }

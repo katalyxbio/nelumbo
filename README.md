@@ -170,7 +170,8 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - Toolbar (docked and floating, vertical, vibrant; paired FAB, collapse, overflow)
 - Kbd, Spinner (ring or shapes), Empty (layered icon tile), Aspect Ratio
 - Nucleotide and Amino Acid (new, biology: tonal residue tiles in one tone system; Nelumbo, base-pair, charge and classic schemes such as IGV, Clustal X and Taylor; sequences with ruler, complement strand, codon footers, highlight and keyboard selection; mutations: DNA changes with the changed bases as a capsule and indels aligned, protein changes as one connected R | 175 | H shape)
-- Gene Model (new, biology: exons and introns with connected UTR and coding parts, dotted introns with strand chevrons, compressed introns, isoform stacks, variant lollipops, keyboard focus on exons)
+- Gene Model (new, biology: exons and introns with connected UTR and coding parts, dotted introns with strand chevrons, compressed introns, isoform stacks, variant lollipops, protein domains mapped onto the exons that encode them, keyboard focus on exons)
+- Protein Domains (new, biology: a protein backbone with domain blocks, a residue ruler, a legend and variant lollipops)
 
 ## License
 

@@ -1,4 +1,5 @@
 import type { GeneModelTranscript } from "@/registry/nelumbo/ui/gene-model"
+import type { ProteinDomain, ProteinVariant } from "@/registry/nelumbo/ui/protein-domains"
 
 // From Ensembl (GRCh38), release current at the time of writing: exons and coding
 // stretches of human TP53 (chr17, minus strand) and HBB (chr11, minus strand).
@@ -99,3 +100,24 @@ export const HBB_201: GeneModelTranscript = {
     { start: 5226930, end: 5227071 },
   ],
 }
+
+// p53 (UniProt P04637, 393 residues): regions and DNA binding as UniProt annotates them.
+export const P53_LENGTH = 393
+export const P53_DOMAINS: ProteinDomain[] = [
+  { start: 1, end: 44, name: "Transactivation", color: "amber", description: "Transcription activation (acidic), residues 1 to 44" },
+  { start: 102, end: 292, name: "DNA-binding", color: "blue", description: "DNA binding, residues 102 to 292" },
+  { start: 305, end: 321, name: "NLS", color: "green", description: "Bipartite nuclear localization signal, residues 305 to 321" },
+  { start: 325, end: 356, name: "Oligomerization", color: "purple", description: "Oligomerization, residues 325 to 356" },
+  { start: 368, end: 387, name: "Basic", color: "pink", description: "Basic, represses DNA binding, residues 368 to 387" },
+]
+
+// The same hotspots as on the gene model, by residue.
+export const P53_HOTSPOTS: ProteinVariant[] = [
+  { position: 175, label: "R175H", description: "p.Arg175His" },
+  { position: 213, label: "R213*", color: "purple", description: "p.Arg213Ter, nonsense" },
+  { position: 220, label: "Y220C", description: "p.Tyr220Cys" },
+  { position: 245, label: "G245S", description: "p.Gly245Ser" },
+  { position: 248, label: "R248Q", description: "p.Arg248Gln" },
+  { position: 273, label: "R273H", description: "p.Arg273His" },
+  { position: 282, label: "R282W", description: "p.Arg282Trp" },
+]

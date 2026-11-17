@@ -1926,14 +1926,31 @@
       "name": "gene-model",
       "type": "registry:ui",
       "title": "Gene Model",
-      "description": "A gene's transcripts as exons and introns: tall coding blocks and thinner UTRs joined with connected corners, dotted introns with strand chevrons, exon numbers in transcription order, compressed introns, genome or transcript orientation, isoform stacks with the canonical in color, variant lollipops with pill labels, and keyboard focus on exons.",
+      "description": "A gene's transcripts as exons and introns: tall coding blocks and thinner UTRs joined with connected corners, dotted introns with strand chevrons, exon numbers in transcription order, compressed introns, genome or transcript orientation, isoform stacks with the canonical in color, variant lollipops with pill labels, and keyboard focus on exons, and protein domains mapped through the coding sequence onto the exons that encode them.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@nelumbo/protein-domains"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/gene-model.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "protein-domains",
+      "type": "registry:ui",
+      "title": "Protein Domains",
+      "description": "A protein along its length: a thin backbone, domains as tall rounded blocks named inside where they fit, overlapping domains on lanes, a residue ruler, a legend, and variants as lollipops with pill labels stacked to avoid collisions.",
       "dependencies": [],
       "registryDependencies": [
         "utils"
       ],
       "files": [
         {
-          "path": "registry/nelumbo/ui/gene-model.tsx",
+          "path": "registry/nelumbo/ui/protein-domains.tsx",
           "type": "registry:ui"
         }
       ]
