@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/banner.webp" alt="Nelumbo, set over an illustration of lotus leaves and pink lotus flowers" width="100%"></p>
+
 # Nelumbo
 
 A soft, tactile design system for shadcn/ui (Tailwind v4). Neutral first: the
