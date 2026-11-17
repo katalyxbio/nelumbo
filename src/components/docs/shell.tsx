@@ -103,6 +103,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/amino-acid", label: "Amino Acid", isNew: true },
       { href: "/components/gene-model", label: "Gene Model", isNew: true },
       { href: "/components/protein-domains", label: "Protein Domains", isNew: true },
+      { href: "/components/plasmid-map", label: "Plasmid Map", isNew: true },
     ],
   },
   {

@@ -1954,6 +1954,22 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "plasmid-map",
+      "type": "registry:ui",
+      "title": "Plasmid Map",
+      "description": "A circular plasmid map: thin backbone ring, features as rounded directional arcs on lanes, names along arcs or outside with leaders spread to avoid overlap, restriction sites as ticks, a ruler, a center readout of the feature in focus, keyboard and pointer focus, and a legend on narrow maps; uniqueSites finds single cutters.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/plasmid-map.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

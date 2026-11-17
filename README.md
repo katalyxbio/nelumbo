@@ -172,6 +172,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - Nucleotide and Amino Acid (new, biology: tonal residue tiles in one tone system; Nelumbo, base-pair, charge and classic schemes such as IGV, Clustal X and Taylor; sequences with ruler, complement strand, codon footers, highlight and keyboard selection; mutations: DNA changes with the changed bases as a capsule and indels aligned, protein changes as one connected R | 175 | H shape)
 - Gene Model (new, biology: exons and introns with connected UTR and coding parts, dotted introns with strand chevrons, compressed introns, isoform stacks, variant lollipops, protein domains mapped onto the exons that encode them, keyboard focus on exons)
 - Protein Domains (new, biology: a protein backbone with domain blocks, a residue ruler, a legend and variant lollipops)
+- Plasmid Map (new, biology: circular map with directional feature arcs, names along arcs or outside with non-crossing leaders, unique restriction sites, a center readout and keyboard focus)
 
 ## License
 
