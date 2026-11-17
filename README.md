@@ -39,6 +39,10 @@ means something: status, categories, charts and focus. One accent is the brand.
 <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/cards-dark.webp"><img src="docs/components/cards-light.webp" alt="Cards, avatars, badges" width="100%"></picture><br><sub>Cards, avatars, badges</sub></td>
 <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/carousel-dark.webp"><img src="docs/components/carousel-light.webp" alt="Carousel" width="100%"></picture><br><sub>Carousel</sub></td>
 </tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/nucleotide-dark.webp"><img src="docs/components/nucleotide-light.webp" alt="Nucleotides: double strand" width="100%"></picture><br><sub>Nucleotides: double strand</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/amino-acid-dark.webp"><img src="docs/components/amino-acid-light.webp" alt="Amino acids: protein sequence with selection" width="100%"></picture><br><sub>Amino acids: protein sequence with selection</sub></td>
+</tr>
 </table>
 
 ## Commands
@@ -165,6 +169,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - FAB Menu (staggered spring actions, morphing trigger)
 - Toolbar (docked and floating, vertical, vibrant; paired FAB, collapse, overflow)
 - Kbd, Spinner (ring or shapes), Empty (layered icon tile), Aspect Ratio
+- Nucleotide and Amino Acid (new, biology: tonal residue tiles in one tone system; Nelumbo, base-pair, charge and classic schemes such as IGV, Clustal X and Taylor; sequences with ruler, complement strand, codon footers, highlight and keyboard selection; substitutions such as R175H)
 
 ## License
 

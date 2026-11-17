@@ -97,6 +97,13 @@ const NAV: { group: string; items: NavItem[] }[] = [
     ],
   },
   {
+    group: "Biology",
+    items: [
+      { href: "/components/nucleotide", label: "Nucleotide", isNew: true },
+      { href: "/components/amino-acid", label: "Amino Acid", isNew: true },
+    ],
+  },
+  {
     group: "Feedback",
     items: [
       { href: "/components/progress", label: "Progress", isNew: true },

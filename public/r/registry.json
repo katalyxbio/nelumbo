@@ -1870,6 +1870,57 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "residue",
+      "type": "registry:ui",
+      "title": "Residue",
+      "description": "The tile the biology components are built on: a letter on a rounded tile, colored through one tone system (hue only; lightness and chroma come from the variant and theme), plus ResidueSequence with blocks, ruler, highlight and keyboard selection.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/residue.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "nucleotide",
+      "type": "registry:ui",
+      "title": "Nucleotide",
+      "description": "DNA and RNA bases as tonal tiles and strands: Nelumbo, base-pair and purine/pyrimidine schemes plus IGV, Jalview, trace and Okabe-Ito redrawn at one lightness; complement strand, codon footers, selection; complement, translate and GC helpers.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@nelumbo/residue"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/nucleotide.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "amino-acid",
+      "type": "registry:ui",
+      "title": "Amino Acid",
+      "description": "Protein residues as tonal tiles and sequences: side-chain and charge schemes plus hydrophobicity, Clustal X, Zappo, Taylor and Okabe-Ito redrawn at one lightness; three-letter notation, selection, and AminoAcidChange for substitutions.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@nelumbo/icon",
+        "@nelumbo/residue"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/amino-acid.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
