@@ -8,6 +8,39 @@ two-layer shadows and spring motion. Color comes from an accent
 palette (blue, cyan, green, amber, orange, red, pink, purple) used where it
 means something: status, categories, charts and focus. One accent is the brand.
 
+## Components
+
+<table>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/charts-dark.webp"><img src="docs/components/charts-light.webp" alt="Charts" width="100%"></picture><br><sub>Charts</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/buttons-dark.webp"><img src="docs/components/buttons-light.webp" alt="Buttons, split buttons, segmented buttons, FABs" width="100%"></picture><br><sub>Buttons, split buttons, segmented buttons, FABs</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/alerts-dark.webp"><img src="docs/components/alerts-light.webp" alt="Alerts" width="100%"></picture><br><sub>Alerts</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/command-dark.webp"><img src="docs/components/command-light.webp" alt="Command palette" width="100%"></picture><br><sub>Command palette</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/date-picker-dark.webp"><img src="docs/components/date-picker-light.webp" alt="Date picker" width="100%"></picture><br><sub>Date picker</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/data-table-dark.webp"><img src="docs/components/data-table-light.webp" alt="Data table" width="100%"></picture><br><sub>Data table</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/fields-dark.webp"><img src="docs/components/fields-light.webp" alt="Inputs, selects, time fields" width="100%"></picture><br><sub>Inputs, selects, time fields</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/list-dark.webp"><img src="docs/components/list-light.webp" alt="List" width="100%"></picture><br><sub>List</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/phones-dark.webp"><img src="docs/components/phones-light.webp" alt="Navigation bar, FAB menu" width="100%"></picture><br><sub>Navigation bar, FAB menu</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/navigation-rail-dark.webp"><img src="docs/components/navigation-rail-light.webp" alt="Navigation rail" width="100%"></picture><br><sub>Navigation rail</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/selection-dark.webp"><img src="docs/components/selection-light.webp" alt="Switches, checkboxes, chips, sliders" width="100%"></picture><br><sub>Switches, checkboxes, chips, sliders</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/progress-dark.webp"><img src="docs/components/progress-light.webp" alt="Progress, loading indicators, spinners" width="100%"></picture><br><sub>Progress, loading indicators, spinners</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/cards-dark.webp"><img src="docs/components/cards-light.webp" alt="Cards, avatars, badges" width="100%"></picture><br><sub>Cards, avatars, badges</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/carousel-dark.webp"><img src="docs/components/carousel-light.webp" alt="Carousel" width="100%"></picture><br><sub>Carousel</sub></td>
+</tr>
+</table>
+
 ## Commands
 
 ```bash
@@ -87,51 +120,51 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
   identifies a control uses `input` or `outline`.
 - Disabled controls fade to 40% (exempt). Loading is a busy state, not disabled: full strength.
 
-## Roadmap
+## What's included
 
-- [x] Foundations
-- [x] Button
-- [x] Icon Button (toggle, filled/secondary/outlined) + Icon (Material Symbols)
-- [x] Segmented Button (single / multiple select)
-- [x] Button Group (standard, connected)
-- [x] Split Button
-- [x] FAB (five colors, three sizes, extended)
-- [x] Input (filled + outlined, floating label)
-- [x] Textarea
-- [x] Select (field trigger), Combobox (new: type to filter, chips for multiple, nested options that cascade or drill), NestedSelect
-- [x] Card (filled, elevated, outlined, interactive)
-- [x] Switch
-- [x] Checkbox, Radio Group
-- [x] Slider
-- [x] Chip (new: assist, filter, input, suggestion)
-- [x] Dialog, Sheet (drag-to-dismiss bottom sheet)
-- [x] Popover, Dropdown Menu, Tooltip
-- [x] Tabs, Navigation Rail (new)
-- [x] Snackbar (new, with a sonner-compatible `toast` API), Navigation Bar
-- [x] Progress (new: linear and circular, flat or wavy), Loading Indicator (morphing shapes), Skeleton
-- [x] Avatar (new: auto tints, status, groups), Badge (labels and notification badges), List (plain and segmented)
-- [x] Calendar, Date Picker (new: typed dates, year grid, ranges with presets)
-- [x] Time Picker (new: typed times in the locale's format, M3 clock dial with 24-hour rings, list mode)
-- [x] Accordion (plain and segmented, Radix), Alert (tonal variants, actions, dismiss, banner)
-- [x] Table, Data Table (new: TanStack; sorting, selection, search, column menu, pagination, loading and empty states)
-- [x] Input OTP (separate or connected slots), Toggle, Toggle Group (connected, morphing selection)
-- [x] Breadcrumb, Pagination (with a range helper)
-- [x] Scroll Area (auto-hiding thumb, edge fades), Separator (faint, inset or space only)
-- [x] Command (cmdk palette with a ⌘K dialog)
-- [x] Alert Dialog (icon tile, destructive), Collapsible (spring chevron), Hover Card
-- [x] Form (react-hook-form; one label per control, spring errors, shake on failed submit), Label
-- [x] Chart (recharts; accent series, spring tooltip, toggleable legend chips)
-- [x] Carousel (multi-browse, hero, uncontained; spring dots), Resizable (gap instead of a line, growing grip)
-- [x] Navigation Menu (springing pill, morphing viewport, rich links)
-- [x] Sidebar (springing active pill, spring collapse to icons, no lines)
-- [x] Search (Material 3 search bar and view; also the Command palette field)
-- [x] Context Menu, Menubar (springing segment; sliding row highlight shared with Dropdown Menu)
-- [x] Top App Bar (four sizes; elevate, collapse, hide on scroll), Bottom App Bar (FAB slot, floating)
-- [x] Field (shadcn layout set; choice cards), Item (segmented tiles)
-- [x] Input Group (one field with addons; chat composer), Native Select
-- [x] FAB Menu (staggered spring actions, morphing trigger)
-- [x] Toolbar (docked and floating, vertical, vibrant; paired FAB, collapse, overflow)
-- [x] Kbd, Spinner (ring or shapes), Empty (layered icon tile), Aspect Ratio
+- Foundations
+- Button
+- Icon Button (toggle, filled/secondary/outlined) + Icon (Material Symbols)
+- Segmented Button (single / multiple select)
+- Button Group (standard, connected)
+- Split Button
+- FAB (five colors, three sizes, extended)
+- Input (filled + outlined, floating label)
+- Textarea
+- Select (field trigger), Combobox (new: type to filter, chips for multiple, nested options that cascade or drill), NestedSelect
+- Card (filled, elevated, outlined, interactive)
+- Switch
+- Checkbox, Radio Group
+- Slider
+- Chip (new: assist, filter, input, suggestion)
+- Dialog, Sheet (drag-to-dismiss bottom sheet)
+- Popover, Dropdown Menu, Tooltip
+- Tabs, Navigation Rail (new)
+- Snackbar (new, with a sonner-compatible `toast` API), Navigation Bar
+- Progress (new: linear and circular, flat or wavy), Loading Indicator (morphing shapes), Skeleton
+- Avatar (new: auto tints, status, groups), Badge (labels and notification badges), List (plain and segmented)
+- Calendar, Date Picker (new: typed dates, year grid, ranges with presets)
+- Time Picker (new: typed times in the locale's format, M3 clock dial with 24-hour rings, list mode)
+- Accordion (plain and segmented, Radix), Alert (tonal variants, actions, dismiss, banner)
+- Table, Data Table (new: TanStack; sorting, selection, search, column menu, pagination, loading and empty states)
+- Input OTP (separate or connected slots), Toggle, Toggle Group (connected, morphing selection)
+- Breadcrumb, Pagination (with a range helper)
+- Scroll Area (auto-hiding thumb, edge fades), Separator (faint, inset or space only)
+- Command (cmdk palette with a ⌘K dialog)
+- Alert Dialog (icon tile, destructive), Collapsible (spring chevron), Hover Card
+- Form (react-hook-form; one label per control, spring errors, shake on failed submit), Label
+- Chart (recharts; accent series, spring tooltip, toggleable legend chips)
+- Carousel (multi-browse, hero, uncontained; spring dots), Resizable (gap instead of a line, growing grip)
+- Navigation Menu (springing pill, morphing viewport, rich links)
+- Sidebar (springing active pill, spring collapse to icons, no lines)
+- Search (Material 3 search bar and view; also the Command palette field)
+- Context Menu, Menubar (springing segment; sliding row highlight shared with Dropdown Menu)
+- Top App Bar (four sizes; elevate, collapse, hide on scroll), Bottom App Bar (FAB slot, floating)
+- Field (shadcn layout set; choice cards), Item (segmented tiles)
+- Input Group (one field with addons; chat composer), Native Select
+- FAB Menu (staggered spring actions, morphing trigger)
+- Toolbar (docked and floating, vertical, vibrant; paired FAB, collapse, overflow)
+- Kbd, Spinner (ring or shapes), Empty (layered icon tile), Aspect Ratio
 
 ## License
 
