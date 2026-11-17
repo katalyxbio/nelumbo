@@ -11,18 +11,27 @@ import { RESIDUE_HUES } from "@/registry/nelumbo/ui/residue"
  * A microplate, 6 to 1536 wells, laid out as the plate is: lettered rows,
  * numbered columns, round wells up to 96 and square ones beyond. Wells take a
  * group's color (a layout: blanks, standards, samples) or a value on a scale
- * (a plate reader's output), and a selection is one connected shape.
+ * (a plate reader's output). A selection is traced as one outline, round at its
+ * outer corners and filleted at its inner ones.
  *
  *   <PlateMap format={96} groups={[{ id: "std", name: "Standard", color: "blue" }]}
  *     wells={[{ well: "A1", group: "std" }, ...]} selectable />
+ *   <PlateMap variant="plate" notch="bottom-left" ... />   // the plate itself, to scale
+ *
+ * Variants:
+ * - "grid" (default): the wells and their headers, filling the width.
+ * - "plate": the whole plate at the standard footprint (127.76 by 85.48 mm),
+ *   wells at their true pitch and offset, the labels on the frame as they are
+ *   molded, and the chamfered corner where `notch` puts it.
  *
  * It is an ARIA grid: one tab stop, arrows move, Shift and the arrows (or a
- * drag) select a rectangle, Space toggles a well, Ctrl+A selects them all,
- * Escape clears. A row or column header selects the whole line.
+ * drag) select a rectangle, Ctrl or Cmd adds, Space toggles a well, Ctrl+A
+ * selects them all, Escape clears. A row or column header selects the line.
  */
 
 export type PlateFormat = 6 | 12 | 24 | 48 | 96 | 384 | 1536
 export type PlateColor = keyof typeof RESIDUE_HUES | "neutral"
+export type PlateCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right"
 
 export type PlateGroup = { id: string; name: string; color?: PlateColor; description?: string }
 
@@ -34,23 +43,29 @@ export type PlateWell = {
   /** Shown inside the well with `labels`. */
   label?: string
   description?: string
+  /** Left out of the analysis (a bubble, a failed read): struck through and faded. */
+  excluded?: boolean
 }
 
 export type PlateFocus = PlateWell & { row: number; column: number; groupInfo?: PlateGroup }
 
-const FORMATS: Record<PlateFormat, [rows: number, cols: number]> = {
-  6: [2, 3],
-  12: [3, 4],
-  24: [4, 6],
-  48: [6, 8],
-  96: [8, 12],
-  384: [16, 24],
-  1536: [32, 48],
+// rows, columns, pitch and the center of A1 in mm, from the SBS/ANSI footprint;
+// the formats without a fixed offset are centered
+const W = 127.76
+const H = 85.48
+const GEOMETRY: Record<PlateFormat, { rows: number; cols: number; pitch: number; a1?: [number, number]; well: number }> = {
+  6: { rows: 2, cols: 3, pitch: 39.12, well: 0.88 },
+  12: { rows: 3, cols: 4, pitch: 26.01, well: 0.85 },
+  24: { rows: 4, cols: 6, pitch: 19.3, well: 0.82 },
+  48: { rows: 6, cols: 8, pitch: 13.08, well: 0.84 },
+  96: { rows: 8, cols: 12, pitch: 9, a1: [14.38, 11.24], well: 0.74 },
+  384: { rows: 16, cols: 24, pitch: 4.5, a1: [12.13, 8.99], well: 0.8 },
+  1536: { rows: 32, cols: 48, pitch: 2.25, a1: [11.005, 7.865], well: 0.78 },
 }
 
 /** Rows and columns of a plate format. */
 export function plateSize(format: PlateFormat) {
-  const [rows, cols] = FORMATS[format]
+  const { rows, cols } = GEOMETRY[format]
   return { rows, cols }
 }
 
@@ -83,6 +98,110 @@ export function wellRange(range: string) {
   return out
 }
 
+/**
+ * The outline of a set of cells as one SVG path: traced clockwise along the
+ * cells' outer edges, outer corners rounded by `outer`, inner corners
+ * filleted by `inner`. Cells touching only at a corner stay apart.
+ */
+export function cellsOutline(
+  has: (row: number, col: number) => boolean,
+  rows: number,
+  cols: number,
+  box: { x: number; y: number; w: number; h: number },
+  outer: number,
+  inner: number
+) {
+  type P = [number, number]
+  const key = (p: P) => `${p[0]},${p[1]}`
+  const out = new Map<string, P[]>()
+  const add = (a: P, b: P) => {
+    const k = key(a)
+    out.set(k, [...(out.get(k) ?? []), b])
+  }
+  for (let r = 0; r < rows; r++)
+    for (let c = 0; c < cols; c++) {
+      if (!has(r, c)) continue
+      if (!has(r - 1, c)) add([c, r], [c + 1, r])
+      if (!has(r, c + 1)) add([c + 1, r], [c + 1, r + 1])
+      if (!has(r + 1, c)) add([c + 1, r + 1], [c, r + 1])
+      if (!has(r, c - 1)) add([c, r + 1], [c, r])
+    }
+  const used = new Set<string>()
+  const ek = (a: P, b: P) => `${key(a)}>${key(b)}`
+  const px = (p: P): P => [box.x + p[0] * box.w, box.y + p[1] * box.h]
+  const f = (n: number) => Math.round(n * 100) / 100
+  let d = ""
+  for (const [k, targets] of out)
+    for (const first of targets) {
+      const start = k.split(",").map(Number) as P
+      if (used.has(ek(start, first))) continue
+      // walk the loop, turning right at a vertex with two ways on
+      const pts: P[] = [start]
+      let a = start
+      let b = first
+      while (!used.has(ek(a, b))) {
+        used.add(ek(a, b))
+        const dir: P = [b[0] - a[0], b[1] - a[1]]
+        const next = (out.get(key(b)) ?? []).filter((n) => !used.has(ek(b, n)))
+        if (!next.length) break
+        const right: P = [-dir[1], dir[0]]
+        const pick = next.find((n) => n[0] - b[0] === right[0] && n[1] - b[1] === right[1]) ?? next.find((n) => n[0] - b[0] === dir[0] && n[1] - b[1] === dir[1]) ?? next[0]
+        pts.push(b)
+        a = b
+        b = pick
+      }
+      // keep only the corners
+      const corners = pts.filter((p, i) => {
+        const prev = pts[(i - 1 + pts.length) % pts.length]
+        const nxt = pts[(i + 1) % pts.length]
+        return (p[0] - prev[0]) * (nxt[1] - p[1]) - (p[1] - prev[1]) * (nxt[0] - p[0]) !== 0
+      })
+      const n = corners.length
+      if (n < 3) continue
+      const seg = corners.map((p, i) => {
+        const prev = corners[(i - 1 + n) % n]
+        const nxt = corners[(i + 1) % n]
+        const din: P = [Math.sign(p[0] - prev[0]), Math.sign(p[1] - prev[1])]
+        const dout: P = [Math.sign(nxt[0] - p[0]), Math.sign(nxt[1] - p[1])]
+        const convex = din[0] * dout[1] - din[1] * dout[0] > 0
+        const rad = convex ? outer : inner
+        const v = px(p)
+        return {
+          a: [v[0] - din[0] * rad, v[1] - din[1] * rad] as P,
+          b: [v[0] + dout[0] * rad, v[1] + dout[1] * rad] as P,
+          rad,
+          sweep: convex ? 1 : 0,
+        }
+      })
+      d += `M${f(seg[n - 1].b[0])} ${f(seg[n - 1].b[1])}`
+      for (const s of seg) d += `L${f(s.a[0])} ${f(s.a[1])}A${f(s.rad)} ${f(s.rad)} 0 0 ${s.sweep} ${f(s.b[0])} ${f(s.b[1])}`
+      d += "Z"
+    }
+  return d
+}
+
+/** The plate's outline in mm: rounded corners, one chamfered. */
+function plateBody(notch: PlateCorner) {
+  const r = 3
+  const c = 6
+  const [x0, y0, x1, y1] = [0, 0, W, H]
+  const tl = notch === "top-left"
+  const tr = notch === "top-right"
+  const br = notch === "bottom-right"
+  const bl = notch === "bottom-left"
+  return [
+    `M${x0 + (tl ? c : r)} ${y0}`,
+    `L${x1 - (tr ? c : r)} ${y0}`,
+    tr ? `L${x1} ${y0 + c}` : `Q${x1} ${y0} ${x1} ${y0 + r}`,
+    `L${x1} ${y1 - (br ? c : r)}`,
+    br ? `L${x1 - c} ${y1}` : `Q${x1} ${y1} ${x1 - r} ${y1}`,
+    `L${x0 + (bl ? c : r)} ${y1}`,
+    bl ? `L${x0} ${y1 - c}` : `Q${x0} ${y1} ${x0} ${y1 - r}`,
+    `L${x0} ${y0 + (tl ? c : r)}`,
+    tl ? "Z" : `Q${x0} ${y0} ${x0 + r} ${y0}Z`,
+  ].join("")
+}
+
 const ORDER: PlateColor[] = ["blue", "amber", "green", "purple", "pink", "cyan", "orange", "red"]
 const hueOf = (c: PlateColor) => (c === "neutral" ? 0 : RESIDUE_HUES[c])
 
@@ -100,6 +219,10 @@ type Cell = { row: number; col: number }
 
 type PlateMapProps = Omit<React.ComponentProps<"div">, "children"> & {
   format?: PlateFormat
+  /** "grid" (default) or "plate": the whole plate, to scale, with its chamfered corner. */
+  variant?: "grid" | "plate"
+  /** With variant="plate": the chamfered corner. Default "top-left". */
+  notch?: PlateCorner
   wells?: PlateWell[]
   groups?: PlateGroup[]
   /** "groups" colors by group, "values" by value. Default: values when wells carry values and no groups are given. */
@@ -113,12 +236,14 @@ type PlateMapProps = Omit<React.ComponentProps<"div">, "children"> & {
   scaleColor?: PlateColor
   /** How a value is written. */
   formatValue?: (v: number) => string
-  /** A unit after values, in the readout and legend. */
+  /** A unit after values, in the tooltip, readout and legend. */
   unit?: string
   /** Each well's label (or value) inside it, where wells are large enough. */
   labels?: boolean
   /** A legend of groups, or the scale, underneath. Default true. */
   legend?: boolean
+  /** A card over the well under the pointer or the keyboard cursor. Default true. */
+  tooltip?: boolean
   selectable?: boolean
   /** Selected well names. */
   selection?: string[]
@@ -128,9 +253,11 @@ type PlateMapProps = Omit<React.ComponentProps<"div">, "children"> & {
   onActiveChange?: (focus: PlateFocus | null) => void
 }
 
-/** A microplate with wells colored by group or value, and rectangle selection. */
+/** A microplate with wells colored by group or value, and selection traced as one shape. */
 function PlateMap({
   format = 96,
+  variant = "grid",
+  notch = "top-left",
   wells = [],
   groups = [],
   colorBy,
@@ -142,6 +269,7 @@ function PlateMap({
   unit,
   labels = false,
   legend = true,
+  tooltip = true,
   selectable = false,
   selection: selectionProp,
   defaultSelection = [],
@@ -151,8 +279,11 @@ function PlateMap({
   "aria-label": ariaLabel,
   ...props
 }: PlateMapProps) {
-  const { rows, cols } = plateSize(format)
+  const G = GEOMETRY[format]
+  const { rows, cols } = G
   const square = format > 96
+  const plate = variant === "plate"
+
   const byName = React.useMemo(() => {
     const m = new Map<string, PlateWell>()
     for (const w of wells) {
@@ -161,13 +292,11 @@ function PlateMap({
     }
     return m
   }, [wells])
-  const groupColors = React.useMemo(
-    () => new Map(groups.map((g, i) => [g.id, g.color ?? ORDER[i % ORDER.length]])),
-    [groups]
-  )
+  const groupColors = React.useMemo(() => new Map(groups.map((g, i) => [g.id, g.color ?? ORDER[i % ORDER.length]])), [groups])
   const mode = colorBy ?? (groups.length === 0 && wells.some((w) => w.value != null) ? "values" : "groups")
-  const values = wells.map((w) => w.value).filter((v): v is number => v != null)
+  const values = wells.filter((w) => !w.excluded).map((w) => w.value).filter((v): v is number => v != null)
   const [lo, hi] = domain ?? [Math.min(...values, 0), Math.max(...values, 1)]
+  const excludedCount = wells.filter((w) => w.excluded).length
 
   const tone = (v: number) => {
     if (scale === "diverging") {
@@ -187,15 +316,41 @@ function PlateMap({
     onSelectionChange?.(next)
   }
   const rect = (a: Cell, b: Cell) => wellRange(`${wellName(a.row, a.col)}:${wellName(b.row, b.col)}`)
+  const isSel = (r: number, c: number) => r >= 0 && c >= 0 && r < rows && c < cols && selected.has(wellName(r, c))
 
   const [cursor, setCursor] = React.useState<Cell>({ row: 0, col: 0 })
   const anchor = React.useRef<Cell>({ row: 0, col: 0 })
-  const base = React.useRef<string[]>([])
   const dragging = React.useRef(false)
   const [hover, setHover] = React.useState<Cell | null>(null)
   const [focused, setFocused] = React.useState(false)
   const gridRef = React.useRef<HTMLDivElement>(null)
+  const frameRef = React.useRef<HTMLDivElement>(null)
   const active = hover ?? (focused ? cursor : null)
+
+  // where the wells sit inside the frame, in px, for the selection outline and the tooltip
+  const [box, setBox] = React.useState<{ x: number; y: number; w: number; h: number; width: number } | null>(null)
+  React.useLayoutEffect(() => {
+    const frame = frameRef.current
+    const grid = gridRef.current
+    if (!frame || !grid) return
+    const measure = () => {
+      const f = frame.getBoundingClientRect()
+      const a = grid.querySelector("[data-well]")?.getBoundingClientRect()
+      const z = grid.querySelector(`[data-well="${wellName(rows - 1, cols - 1)}"]`)?.getBoundingClientRect()
+      if (!a || !z) return
+      setBox({ x: a.left - f.left, y: a.top - f.top, w: (z.right - a.left) / cols, h: (z.bottom - a.top) / rows, width: f.width })
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(frame)
+    return () => ro.disconnect()
+  }, [rows, cols, variant, format])
+
+  const outline = React.useMemo(() => {
+    if (!box || !selected.size) return ""
+    const cell = Math.min(box.w, box.h)
+    return cellsOutline(isSel, rows, cols, box, cell * (square ? 0.3 : 0.5), cell * 0.22)
+  }, [box, selected, rows, cols, square]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const focusOf = React.useCallback(
     (c: Cell | null): PlateFocus | null => {
@@ -216,12 +371,15 @@ function PlateMap({
     gridRef.current?.querySelector<HTMLElement>(`[data-well="${wellName(c.row, c.col)}"]`)?.focus()
   }
 
+  const valueText = (v: number) => `${formatValue(v)}${unit ? ` ${unit}` : ""}`
   const describe = (name: string) => {
     const w = byName.get(name)
     const g = groups.find((x) => x.id === w?.group)
-    const parts = [name, g?.name, w?.label, w?.value != null ? `${formatValue(w.value)}${unit ? ` ${unit}` : ""}` : undefined]
+    const parts = [name, g?.name, w?.label, w?.value != null ? valueText(w.value) : undefined, w?.excluded ? "excluded" : undefined]
     return parts.filter(Boolean).join(", ") + (w ? "" : ", empty")
   }
+
+  const toggle = (name: string) => setSelection(selected.has(name) ? selection.filter((s) => s !== name) : [...selection, name])
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     const { row, col } = cursor
@@ -236,9 +394,8 @@ function PlateMap({
     else if (e.key === "PageDown") to = { row: rows - 1, col }
     else if (e.key === "PageUp") to = { row: 0, col }
     else if (selectable && (e.key === " " || e.key === "Enter")) {
-      const name = wellName(row, col)
       anchor.current = cursor
-      setSelection(selected.has(name) ? selection.filter((s) => s !== name) : [...selection, name])
+      toggle(wellName(row, col))
     } else if (selectable && ctrl && e.key.toLowerCase() === "a") setSelection(wellRange(`A1:${wellName(rows - 1, cols - 1)}`))
     else if (selectable && e.key === "Escape" && selection.length) setSelection([])
     else return
@@ -266,10 +423,9 @@ function PlateMap({
     if (e.shiftKey) setSelection(rect(anchor.current, c))
     else if (e.ctrlKey || e.metaKey) {
       anchor.current = c
-      setSelection(selected.has(name) ? selection.filter((s) => s !== name) : [...selection, name])
+      toggle(name)
     } else {
       anchor.current = c
-      base.current = []
       dragging.current = true
       if (e.pointerType === "mouse") (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId)
       setSelection([name])
@@ -281,218 +437,313 @@ function PlateMap({
     if (add) setSelection(all ? selection.filter((s) => !names.includes(s)) : [...new Set([...selection, ...names])])
     else setSelection(all && selection.length === names.length ? [] : names)
   }
+  const colFull = (c: number) => Array.from({ length: rows }, (_, r) => r).every((r) => isSel(r, c))
+  const rowFull = (r: number) => Array.from({ length: cols }, (_, c) => c).every((c) => isSel(r, c))
 
+  // layout
+  const hw = plate ? Math.min((G.a1?.[0] ?? (W - (cols - 1) * G.pitch) / 2) - G.pitch / 2 - 2.5, 7) : 0
+  const hh = plate ? Math.min((G.a1?.[1] ?? (H - (rows - 1) * G.pitch) / 2) - G.pitch / 2 - 2, 6) : 0
+  const ax = G.a1?.[0] ?? (W - (cols - 1) * G.pitch) / 2
+  const ay = G.a1?.[1] ?? (H - (rows - 1) * G.pitch) / 2
+  const headerCol = rows > 26 ? "1.75rem" : "1.25rem"
   const label = ariaLabel ?? `${format}-well plate`
-  const isSel = (r: number, c: number) => r >= 0 && c >= 0 && r < rows && c < cols && selected.has(wellName(r, c))
-  const R = square ? "6px" : "40%"
+  const headerFont = plate ? `clamp(6px, ${format >= 384 ? 1.05 : 1.45}cqw, 0.75rem)` : undefined
+  const sparse = (i: number, n: number) => (n > 24 ? i % 4 !== 0 && "invisible" : n > 12 ? i % 2 === 1 && "@max-[640px]:invisible" : false)
 
-  const header = "flex select-none items-center justify-center type-label-sm text-muted-foreground tabular-nums"
+  const header = "flex select-none items-center justify-center type-label-sm tabular-nums transition-colors"
   const headerButton = selectable ? "cursor-pointer rounded-full hover:text-foreground" : ""
+  const lit = "rounded-full bg-foreground text-background"
 
-  return (
-    <div data-slot="plate-map" className={cn("@container grid w-full gap-4", className)} {...props}>
-      <div
-        ref={gridRef}
-        role="grid"
-        aria-label={label}
-        aria-multiselectable={selectable || undefined}
-        aria-readonly={!selectable || undefined}
-        aria-rowcount={rows + 1}
-        aria-colcount={cols + 1}
-        className={cn("grid w-full touch-none select-none", selectable && "cursor-pointer")}
-        style={{
-          gridTemplateColumns: `${rows > 26 ? "1.75rem" : "1.25rem"} repeat(${cols}, minmax(0, 1fr))`,
-          maxWidth: `calc(${rows > 26 ? "1.75rem" : "1.25rem"} + ${cols} * ${format <= 24 ? 5 : format <= 96 ? 3.5 : format === 384 ? 1.9 : 1.2}rem)`,
-        }}
-        onKeyDown={onKeyDown}
-        onFocus={() => setFocused(true)}
-        onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node) && setFocused(false)}
-        onPointerDown={onPointerDown}
-        onPointerMove={(e) => {
-          const c = cellFrom(e)
-          setHover(c)
-          if (dragging.current && c && selectable) setSelection(rect(anchor.current, c))
-        }}
-        onPointerUp={() => (dragging.current = false)}
-        onPointerLeave={() => setHover(null)}
-        onLostPointerCapture={() => (dragging.current = false)}
-      >
-        <div role="row" aria-rowindex={1} className="col-span-full grid grid-cols-subgrid pb-1">
-          <div role="columnheader" aria-colindex={1} className={header}>
-            <span className="sr-only">Row</span>
-            {selectable && (
-              <button
-                type="button"
-                tabIndex={-1}
-                aria-label="Select all wells"
-                className="size-3 rounded-[3px] bg-outline-variant hover:bg-muted-foreground"
-                onPointerDown={(e) => e.stopPropagation()}
-                onClick={() => lineSelect(wellRange(`A1:${wellName(rows - 1, cols - 1)}`), false)}
-              />
-            )}
-          </div>
-          {Array.from({ length: cols }, (_, c) => (
+  const grid = (
+    <div
+      ref={gridRef}
+      role="grid"
+      aria-label={label}
+      aria-multiselectable={selectable || undefined}
+      aria-readonly={!selectable || undefined}
+      aria-rowcount={rows + 1}
+      aria-colcount={cols + 1}
+      className={cn("relative z-10 grid touch-none select-none", selectable && "cursor-pointer", plate ? "absolute" : "w-full")}
+      style={
+        plate
+          ? {
+              left: `${((ax - G.pitch / 2 - hw) / W) * 100}%`,
+              top: `${((ay - G.pitch / 2 - hh) / H) * 100}%`,
+              width: `${((hw + cols * G.pitch) / W) * 100}%`,
+              height: `${((hh + rows * G.pitch) / H) * 100}%`,
+              gridTemplateColumns: `minmax(0, ${hw}fr) repeat(${cols}, minmax(0, ${G.pitch}fr))`,
+              gridTemplateRows: `minmax(0, ${hh}fr) repeat(${rows}, minmax(0, ${G.pitch}fr))`,
+            }
+          : {
+              gridTemplateColumns: `${headerCol} repeat(${cols}, minmax(0, 1fr))`,
+              maxWidth: `calc(${headerCol} + ${cols} * ${format <= 24 ? 5 : format <= 96 ? 3.5 : format === 384 ? 1.9 : 1.2}rem)`,
+            }
+      }
+      onKeyDown={onKeyDown}
+      onFocus={() => setFocused(true)}
+      onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node) && setFocused(false)}
+      onPointerDown={onPointerDown}
+      onPointerMove={(e) => {
+        const c = cellFrom(e)
+        setHover(c)
+        if (dragging.current && c && selectable) setSelection(rect(anchor.current, c))
+      }}
+      onPointerUp={() => (dragging.current = false)}
+      onPointerLeave={() => setHover(null)}
+      onLostPointerCapture={() => (dragging.current = false)}
+    >
+      <div role="row" aria-rowindex={1} className={cn("col-span-full grid grid-cols-subgrid", !plate && "pb-1")}>
+        <div role="columnheader" aria-colindex={1} className={header}>
+          <span className="sr-only">Row</span>
+          {selectable && !plate && (
+            <button
+              type="button"
+              tabIndex={-1}
+              aria-label="Select all wells"
+              className="size-3 rounded-[3px] bg-outline-variant hover:bg-muted-foreground"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={() => lineSelect(wellRange(`A1:${wellName(rows - 1, cols - 1)}`), false)}
+            />
+          )}
+        </div>
+        {Array.from({ length: cols }, (_, c) => {
+          const on = active?.col === c
+          return (
             <div
               key={c}
               role="columnheader"
               aria-colindex={c + 2}
-              className={cn(header, cols > 12 && c % 2 === 1 && "@max-[640px]:invisible", cols > 24 && c % 4 !== 0 && "invisible")}
+              className={cn(header, plate ? "items-end pb-[0.4cqw]" : "", !on && sparse(c, cols))}
+              style={{ fontSize: headerFont }}
             >
-              {selectable ? (
-                <button
-                  type="button"
-                  tabIndex={-1}
-                  aria-label={`Column ${c + 1}`}
-                  className={headerButton}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onClick={(e) => lineSelect(wellRange(`A${c + 1}:${wellName(rows - 1, c)}`), e.ctrlKey || e.metaKey || e.shiftKey)}
-                >
-                  {c + 1}
-                </button>
-              ) : (
-                c + 1
-              )}
+              <button
+                type="button"
+                tabIndex={-1}
+                disabled={!selectable}
+                aria-label={`Column ${c + 1}`}
+                className={cn(
+                  "px-[0.4em] leading-[1.6]",
+                  headerButton,
+                  on ? lit : colFull(c) ? "font-semibold text-foreground" : "text-muted-foreground"
+                )}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => lineSelect(wellRange(`A${c + 1}:${wellName(rows - 1, c)}`), e.ctrlKey || e.metaKey || e.shiftKey)}
+              >
+                {c + 1}
+              </button>
             </div>
-          ))}
-        </div>
-        {Array.from({ length: rows }, (_, r) => (
-          <div key={r} role="row" aria-rowindex={r + 2} className="col-span-full grid grid-cols-subgrid">
-            <div role="rowheader" aria-colindex={1} className={cn(header, "justify-start", rows > 16 && r % 2 === 1 && "@max-[640px]:invisible")}>
-              {selectable ? (
-                <button
-                  type="button"
-                  tabIndex={-1}
-                  aria-label={`Row ${rowName(r)}`}
-                  className={headerButton}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onClick={(e) => lineSelect(wellRange(`${rowName(r)}1:${wellName(r, cols - 1)}`), e.ctrlKey || e.metaKey || e.shiftKey)}
-                >
-                  {rowName(r)}
-                </button>
-              ) : (
-                rowName(r)
-              )}
-            </div>
-            {Array.from({ length: cols }, (_, c) => {
-              const name = wellName(r, c)
-              const w = byName.get(name)
-              const sel = isSel(r, c)
-              const isCursor = cursor.row === r && cursor.col === c
-              const isActive = !!active && active.row === r && active.col === c
-              const g = w?.group != null ? groupColors.get(w.group) : undefined
-              const v = mode === "values" && w?.value != null ? tone(w.value) : null
-              const filled = mode === "groups" ? g != null : v != null
-              // the selection is one shape: a corner rounds where neither side continues it
-              const up = isSel(r - 1, c)
-              const down = isSel(r + 1, c)
-              const left = isSel(r, c - 1)
-              const right = isSel(r, c + 1)
-              const corner = (a: boolean, b: boolean) => (a || b ? "0" : R)
-              const text = labels && format <= 96 ? (w?.label ?? (w?.value != null ? formatValue(w.value) : "")) : ""
-              return (
-                <div
-                  key={c}
-                  role="gridcell"
-                  aria-colindex={c + 2}
-                  aria-selected={selectable ? sel : undefined}
-                  aria-label={describe(name)}
-                  tabIndex={isCursor ? 0 : -1}
-                  data-well={name}
-                  data-row={r}
-                  data-col={c}
-                  className="group/well @container relative aspect-square outline-none"
-                  onFocus={() => setCursor({ row: r, col: c })}
-                >
-                  {sel && (
-                    <span
-                      aria-hidden
-                      className="absolute bg-surface-container-highest"
-                      style={{
-                        // joined sides overlap a hair, so fractional column widths leave no seam
-                        top: up ? -1 : 0,
-                        bottom: down ? -1 : 0,
-                        left: left ? -1 : 0,
-                        right: right ? -1 : 0,
-                        borderTopLeftRadius: corner(up, left),
-                        borderTopRightRadius: corner(up, right),
-                        borderBottomLeftRadius: corner(down, left),
-                        borderBottomRightRadius: corner(down, right),
-                      }}
-                    />
-                  )}
-                  <span
-                    aria-hidden
-                    title={describe(name)}
-                    className={cn(
-                      "absolute flex items-center justify-center overflow-hidden font-mono font-semibold leading-none tabular-nums",
-                      square ? "inset-[10%] rounded-[22%]" : "inset-[12%] rounded-full",
-                      "outline-2 outline-offset-1 outline-transparent transition-[outline-color,scale] duration-200",
-                      "group-focus-visible/well:outline-ring",
-                      isActive && "outline-foreground/70",
-                      !filled && "shadow-[inset_0_0_0_1px_var(--outline-variant)]",
-                      filled && (mode === "groups" ? GROUP_WELL : VALUE_WELL),
-                      sel && "scale-[0.88]"
-                    )}
-                    style={
-                      {
-                        "--h": g != null ? hueOf(g) : (v?.h ?? 0),
-                        "--k": g === "neutral" ? 0 : 1,
-                        "--t": v?.t ?? 0,
-                        fontSize: "clamp(0px, 26cqi, 0.75rem)",
-                      } as React.CSSProperties
-                    }
-                  >
-                    {text}
-                  </span>
-                </div>
-              )
-            })}
-          </div>
-        ))}
+          )
+        })}
       </div>
-      {legend && mode === "groups" && groups.length > 0 && (
-        <ul className="flex flex-wrap gap-x-5 gap-y-2">
-          {groups.map((g) => {
-            const color = groupColors.get(g.id)!
-            const n = wells.filter((w) => w.group === g.id).length
+      {Array.from({ length: rows }, (_, r) => (
+        <div key={r} role="row" aria-rowindex={r + 2} className="col-span-full grid grid-cols-subgrid">
+          <div
+            role="rowheader"
+            aria-colindex={1}
+            className={cn(header, plate ? "justify-end pr-[0.5cqw]" : "justify-start", active?.row !== r && rows > 16 && r % 2 === 1 && "@max-[640px]:invisible")}
+            style={{ fontSize: headerFont }}
+          >
+            <button
+              type="button"
+              tabIndex={-1}
+              disabled={!selectable}
+              aria-label={`Row ${rowName(r)}`}
+              className={cn(
+                "px-[0.4em] leading-[1.6]",
+                headerButton,
+                active?.row === r ? lit : rowFull(r) ? "font-semibold text-foreground" : "text-muted-foreground"
+              )}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => lineSelect(wellRange(`${rowName(r)}1:${wellName(r, cols - 1)}`), e.ctrlKey || e.metaKey || e.shiftKey)}
+            >
+              {rowName(r)}
+            </button>
+          </div>
+          {Array.from({ length: cols }, (_, c) => {
+            const name = wellName(r, c)
+            const w = byName.get(name)
+            const sel = isSel(r, c)
+            const isCursor = cursor.row === r && cursor.col === c
+            const isActive = !!active && active.row === r && active.col === c
+            const g = w?.group != null ? groupColors.get(w.group) : undefined
+            const v = mode === "values" && w?.value != null ? tone(w.value) : null
+            const filled = mode === "groups" ? g != null : v != null
+            const text = labels && format <= 96 ? (w?.label ?? (w?.value != null ? formatValue(w.value) : "")) : ""
+            const inset = `${((1 - G.well) / 2) * 100}%`
             return (
-              <li key={g.id} className="flex items-center gap-2 type-label-md">
+              <div
+                key={c}
+                role="gridcell"
+                aria-colindex={c + 2}
+                aria-selected={selectable ? sel : undefined}
+                aria-label={describe(name)}
+                tabIndex={isCursor ? 0 : -1}
+                data-well={name}
+                data-row={r}
+                data-col={c}
+                className={cn("group/well @container relative outline-none", !plate && "aspect-square")}
+                onFocus={() => setCursor({ row: r, col: c })}
+              >
                 <span
                   aria-hidden
-                  className={cn("size-3 shrink-0", square ? "rounded-[3px]" : "rounded-full", GROUP_WELL)}
-                  style={{ "--h": hueOf(color), "--k": color === "neutral" ? 0 : 1 } as React.CSSProperties}
-                />
-                <span className="text-foreground">{g.name}</span>
-                <span className="text-muted-foreground tabular-nums">{n}</span>
-              </li>
+                  className={cn(
+                    "absolute flex items-center justify-center overflow-hidden font-mono font-semibold leading-none tabular-nums",
+                    square ? "rounded-[22%]" : "rounded-full",
+                    "outline-2 outline-offset-2 outline-transparent transition-[outline-color,scale,opacity] duration-200 ease-out",
+                    "group-focus-visible/well:outline-ring",
+                    isActive && "scale-110 outline-foreground/70",
+                    !filled && (plate ? "bg-[var(--plate-well)] shadow-[inset_0_1px_2px_rgb(0_0_0/0.12)]" : "shadow-[inset_0_0_0_1px_var(--outline-variant)]"),
+                    filled && (mode === "groups" ? GROUP_WELL : VALUE_WELL),
+                    w?.excluded && "opacity-45"
+                  )}
+                  style={
+                    {
+                      inset,
+                      "--h": g != null ? hueOf(g) : (v?.h ?? 0),
+                      "--k": g === "neutral" ? 0 : 1,
+                      "--t": v?.t ?? 0,
+                      fontSize: "clamp(0px, 26cqi, 0.75rem)",
+                    } as React.CSSProperties
+                  }
+                >
+                  {text}
+                  {w?.excluded && <span className="absolute h-[1.5px] w-[130%] rotate-45 bg-foreground" />}
+                </span>
+              </div>
             )
           })}
-        </ul>
+        </div>
+      ))}
+    </div>
+  )
+
+  const act = active ? focusOf(active) : null
+  const tip =
+    tooltip && act && box ? (
+      <div
+        aria-hidden
+        className="pointer-events-none absolute z-30 w-max max-w-56 -translate-x-1/2 -translate-y-full rounded-xl bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-lg"
+        style={{
+          left: Math.max(80, Math.min(box.width - 80, box.x + (act.column + 0.5) * box.w)),
+          top: box.y + act.row * box.h - 6,
+        }}
+      >
+        <div className="flex items-center gap-2 type-label-md">
+          <span className="font-semibold tabular-nums">{act.well}</span>
+          {act.groupInfo && (
+            <>
+              <span
+                className={cn("size-2.5 shrink-0", square ? "rounded-[3px]" : "rounded-full", GROUP_WELL)}
+                style={{ "--h": hueOf(groupColors.get(act.groupInfo.id)!), "--k": groupColors.get(act.groupInfo.id) === "neutral" ? 0 : 1 } as React.CSSProperties}
+              />
+              <span>{act.groupInfo.name}</span>
+            </>
+          )}
+          {!act.groupInfo && act.value == null && <span className="opacity-70">Empty</span>}
+        </div>
+        {(act.value != null || act.description || act.excluded) && (
+          <div className="mt-0.5 type-body-sm tabular-nums opacity-80">
+            {[act.value != null ? valueText(act.value) : null, act.description, act.excluded ? "Excluded" : null].filter(Boolean).join(", ")}
+          </div>
+        )}
+      </div>
+    ) : null
+
+  const selectionShape = outline ? (
+    <svg aria-hidden className="pointer-events-none absolute inset-0 z-0 size-full overflow-visible">
+      <path d={outline} className="fill-foreground/[0.07] dark:fill-foreground/[0.1]" />
+      <path d={outline} fill="none" className="stroke-foreground/60" strokeWidth={1.5} strokeLinejoin="round" />
+    </svg>
+  ) : null
+
+  return (
+    <div data-slot="plate-map" className={cn("@container grid w-full gap-4", className)} {...props}>
+      {plate ? (
+        <div
+          ref={frameRef}
+          className="@container relative w-full max-w-3xl [--plate-well:var(--surface-container-lowest)] dark:[--plate-well:var(--surface-container-highest)]"
+          style={{ aspectRatio: `${W} / ${H}` }}
+        >
+          {/* one outline, its 1px stroke kept whole at every corner (not clipped at the edges, not scaled) */}
+          <svg aria-hidden viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 size-full overflow-visible">
+            <path d={plateBody(notch)} vectorEffect="non-scaling-stroke" strokeWidth={1} className="fill-surface-container-high stroke-outline-variant" />
+            <rect
+              x={ax - G.pitch / 2 - 0.9}
+              y={ay - G.pitch / 2 - 0.9}
+              width={cols * G.pitch + 1.8}
+              height={rows * G.pitch + 1.8}
+              rx={1.6}
+              className="fill-surface-container"
+            />
+          </svg>
+          {selectionShape}
+          {grid}
+          {tip}
+        </div>
+      ) : (
+        <div ref={frameRef} className="relative w-full">
+          {selectionShape}
+          {grid}
+          {tip}
+        </div>
       )}
-      {legend && mode === "values" && values.length > 0 && (
-        <div className="grid w-full max-w-xs gap-1.5">
-          <div
-            aria-hidden
-            className="flex h-2.5 overflow-hidden rounded-full"
-          >
-            {Array.from({ length: 24 }, (_, i) => {
-              const v = lo + ((hi - lo) * (i + 0.5)) / 24
-              const s = tone(v)
-              return <span key={i} className={cn("h-full flex-1", VALUE_WELL)} style={{ "--t": s.t, "--h": s.h } as React.CSSProperties} />
-            })}
-          </div>
-          <div className="relative flex justify-between type-label-sm text-muted-foreground tabular-nums">
-            <span>{formatValue(lo)}</span>
-            {scale === "diverging" && midpoint > lo && midpoint < hi && (
-              <span className="absolute -translate-x-1/2" style={{ left: `${((midpoint - lo) / (hi - lo)) * 100}%` }}>
-                {formatValue(midpoint)}
+      {legend && (
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+          {mode === "groups" && groups.length > 0 && (
+            <ul className="flex flex-wrap gap-x-5 gap-y-2">
+              {groups.map((g) => {
+                const color = groupColors.get(g.id)!
+                const n = wells.filter((w) => w.group === g.id).length
+                return (
+                  <li key={g.id} className="flex items-center gap-2 type-label-md">
+                    <span
+                      aria-hidden
+                      className={cn("size-3 shrink-0", square ? "rounded-[3px]" : "rounded-full", GROUP_WELL)}
+                      style={{ "--h": hueOf(color), "--k": color === "neutral" ? 0 : 1 } as React.CSSProperties}
+                    />
+                    <span className="text-foreground">{g.name}</span>
+                    <span className="text-muted-foreground tabular-nums">{n}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+          {mode === "values" && values.length > 0 && (
+            <div className="grid w-full max-w-xs gap-1.5">
+              <div aria-hidden className="flex h-2.5 overflow-hidden rounded-full">
+                {Array.from({ length: 24 }, (_, i) => {
+                  const s = tone(lo + ((hi - lo) * (i + 0.5)) / 24)
+                  return <span key={i} className={cn("h-full flex-1", VALUE_WELL)} style={{ "--t": s.t, "--h": s.h } as React.CSSProperties} />
+                })}
+              </div>
+              <div className="relative flex justify-between type-label-sm text-muted-foreground tabular-nums">
+                <span>{formatValue(lo)}</span>
+                {scale === "diverging" && midpoint > lo && midpoint < hi && (
+                  <span className="absolute -translate-x-1/2" style={{ left: `${((midpoint - lo) / (hi - lo)) * 100}%` }}>
+                    {formatValue(midpoint)}
+                  </span>
+                )}
+                <span>
+                  {formatValue(hi)}
+                  {unit ? ` ${unit}` : ""}
+                </span>
+              </div>
+            </div>
+          )}
+          {excludedCount > 0 && (
+            <span className="flex items-center gap-2 type-label-md">
+              <span aria-hidden className="relative flex size-3 items-center justify-center overflow-hidden rounded-full shadow-[inset_0_0_0_1px_var(--outline)]">
+                <span className="h-[1.5px] w-[130%] rotate-45 bg-foreground" />
               </span>
-            )}
-            <span>
-              {formatValue(hi)}
-              {unit ? ` ${unit}` : ""}
+              <span className="text-foreground">Excluded</span>
+              <span className="text-muted-foreground tabular-nums">{excludedCount}</span>
             </span>
-          </div>
+          )}
+          {selectable && selection.length > 0 && (
+            <span className="ml-auto type-label-md text-muted-foreground tabular-nums">
+              {selection.length} {selection.length === 1 ? "well" : "wells"} selected
+            </span>
+          )}
         </div>
       )}
     </div>

@@ -1975,7 +1975,7 @@
       "name": "sequence-alignment",
       "type": "registry:ui",
       "title": "Sequence Alignment",
-      "description": "Aligned DNA or protein sequences as rows of connected residue tiles: gaps as thin lines, blocks that wrap to the width, column ruler, end positions, identity bars, a consensus row, color by residue, conservation or difference from a reference (with dots), highlighted columns and keyboard focus; alignmentConsensus and percentIdentity helpers.",
+      "description": "Aligned DNA or protein sequences as rows of connected residue tiles: gaps as thin lines, blocks that wrap to the width (or one scrolling row under a draggable identity overview, names held), column ruler, end positions, a feature and marker track, identity bars, a consensus row, per-sequence identity and sorting, color by residue, conservation or difference (with dots), and block selection by drag, keyboard, names or ruler that copies as aligned FASTA; alignmentConsensus, percentIdentity, alignmentSlice and toFasta helpers.",
       "dependencies": [],
       "registryDependencies": [
         "utils",
@@ -1994,7 +1994,7 @@
       "name": "plate-map",
       "type": "registry:ui",
       "title": "Plate Map",
-      "description": "A 6 to 1536-well microplate as an ARIA grid: wells colored by group or by value on a sequential or diverging scale, labels, a legend with counts or the scale, rectangle, additive and row or column selection drawn as one connected shape, and keyboard navigation; wellRange, parseWell and wellName helpers.",
+      "description": "A 6 to 1536-well microplate as an ARIA grid, as bare wells or the whole plate to scale (SBS footprint, true pitch, molded labels, a chamfered corner where notch puts it): wells by group or by value on a sequential or diverging scale, excluded wells, a hover card with lit headers, a legend, and rectangle, additive and line selection traced as one filleted outline; wellRange, parseWell, wellName and cellsOutline helpers.",
       "dependencies": [],
       "registryDependencies": [
         "utils",

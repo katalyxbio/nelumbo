@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { PlateMap, wellName, wellRange, type PlateFocus, type PlateGroup, type PlateWell } from "@/registry/nelumbo/ui/plate-map"
+import { PlateMap, wellName, wellRange, type PlateCorner, type PlateFocus, type PlateGroup, type PlateWell } from "@/registry/nelumbo/ui/plate-map"
+import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
 import { ChartReadout } from "@/registry/nelumbo/ui/chart"
 import { Button } from "@/registry/nelumbo/ui/button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
@@ -44,6 +45,8 @@ const ELISA: PlateWell[] = (() => {
     out.push(r < 4 ? { well: wellName(r, 10), group: "pos", label: "P", value: noise(2.1) } : { well: wellName(r, 10), group: "neg", label: "N", value: noise(0.09) })
     out.push({ well: wellName(r, 11), group: "blank", label: "B", value: noise(0.05) })
   }
+  // two wells flagged after the read: a bubble, and a scratch on the bottom
+  for (const w of out) if (w.well === "D6" || w.well === "G9") Object.assign(w, { excluded: true, description: `${w.description}, excluded: ${w.well === "D6" ? "bubble" : "scratch"}` })
   return out
 })()
 
@@ -94,7 +97,7 @@ export default function PlateMapPage() {
 
       <Section
         title="A layout"
-        description="Groups color the wells and fill the legend, with counts. An ELISA plate: a standard curve in duplicate, samples in duplicate, controls and blanks."
+        description="Groups color the wells and fill the legend, with counts. An ELISA plate: a standard curve in duplicate, samples in duplicate, controls and blanks. Wells marked excluded are struck through and counted apart. Hover a well for its card; its row and column light up."
       >
         <Preview className="block">
           <PlateMap format={96} wells={ELISA} groups={ELISA_GROUPS} labels aria-label="ELISA plate layout" />
@@ -112,10 +115,19 @@ export default function PlateMapPage() {
 
       <Section
         title="Selection"
-        description="selectable turns on selection. Drag, or Shift and the arrows, for a rectangle; Ctrl or Cmd adds wells; Space toggles the well in focus; a row or column header takes the whole line. The selection is one shape, tight where wells touch and round at its corners."
+        description="selectable turns on selection. Drag, or Shift and the arrows, for a rectangle; Ctrl or Cmd adds wells; Space toggles the well in focus; a row or column header takes the whole line. However the wells are picked, the selection is traced as one outline: round at its outer corners, filleted where it turns inward, and separate where wells only touch at a corner."
       >
         <Preview className="block">
           <SelectionDemo />
+        </Preview>
+      </Section>
+
+      <Section
+        title="Plate"
+        description='variant="plate" draws the plate itself at the standard footprint, 127.76 by 85.48 mm: the frame and its flange, the raised deck, wells at their true pitch and offset, labels molded on the frame. notch puts the chamfered corner where your plates have it.'
+      >
+        <Preview className="block">
+          <PlateDemo />
         </Preview>
       </Section>
 
@@ -125,7 +137,17 @@ export default function PlateMapPage() {
       >
         <Preview className="grid gap-10">
           <PlateMap format={384} wells={SCREEN_LAYOUT} groups={SCREEN_GROUPS} aria-label="384-well screen layout" />
-          <PlateMap format={384} wells={SCREEN} scale="diverging" midpoint={50} domain={[0, 100]} unit="%" aria-label="384-well screen, percent activity" />
+          <PlateMap
+            format={384}
+            variant="plate"
+            notch="bottom-left"
+            wells={SCREEN}
+            scale="diverging"
+            midpoint={50}
+            domain={[0, 100]}
+            unit="%"
+            aria-label="384-well screen, percent activity"
+          />
         </Preview>
       </Section>
 
@@ -150,18 +172,21 @@ export default function PlateMapPage() {
         <PropsTable
           rows={[
             ["format", "6 | 12 | 24 | 48 | 96 | 384 | 1536", "96", "The plate. Round wells up to 96, square beyond."],
-            ["wells", "PlateWell[]", "", "well (\"B3\"), group, value, label, description."],
+            ["variant", '"grid" | "plate"', '"grid"', "The wells alone, or the whole plate to scale with its frame."],
+            ["notch", '"top-left" | "top-right" | "bottom-left" | "bottom-right"', '"top-left"', "The chamfered corner of the plate variant."],
+            ["wells", "PlateWell[]", "", "well (\"B3\"), group, value, label, description, excluded."],
             ["groups", "PlateGroup[]", "", "id, name, color, description. Colors follow the palette order when left out."],
             ["colorBy", '"groups" | "values"', "groups if given", "What colors the wells."],
             ["scale / domain / midpoint", '"sequential" | "diverging", [min, max], number', '"sequential", the values, 0', "The value scale."],
             ["scaleColor", "accent role", '"blue"', "The hue of a sequential scale."],
             ["formatValue / unit", "(v) => string, string", "", "How values are written, in wells, the readout and the legend."],
             ["labels", "boolean", "false", "Labels or values inside the wells, up to 96."],
-            ["legend", "boolean", "true", "Groups with counts, or the scale."],
+            ["legend", "boolean", "true", "Groups with counts, or the scale, and excluded wells."],
+            ["tooltip", "boolean", "true", "A card over the well under the pointer or the keyboard cursor."],
             ["selectable", "boolean", "false", "Rectangle, additive and line selection."],
             ["selection / onSelectionChange", "string[], (wells) => void", "", "Selected well names, controlled or not (defaultSelection)."],
             ["onActiveChange", "(focus | null) => void", "", "The well under the pointer or the keyboard cursor."],
-            ["Helpers", "plateSize, wellName, parseWell, wellRange, rowName", "", '"A1:B3" to a list of wells, "B3" to row and column, and back.'],
+            ["Helpers", "plateSize, wellName, parseWell, wellRange, rowName, cellsOutline", "", '"A1:B3" to wells, "B3" to row and column and back; the traced outline of any set of cells as an SVG path.'],
           ]}
         />
       </Section>
@@ -170,7 +195,7 @@ export default function PlateMapPage() {
 }
 
 function SelectionDemo() {
-  const [selection, setSelection] = React.useState<string[]>(wellRange("B3:E6"))
+  const [selection, setSelection] = React.useState<string[]>([...wellRange("B3:E6"), ...wellRange("F3:G4"), ...wellRange("B8:B9"), "C10"])
   const [focus, setFocus] = React.useState<PlateFocus | null>(null)
   const picked = ELISA.filter((w) => selection.includes(w.well) && w.value != null)
   const mean = picked.length ? picked.reduce((s, w) => s + w.value!, 0) / picked.length : 0
@@ -204,6 +229,38 @@ function SelectionDemo() {
         onSelectionChange={setSelection}
         onActiveChange={setFocus}
         aria-label="ELISA plate, selectable"
+      />
+    </div>
+  )
+}
+
+const CORNERS: { value: PlateCorner; label: string }[] = [
+  { value: "top-left", label: "Top left" },
+  { value: "top-right", label: "Top right" },
+  { value: "bottom-left", label: "Bottom left" },
+  { value: "bottom-right", label: "Bottom right" },
+]
+
+function PlateDemo() {
+  const [notch, setNotch] = React.useState<PlateCorner>("top-left")
+  return (
+    <div className="grid gap-6">
+      <ToggleGroup type="single" value={notch} onValueChange={(v) => v && setNotch(v as PlateCorner)} aria-label="Notch" className="w-fit flex-wrap">
+        {CORNERS.map((c) => (
+          <ToggleGroupItem key={c.value} value={c.value}>
+            {c.label}
+          </ToggleGroupItem>
+        ))}
+      </ToggleGroup>
+      <PlateMap
+        format={96}
+        variant="plate"
+        notch={notch}
+        wells={ELISA}
+        groups={ELISA_GROUPS}
+        selectable
+        defaultSelection={wellRange("A3:H4")}
+        aria-label={`ELISA plate, notch ${notch.replace("-", " ")}`}
       />
     </div>
   )
