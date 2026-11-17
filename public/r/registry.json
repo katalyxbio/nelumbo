@@ -1921,6 +1921,22 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "gene-model",
+      "type": "registry:ui",
+      "title": "Gene Model",
+      "description": "A gene's transcripts as exons and introns: tall coding blocks and thinner UTRs joined with connected corners, dotted introns with strand chevrons, exon numbers in transcription order, compressed introns, genome or transcript orientation, isoform stacks with the canonical in color, variant lollipops with pill labels, and keyboard focus on exons.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/gene-model.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
