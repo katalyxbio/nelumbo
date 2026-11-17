@@ -173,6 +173,8 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - Gene Model (new, biology: exons and introns with connected UTR and coding parts, dotted introns with strand chevrons, compressed introns, isoform stacks, variant lollipops, protein domains mapped onto the exons that encode them, keyboard focus on exons)
 - Protein Domains (new, biology: a protein backbone with domain blocks, a residue ruler, a legend and variant lollipops)
 - Plasmid Map (new, biology: circular map with directional feature arcs, names along arcs or outside with non-crossing leaders, unique restriction sites, a center readout and keyboard focus)
+- Sequence Alignment (new, biology: aligned DNA or protein as connected residue rows with gap lines, blocks that wrap to the width, identity bars, a consensus row, and color by residue, conservation or difference)
+- Plate Map (new, biology: 6 to 1536-well plates with wells by group or value, rectangle and line selection as one shape, and full keyboard navigation)
 
 ## License
 

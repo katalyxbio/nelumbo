@@ -104,6 +104,8 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/gene-model", label: "Gene Model", isNew: true },
       { href: "/components/protein-domains", label: "Protein Domains", isNew: true },
       { href: "/components/plasmid-map", label: "Plasmid Map", isNew: true },
+      { href: "/components/sequence-alignment", label: "Sequence Alignment", isNew: true },
+      { href: "/components/plate-map", label: "Plate Map", isNew: true },
     ],
   },
   {

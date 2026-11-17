@@ -1970,6 +1970,42 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "sequence-alignment",
+      "type": "registry:ui",
+      "title": "Sequence Alignment",
+      "description": "Aligned DNA or protein sequences as rows of connected residue tiles: gaps as thin lines, blocks that wrap to the width, column ruler, end positions, identity bars, a consensus row, color by residue, conservation or difference from a reference (with dots), highlighted columns and keyboard focus; alignmentConsensus and percentIdentity helpers.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@nelumbo/residue",
+        "@nelumbo/nucleotide",
+        "@nelumbo/amino-acid"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/sequence-alignment.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "plate-map",
+      "type": "registry:ui",
+      "title": "Plate Map",
+      "description": "A 6 to 1536-well microplate as an ARIA grid: wells colored by group or by value on a sequential or diverging scale, labels, a legend with counts or the scale, rectangle, additive and row or column selection drawn as one connected shape, and keyboard navigation; wellRange, parseWell and wellName helpers.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@nelumbo/residue"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/plate-map.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
