@@ -53,7 +53,7 @@ const VARIANTS = {
   tonal:
     "[--rbl:0.885] [--rbc:0.085] [--ril:0.36] [--ric:0.11] [--rsd:0.06] dark:[--rbl:0.42] dark:[--rbc:0.09] dark:[--ril:0.96] dark:[--ric:0.05] dark:[--rsd:0.06]",
   solid:
-    "[--rbl:0.48] [--rbc:0.15] [--ril:0.995] [--ric:0] [--rsd:0.04] dark:[--rbl:0.82] dark:[--rbc:0.13] dark:[--ril:0.22] dark:[--ric:0.05] dark:[--rsd:0.05]",
+    "[--rbl:0.7] [--rbc:0.16] [--ril:0.2] [--ric:0.05] [--rsd:0.04] dark:[--rbl:0.82] dark:[--rbc:0.13] dark:[--ril:0.22] dark:[--ric:0.05] dark:[--rsd:0.05]",
   subtle:
     "[--rbl:0.955] [--rbc:0.025] [--ril:0.48] [--ric:0.09] [--rsd:0.015] dark:[--rbl:0.27] dark:[--rbc:0.035] dark:[--ril:0.8] dark:[--ric:0.07] dark:[--rsd:0.02]",
   text: "[--ril:0.48] [--ric:0.15] dark:[--ril:0.82] dark:[--ric:0.13] [--rsd:0]",
