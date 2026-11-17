@@ -12,6 +12,7 @@ import {
 } from "@/registry/nelumbo/ui/amino-acid"
 import { Residue, type ResidueRange } from "@/registry/nelumbo/ui/residue"
 import { ChartReadout } from "@/registry/nelumbo/ui/chart"
+import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 // Human p53, residues 1 to 120.
@@ -77,6 +78,15 @@ export default function AminoAcidPage() {
       </Section>
 
       <Section
+        title="Spacers and positions"
+        description='groupSize puts a spacer every n residues, and blocks wrap as a whole. ruler numbers them: "top" puts the first position above each block, "inline" puts the last position in the spacer, as sequence listings print it.'
+      >
+        <Preview className="block">
+          <SpacersDemo />
+        </Preview>
+      </Section>
+
+      <Section
         title="Highlight"
         description="Residues 18 to 26 of p53, the stretch that binds MDM2, brought forward from the transactivation domain."
       >
@@ -124,6 +134,8 @@ export default function AminoAcidPage() {
             ["notation", '"one" | "three"', '"one"', ""],
             ["variant / size", "as Nucleotide", '"tonal" / "default"', ""],
             ["ProteinSequence sequence", "string", "", "Plus every NucleotideSequence prop except complement."],
+            ["groupSize", "number", "10", "A spacer every n residues. 0 for none."],
+            ["ruler", 'boolean | "top" | "inline"', "false", "true or top: first position above each block. inline: last position in the spacer."],
             ["AminoAcidChange from, to, position", "string, string, number", "", "Announced as one phrase."],
             ["Residue tone", "{ hue, chroma?, shade? } | null", "", "OKLCH hue; chroma 0 to 1; shade -1 to 1. null is neutral."],
             ["Data", "AMINO_ACIDS, AMINO_ACID_KINDS, HYDROPATHY, fromThree, aminoAcidTone", "", "Names, three-letter codes, kinds and Kyte-Doolittle values."],
@@ -168,6 +180,59 @@ function SelectionDemo() {
         onSelectionChange={setSelection}
         onActiveChange={setActive}
         aria-label="p53, residues 1 to 120"
+      />
+    </div>
+  )
+}
+
+const SPACINGS = [
+  { value: "5", label: "Every 5" },
+  { value: "10", label: "Every 10" },
+  { value: "20", label: "Every 20" },
+  { value: "0", label: "No spacers" },
+]
+const RULERS = [
+  { value: "inline", label: "Inline" },
+  { value: "top", label: "Top" },
+  { value: "off", label: "Off" },
+]
+
+function SpacersDemo() {
+  const [spacing, setSpacing] = React.useState("10")
+  const [ruler, setRuler] = React.useState("inline")
+  return (
+    <div className="grid gap-6">
+      <div className="flex flex-wrap gap-x-8 gap-y-4">
+        <div className="grid gap-2">
+          <span id="spacing-label" className="type-label-md text-muted-foreground">
+            Spacer
+          </span>
+          <ToggleGroup type="single" value={spacing} onValueChange={(v) => v && setSpacing(v)} aria-labelledby="spacing-label">
+            {SPACINGS.map((o) => (
+              <ToggleGroupItem key={o.value} value={o.value} aria-label={o.label}>
+                {o.value === "0" ? "None" : o.value}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </div>
+        <div className="grid gap-2">
+          <span id="ruler-label" className="type-label-md text-muted-foreground">
+            Positions
+          </span>
+          <ToggleGroup type="single" value={ruler} onValueChange={(v) => v && setRuler(v)} aria-labelledby="ruler-label">
+            {RULERS.map((o) => (
+              <ToggleGroupItem key={o.value} value={o.value}>
+                {o.label}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </div>
+      </div>
+      <ProteinSequence
+        sequence={P53.slice(0, 80)}
+        groupSize={Number(spacing)}
+        ruler={ruler === "off" ? false : (ruler as "top" | "inline")}
+        aria-label="p53, residues 1 to 80"
       />
     </div>
   )

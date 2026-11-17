@@ -149,10 +149,14 @@ type ResidueSequenceProps = Omit<React.ComponentProps<"div">, "children" | "onSe
   resolve: (letter: string) => { tone: ResidueTone | null; label: string }
   variant?: ResidueVariant
   size?: ResidueSize
-  /** Residues per block. Blocks wrap as a whole. Default 10; 0 for one block. */
+  /** A spacer every n residues: blocks wrap as a whole. Default 10; 0 for one block. */
   groupSize?: number
-  /** Numbers each block with the position of its first residue. */
-  ruler?: boolean
+  /**
+   * Positions for the blocks. `true` or "top": the first position above each
+   * block. "inline": the last position in the spacer after each block, as
+   * sequence listings print it (MEEPQSDPSV 10 EPPLSQETFS 20).
+   */
+  ruler?: boolean | "top" | "inline"
   /** The position of the first residue. Default 1. */
   start?: number
   /** Stretches to bring forward: everything else fades to the subtle variant. */
@@ -328,48 +332,63 @@ function ResidueSequence({
     >
       {blocks.map((b) => (
         <div key={b.start} className="flex flex-col gap-1">
-          {ruler && (
+          {ruler && ruler !== "inline" && (
             <span aria-hidden className="select-none px-0.5 type-label-sm text-muted-foreground tabular-nums">
               {b.start}
             </span>
           )}
-          <div className={cn("flex", size === "sm" && shape === "separate" ? "gap-px" : "gap-0.5")}>
-            {Array.from({ length: b.end - b.start + 1 }, (_, k) => {
-              const p = b.start + k
-              const letter = letters[p - start]
-              const { tone, label } = resolve(letter)
-              const faded = !!highlight?.length && !highlight.some((r) => within(p, r))
-              // a neighbor joins when it is in the block and in the same state (selected, faded)
-              const state = (q: number) => `${within(q, selection)}${!!highlight?.length && !highlight.some((r) => within(q, r))}`
-              const join =
-                shape === "connected"
-                  ? { start: p > b.start && state(p - 1) === state(p), end: p < b.end && state(p + 1) === state(p) }
-                  : { start: false, end: false }
-              const tileEl = (
-                <Residue
-                  key={p}
-                  data-pos={p}
-                  tone={tone}
-                  label={`${label}, ${p}`}
-                  size={size}
-                  variant={faded ? "subtle" : variant}
-                  selected={within(p, selection)}
-                  active={active === p}
-                  join={join}
-                >
-                  {letter}
-                </Residue>
-              )
-              if (!below) return tileEl
-              return (
-                <span key={p} className="flex flex-col items-center gap-0.5">
-                  {tileEl}
-                  <span aria-hidden className="select-none">
-                    {below(letter, p, join)}
+          <div className="flex items-start gap-1.5">
+            <div className={cn("flex", size === "sm" && shape === "separate" ? "gap-px" : "gap-0.5")}>
+              {Array.from({ length: b.end - b.start + 1 }, (_, k) => {
+                const p = b.start + k
+                const letter = letters[p - start]
+                const { tone, label } = resolve(letter)
+                const faded = !!highlight?.length && !highlight.some((r) => within(p, r))
+                // a neighbor joins when it is in the block and in the same state (selected, faded)
+                const state = (q: number) => `${within(q, selection)}${!!highlight?.length && !highlight.some((r) => within(q, r))}`
+                const join =
+                  shape === "connected"
+                    ? { start: p > b.start && state(p - 1) === state(p), end: p < b.end && state(p + 1) === state(p) }
+                    : { start: false, end: false }
+                const tileEl = (
+                  <Residue
+                    key={p}
+                    data-pos={p}
+                    tone={tone}
+                    label={`${label}, ${p}`}
+                    size={size}
+                    variant={faded ? "subtle" : variant}
+                    selected={within(p, selection)}
+                    active={active === p}
+                    join={join}
+                  >
+                    {letter}
+                  </Residue>
+                )
+                if (!below) return tileEl
+                return (
+                  <span key={p} className="flex flex-col items-center gap-0.5">
+                    {tileEl}
+                    <span aria-hidden className="select-none">
+                      {below(letter, p, join)}
+                    </span>
                   </span>
-                </span>
-              )
-            })}
+                )
+              })}
+            </div>
+            {ruler === "inline" && (
+              <span
+                aria-hidden
+                className={cn(
+                  "flex select-none items-center type-label-sm text-muted-foreground tabular-nums",
+                  size === "sm" ? "h-5" : size === "lg" ? "h-12 type-label-md" : "h-7"
+                )}
+                // room for the longest position, so blocks line up from row to row
+                style={{ minWidth: `${String(last).length}ch` }}
+              >
+                {b.end}
+              </span>
+            )}
           </div>
           {footer && <div className="select-none">{footer(b)}</div>}
         </div>
