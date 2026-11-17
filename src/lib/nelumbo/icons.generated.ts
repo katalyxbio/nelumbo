@@ -128,6 +128,7 @@ export const USED_ICONS: IconName[] = [
   "ink_eraser",
   "input",
   "ios_share",
+  "join",
   "keep",
   "key",
   "keyboard",

@@ -54,16 +54,8 @@ export default function AminoAcidPage() {
 
       <Section title="Notation" description='notation="three" shows Trp instead of W. The tile widens; the colors stay.'>
         <Preview className="flex-col items-start gap-4">
-          <div className="flex flex-wrap gap-1">
-            {"MEEPQSDPSV".split("").map((a, i) => (
-              <AminoAcid key={i} residue={a} />
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-1">
-            {"MEEPQSDPSV".split("").map((a, i) => (
-              <AminoAcid key={i} residue={a} notation="three" />
-            ))}
-          </div>
+          <ProteinSequence sequence="MEEPQSDPSV" groupSize={5} aria-label="One-letter notation" />
+          <ProteinSequence sequence="MEEPQSDPSV" groupSize={5} notation="three" aria-label="Three-letter notation" />
         </Preview>
       </Section>
 
@@ -78,7 +70,7 @@ export default function AminoAcidPage() {
                 <p className="type-title-sm">{s.name}</p>
                 <p className="type-body-sm text-muted-foreground">{s.about}</p>
               </div>
-              <ProteinSequence sequence="ACDEFGHIKLMNPQRSTVWY" scheme={s.id} groupSize={0} size="sm" aria-label={`${s.name} scheme example`} />
+              <ProteinSequence sequence="ACDEFGHIKLMNPQRSTVWY" scheme={s.id} groupSize={10} size="sm" aria-label={`${s.name} scheme example`} />
             </React.Fragment>
           ))}
         </Preview>

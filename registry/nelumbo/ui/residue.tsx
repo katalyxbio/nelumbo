@@ -59,10 +59,11 @@ const VARIANTS = {
   text: "[--ril:0.48] [--ric:0.15] dark:[--ril:0.82] dark:[--ric:0.13] [--rsd:0]",
 }
 
+// --ro: an outer corner, --ri: a corner joined to its neighbor, --rf: fully round (selected ends)
 const SIZES = {
-  sm: "h-5 min-w-4 px-0.5 text-[0.6875rem] rounded-[5px] data-[selected=true]:rounded-[10px]",
-  default: "h-7 min-w-6 px-1 text-[0.8125rem] rounded-[7px] data-[selected=true]:rounded-[14px]",
-  lg: "h-12 min-w-10 px-1.5 text-[1.25rem] rounded-[12px] data-[selected=true]:rounded-[24px]",
+  sm: "h-5 min-w-4 px-0.5 text-[0.6875rem] [--ro:6px] [--ri:2px] [--rf:10px]",
+  default: "h-7 min-w-6 px-1 text-[0.8125rem] [--ro:9px] [--ri:3px] [--rf:14px]",
+  lg: "h-12 min-w-10 px-1.5 text-[1.25rem] [--ro:14px] [--ri:4px] [--rf:24px]",
 }
 
 export type ResidueVariant = keyof typeof VARIANTS
@@ -72,6 +73,7 @@ const tile =
   "relative inline-flex shrink-0 select-text items-center justify-center font-mono font-semibold leading-none tabular-nums" +
   " bg-[color:oklch(calc(var(--rbl)+var(--rs,0)*var(--rsd))_calc(var(--rbc)*var(--rk,1))_var(--rh,0))]" +
   " text-[color:oklch(var(--ril)_calc(var(--ric)*var(--rk,1))_var(--rh,0))]" +
+  " rounded-l-[var(--rl)] rounded-r-[var(--rr)]" +
   " transition-[border-radius,background-color,color,outline-color] duration-500 ease-spring motion-reduce:transition-none" +
   " outline-2 outline-offset-1 outline-transparent data-[active=true]:outline-foreground/70"
 
@@ -87,6 +89,11 @@ type ResidueProps = Omit<React.ComponentProps<"span">, "children"> & {
   active?: boolean
   /** The full name, shown on hover ("Adenine"). */
   label?: string
+  /**
+   * Which sides touch a neighbor, as in a connected button group: joined
+   * corners tighten, the run's outer ends stay round. Sequences set this.
+   */
+  join?: { start?: boolean; end?: boolean }
 }
 
 function Residue({
@@ -96,12 +103,14 @@ function Residue({
   selected = false,
   active = false,
   label,
+  join,
   className,
   style,
   children,
   ...props
 }: ResidueProps) {
   const v = selected ? "solid" : variant
+  const edge = selected ? "var(--rf)" : "var(--ro)"
   return (
     <span
       data-slot="residue"
@@ -115,6 +124,8 @@ function Residue({
           "--rh": tone?.hue ?? 0,
           "--rk": tone ? (tone.chroma ?? 1) : 0,
           "--rs": tone?.shade ?? 0,
+          "--rl": join?.start ? "var(--ri)" : edge,
+          "--rr": join?.end ? "var(--ri)" : edge,
           ...style,
         } as React.CSSProperties
       }
@@ -146,8 +157,14 @@ type ResidueSequenceProps = Omit<React.ComponentProps<"div">, "children" | "onSe
   start?: number
   /** Stretches to bring forward: everything else fades to the subtle variant. */
   highlight?: ResidueRange[]
-  /** Something under each residue (the complementary base, say). */
-  below?: (letter: string, position: number) => React.ReactNode
+  /**
+   * "connected" (default): each block is one shape, tight corners between
+   * residues and round ends, and a selection becomes its own capsule.
+   * "separate": every tile keeps all four corners round.
+   */
+  shape?: "connected" | "separate"
+  /** Something under each residue (the complementary base, say). `join` matches the tile's. */
+  below?: (letter: string, position: number, join: { start: boolean; end: boolean }) => React.ReactNode
   /** Something under each block (the amino acid a codon makes, say). */
   footer?: (block: ResidueRange) => React.ReactNode
   /** Turns on pointer and keyboard selection. */
@@ -180,6 +197,7 @@ function ResidueSequence({
   ruler = false,
   start = 1,
   highlight,
+  shape = "connected",
   below,
   footer,
   selectable = false,
@@ -315,12 +333,18 @@ function ResidueSequence({
               {b.start}
             </span>
           )}
-          <div className={cn("flex", size === "sm" ? "gap-px" : "gap-0.5")}>
+          <div className={cn("flex", size === "sm" && shape === "separate" ? "gap-px" : "gap-0.5")}>
             {Array.from({ length: b.end - b.start + 1 }, (_, k) => {
               const p = b.start + k
               const letter = letters[p - start]
               const { tone, label } = resolve(letter)
-              const faded = highlight?.length && !highlight.some((r) => within(p, r))
+              const faded = !!highlight?.length && !highlight.some((r) => within(p, r))
+              // a neighbor joins when it is in the block and in the same state (selected, faded)
+              const state = (q: number) => `${within(q, selection)}${!!highlight?.length && !highlight.some((r) => within(q, r))}`
+              const join =
+                shape === "connected"
+                  ? { start: p > b.start && state(p - 1) === state(p), end: p < b.end && state(p + 1) === state(p) }
+                  : { start: false, end: false }
               const tileEl = (
                 <Residue
                   key={p}
@@ -331,6 +355,7 @@ function ResidueSequence({
                   variant={faded ? "subtle" : variant}
                   selected={within(p, selection)}
                   active={active === p}
+                  join={join}
                 >
                   {letter}
                 </Residue>
@@ -340,7 +365,7 @@ function ResidueSequence({
                 <span key={p} className="flex flex-col items-center gap-0.5">
                   {tileEl}
                   <span aria-hidden className="select-none">
-                    {below(letter, p)}
+                    {below(letter, p, join)}
                   </span>
                 </span>
               )

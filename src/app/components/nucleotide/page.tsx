@@ -56,15 +56,23 @@ export default function NucleotidePage() {
               <span className="type-label-md text-muted-foreground">{v}</span>
               <div className="flex flex-wrap items-center gap-6">
                 {(["sm", "default", "lg"] as const).map((s) => (
-                  <span key={s} className="flex gap-0.5">
-                    {"GATC".split("").map((b) => (
-                      <Nucleotide key={b} base={b} variant={v} size={s} />
-                    ))}
-                  </span>
+                  <NucleotideSequence key={s} sequence="GATC" groupSize={0} variant={v} size={s} aria-label={`${v}, ${s}`} />
                 ))}
               </div>
             </React.Fragment>
           ))}
+        </Preview>
+      </Section>
+
+      <Section
+        title="Shape"
+        description="Sequences are connected by default, like a connected button group: corners tighten where bases meet and stay round at the ends of each block, and a selection becomes its own capsule. separate keeps every corner round."
+      >
+        <Preview className="grid gap-5 sm:grid-cols-[auto_1fr] sm:items-center">
+          <span className="type-label-md text-muted-foreground">connected</span>
+          <NucleotideSequence sequence={TP53.slice(0, 30)} defaultSelection={{ start: 14, end: 18 }} selectable aria-label="Connected shape" />
+          <span className="type-label-md text-muted-foreground">separate</span>
+          <NucleotideSequence sequence={TP53.slice(0, 30)} defaultSelection={{ start: 14, end: 18 }} selectable shape="separate" aria-label="Separate shape" />
         </Preview>
       </Section>
 
@@ -147,6 +155,7 @@ export default function NucleotidePage() {
             ["groupSize", "number", "10", "Bases per block. 0 for one block."],
             ["ruler", "boolean", "false", "Numbers each block with its first position."],
             ["start", "number", "1", "Position of the first base."],
+            ["shape", '"connected" | "separate"', '"connected"', "Connected joins each block into one shape; a selection becomes its own capsule."],
             ["complement", "boolean", "false", "Shows the paired strand under each base."],
             ["highlight", "{ start, end }[]", "", "Stretches to bring forward. 1-based, inclusive."],
             ["footer", "(block) => ReactNode", "", "Drawn under each block: codon translations, annotations."],

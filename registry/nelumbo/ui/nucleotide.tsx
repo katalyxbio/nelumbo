@@ -193,7 +193,9 @@ function NucleotideSequence({
       unit="base"
       below={
         showComplement
-          ? (b) => <Nucleotide base={complement(b, rna)} scheme={scheme} size={size} variant="subtle" aria-hidden title={undefined} />
+          ? (b, _p, join) => (
+              <Nucleotide base={complement(b, rna)} scheme={scheme} size={size} variant="subtle" join={join} aria-hidden title={undefined} />
+            )
           : undefined
       }
       {...props}
