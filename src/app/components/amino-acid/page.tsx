@@ -104,15 +104,35 @@ export default function AminoAcidPage() {
         </Preview>
       </Section>
 
-      <Section title="Substitutions" description="AminoAcidChange draws a missense change, and is announced as one: Arginine 175 to Histidine.">
-        <Preview className="flex-col items-start gap-5">
-          <div className="flex flex-wrap items-center gap-6">
+      <Section
+        title="Mutations"
+        description="AminoAcidChange is one connected shape: the residue it was, a wider neutral segment with the position, and the residue it became. It is announced as one phrase (Arginine 175 to Histidine) and titled in HGVS (p.Arg175His)."
+      >
+        <Preview className="grid gap-6 sm:grid-cols-[minmax(9rem,auto)_1fr] sm:items-center">
+          <span className="type-label-lg text-muted-foreground">Missense</span>
+          <div className="flex flex-wrap items-center gap-3">
             <AminoAcidChange from="R" position={175} to="H" />
             <AminoAcidChange from="R" position={248} to="Q" />
             <AminoAcidChange from="R" position={273} to="H" />
             <AminoAcidChange from="Y" position={220} to="C" />
+            <AminoAcidChange from="G" position={245} to="S" />
           </div>
-          <AminoAcidChange from="G" position={245} to="S" size="lg" />
+          <span className="type-label-lg text-muted-foreground">Nonsense, synonymous</span>
+          <div className="flex flex-wrap items-center gap-3">
+            <AminoAcidChange from="R" position={213} to="*" />
+            <AminoAcidChange from="P" position={72} to="=" />
+          </div>
+          <span className="type-label-lg text-muted-foreground">Three letters</span>
+          <div className="flex flex-wrap items-center gap-3">
+            <AminoAcidChange from="R" position={175} to="H" notation="three" />
+            <AminoAcidChange from="Y" position={220} to="C" notation="three" />
+          </div>
+          <span className="type-label-lg text-muted-foreground">Sizes</span>
+          <div className="flex flex-wrap items-center gap-4">
+            <AminoAcidChange from="R" position={175} to="H" size="sm" />
+            <AminoAcidChange from="R" position={175} to="H" />
+            <AminoAcidChange from="R" position={175} to="H" size="lg" />
+          </div>
         </Preview>
       </Section>
 
@@ -136,7 +156,8 @@ export default function AminoAcidPage() {
             ["ProteinSequence sequence", "string", "", "Plus every NucleotideSequence prop except complement."],
             ["groupSize", "number", "10", "A spacer every n residues. 0 for none."],
             ["ruler", 'boolean | "top" | "inline"', "false", "true or top: first position above each block. inline: last position in the spacer."],
-            ["AminoAcidChange from, to, position", "string, string, number", "", "Announced as one phrase."],
+            ["AminoAcidChange from, to, position", "string, string, number", "", 'to may be "*" (stop) or "=" (synonymous). Announced as one phrase, titled in HGVS.'],
+            ["AminoAcidChange notation / size", '"one" | "three", ResidueSize', '"one", "default"', ""],
             ["Residue tone", "{ hue, chroma?, shade? } | null", "", "OKLCH hue; chroma 0 to 1; shade -1 to 1. null is neutral."],
             ["Data", "AMINO_ACIDS, AMINO_ACID_KINDS, HYDROPATHY, fromThree, aminoAcidTone", "", "Names, three-letter codes, kinds and Kyte-Doolittle values."],
           ]}

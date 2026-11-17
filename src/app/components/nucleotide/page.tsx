@@ -4,6 +4,7 @@ import * as React from "react"
 import {
   NUCLEOTIDE_SCHEMES,
   Nucleotide,
+  NucleotideChange,
   NucleotideSequence,
   cleanSequence,
   gcContent,
@@ -120,6 +121,37 @@ export default function NucleotidePage() {
       </Section>
 
       <Section
+        title="Mutations"
+        description="NucleotideChange shows the reference, an arrow and the changed sequence. The bases that differ are found and drawn as a solid capsule in both; deletions and insertions are padded with gaps so the two line up."
+      >
+        <Preview className="grid gap-6 sm:grid-cols-[minmax(11rem,auto)_1fr] sm:items-center">
+          <div>
+            <p className="type-title-sm">Substitution</p>
+            <p className="type-body-sm text-muted-foreground">HBB c.20A&gt;T, sickle cell</p>
+          </div>
+          <NucleotideChange from="CCTGAGGAG" to="CCTGTGGAG" />
+          <div>
+            <p className="type-title-sm">Deletion</p>
+            <p className="type-body-sm text-muted-foreground">CFTR c.1521_1523del, F508del</p>
+          </div>
+          <NucleotideChange from="CATCTTTGGT" to="CATTGGT" />
+          <div>
+            <p className="type-title-sm">Insertion</p>
+            <p className="type-body-sm text-muted-foreground">One base, a frameshift</p>
+          </div>
+          <NucleotideChange from="GGCACGTTAC" to="GGCACGTTTAC" />
+          <div>
+            <p className="type-title-sm">Sizes</p>
+            <p className="type-body-sm text-muted-foreground">sm and lg</p>
+          </div>
+          <div className="grid gap-4">
+            <NucleotideChange from="CCTGAGGAG" to="CCTGTGGAG" size="sm" />
+            <NucleotideChange from="TGAGG" to="TGTGG" size="lg" />
+          </div>
+        </Preview>
+      </Section>
+
+      <Section
         title="Highlight"
         description="highlight brings stretches forward and fades the rest. Here, the EcoRI and BamHI sites in a cloning site."
       >
@@ -162,7 +194,8 @@ export default function NucleotidePage() {
             ["selectable", "boolean", "false", "Pointer and keyboard selection."],
             ["selection / onSelectionChange", "{ start, end } | null", "", "Controlled selection. defaultSelection for uncontrolled."],
             ["onActiveChange", "(position | null) => void", "", "The base under the pointer, or the keyboard cursor."],
-            ["Helpers", "complement, reverseComplement, gcContent, translate, translateCodon, cleanSequence", "", "Standard genetic code; RNA pairs A with U."],
+            ["NucleotideChange from, to", "string, string", "", "Reference and changed sequence, with context. scheme and size as above."],
+            ["Helpers", "alignChange, complement, reverseComplement, gcContent, translate, translateCodon, cleanSequence", "", "Standard genetic code; RNA pairs A with U."],
           ]}
         />
       </Section>

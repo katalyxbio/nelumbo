@@ -169,7 +169,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - FAB Menu (staggered spring actions, morphing trigger)
 - Toolbar (docked and floating, vertical, vibrant; paired FAB, collapse, overflow)
 - Kbd, Spinner (ring or shapes), Empty (layered icon tile), Aspect Ratio
-- Nucleotide and Amino Acid (new, biology: tonal residue tiles in one tone system; Nelumbo, base-pair, charge and classic schemes such as IGV, Clustal X and Taylor; sequences with ruler, complement strand, codon footers, highlight and keyboard selection; substitutions such as R175H)
+- Nucleotide and Amino Acid (new, biology: tonal residue tiles in one tone system; Nelumbo, base-pair, charge and classic schemes such as IGV, Clustal X and Taylor; sequences with ruler, complement strand, codon footers, highlight and keyboard selection; mutations: DNA changes with the changed bases as a capsule and indels aligned, protein changes as one connected R | 175 | H shape)
 
 ## License
 

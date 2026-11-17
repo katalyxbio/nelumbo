@@ -3,7 +3,6 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { Icon } from "@/registry/nelumbo/ui/icon"
 import {
   RESIDUE_HUES as H,
   Residue,
@@ -22,7 +21,7 @@ import {
  *   <AminoAcid residue="W" />
  *   <AminoAcid residue="W" notation="three" />          // Trp
  *   <ProteinSequence sequence="MEEPQSDPSV..." ruler selectable />
- *   <AminoAcidChange from="R" position={175} to="H" />  // p.Arg175His
+ *   <AminoAcidChange from="R" position={175} to="H" />  // [R|175|H], p.Arg175His
  *
  * Schemes (all in Nelumbo's tone system, one lightness for every hue):
  * - "nelumbo" (default): by side chain, on the palette's hues. Aliphatic amber,
@@ -219,34 +218,48 @@ function ProteinSequence({ sequence, scheme = "nelumbo", notation = "one", "aria
 }
 
 type AminoAcidChangeProps = Omit<React.ComponentProps<"span">, "children"> & {
+  /** The residue it was: one letter or three. */
   from: string
+  /** What it became. "*" for a stop (nonsense), "=" for the same (synonymous). */
   to: string
-  position?: number
+  position: number
   scheme?: AminoAcidScheme
+  notation?: "one" | "three"
   size?: ResidueSize
 }
 
-/** A substitution, "R175H": the residue it was, where, and what it became. */
-function AminoAcidChange({ from, to, position, scheme, size = "default", className, ...props }: AminoAcidChangeProps) {
+/**
+ * A missense change, R175H, as one connected shape: the residue it was, a
+ * wider neutral segment with the position, and the residue it became.
+ * Announced as one phrase ("Arginine 175 to Histidine"), titled p.Arg175His.
+ */
+function AminoAcidChange({ from, to, position, scheme, notation = "one", size = "default", className, ...props }: AminoAcidChangeProps) {
   const a = aminoAcidTone(from)
-  const b = aminoAcidTone(to)
-  const said = `${a.label}${position != null ? ` ${position}` : ""} to ${b.label}`
+  const b = aminoAcidTone(to === "=" ? from : to)
+  const said = `${a.label} ${position} to ${to === "=" ? "the same, synonymous" : b.label}`
+  const hgvs = `p.${a.info?.three ?? a.letter}${position}${to === "=" ? "=" : (b.info?.three ?? b.letter)}`
   return (
     <span
       data-slot="amino-acid-change"
       role="img"
       aria-label={said}
-      className={cn("inline-flex items-center", size === "lg" ? "gap-2" : "gap-1", className)}
+      title={hgvs}
+      className={cn("inline-flex items-center gap-0.5", className)}
       {...props}
     >
-      <AminoAcid residue={from} scheme={scheme} size={size} aria-hidden />
-      {position != null && (
-        <span aria-hidden className={cn("font-mono text-muted-foreground tabular-nums", size === "lg" ? "type-title-md" : "type-label-md")}>
-          {position}
-        </span>
-      )}
-      <Icon name="arrow_forward" aria-hidden size={size === "lg" ? 20 : size === "sm" ? 12 : 16} className="text-muted-foreground" />
-      <AminoAcid residue={to} scheme={scheme} size={size} aria-hidden />
+      <AminoAcid residue={a.letter} scheme={scheme} notation={notation} size={size} join={{ end: true }} title={undefined} />
+      <Residue
+        tone={null}
+        size={size}
+        join={{ start: true, end: true }}
+        className={cn(
+          "bg-surface-container-highest font-medium text-foreground dark:bg-surface-container-highest",
+          size === "sm" ? "px-1.5" : size === "lg" ? "px-3.5" : "px-2.5"
+        )}
+      >
+        {position}
+      </Residue>
+      <AminoAcid residue={b.letter} scheme={scheme} notation={notation} size={size} join={{ start: true }} title={undefined} />
     </span>
   )
 }

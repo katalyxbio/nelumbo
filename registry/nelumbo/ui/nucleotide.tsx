@@ -2,8 +2,13 @@
 
 import * as React from "react"
 
+import { cn } from "@/lib/utils"
+import { Icon } from "@/registry/nelumbo/ui/icon"
+
 import {
   RESIDUE_HUES as H,
+  type ResidueRange,
+  type ResidueSize,
   Residue,
   ResidueSequence,
   type ResidueProps,
@@ -18,6 +23,7 @@ import {
  *
  *   <Nucleotide base="A" />
  *   <NucleotideSequence sequence="ATGGCC..." ruler complement selectable />
+ *   <NucleotideChange from="GACGTC" to="GAAGTC" />     // the changed base as a capsule in both
  *
  * Schemes (all drawn in Nelumbo's tone system, so they share one lightness):
  * - "nelumbo" (default): A green, C blue, G amber, T and U red, on the palette's own hues.
@@ -203,4 +209,70 @@ function NucleotideSequence({
   )
 }
 
+/**
+ * Lines up a change: the shared start and end stay, the stretch between is
+ * what changed, padded with gaps ("-") on the shorter side, so a deletion or
+ * an insertion reads base for base. `changed` is that stretch, 1-based.
+ */
+export function alignChange(from: string, to: string) {
+  const a = cleanSequence(from)
+  const b = cleanSequence(to)
+  let p = 0
+  while (p < a.length && p < b.length && a[p] === b[p]) p++
+  let q = 0
+  while (q < a.length - p && q < b.length - p && a[a.length - 1 - q] === b[b.length - 1 - q]) q++
+  const am = a.slice(p, a.length - q)
+  const bm = b.slice(p, b.length - q)
+  const n = Math.max(am.length, bm.length)
+  const changed: ResidueRange | null = n ? { start: p + 1, end: p + n } : null
+  return {
+    from: a.slice(0, p) + am.padEnd(n, "-") + a.slice(a.length - q),
+    to: b.slice(0, p) + bm.padEnd(n, "-") + b.slice(b.length - q),
+    changed,
+    kind: !n ? "none" : !am.length ? "insertion" : !bm.length ? "deletion" : am.length === 1 && bm.length === 1 ? "substitution" : "delins",
+  } as const
+}
+
+type NucleotideChangeProps = Omit<React.ComponentProps<"div">, "children"> & {
+  /** The reference sequence, with some context around the change. */
+  from: string
+  /** The same stretch, changed. */
+  to: string
+  scheme?: NucleotideScheme
+  size?: ResidueSize
+}
+
+/**
+ * A DNA or RNA change: the reference, an arrow, the changed sequence. The
+ * bases that differ are found and drawn as a solid capsule in both; a
+ * deletion or an insertion is padded with gaps so the two line up.
+ */
+function NucleotideChange({ from, to, scheme = "nelumbo", size = "default", className, ...props }: NucleotideChangeProps) {
+  const c = React.useMemo(() => alignChange(from, to), [from, to])
+  const said =
+    c.kind === "none"
+      ? `${cleanSequence(from)}, unchanged`
+      : `${c.kind === "delins" ? "Change" : c.kind[0].toUpperCase() + c.kind.slice(1)}: ${cleanSequence(from)} to ${cleanSequence(to)}`
+  const seq = (s: string) => (
+    <NucleotideSequence sequence={s} scheme={scheme} size={size} groupSize={0} selection={c.changed} aria-hidden aria-label={undefined} />
+  )
+  return (
+    <div
+      data-slot="nucleotide-change"
+      role="img"
+      aria-label={said}
+      className={cn("inline-flex flex-wrap items-center", size === "lg" ? "gap-3" : size === "sm" ? "gap-1.5" : "gap-2", className)}
+      {...props}
+    >
+      {seq(c.from)}
+      {/* the arrow travels with the changed sequence when the two wrap */}
+      <span className={cn("inline-flex items-center", size === "lg" ? "gap-3" : size === "sm" ? "gap-1.5" : "gap-2")}>
+        <Icon name="arrow_forward" aria-hidden size={size === "lg" ? 24 : size === "sm" ? 14 : 18} className="text-muted-foreground" />
+        {seq(c.to)}
+      </span>
+    </div>
+  )
+}
+
+export { NucleotideChange, type NucleotideChangeProps }
 export { Nucleotide, NucleotideSequence, type NucleotideProps, type NucleotideSequenceProps }

@@ -1891,10 +1891,11 @@
       "name": "nucleotide",
       "type": "registry:ui",
       "title": "Nucleotide",
-      "description": "DNA and RNA bases as tonal tiles and strands: Nelumbo, base-pair and purine/pyrimidine schemes plus IGV, Jalview, trace and Okabe-Ito redrawn at one lightness; complement strand, codon footers, selection; complement, translate and GC helpers.",
+      "description": "DNA and RNA bases as tonal tiles and strands: Nelumbo, base-pair and purine/pyrimidine schemes plus IGV, Jalview, trace and Okabe-Ito redrawn at one lightness; complement strand, codon footers, inline or top rulers, selection; NucleotideChange for mutations (changed bases as a capsule, indels aligned with gaps); complement, translate and GC helpers.",
       "dependencies": [],
       "registryDependencies": [
         "utils",
+        "@nelumbo/icon",
         "@nelumbo/residue"
       ],
       "files": [
@@ -1908,11 +1909,10 @@
       "name": "amino-acid",
       "type": "registry:ui",
       "title": "Amino Acid",
-      "description": "Protein residues as tonal tiles and sequences: side-chain and charge schemes plus hydrophobicity, Clustal X, Zappo, Taylor and Okabe-Ito redrawn at one lightness; three-letter notation, selection, and AminoAcidChange for substitutions.",
+      "description": "Protein residues as tonal tiles and sequences: side-chain and charge schemes plus hydrophobicity, Clustal X, Zappo, Taylor and Okabe-Ito redrawn at one lightness; three-letter notation, inline or top rulers, selection; AminoAcidChange draws a mutation as one connected shape (residue, position, new residue), titled in HGVS.",
       "dependencies": [],
       "registryDependencies": [
         "utils",
-        "@nelumbo/icon",
         "@nelumbo/residue"
       ],
       "files": [
