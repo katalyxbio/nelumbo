@@ -616,8 +616,17 @@ function PhyloTree({
       const [ax, ay] = P(rp, ap)
       const [bx, by] = P(rp, an)
       const [ex, ey] = P(rn, an)
-      const arc = Math.abs(an - ap) > 1e-6 ? `A${rp},${rp} 0 ${Math.abs(an - ap) > Math.PI ? 1 : 0} ${an > ap ? 1 : 0} ${bx},${by}` : ""
-      return `M${ax},${ay}${arc}L${ex},${ey}`
+      const d = an - ap
+      // a rounded elbow where the arc turns outward, as in the rectangular layout
+      const rr = Math.min(6, Math.abs(d) * rp, rn - rp)
+      if (Math.abs(d) < 1e-6 || rr < 0.5) {
+        const arc = Math.abs(d) > 1e-6 ? `A${rp},${rp} 0 ${Math.abs(d) > Math.PI ? 1 : 0} ${d > 0 ? 1 : 0} ${bx},${by}` : ""
+        return `M${ax},${ay}${arc}L${ex},${ey}`
+      }
+      const aEnd = an - (Math.sign(d) * rr) / rp
+      const [sx, sy] = P(rp, aEnd)
+      const [tx, ty] = P(rp + rr, an)
+      return `M${ax},${ay}A${rp},${rp} 0 ${Math.abs(aEnd - ap) > Math.PI ? 1 : 0} ${d > 0 ? 1 : 0} ${sx},${sy}Q${bx},${by} ${tx},${ty}L${ex},${ey}`
     }
     const px = X(x0(p))
     const py = Y(p.pos)
@@ -681,21 +690,18 @@ function PhyloTree({
               const first = Math.min(...under.map((v) => v.pos))
               const last = Math.max(...under.map((v) => v.pos))
               if (circular) {
-                const a0 = A(first) - step / 2
-                const a1 = A(last) + step / 2
-                const r0 = Math.max(0, rOf(n) - 6)
+                const r0 = Math.max(0, rOf(n) - 8)
                 const r1 = R + labelW + 2
-                const r2 = r1 + 6
+                const r2 = r1 + 7
+                // a 3px gap between neighbouring clades
+                const a0 = A(first) - step / 2 + 1.5 / r1
+                const a1 = A(last) + step / 2 - 1.5 / r1
                 const large = a1 - a0 > Math.PI ? 1 : 0
-                const [p0x, p0y] = P(r0, a0)
-                const [p1x, p1y] = P(r1, a0)
-                const [p2x, p2y] = P(r1, a1)
-                const [p3x, p3y] = P(r0, a1)
-                const [q0x, q0y] = P(r2, a0 + 0.01)
-                const [q1x, q1y] = P(r2, a1 - 0.01)
+                const [q0x, q0y] = P(r2, a0 + 4 / r2)
+                const [q1x, q1y] = P(r2, a1 - 4 / r2)
                 return (
                   <g key={`c${id}`}>
-                    <path d={`M${p0x},${p0y}L${p1x},${p1y}A${r1},${r1} 0 ${large} 1 ${p2x},${p2y}L${p3x},${p3y}A${r0},${r0} 0 ${large} 0 ${p0x},${p0y}Z`} fill={tint(c.color)} />
+                    <path d={sector(cx, cy, r0, r1, a0, a1, 12)} fill={tint(c.color)} />
                     <path d={`M${q0x},${q0y}A${r2},${r2} 0 ${large} 1 ${q1x},${q1y}`} fill="none" stroke={`var(--${c.color ?? "brand"})`} strokeWidth={4} strokeLinecap="round" />
                   </g>
                 )
@@ -707,7 +713,7 @@ function PhyloTree({
               const y1 = Y(last) + rowHeight / 2 - 2
               return (
                 <g key={`c${id}`}>
-                  <rect x={x} y={y0} width={bx - x} height={y1 - y0} rx={8} fill={tint(c.color)} />
+                  <rect x={x} y={y0} width={bx - x} height={y1 - y0} rx={12} fill={tint(c.color)} />
                   <rect x={bx + 4} y={y0} width={4} height={y1 - y0} rx={2} fill={`var(--${c.color ?? "brand"})`} />
                   <text x={bx + 14} y={(y0 + y1) / 2 + 4} className="fill-foreground text-[0.75rem] font-medium">
                     {c.label}
@@ -901,6 +907,19 @@ function PhyloTree({
       )}
     </div>
   )
+}
+
+/** An annular sector with rounded corners: radius c at the outer edge, and at the inner edge when it isn't the center. */
+function sector(cx: number, cy: number, r0: number, r1: number, a0: number, a1: number, c: number) {
+  const P = (r: number, a: number) => `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`
+  const span = a1 - a0
+  const large = span > Math.PI ? 1 : 0
+  const c1 = Math.max(0, Math.min(c, (r1 - r0) / 2, (span * r1) / 2))
+  const c0 = r0 > 1 ? Math.max(0, Math.min(c, (r1 - r0) / 2, (span * r0) / 2)) : 0
+  let d = `M${P(r0 + c0, a0)}L${P(r1 - c1, a0)}Q${P(r1, a0)} ${P(r1, a0 + c1 / r1)}A${r1},${r1} 0 ${large} 1 ${P(r1, a1 - c1 / r1)}Q${P(r1, a1)} ${P(r1 - c1, a1)}`
+  if (c0 > 0) d += `L${P(r0 + c0, a1)}Q${P(r0, a1)} ${P(r0, a1 - c0 / r0)}A${r0},${r0} 0 ${large} 0 ${P(r0, a0 + c0 / r0)}Q${P(r0, a0)} ${P(r0 + c0, a0)}`
+  else d += `L${P(r0, a1)}${r0 > 1 ? `A${r0},${r0} 0 ${large} 0 ${P(r0, a0)}` : ""}`
+  return `${d}Z`
 }
 
 function inside0(nodes: Laid[], root: number, id: number) {
