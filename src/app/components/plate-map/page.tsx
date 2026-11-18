@@ -126,7 +126,7 @@ export default function PlateMapPage() {
 
       <Section
         title="Plate"
-        description='variant="plate" draws the plate itself at the standard footprint, 127.76 by 85.48 mm, with wells at their true pitch and offset and the labels molded on the frame. notch puts the chamfered corner where your plates have it; frame draws the plate as one flat fill or as a single line. barcode adds the front side of the plate underneath with a label on it, as you would see it looking at the plate from the front: a real Code 128 that scans, placed at the start, center or end. With the notch on a bottom corner, the chamfer shows on that side too.'
+        description='variant="plate" draws the plate itself at the standard footprint, 127.76 by 85.48 mm, with wells at their true pitch and offset and the labels molded on the frame. notch puts the chamfered corner where your plates have it; frame draws the plate as one flat fill or as a single line. barcode tilts the plate a little toward you, so its front wall shows below the top, and puts a label on that wall: a real Code 128 that scans, at the start, center or end. With the notch on a bottom corner, the chamfer carries down the wall too.'
       >
         <Preview className="block">
           <PlateDemo />
@@ -179,8 +179,8 @@ export default function PlateMapPage() {
             ["variant", '"grid" | "plate"', '"grid"', "The wells alone, or the whole plate to scale with its frame."],
             ["notch", '"top-left" | "top-right" | "bottom-left" | "bottom-right"', '"top-left"', "The chamfered corner of the plate variant."],
             ["frame", '"solid" | "outline"', '"solid"', "The plate variant as a flat fill, or a single line with no fill."],
-            ["barcode / barcodePosition", 'string, "start" | "center" | "end"', '"center"', "A Code 128 label on the plate's front side, drawn under the plate."],
-            ["side", "boolean", "with a barcode", "The plate's front side under the plate, with or without a label."],
+            ["barcode / barcodePosition", 'string, "start" | "center" | "end"', '"center"', "A Code 128 label on the plate's front wall, which then shows below the top."],
+            ["side", "boolean", "with a barcode", "The front wall below the top, as if the plate were seen from a little in front, with or without a label."],
             ["wells", "PlateWell[]", "", "well (\"B3\"), group, value, label, description, excluded."],
             ["groups", "PlateGroup[]", "", "id, name, color, description. Colors follow the palette order when left out."],
             ["colorBy", '"groups" | "values"', "groups if given", "What colors the wells."],

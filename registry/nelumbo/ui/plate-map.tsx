@@ -18,7 +18,7 @@ import { RESIDUE_HUES } from "@/registry/nelumbo/ui/residue"
  *     wells={[{ well: "A1", group: "std" }, ...]} selectable />
  *   <PlateMap variant="plate" notch="bottom-left" ... />   // the plate itself, to scale
  *   <PlateMap variant="plate" frame="outline" ... />       // drawn as a line, no fill
- *   <PlateMap variant="plate" barcode="PLT-000123" ... />  // and its side, with a scannable label
+ *   <PlateMap variant="plate" barcode="PLT-000123" ... />  // its front wall showing, with a scannable label
  *
  * Variants:
  * - "grid" (default): the wells and their headers, filling the width.
@@ -224,71 +224,34 @@ export function code128(value: string) {
   return [...codes.flatMap((c) => [...CODE128[c]].map(Number)), 2, 3, 3, 1, 1, 1, 2]
 }
 
-// the side of the plate in mm: its wall, and the flange of the skirt along the bottom
-const SIDE = { h: 14.35, flange: 2.5, inset: 0.6 }
+// how much of the front wall shows below the top, in mm: the plate seen from a little in front
+const DEPTH = 9
 
-/** The plate's front wall (the side below the last row), with an optional barcode label. */
-function PlateSide({
-  notch,
-  frame,
-  barcode,
-  position,
-}: {
-  notch: PlateCorner
-  frame: "solid" | "outline"
-  barcode?: string
-  position: "start" | "center" | "end"
-}) {
-  const { h, flange, inset } = SIDE
-  const wall = h - flange
-  const body = `M${inset} ${wall}V0.8Q${inset} 0 ${inset + 0.8} 0H${W - inset - 0.8}Q${W - inset} 0 ${W - inset} 0.8V${wall}H${W}V${h}H0V${wall}Z`
-  // the chamfer faces this side when the notch is on a bottom corner
-  const chamfer = notch === "bottom-left" ? [inset, 6] : notch === "bottom-right" ? [W - 6, W - inset] : null
-  const edge = notch === "bottom-left" ? 6 : W - 6
-  const widths = barcode ? code128(barcode) : []
+/** A barcode label on the front wall, which runs from y = top to top + DEPTH. */
+function WallLabel({ value, position, top }: { value: string; position: "start" | "center" | "end"; top: number }) {
+  const widths = code128(value)
   const modules = widths.reduce((a, b) => a + b, 0)
   const quiet = 10
   const mw = Math.min(0.33, (W * 0.55) / (modules + quiet * 2))
   const lw = (modules + quiet * 2) * mw
-  const lx = position === "start" ? 8 : position === "end" ? W - 8 - lw : (W - lw) / 2
-  const ly = 1.4
-  const lh = wall - 2.6
+  const lx = position === "start" ? 9 : position === "end" ? W - 9 - lw : (W - lw) / 2
+  const ly = top + 1.1
+  const lh = DEPTH - 2.2
   let bars = ""
   let x = lx + quiet * mw
   widths.forEach((w, i) => {
-    if (i % 2 === 0) bars += `M${x.toFixed(3)} ${ly + 1}h${(w * mw).toFixed(3)}v${(lh - 4.2).toFixed(2)}h${(-w * mw).toFixed(3)}z`
+    if (i % 2 === 0) bars += `M${x.toFixed(3)} ${(ly + 0.7).toFixed(2)}h${(w * mw).toFixed(3)}v${(lh - 3).toFixed(2)}h${(-w * mw).toFixed(3)}z`
     x += w * mw
   })
   return (
-    <svg
-      role="img"
-      aria-label={barcode ? `Side of the plate, barcode ${barcode}` : "Side of the plate"}
-      viewBox={`0 0 ${W} ${h}`}
-      className="block w-full overflow-visible"
-    >
-      <path
-        d={body}
-        vectorEffect="non-scaling-stroke"
-        strokeWidth={frame === "outline" ? 1 : 0}
-        className={frame === "outline" ? "fill-none stroke-outline" : "fill-surface-container-high"}
-      />
-      {chamfer &&
-        (frame === "outline" ? (
-          <line x1={edge} x2={edge} y1={0} y2={wall} vectorEffect="non-scaling-stroke" strokeWidth={1} className="stroke-outline-variant" />
-        ) : (
-          <rect x={chamfer[0]} width={chamfer[1] - chamfer[0]} y={0} height={wall} className="fill-surface-container-highest" />
-        ))}
-      {barcode && (
-        <g aria-hidden>
-          {/* a printed label is white in either theme, as it is on the bench */}
-          <rect x={lx} y={ly} width={lw} height={lh} rx={0.5} fill="#fff" stroke="rgb(0 0 0 / 0.18)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
-          <path d={bars} fill="#111" />
-          <text x={lx + lw / 2} y={ly + lh - 0.9} textAnchor="middle" fill="#111" fontSize={2.1} className="font-mono">
-            {barcode}
-          </text>
-        </g>
-      )}
-    </svg>
+    <g>
+      {/* a printed label is white in either theme, as it is on the bench */}
+      <rect x={lx} y={ly} width={lw} height={lh} rx={0.4} fill="#fff" stroke="rgb(0 0 0 / 0.18)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+      <path d={bars} fill="#111" />
+      <text x={lx + lw / 2} y={ly + lh - 0.6} textAnchor="middle" fill="#111" fontSize={1.7} className="font-mono">
+        {value}
+      </text>
+    </g>
   )
 }
 
@@ -315,11 +278,11 @@ type PlateMapProps = Omit<React.ComponentProps<"div">, "children"> & {
   notch?: PlateCorner
   /** With variant="plate": a flat "solid" plate (default), or an "outline" with no fill. */
   frame?: "solid" | "outline"
-  /** With variant="plate": a Code 128 barcode on a label, drawn on the side of the plate below it. */
+  /** With variant="plate": a Code 128 barcode on a label on the plate's front wall. */
   barcode?: string
-  /** Where the label sits along the side. Default "center". */
+  /** Where the label sits along the wall. Default "center". */
   barcodePosition?: "start" | "center" | "end"
-  /** With variant="plate": the side of the plate below it. Default: shown when there is a barcode. */
+  /** With variant="plate": the front wall below the top, as if the plate were seen from a little in front. Default: shown with a barcode. */
   side?: boolean
   wells?: PlateWell[]
   groups?: PlateGroup[]
@@ -543,6 +506,9 @@ function PlateMap({
   const rowFull = (r: number) => Array.from({ length: cols }, (_, c) => c).every((c) => isSel(r, c))
 
   // layout
+  const depth = plate && (side ?? !!barcode) ? DEPTH : 0
+  const PH = H + depth
+  const maskId = React.useId().replace(/:/g, "")
   const hw = plate ? Math.min((G.a1?.[0] ?? (W - (cols - 1) * G.pitch) / 2) - G.pitch / 2 - 2.5, 7) : 0
   const hh = plate ? Math.min((G.a1?.[1] ?? (H - (rows - 1) * G.pitch) / 2) - G.pitch / 2 - 2, 6) : 0
   const ax = G.a1?.[0] ?? (W - (cols - 1) * G.pitch) / 2
@@ -570,9 +536,9 @@ function PlateMap({
         plate
           ? {
               left: `${((ax - G.pitch / 2 - hw) / W) * 100}%`,
-              top: `${((ay - G.pitch / 2 - hh) / H) * 100}%`,
+              top: `${((ay - G.pitch / 2 - hh) / PH) * 100}%`,
               width: `${((hw + cols * G.pitch) / W) * 100}%`,
-              height: `${((hh + rows * G.pitch) / H) * 100}%`,
+              height: `${((hh + rows * G.pitch) / PH) * 100}%`,
               gridTemplateColumns: `minmax(0, ${hw}fr) repeat(${cols}, minmax(0, ${G.pitch}fr))`,
               gridTemplateRows: `minmax(0, ${hh}fr) repeat(${rows}, minmax(0, ${G.pitch}fr))`,
             }
@@ -764,26 +730,58 @@ function PlateMap({
   return (
     <div data-slot="plate-map" className={cn("@container grid w-full gap-4", className)} {...props}>
       {plate ? (
-        <div className="grid w-full max-w-3xl gap-[1.2cqw]">
-          <div
-            ref={frameRef}
-            className="@container relative w-full [--plate-well:var(--surface-container-lowest)] dark:[--plate-well:var(--surface-container-highest)]"
-            style={{ aspectRatio: `${W} / ${H}` }}
-          >
-            {/* the plate in one piece: a flat fill, or a single 1px line kept whole at every corner */}
-            <svg aria-hidden viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 size-full overflow-visible">
+        <div
+          ref={frameRef}
+          className="@container relative w-full max-w-3xl [--plate-well:var(--surface-container-lowest)] dark:[--plate-well:var(--surface-container-highest)]"
+          style={{ aspectRatio: `${W} / ${PH}` }}
+        >
+          {/*
+            The plate in one piece: a flat fill, or a single 1px line kept whole at every corner.
+            With a side, the same outline is drawn again lower down and the top laid over it,
+            so the front wall shows below the top as if the plate were seen from a little in front.
+          */}
+          <svg aria-hidden viewBox={`0 0 ${W} ${PH}`} className="absolute inset-0 size-full overflow-visible">
+            {depth > 0 && frame === "outline" && (
+              <mask id={maskId} maskUnits="userSpaceOnUse" x={-2} y={-2} width={W + 4} height={PH + 4}>
+                <rect x={-2} y={-2} width={W + 4} height={PH + 4} fill="#fff" />
+                <path d={plateBody(notch)} fill="#000" />
+              </mask>
+            )}
+            {depth > 0 && (
+              // the mask sits on the group, in the top's own coordinates; only the path moves down
+              <g mask={frame === "outline" ? `url(#${maskId})` : undefined}>
+                <path
+                  d={plateBody(notch)}
+                  transform={`translate(0 ${depth})`}
+                  vectorEffect="non-scaling-stroke"
+                  strokeWidth={frame === "outline" ? 1 : 0}
+                  className={frame === "outline" ? "fill-none stroke-outline" : "fill-surface-container-highest dark:fill-surface-container-low"}
+                />
+              </g>
+            )}
+            {depth > 0 && frame === "outline" && (
+              // the wall's vertical edges, where the top's corners drop to the bottom's
               <path
-                d={plateBody(notch)}
+                d={`M0 ${H - (notch === "bottom-left" ? 6 : 3)}V${PH - (notch === "bottom-left" ? 6 : 3)}M${W} ${H - (notch === "bottom-right" ? 6 : 3)}V${PH - (notch === "bottom-right" ? 6 : 3)}`}
                 vectorEffect="non-scaling-stroke"
-                strokeWidth={frame === "outline" ? 1 : 0}
-                className={frame === "outline" ? "fill-none stroke-outline" : "fill-surface-container-high"}
+                strokeWidth={1}
+                className="stroke-outline"
               />
-            </svg>
-            {selectionShape}
-            {grid}
-            {tip}
-          </div>
-          {(side ?? !!barcode) && <PlateSide notch={notch} frame={frame} barcode={barcode} position={barcodePosition} />}
+            )}
+            <path
+              d={plateBody(notch)}
+              vectorEffect="non-scaling-stroke"
+              strokeWidth={frame === "outline" ? 1 : 0}
+              className={frame === "outline" ? "fill-none stroke-outline" : "fill-surface-container-high"}
+            />
+            {depth > 0 && barcode && <WallLabel value={barcode} position={barcodePosition} top={H} />}
+          </svg>
+          {depth > 0 && barcode && (
+            <span role="img" aria-label={`Barcode ${barcode}`} className="absolute inset-x-0 bottom-0" style={{ height: `${(depth / PH) * 100}%` }} />
+          )}
+          {selectionShape}
+          {grid}
+          {tip}
         </div>
       ) : (
         <div ref={frameRef} className="relative w-full">
