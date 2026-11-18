@@ -110,6 +110,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/construct-map", label: "Construct Map", isNew: true },
       { href: "/components/translation", label: "Translation", isNew: true },
       { href: "/components/sanger-trace", label: "Sanger Trace", isNew: true },
+      { href: "/components/variant-badge", label: "Variant Badge", isNew: true },
     ],
   },
   {

@@ -179,6 +179,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - Construct Map (new, biology: the plasmid map unrolled into a line for inserts, guides and PCR products, with strands above and below the backbone, zoom down to both strands and the amino acids of each codon, range selection, and a GenBank parser shared with Plasmid Map)
 - Translation (new, biology: DNA with each amino acid under its codon, in one, three or six reading frames, with open reading frames lit and base selection)
 - Sanger Trace (new, biology: a chromatogram read straight from .ab1 files, with base calls, quality bars, trimmed ends shaded, differences from a reference and mixed bases marked)
+- Variant Badge (new, biology: ACMG/AMP classifications from pathogenic to benign with a five-pip scale, ClinVar review stars, evidence chips, and a classifier that applies the 2015 combining rules)
 
 ## License
 

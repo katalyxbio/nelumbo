@@ -2080,6 +2080,23 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "variant-badge",
+      "type": "registry:ui",
+      "title": "Variant Badge",
+      "description": "A variant's clinical classification on the ACMG/AMP five-tier scale (pathogenic to benign, plus conflicting and not provided): color carries the meaning, red toward pathogenic and green toward benign, and five pips show the tier without color; tonal, outline and solid styles, full or short notation, three sizes and ClinVar review stars. VariantEvidence shows ACMG criteria as chips by direction and strength, and classifyVariant combines them by the 2015 rules with ClinGen strength suffixes.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@nelumbo/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/variant-badge.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
