@@ -575,7 +575,7 @@ const CHAR = 6.2
 type GelProps = Omit<React.ComponentProps<"div">, "children"> &
   Partial<GelSettings> & {
     lanes: GelLane[]
-    /** The slab's height in px; its `length` in cm is drawn to fit. Default 320. */
+    /** The slab's height in px; its `length` in cm is drawn to fit. Default 440. */
     height?: number
     /** How it's imaged: "ethidium" (default) under UV, "sybr" under blue light, or "print", dark on light. */
     stain?: GelStain
@@ -601,7 +601,7 @@ function Gel({
   electrodes = DEFAULT_GEL.electrodes,
   minutes = DEFAULT_GEL.minutes,
   length = DEFAULT_GEL.length,
-  height = 320,
+  height = 440,
   stain = "ethidium",
   mode = "real",
   sizes = true,
@@ -674,8 +674,9 @@ function Gel({
   const W = Math.max(width, 1)
   const n = Math.max(1, lanes.length)
   const avail = W - gutterL - gutterR
-  const pitch = Math.min(64, avail / n)
-  const gap = Math.max(6, Math.min(14, pitch * 0.3))
+  // lanes as a real gel's: 34 px at most, 12 apart, so bands keep their proportions
+  const pitch = Math.min(46, avail / n)
+  const gap = Math.max(6, Math.min(12, pitch * 0.26))
   const laneW = Math.max(8, pitch - gap)
   const slabW = n * pitch + gap
   const slabX = gutterL + Math.max(0, (avail - slabW) / 2)
@@ -807,12 +808,12 @@ function Gel({
       >
         {width > 0 && (
           <>
-            {!ideal && <canvas ref={canvas} aria-hidden className="absolute rounded-xl" style={{ left: slabX, top, width: slabW, height }} />}
+            {!ideal && <canvas ref={canvas} aria-hidden className="absolute rounded-lg" style={{ left: slabX, top, width: slabW, height }} />}
             <svg width={W} height={H} aria-hidden className="absolute inset-0 block overflow-visible">
               {/* the ideal run: a plain slab, each band a line where its size runs */}
               {ideal && (
                 <>
-                  <rect x={slabX} y={top} width={slabW} height={height} rx={12} className="fill-surface-container-high" />
+                  <rect x={slabX} y={top} width={slabW} height={height} rx={8} className="fill-surface-container-high" />
                   {lanes.map((_, i) => (
                     <rect key={i} x={laneXs[i]} y={top + WELL_TOP} width={laneW} height={WELL_H} rx={1.5} className="fill-foreground/15" />
                   ))}

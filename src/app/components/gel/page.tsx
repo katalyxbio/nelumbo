@@ -91,7 +91,7 @@ export default function GelPage() {
           ).map(([name, look]) => (
             <div key={name} className="grid gap-2">
               <span className="type-label-lg text-muted-foreground">{name}</span>
-              <Gel lanes={DIGESTS.slice(0, 4)} {...look} height={240} dyes={false} aria-label={`Gel, ${name}`} />
+              <Gel lanes={DIGESTS.slice(0, 4)} {...look} dyes={false} height={360} aria-label={`Gel, ${name}`} />
             </div>
           ))}
         </Preview>
@@ -113,7 +113,7 @@ export default function GelPage() {
             ["agarose / buffer", 'number, "tae" | "tbe"', '1, "tae"', "Agarose % w/v, 0.5 to 4; the running buffer."],
             ["volts / electrodes", "number, number", "100, 12", "Volts across electrodes this many cm apart: the field."],
             ["minutes / length", "number, number", "40, 8", "How long it runs; the gel's length from the wells, cm."],
-            ["height", "number", "320", "The slab's height in px."],
+            ["height", "number", "440", "The slab's height in px."],
             ["stain", '"ethidium" | "sybr" | "print"', '"ethidium"', "How it's imaged: under UV, under blue light, or printed dark on light."],
             ["mode", '"real" | "overlay" | "ideal"', '"real"', "As the stain shows it; the ideal bands drawn over it; or the ideal bands alone."],
             ["sizes / dyes", "boolean, boolean", "true, true", "The ladder's sizes on the left; the loading dyes' fronts on the right."],
@@ -256,7 +256,7 @@ function RunDemo() {
               />
             )}
           </div>
-          <Gel lanes={lanes} {...g} stain={stain} mode={mode} run={run} onRunProgress={setClock} selectable onActiveChange={setFocus} height={360} aria-label="Digest run with these settings" />
+          <Gel lanes={lanes} {...g} stain={stain} mode={mode} run={run} onRunProgress={setClock} selectable onActiveChange={setFocus} height={480} aria-label="Digest run with these settings" />
         </div>
       </div>
     </div>
@@ -279,7 +279,7 @@ function LadderDemo() {
         agarose={Number(agarose)}
         minutes={45}
         sizes={false}
-        height={380}
+        height={460}
         aria-label={`Seven ladders on a ${agarose}% gel`}
       />
     </div>
