@@ -18,6 +18,7 @@ import { RESIDUE_HUES } from "@/registry/nelumbo/ui/residue"
  *     wells={[{ well: "A1", group: "std" }, ...]} selectable />
  *   <PlateMap variant="plate" notch="bottom-left" ... />   // the plate itself, to scale
  *   <PlateMap variant="plate" frame="outline" ... />       // drawn as a line, no fill
+ *   <PlateMap variant="plate" barcode="PLT-000123" ... />  // and its side, with a scannable label
  *
  * Variants:
  * - "grid" (default): the wells and their headers, filling the width.
@@ -204,6 +205,93 @@ function plateBody(notch: PlateCorner) {
   ].join("")
 }
 
+// Code 128 symbols as bar and space widths in modules (0 to 102, then Start A, B and C)
+const CODE128 = "212222 222122 222221 121223 121322 131222 122213 122312 132212 221213 221312 231212 112232 122132 122231 113222 123122 123221 223211 221132 221231 213212 223112 312131 311222 321122 321221 312212 322112 322211 212123 212321 232121 111323 131123 131321 112313 132113 132311 211313 231113 231311 112133 112331 132131 113123 113321 133121 313121 211331 231131 213113 213311 213131 311123 311321 331121 312113 312311 332111 314111 221411 431111 111224 111422 121124 121421 141122 141221 112214 112412 122114 122411 142112 142211 241211 221114 413111 241112 134111 111242 121142 121241 114212 124112 124211 411212 421112 421211 212141 214121 412121 111143 111341 131141 114113 114311 411113 411311 113141 114131 311141 411131 211412 211214 211232".split(" ")
+
+/**
+ * Code 128 (set B) for printable ASCII: the bar and space widths in modules,
+ * starting with a bar, with its check symbol and stop. Scannable as drawn.
+ */
+export function code128(value: string) {
+  const codes = [
+    104,
+    ...[...value].map((ch) => {
+      const c = ch.charCodeAt(0) - 32
+      return c >= 0 && c < 95 ? c : 31 // "?" for what set B cannot carry
+    }),
+  ]
+  codes.push(codes.slice(1).reduce((sum, c, i) => sum + c * (i + 1), 104) % 103)
+  return [...codes.flatMap((c) => [...CODE128[c]].map(Number)), 2, 3, 3, 1, 1, 1, 2]
+}
+
+// the side of the plate in mm: its wall, and the flange of the skirt along the bottom
+const SIDE = { h: 14.35, flange: 2.5, inset: 0.6 }
+
+/** The plate's front wall (the side below the last row), with an optional barcode label. */
+function PlateSide({
+  notch,
+  frame,
+  barcode,
+  position,
+}: {
+  notch: PlateCorner
+  frame: "solid" | "outline"
+  barcode?: string
+  position: "start" | "center" | "end"
+}) {
+  const { h, flange, inset } = SIDE
+  const wall = h - flange
+  const body = `M${inset} ${wall}V0.8Q${inset} 0 ${inset + 0.8} 0H${W - inset - 0.8}Q${W - inset} 0 ${W - inset} 0.8V${wall}H${W}V${h}H0V${wall}Z`
+  // the chamfer faces this side when the notch is on a bottom corner
+  const chamfer = notch === "bottom-left" ? [inset, 6] : notch === "bottom-right" ? [W - 6, W - inset] : null
+  const edge = notch === "bottom-left" ? 6 : W - 6
+  const widths = barcode ? code128(barcode) : []
+  const modules = widths.reduce((a, b) => a + b, 0)
+  const quiet = 10
+  const mw = Math.min(0.33, (W * 0.55) / (modules + quiet * 2))
+  const lw = (modules + quiet * 2) * mw
+  const lx = position === "start" ? 8 : position === "end" ? W - 8 - lw : (W - lw) / 2
+  const ly = 1.4
+  const lh = wall - 2.6
+  let bars = ""
+  let x = lx + quiet * mw
+  widths.forEach((w, i) => {
+    if (i % 2 === 0) bars += `M${x.toFixed(3)} ${ly + 1}h${(w * mw).toFixed(3)}v${(lh - 4.2).toFixed(2)}h${(-w * mw).toFixed(3)}z`
+    x += w * mw
+  })
+  return (
+    <svg
+      role="img"
+      aria-label={barcode ? `Side of the plate, barcode ${barcode}` : "Side of the plate"}
+      viewBox={`0 0 ${W} ${h}`}
+      className="block w-full overflow-visible"
+    >
+      <path
+        d={body}
+        vectorEffect="non-scaling-stroke"
+        strokeWidth={frame === "outline" ? 1 : 0}
+        className={frame === "outline" ? "fill-none stroke-outline" : "fill-surface-container-high"}
+      />
+      {chamfer &&
+        (frame === "outline" ? (
+          <line x1={edge} x2={edge} y1={0} y2={wall} vectorEffect="non-scaling-stroke" strokeWidth={1} className="stroke-outline-variant" />
+        ) : (
+          <rect x={chamfer[0]} width={chamfer[1] - chamfer[0]} y={0} height={wall} className="fill-surface-container-highest" />
+        ))}
+      {barcode && (
+        <g aria-hidden>
+          {/* a printed label is white in either theme, as it is on the bench */}
+          <rect x={lx} y={ly} width={lw} height={lh} rx={0.5} fill="#fff" stroke="rgb(0 0 0 / 0.18)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+          <path d={bars} fill="#111" />
+          <text x={lx + lw / 2} y={ly + lh - 0.9} textAnchor="middle" fill="#111" fontSize={2.1} className="font-mono">
+            {barcode}
+          </text>
+        </g>
+      )}
+    </svg>
+  )
+}
+
 const ORDER: PlateColor[] = ["blue", "amber", "green", "purple", "pink", "cyan", "orange", "red"]
 const hueOf = (c: PlateColor) => (c === "neutral" ? 0 : RESIDUE_HUES[c])
 
@@ -227,6 +315,12 @@ type PlateMapProps = Omit<React.ComponentProps<"div">, "children"> & {
   notch?: PlateCorner
   /** With variant="plate": a flat "solid" plate (default), or an "outline" with no fill. */
   frame?: "solid" | "outline"
+  /** With variant="plate": a Code 128 barcode on a label, drawn on the side of the plate below it. */
+  barcode?: string
+  /** Where the label sits along the side. Default "center". */
+  barcodePosition?: "start" | "center" | "end"
+  /** With variant="plate": the side of the plate below it. Default: shown when there is a barcode. */
+  side?: boolean
   wells?: PlateWell[]
   groups?: PlateGroup[]
   /** "groups" colors by group, "values" by value. Default: values when wells carry values and no groups are given. */
@@ -263,6 +357,9 @@ function PlateMap({
   variant = "grid",
   notch = "top-left",
   frame = "solid",
+  barcode,
+  barcodePosition = "center",
+  side,
   wells = [],
   groups = [],
   colorBy,
@@ -667,23 +764,26 @@ function PlateMap({
   return (
     <div data-slot="plate-map" className={cn("@container grid w-full gap-4", className)} {...props}>
       {plate ? (
-        <div
-          ref={frameRef}
-          className="@container relative w-full max-w-3xl [--plate-well:var(--surface-container-lowest)] dark:[--plate-well:var(--surface-container-highest)]"
-          style={{ aspectRatio: `${W} / ${H}` }}
-        >
-          {/* the plate in one piece: a flat fill, or a single 1px line kept whole at every corner */}
-          <svg aria-hidden viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 size-full overflow-visible">
-            <path
-              d={plateBody(notch)}
-              vectorEffect="non-scaling-stroke"
-              strokeWidth={frame === "outline" ? 1 : 0}
-              className={frame === "outline" ? "fill-none stroke-outline" : "fill-surface-container-high"}
-            />
-          </svg>
-          {selectionShape}
-          {grid}
-          {tip}
+        <div className="grid w-full max-w-3xl gap-[1.2cqw]">
+          <div
+            ref={frameRef}
+            className="@container relative w-full [--plate-well:var(--surface-container-lowest)] dark:[--plate-well:var(--surface-container-highest)]"
+            style={{ aspectRatio: `${W} / ${H}` }}
+          >
+            {/* the plate in one piece: a flat fill, or a single 1px line kept whole at every corner */}
+            <svg aria-hidden viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 size-full overflow-visible">
+              <path
+                d={plateBody(notch)}
+                vectorEffect="non-scaling-stroke"
+                strokeWidth={frame === "outline" ? 1 : 0}
+                className={frame === "outline" ? "fill-none stroke-outline" : "fill-surface-container-high"}
+              />
+            </svg>
+            {selectionShape}
+            {grid}
+            {tip}
+          </div>
+          {(side ?? !!barcode) && <PlateSide notch={notch} frame={frame} barcode={barcode} position={barcodePosition} />}
         </div>
       ) : (
         <div ref={frameRef} className="relative w-full">

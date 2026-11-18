@@ -3,6 +3,8 @@
 import * as React from "react"
 import { PlateMap, wellName, wellRange, type PlateCorner, type PlateFocus, type PlateGroup, type PlateWell } from "@/registry/nelumbo/ui/plate-map"
 import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
+import { Input } from "@/registry/nelumbo/ui/input"
+import { Label } from "@/registry/nelumbo/ui/label"
 import { ChartReadout } from "@/registry/nelumbo/ui/chart"
 import { Button } from "@/registry/nelumbo/ui/button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
@@ -124,7 +126,7 @@ export default function PlateMapPage() {
 
       <Section
         title="Plate"
-        description='variant="plate" draws the plate itself at the standard footprint, 127.76 by 85.48 mm, with wells at their true pitch and offset and the labels molded on the frame. notch puts the chamfered corner where your plates have it; frame draws the plate as one flat fill or as a single line.'
+        description='variant="plate" draws the plate itself at the standard footprint, 127.76 by 85.48 mm, with wells at their true pitch and offset and the labels molded on the frame. notch puts the chamfered corner where your plates have it; frame draws the plate as one flat fill or as a single line. barcode adds the front side of the plate underneath with a label on it, as you would see it looking at the plate from the front: a real Code 128 that scans, placed at the start, center or end. With the notch on a bottom corner, the chamfer shows on that side too.'
       >
         <Preview className="block">
           <PlateDemo />
@@ -141,6 +143,8 @@ export default function PlateMapPage() {
             format={384}
             variant="plate"
             notch="bottom-left"
+            barcode="SCR-384-0042"
+            barcodePosition="end"
             wells={SCREEN}
             scale="diverging"
             midpoint={50}
@@ -175,6 +179,8 @@ export default function PlateMapPage() {
             ["variant", '"grid" | "plate"', '"grid"', "The wells alone, or the whole plate to scale with its frame."],
             ["notch", '"top-left" | "top-right" | "bottom-left" | "bottom-right"', '"top-left"', "The chamfered corner of the plate variant."],
             ["frame", '"solid" | "outline"', '"solid"', "The plate variant as a flat fill, or a single line with no fill."],
+            ["barcode / barcodePosition", 'string, "start" | "center" | "end"', '"center"', "A Code 128 label on the plate's front side, drawn under the plate."],
+            ["side", "boolean", "with a barcode", "The plate's front side under the plate, with or without a label."],
             ["wells", "PlateWell[]", "", "well (\"B3\"), group, value, label, description, excluded."],
             ["groups", "PlateGroup[]", "", "id, name, color, description. Colors follow the palette order when left out."],
             ["colorBy", '"groups" | "values"', "groups if given", "What colors the wells."],
@@ -187,7 +193,7 @@ export default function PlateMapPage() {
             ["selectable", "boolean", "false", "Rectangle, additive and line selection."],
             ["selection / onSelectionChange", "string[], (wells) => void", "", "Selected well names, controlled or not (defaultSelection)."],
             ["onActiveChange", "(focus | null) => void", "", "The well under the pointer or the keyboard cursor."],
-            ["Helpers", "plateSize, wellName, parseWell, wellRange, rowName, cellsOutline", "", '"A1:B3" to wells, "B3" to row and column and back; the traced outline of any set of cells as an SVG path.'],
+            ["Helpers", "plateSize, wellName, parseWell, wellRange, rowName, cellsOutline, code128", "", '"A1:B3" to wells, "B3" to row and column and back; the traced outline of any set of cells as an SVG path; a string as Code 128 bar widths.'],
           ]}
         />
       </Section>
@@ -243,11 +249,13 @@ const CORNERS: { value: PlateCorner; label: string }[] = [
 ]
 
 function PlateDemo() {
-  const [notch, setNotch] = React.useState<PlateCorner>("top-left")
+  const [notch, setNotch] = React.useState<PlateCorner>("bottom-left")
   const [frame, setFrame] = React.useState<"solid" | "outline">("solid")
+  const [code, setCode] = React.useState("ELISA-2611-07")
+  const [position, setPosition] = React.useState<"start" | "center" | "end">("center")
   return (
     <div className="grid gap-6">
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-end gap-3">
         <ToggleGroup type="single" value={frame} onValueChange={(v) => v && setFrame(v as typeof frame)} aria-label="Frame" className="w-fit">
           <ToggleGroupItem value="solid">Solid</ToggleGroupItem>
           <ToggleGroupItem value="outline">Outline</ToggleGroupItem>
@@ -260,11 +268,25 @@ function PlateDemo() {
           ))}
         </ToggleGroup>
       </div>
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="grid gap-1.5">
+          <Label htmlFor="plate-barcode">Barcode</Label>
+          <Input id="plate-barcode" value={code} onChange={(e) => setCode(e.target.value)} className="w-56 font-mono" spellCheck={false} />
+        </div>
+        <ToggleGroup type="single" value={position} onValueChange={(v) => v && setPosition(v as typeof position)} aria-label="Label position" className="w-fit">
+          <ToggleGroupItem value="start">Start</ToggleGroupItem>
+          <ToggleGroupItem value="center">Center</ToggleGroupItem>
+          <ToggleGroupItem value="end">End</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
       <PlateMap
         format={96}
         variant="plate"
         notch={notch}
         frame={frame}
+        barcode={code || undefined}
+        barcodePosition={position}
+        side
         wells={ELISA}
         groups={ELISA_GROUPS}
         selectable
