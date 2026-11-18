@@ -2130,6 +2130,22 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "phylo-tree",
+      "type": "registry:ui",
+      "title": "Phylo Tree",
+      "description": "A phylogenetic tree from Newick: rectangular or circular, phylogram or cladogram, with rounded elbows and the path to every leaf lit from the node you point at. Support values as numbers or dots above a threshold, shaded clades named by their taxa, clades folded into triangles, aligned labels, a scale bar or a time axis, and keyboard walking. parseNewick, toNewick, ladderize, reroot, distances (p or Jukes–Cantor) and neighborJoining build trees from your own data.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/phylo-tree.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

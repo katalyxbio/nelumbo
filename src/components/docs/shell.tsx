@@ -113,6 +113,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/variant-badge", label: "Variant Badge", isNew: true },
       { href: "/components/gel", label: "Gel", isNew: true },
       { href: "/components/chromosome-ideogram", label: "Chromosome Ideogram", isNew: true },
+      { href: "/components/phylo-tree", label: "Phylo Tree", isNew: true },
     ],
   },
   {
