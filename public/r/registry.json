@@ -1943,7 +1943,7 @@
       "name": "protein-domains",
       "type": "registry:ui",
       "title": "Protein Domains",
-      "description": "A protein along its length: a thin backbone, domains as tall rounded blocks named inside where they fit, overlapping domains on lanes, a residue ruler, a legend, and variants as lollipops with pill labels stacked to avoid collisions.",
+      "description": "A protein along its length: a thin backbone, domains as tall rounded blocks named inside where they fit, overlapping domains on lanes, a residue ruler, a legend, and variants as lollipops with pill labels stacked to avoid collisions; secondary structure (helices as coils, strands as arrows, structureFromDssp) and per-residue confidence such as AlphaFold pLDDT (bars in AlphaFold's bands) as tracks on the same scale, with a residue guide through every track, a hover card and a keyboard stop.",
       "dependencies": [],
       "registryDependencies": [
         "utils"

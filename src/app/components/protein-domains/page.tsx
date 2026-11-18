@@ -1,6 +1,9 @@
 "use client"
 
-import { ProteinDomains } from "@/registry/nelumbo/ui/protein-domains"
+import * as React from "react"
+import { ProteinDomains, plddtBand } from "@/registry/nelumbo/ui/protein-domains"
+import { ChartReadout } from "@/registry/nelumbo/ui/chart"
+import { P53_PLDDT, P53_SEQUENCE, P53_STRUCTURE } from "./data"
 import { AminoAcidChange } from "@/registry/nelumbo/ui/amino-acid"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 import { P53_DOMAINS, P53_HOTSPOTS, P53_LENGTH } from "../gene-model/data"
@@ -34,6 +37,24 @@ export default function ProteinDomainsPage() {
       </Section>
 
       <Section
+        title="Structure and confidence"
+        description="Tracks under the domains, on the same scale: secondary structure (helices as coils, strands as arrows, turns as short bars, coil as the line) and a per-residue confidence such as AlphaFold's pLDDT, its bars colored by AlphaFold's four bands. Hover anywhere for the residue through every track. p53's structure is UniProt's; the confidence here is simulated to match its AlphaFold model's band shares."
+      >
+        <Preview className="block">
+          <ProteinDomains length={P53_LENGTH} domains={P53_DOMAINS} structure={P53_STRUCTURE} confidence={P53_PLDDT} sequence={P53_SEQUENCE} />
+        </Preview>
+      </Section>
+
+      <Section
+        title="Reading a residue"
+        description="selectable makes the tracks one keyboard stop: arrows move a residue, Shift moves ten, Home and End jump. Disorder shows at a glance: the transactivation region and the C-terminus fall to very low confidence, the DNA-binding domain stays very high."
+      >
+        <Preview className="block">
+          <ResidueDemo />
+        </Preview>
+      </Section>
+
+      <Section
         title="With mutations"
         description="Pair the track with AminoAcidChange for a variant list that reads the same way."
       >
@@ -63,10 +84,51 @@ export default function ProteinDomainsPage() {
             ["labels", '"inside" | "legend" | "both" | "none"', '"both"', "Names inside the blocks where they fit, and a legend underneath."],
             ["ruler", "boolean", "true", "Residue numbers along the bottom."],
             ["size", '"sm" | "default"', '"default"', "14 or 22 px domains."],
-            ["Parts", "DomainLegend, Lollipop, domainColors, domainLanes, stackLabels", "", "Shared with GeneModel."],
+            ["structure", "StructureElement[]", "", "start, end, type (helix, strand, turn). structureFromDssp reads a DSSP string."],
+            ["confidence", "number[]", "", "One score a residue, 0 to 100 (pLDDT): bars in AlphaFold's bands."],
+            ["confidenceLabel", "string", '"AlphaFold confidence (pLDDT)"', "The confidence track's name."],
+            ["sequence", "string", "", "The residues, named in the hover card and readout."],
+            ["selectable / onActiveChange", "boolean, (residue | null) => void", "false", "A keyboard stop over the residues; the residue in focus."],
+            ["Parts", "DomainLegend, Lollipop, domainColors, domainLanes, stackLabels, PLDDT_BANDS, plddtBand", "", "Shared with GeneModel; AlphaFold's bands."],
           ]}
         />
       </Section>
     </>
+  )
+}
+
+function ResidueDemo() {
+  const [aa, setAa] = React.useState<number | null>(null)
+  const domain = aa ? P53_DOMAINS.filter((d) => aa >= d.start && aa <= d.end).map((d) => d.name).join(", ") : ""
+  const ss = aa ? (P53_STRUCTURE.find((e) => aa >= e.start && aa <= e.end)?.type ?? "coil") : ""
+  return (
+    <div className="grid gap-6">
+      <div className="min-h-[4.5rem]">
+        {aa ? (
+          <ChartReadout
+            value={`${P53_SEQUENCE[aa - 1]}${aa}`}
+            label={domain || "Between domains"}
+            detail={
+              <span className="type-body-sm text-muted-foreground tabular-nums">
+                {ss[0].toUpperCase() + ss.slice(1)}, pLDDT {Math.round(P53_PLDDT[aa - 1])} ({plddtBand(P53_PLDDT[aa - 1]).name.toLowerCase()})
+              </span>
+            }
+          />
+        ) : (
+          <ChartReadout value={P53_LENGTH} unit="residues" label="p53" />
+        )}
+      </div>
+      <ProteinDomains
+        length={P53_LENGTH}
+        domains={P53_DOMAINS}
+        structure={P53_STRUCTURE}
+        confidence={P53_PLDDT}
+        sequence={P53_SEQUENCE}
+        selectable
+        onActiveChange={setAa}
+        labels="inside"
+        aria-label="p53 by residue"
+      />
+    </div>
   )
 }
