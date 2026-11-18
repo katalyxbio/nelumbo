@@ -1959,7 +1959,7 @@
       "name": "plasmid-map",
       "type": "registry:ui",
       "title": "Plasmid Map",
-      "description": "A circular plasmid map: thin backbone ring, features as rounded directional arcs on lanes, names along arcs or outside with leaders spread to avoid overlap, restriction sites as ticks, a ruler, a center readout of the feature in focus, keyboard and pointer focus, and a legend on narrow maps; uniqueSites finds single cutters.",
+      "description": "A circular plasmid map: thin backbone ring, features as rounded directional arcs on lanes, names along arcs or outside with leaders spread to avoid overlap, restriction sites as ticks, a ruler, a center readout of the feature in focus, keyboard and pointer focus, and a legend on narrow maps; uniqueSites finds single cutters, and parseGenBank reads a GenBank record (locations with complement, join and origin wraps; kinds from feature keys; names from labels, genes, products and notes) into features for this map or Construct Map.",
       "dependencies": [],
       "registryDependencies": [
         "utils"
@@ -2022,6 +2022,25 @@
       "files": [
         {
           "path": "registry/nelumbo/ui/sequence-logo.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "construct-map",
+      "type": "registry:ui",
+      "title": "Construct Map",
+      "description": "A linear construct map, the plasmid map unrolled: forward features above the backbone and reverse below as rounded bars with arrow tips, lanes for overlaps, joined features as blocks on a line, names inside, beside or in a label row (a legend on narrow maps), restriction sites on two fanned rows, a ruler, zoom (buttons, Ctrl-wheel, double-click a feature) down to both strands of the sequence with amino acids under each codon, an overview to drag, range selection with length and GC, hover cards and a keyboard stop; sliceConstruct cuts out a stretch (a PCR product, across the origin too). Takes the same features as Plasmid Map, so parseGenBank output renders either way.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@nelumbo/icon-button",
+        "@nelumbo/nucleotide",
+        "@nelumbo/plasmid-map"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/construct-map.tsx",
           "type": "registry:ui"
         }
       ]

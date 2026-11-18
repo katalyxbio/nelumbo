@@ -176,6 +176,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - Sequence Alignment (new, biology: aligned DNA or protein as connected residue rows with gap lines, wrapping blocks or a scrolling row with an overview, feature and marker tracks, identity bars, a consensus row, color by residue, conservation or difference, and block selection that copies as FASTA)
 - Plate Map (new, biology: 6 to 1536-well plates, bare or drawn to scale with a chosen notch corner and a scannable barcode on its front wall, wells by group or value, excluded wells, hover cards, and selection traced as one filleted outline with full keyboard navigation)
 - Sequence Logo (new, biology: motifs as stacks of letters sized by information or probability, from aligned sequences or a position matrix, with small-sample correction, a background, reverse complement, an IUPAC consensus row and range selection)
+- Construct Map (new, biology: the plasmid map unrolled into a line for inserts, guides and PCR products, with strands above and below the backbone, zoom down to both strands and the amino acids of each codon, range selection, and a GenBank parser shared with Plasmid Map)
 
 ## License
 

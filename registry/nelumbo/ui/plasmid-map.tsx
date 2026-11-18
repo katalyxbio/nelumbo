@@ -41,6 +41,10 @@ export type PlasmidFeature = {
   /** Default by kind: CDS blue, promoter green, origin amber, terminator pink, primer cyan, marker purple. */
   color?: PlasmidColor
   description?: string
+  /** The pieces of a joined feature (a spliced CDS), in order. The feature spans them all. */
+  segments?: { start: number; end: number }[]
+  /** For a CDS: which base of the first codon the feature starts on, 1 to 3. */
+  codonStart?: 1 | 2 | 3
 }
 
 export type PlasmidSite = {
@@ -83,6 +87,188 @@ export function uniqueSites(sequence: string, enzymes: Record<string, string>): 
     if (hits.length === 1) out.push({ position: hits[0], name })
   }
   return out.sort((a, b) => a.position - b.position)
+}
+
+export type GenBankRecord = {
+  /** The LOCUS name. */
+  name: string
+  length: number
+  topology: "circular" | "linear"
+  /** "DNA", "mRNA", ... */
+  molecule: string
+  definition: string
+  accession: string
+  features: PlasmidFeature[]
+  /** Upper case, no spaces or numbers. Empty when the record has no ORIGIN. */
+  sequence: string
+}
+
+const KEY_KIND: Record<string, PlasmidFeatureKind> = {
+  CDS: "cds",
+  promoter: "promoter",
+  rep_origin: "origin",
+  oriT: "origin",
+  terminator: "terminator",
+  polyA_signal: "terminator",
+  primer_bind: "primer",
+  primer: "primer",
+}
+
+const MARKER = /resistan|lactamase|phosphotransferase|acetyltransferase|\b(amp|kan|neo|cm|tet|hyg|bla|zeo|puro|bsd)r?\b/i
+
+/** A feature's name from its qualifiers: label, gene, product, then a trimmed note. */
+function featureName(q: Record<string, string>, key: string) {
+  if (q.label) return q.label
+  if (key === "exon" && q.number) return `Exon ${q.number}`
+  if (key === "gene" || key === "CDS" || key === "mRNA") {
+    const n = q.gene ?? q.product ?? q.locus_tag
+    if (n) return n
+  }
+  const direct = q.standard_name ?? q.allele ?? (key === "misc_feature" ? undefined : q.product)
+  if (direct) return direct
+  const region = q.note?.match(/Region:\s*(.+?)(?:\.(?:\s|$)|;|$)/)?.[1]
+  if (region) return region
+  if (q.note) {
+    const n = q.note.split(/[;,]/)[0].replace(/\s+(sequencing\s+)?(primer\s+)?binding site$/i, "").trim()
+    return n.split(/\s+/).length > 4 ? n.split(/\s+/).slice(0, 4).join(" ") : n
+  }
+  return q.product ?? q.regulatory_class?.replace(/_/g, " ") ?? q.gene ?? key.replace(/_/g, " ")
+}
+
+/** A GenBank location: complement(), join(), order(), <, >, a^b, single bases. Remote parts are skipped. */
+export function parseLocation(loc: string, length = Infinity) {
+  const strand: 1 | -1 = /^complement\(/.test(loc.trim()) || /^(join|order)\(complement\(/.test(loc.trim()) ? -1 : 1
+  const segments: { start: number; end: number }[] = []
+  for (const part of loc.replace(/\s/g, "").split(/[,()]/)) {
+    if (!part || /:/.test(part) || /^(complement|join|order)$/.test(part)) continue
+    const m = part.match(/^[<>]?(\d+)(?:(?:\.\.|\^)[<>]?(\d+))?$/)
+    if (!m) continue
+    const a = Number(m[1])
+    const b = m[2] ? Number(m[2]) : a
+    segments.push({ start: Math.min(a, b, length), end: Math.min(Math.max(a, b), length) })
+  }
+  if (strand === -1 && /^complement\((join|order)\(/.test(loc.trim())) segments.sort((p, q) => p.start - q.start)
+  return { strand, segments }
+}
+
+/**
+ * The first record of a GenBank file, its features as PlasmidFeatures, ready
+ * for PlasmidMap or ConstructMap. Kinds come from the feature keys (CDS,
+ * promoter, rep_origin, terminator, polyA_signal, primer_bind; resistance genes
+ * become markers); `source`, and a `gene` that only repeats its CDS, are left
+ * out. Names come from /label, /gene, /product, then /note.
+ */
+export function parseGenBank(
+  text: string,
+  { skip = ["source"], keepGenes = false }: { skip?: string[]; keepGenes?: boolean } = {}
+): GenBankRecord {
+  const lines = text.replace(/\r/g, "").split("\n")
+  const locus = lines.find((l) => l.startsWith("LOCUS")) ?? ""
+  const lt = locus.split(/\s+/)
+  const lengthAt = lt.findIndex((t) => /^(bp|aa)$/.test(t))
+  let length = lengthAt > 0 ? Number(lt[lengthAt - 1]) : 0
+  const topology = /\bcircular\b/i.test(locus) ? "circular" : "linear"
+  const molecule = lt.find((t) => /^(ss-|ds-|ms-)?(DNA|RNA|mRNA|rRNA|tRNA|cRNA)$/i.test(t)) ?? "DNA"
+
+  const field = (key: string) => {
+    const i = lines.findIndex((l) => l.startsWith(key))
+    if (i < 0) return ""
+    const out = [lines[i].slice(12)]
+    for (let j = i + 1; j < lines.length && lines[j].startsWith(" ".repeat(12)); j++) out.push(lines[j].trim())
+    return out.join(" ").trim()
+  }
+
+  const o = lines.findIndex((l) => l.startsWith("ORIGIN"))
+  const sequence =
+    o < 0
+      ? ""
+      : lines
+          .slice(o + 1)
+          .filter((l) => !l.startsWith("//"))
+          .join("")
+          .replace(/[^A-Za-z]/g, "")
+          .toUpperCase()
+  if (!length) length = sequence.length
+
+  // features: a key at column 5, qualifiers at column 21
+  const f0 = lines.findIndex((l) => l.startsWith("FEATURES"))
+  const raw: { key: string; loc: string; q: Record<string, string> }[] = []
+  if (f0 >= 0) {
+    let cur: (typeof raw)[number] | null = null
+    let qKey: string | null = null
+    let open = false
+    // an odd run of quotes at the end closes the value ("" is an escaped quote)
+    const closes = (t: string) => (t.match(/"+$/)?.[0].length ?? 0) % 2 === 1
+    for (let j = f0 + 1; j < lines.length; j++) {
+      const l = lines[j]
+      if (/^\S/.test(l)) break
+      const key = l.slice(5, 21).trim()
+      const rest = l.slice(21).trimEnd()
+      if (key && !open) {
+        cur = { key, loc: rest.trim(), q: {} }
+        raw.push(cur)
+        qKey = null
+      } else if (cur) {
+        // a quoted value runs on until its closing quote, even over lines that start with "/"
+        const qm: RegExpMatchArray | null = open ? null : rest.match(/^\/(\w+)(?:=(.*))?$/)
+        if (qm) {
+          const k: string = qm[1]
+          const v: string = qm[2] ?? ""
+          qKey = k
+          cur.q[k] = v.replace(/^"/, "")
+          open = v.startsWith('"') && !closes(v.slice(1))
+        } else if (qKey) {
+          cur.q[qKey] += (qKey === "translation" ? "" : " ") + rest.trim()
+          if (open && closes(rest.trim())) open = false
+        } else cur.loc += rest.trim()
+      }
+    }
+    for (const f of raw) for (const k in f.q) f.q[k] = f.q[k].replace(/"$/, "").replace(/""/g, '"')
+  }
+
+  const features: PlasmidFeature[] = []
+  let exon = 0
+  for (const f of raw) {
+    if (f.key === "exon") exon++
+    if (f.key === "exon" && !f.q.number) f.q.number = String(exon)
+    if (skip.includes(f.key)) continue
+    if (f.key === "gene" && !keepGenes && raw.some((g) => g !== f && g.key === "CDS" && g.loc === f.loc)) continue
+    const { strand, segments } = parseLocation(f.loc, length || Infinity)
+    if (!segments.length) continue
+    const first = segments[0]
+    const lastSeg = segments[segments.length - 1]
+    // a join that runs back past the origin wraps
+    const wraps = topology === "circular" && segments.length > 1 && lastSeg.end < first.start
+    const start = wraps ? first.start : Math.min(...segments.map((s) => s.start))
+    const end = wraps ? lastSeg.end : Math.max(...segments.map((s) => s.end))
+    const text = `${f.q.note ?? ""} ${f.q.product ?? ""} ${f.q.gene ?? ""} ${f.q.label ?? ""}`
+    let kind: PlasmidFeatureKind = KEY_KIND[f.key] ?? "misc"
+    if (f.key === "regulatory") kind = /polyA|terminator/i.test(f.q.regulatory_class ?? "") ? "terminator" : /promoter/i.test(f.q.regulatory_class ?? "") ? "promoter" : "misc"
+    if ((kind === "cds" || f.key === "gene") && MARKER.test(text)) kind = "marker"
+    const directional = kind === "cds" || kind === "marker" || kind === "promoter" || kind === "primer" || f.key === "gene"
+    const desc = [f.q.product, f.q.note].filter(Boolean).join(", ")
+    features.push({
+      start,
+      end,
+      name: featureName(f.q, f.key),
+      kind,
+      strand: directional || /complement/.test(f.loc) ? strand : 0,
+      ...(desc ? { description: desc[0].toUpperCase() + desc.slice(1) } : {}),
+      ...(segments.length > 1 ? { segments } : {}),
+      ...(f.q.codon_start ? { codonStart: Number(f.q.codon_start) as 1 | 2 | 3 } : {}),
+    })
+  }
+
+  return {
+    name: lt[1] ?? "",
+    length,
+    topology,
+    molecule,
+    definition: field("DEFINITION").replace(/\.$/, ""),
+    accession: field("ACCESSION").split(/\s+/)[0] ?? "",
+    features,
+    sequence,
+  }
 }
 
 type PlasmidMapProps = Omit<React.ComponentProps<"div">, "children"> & {

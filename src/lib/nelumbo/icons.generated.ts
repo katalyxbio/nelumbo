@@ -2,6 +2,7 @@
 import type { IconName } from "@/registry/nelumbo/ui/icon"
 
 export const USED_ICONS: IconName[] = [
+  "2d",
   "abc",
   "accessibility_new",
   "account_circle",
@@ -27,6 +28,7 @@ export const USED_ICONS: IconName[] = [
   "bookmark",
   "bookmark_added",
   "brush",
+  "bubble",
   "cake",
   "calendar_month",
   "calendar_today",
@@ -66,6 +68,7 @@ export const USED_ICONS: IconName[] = [
   "deployed_code",
   "description",
   "desktop_windows",
+  "difference",
   "directions",
   "directions_car",
   "directions_run",
@@ -92,6 +95,7 @@ export const USED_ICONS: IconName[] = [
   "files",
   "filter",
   "fit_screen",
+  "fit_width",
   "flight",
   "flight_takeoff",
   "folder",
@@ -114,6 +118,7 @@ export const USED_ICONS: IconName[] = [
   "grid_4x4",
   "grid_view",
   "group",
+  "groups",
   "headphones",
   "height",
   "help",
@@ -163,6 +168,7 @@ export const USED_ICONS: IconName[] = [
   "monitoring",
   "more_horiz",
   "more_vert",
+  "mouse",
   "movie",
   "navigation",
   "news",
@@ -275,5 +281,6 @@ export const USED_ICONS: IconName[] = [
   "window",
   "work",
   "workspace_premium",
-  "zoom_in"
+  "zoom_in",
+  "zoom_out"
 ]
