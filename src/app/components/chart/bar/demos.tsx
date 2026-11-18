@@ -57,6 +57,13 @@ const visitorsConfig = {
   mobile: { label: "Mobile", color: "var(--orange)" },
 } satisfies ChartConfig
 
+// A stack is one quantity in parts, so its segments are tones of one color rather than two hues;
+// the legend and tooltip name them.
+const stackConfig = {
+  desktop: { label: "Desktop", color: "var(--blue)" },
+  mobile: { label: "Mobile", color: "color-mix(in oklab, var(--blue) 55%, var(--card))" },
+} satisfies ChartConfig
+
 const monthTick = (i: number) => monthly[i]?.tick ?? ""
 
 /* Default: pill bars, a goal line, badges on goal months ------------- */
@@ -177,7 +184,7 @@ export function StackedBarDemo() {
       <CardContent className="grid gap-6 pt-6">
         <CardHead title="Bar Chart - Stacked + Legend" description="Desktop and mobile visitors, January to June 2026" />
         <ChartReadout value={fmtNum(total)} unit="visitors" label={point ? point.month : "Six months"} detail={detail} onClear={focus.isDefault ? undefined : focus.reset} />
-        <ChartContainer config={visitorsConfig} focus={focus} aria-label="Desktop and mobile visitors per month, stacked bars" className="aspect-auto h-64">
+        <ChartContainer config={stackConfig} focus={focus} aria-label="Desktop and mobile visitors per month, stacked bars" className="aspect-auto h-64">
           <BarChart data={monthly} margin={{ top: 12, right: 0, left: 0, bottom: 0 }} barCategoryGap="16%" {...focus.chartProps}>
             <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={10} interval={0} tickFormatter={(_, i) => monthTick(i)} />
             <YAxis orientation="right" tickLine={false} axisLine={false} width={40} domain={[0, 500]} ticks={[0, 200, 400]} tick={chartTicks()} />

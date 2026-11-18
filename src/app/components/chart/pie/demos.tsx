@@ -79,9 +79,12 @@ const trend = (
   </>
 )
 
-/* the slice style: gaps and pill ends ------------------------------ */
+/* the slice style: even gaps and rounded ends ---------------------- */
 
-const slices = { paddingAngle: 4, cornerRadius: 12, stroke: "none" } as const
+// The gaps are a stroke in the card's color, so they keep one width from rim to center
+// (paddingAngle gaps are wedges that narrow to a point), and a small hole keeps the
+// slices from meeting in one point.
+const slices = { innerRadius: "14%", paddingAngle: 0, cornerRadius: 10, stroke: "var(--card)", strokeWidth: 4 } as const
 const tip = <ChartTooltipContent hideLabel nameKey="browser" />
 
 /* Simple ----------------------------------------------------------- */
@@ -210,7 +213,7 @@ export function PieLegendDemo() {
 
 /* Donut ------------------------------------------------------------ */
 
-const donut = { innerRadius: "56%", outerRadius: "84%", ...slices } as const
+const donut = { ...slices, innerRadius: "56%", outerRadius: "84%" } as const
 
 export function PieDonutDemo() {
   const motion = useChartAnimation()
@@ -295,7 +298,7 @@ const sum = (rows: { visitors: number }[]) => rows.reduce((a, r) => a + r.visito
 
 export function PieStackedDemo() {
   const motion = useChartAnimation()
-  const ring = { dataKey: "visitors", nameKey: "browser", paddingAngle: 4, cornerRadius: 9, stroke: "none" } as const
+  const ring = { dataKey: "visitors", nameKey: "browser", paddingAngle: 0, cornerRadius: 9, stroke: "var(--card)", strokeWidth: 4 } as const
   return (
     <PieCard title="Pie Chart - Stacked" description="October on the inside, November on the outside">
       <ChartContainer

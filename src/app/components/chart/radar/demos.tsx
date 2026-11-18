@@ -58,11 +58,13 @@ function RadarCard({
   title,
   description,
   trend = "up",
+  control,
   children,
 }: {
   title: string
   description: string
   trend?: "up" | "down"
+  control?: React.ReactNode
   children: React.ReactNode
 }) {
   return (
@@ -72,6 +74,7 @@ function RadarCard({
           <h3 className="type-title-md">{title}</h3>
           <p className="type-body-md text-muted-foreground">{description}</p>
         </div>
+        {control}
         {children}
         <div className="flex flex-wrap items-center gap-2 type-body-md text-muted-foreground">
           <Badge variant={trend === "up" ? "success" : "destructive"} icon={trend === "up" ? "trending_up" : "trending_down"}>
@@ -186,29 +189,31 @@ export function RadarCustomLabel() {
 
 /* Grids ------------------------------------------------------------- */
 
-type GridKind = "custom" | "none" | "circle" | "circle-no-lines" | "circle-filled" | "filled"
+export type GridKind = "polygon" | "custom" | "none" | "circle" | "circle-no-lines" | "circle-filled" | "filled"
 
-const gridMeta: Record<GridKind, { title: string; description: string }> = {
-  custom: { title: "Radar Chart - Grid Custom", description: "Three dotted rings in the series color, no spokes" },
-  none: { title: "Radar Chart - Grid None", description: "No grid, the polygon and its dots carry the chart" },
-  circle: { title: "Radar Chart - Grid Circle", description: "Round dotted rings with spokes" },
-  "circle-no-lines": { title: "Radar Chart - Grid Circle No Lines", description: "Round dotted rings, spokes removed" },
-  "circle-filled": { title: "Radar Chart - Grid Circle Filled", description: "Alternating tonal rings behind the polygon" },
-  filled: { title: "Radar Chart - Grid Filled", description: "One tonal body with dotted rings and spokes on top" },
+export const gridMeta: Record<GridKind, { title: string; description: string; short: string }> = {
+  polygon: { title: "Radar Chart - Grid", description: "Dotted polygon rings with spokes, the default", short: "Polygon" },
+  custom: { title: "Radar Chart - Grid Custom", description: "Three dotted rings in the series color, no spokes", short: "Rings" },
+  none: { title: "Radar Chart - Grid None", description: "No grid, the polygon and its dots carry the chart", short: "None" },
+  circle: { title: "Radar Chart - Grid Circle", description: "Round dotted rings with spokes", short: "Circle" },
+  "circle-no-lines": { title: "Radar Chart - Grid Circle No Lines", description: "Round dotted rings, spokes removed", short: "No spokes" },
+  "circle-filled": { title: "Radar Chart - Grid Circle Filled", description: "Alternating tonal rings behind the polygon", short: "Tonal" },
+  filled: { title: "Radar Chart - Grid Filled", description: "One tonal body with dotted rings and spokes on top", short: "Filled" },
 }
 
-export function RadarGridDemo({ kind }: { kind: GridKind }) {
+export function RadarGridDemo({ kind, control }: { kind: GridKind; control?: React.ReactNode }) {
   const motion = useChartAnimation()
   const color = "var(--color-desktop)"
   const meta = gridMeta[kind]
   let grid: React.ReactNode = null
+  if (kind === "polygon") grid = <PolarGrid {...radarGrid} />
   if (kind === "custom") grid = <Customized component={<RadarRings count={N} rings={3} spokes={false} color={color} />} />
   if (kind === "circle") grid = <PolarGrid {...radarGrid} gridType="circle" />
   if (kind === "circle-no-lines") grid = <PolarGrid {...radarGrid} gridType="circle" radialLines={false} />
   if (kind === "circle-filled") grid = <Customized component={<RadarRings count={N} shape="circle" rings={4} fill="tonal" spokes={false} color={color} />} />
   if (kind === "filled") grid = <Customized component={<RadarRings count={N} rings={4} fill="flat" color={color} />} />
   return (
-    <RadarCard title={meta.title} description={meta.description}>
+    <RadarCard title={meta.title} description={meta.description} control={control}>
       <ChartContainer config={single} aria-label={`Radar chart, ${meta.title.replace("Radar Chart - ", "").toLowerCase()}: desktop visitors for each month`} className={chartClass}>
         <RadarChart data={months} {...polar}>
           {grid}

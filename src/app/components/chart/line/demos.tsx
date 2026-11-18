@@ -38,7 +38,7 @@ const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0)
 const avgDesktop = Math.round(sum(desktop) / desktop.length)
 
 const cardClass = "[--card:var(--surface-container-low)]"
-const margin = { top: 12, right: 0, left: 8, bottom: 0 }
+const margin = { top: 12, right: 0, left: 16, bottom: 0 }
 
 const singleConfig = { desktop: { label: "Desktop", color: "var(--blue)" } } satisfies ChartConfig
 
@@ -128,7 +128,7 @@ function ReadoutLine({
         <ChartContainer config={config} focus={focus} aria-label={aria} className="aspect-auto h-64">
           <LineChart data={monthly} margin={{ ...margin, top: dots === "cookie" ? 20 : margin.top }} {...focus.chartProps}>
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={10} tickFormatter={(v: string) => v.slice(0, 3)} />
+            <XAxis dataKey="month" interval="preserveStartEnd" tickLine={false} axisLine={false} tickMargin={10} tickFormatter={(v: string) => v.slice(0, 3)} />
             <YAxis
               orientation="right"
               tickLine={false}
@@ -237,7 +237,7 @@ export function LineMultiple() {
         <ChartContainer config={multiConfig} focus={focus} aria-label="Desktop and mobile visitors by month, January to June 2026" className="aspect-auto h-72">
           <LineChart data={monthly} margin={margin} {...focus.chartProps}>
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={10} tickFormatter={(v: string) => v.slice(0, 3)} />
+            <XAxis dataKey="month" interval="preserveStartEnd" tickLine={false} axisLine={false} tickMargin={10} tickFormatter={(v: string) => v.slice(0, 3)} />
             <YAxis orientation="right" tickLine={false} axisLine={false} width={40} domain={[0, 320]} ticks={[0, 100, 200, 300]} tick={chartTicks()} />
             <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
             <Line {...chartLine("desktop")} {...motion} />
@@ -268,7 +268,7 @@ export function LineLabel() {
         >
           <LineChart data={monthly} margin={{ top: 40, right: 26, left: 26, bottom: 0 }}>
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={10} tickFormatter={(v: string) => v.slice(0, 3)} />
+            <XAxis dataKey="month" interval="preserveStartEnd" tickLine={false} axisLine={false} tickMargin={10} tickFormatter={(v: string) => v.slice(0, 3)} />
             <YAxis hide domain={[0, 340]} />
             <Line {...chartLine("desktop")} dot={chartDot("desktop")} {...motion}>
               <LabelList dataKey="desktop" content={chartPillLabel("desktop")} />

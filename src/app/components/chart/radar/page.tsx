@@ -1,18 +1,10 @@
 "use client"
 
+import * as React from "react"
 import { PageHeader, Preview, Section } from "@/components/docs/primitives"
+import { ChipGroup, FilterChip } from "@/registry/nelumbo/ui/chip"
 import { ChartNav } from "../chart-nav"
-import {
-  RadarCustomLabel,
-  RadarDefault,
-  RadarDots,
-  RadarGridDemo,
-  RadarIcons,
-  RadarLegend,
-  RadarLinesOnly,
-  RadarMultiple,
-  RadarRadiusAxis,
-} from "./demos"
+import { RadarCustomLabel, RadarDefault, RadarGridDemo, RadarLegend, RadarLinesOnly, RadarRadiusAxis, gridMeta, type GridKind } from "./demos"
 
 const grid = "grid items-start gap-4 lg:grid-cols-2"
 
@@ -26,41 +18,46 @@ export default function RadarChartsPage() {
       <ChartNav />
 
       <Section
-        title="Default"
-        description="The focused axis gets a spoke and a ring, and the readout above follows it. Hover an axis, click or tap to select, or tab to the chart and use the arrow keys (Escape goes back to the summary)."
+        title="Default and grids"
+        description="The focused axis gets a spoke and a ring, and the readout above follows it: hover an axis, click or tap to select, or tab to the chart and use the arrow keys (Escape goes back to the summary). Dotted polygon rings are the default grid; the others change the rings' shape, drop the spokes, or put a tone behind the polygon."
       >
-        <Preview className="block max-w-xl">
+        <Preview className={grid}>
           <RadarDefault />
+          <GridPicker />
         </Preview>
       </Section>
 
-      <Section title="Dots, Lines Only and Custom Label" description="Resting dots are ringed in the surface. Lines Only drops the fill for two outlines; Custom Label puts each value under its axis name.">
+      <Section title="Lines Only and Custom Label" description="Lines Only drops the fill for two outlines; Custom Label puts each value under its axis name.">
         <Preview className={grid}>
-          <RadarDots />
           <RadarLinesOnly />
           <RadarCustomLabel />
         </Preview>
       </Section>
 
-      <Section title="Grids" description="Dotted polygon rings are the default. Custom, None, Circle, Circle No Lines, Circle Filled and Filled change the shape and the tone behind the polygon.">
+      <Section title="Legend and Radius Axis" description="Two series overlap in translucent tones. The legend chips toggle a series and can carry Material Symbols; the radius axis can be labelled along one spoke.">
         <Preview className={grid}>
-          <RadarGridDemo kind="custom" />
-          <RadarGridDemo kind="none" />
-          <RadarGridDemo kind="circle" />
-          <RadarGridDemo kind="circle-no-lines" />
-          <RadarGridDemo kind="circle-filled" />
-          <RadarGridDemo kind="filled" />
-        </Preview>
-      </Section>
-
-      <Section title="Multiple, Legend, Icons and Radius Axis" description="Two series overlap in translucent tones. The legend chips can toggle a series, carry Material Symbols, and the radius axis can be labelled along one spoke.">
-        <Preview className={grid}>
-          <RadarMultiple />
           <RadarLegend />
-          <RadarIcons />
           <RadarRadiusAxis />
         </Preview>
       </Section>
     </>
+  )
+}
+
+function GridPicker() {
+  const [kind, setKind] = React.useState<GridKind>("polygon")
+  return (
+    <RadarGridDemo
+      kind={kind}
+      control={
+        <ChipGroup aria-label="Grid">
+          {(Object.keys(gridMeta) as GridKind[]).map((k) => (
+            <FilterChip key={k} selected={kind === k} onSelectedChange={() => setKind(k)}>
+              {gridMeta[k].short}
+            </FilterChip>
+          ))}
+        </ChipGroup>
+      }
+    />
   )
 }

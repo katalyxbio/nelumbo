@@ -1182,8 +1182,8 @@ type LineDotProps = { cx?: number; cy?: number; index?: number; value?: number |
  */
 export function chartColorDot(colorOf: (payload: any, index: number) => string, { r = 5 }: { r?: number } = {}) {
   function ColorDot({ cx, cy, index = 0, payload }: LineDotProps) {
-    if (cx === undefined || cy === undefined || !payload) return <g />
-    return <circle cx={cx} cy={cy} r={r} fill={colorOf(payload, index)} stroke="var(--chart-surface)" strokeWidth={2} />
+    if (cx === undefined || cy === undefined || !payload) return <g key={`dot-${index}`} />
+    return <circle key={`dot-${index}`} cx={cx} cy={cy} r={r} fill={colorOf(payload, index)} stroke="var(--chart-surface)" strokeWidth={2} />
   }
   return ColorDot
 }
@@ -1202,11 +1202,11 @@ export function chartCookieDot(
 ) {
   const color = `var(--color-${key})`
   function CookieDot({ cx, cy, index = 0, payload }: LineDotProps) {
-    if (cx === undefined || cy === undefined || !payload) return <g />
-    if (when && !when(payload, index)) return <circle cx={cx} cy={cy} r={4} fill={color} stroke="var(--chart-surface)" strokeWidth={2} />
+    if (cx === undefined || cy === undefined || !payload) return <g key={`dot-${index}`} />
+    if (when && !when(payload, index)) return <circle key={`dot-${index}`} cx={cx} cy={cy} r={4} fill={color} stroke="var(--chart-surface)" strokeWidth={2} />
     const s = (r * 1.15) / 24
     return (
-      <g aria-hidden>
+      <g key={`dot-${index}`} aria-hidden>
         <path d={chartCookiePath(cx, cy, r)} fill={color} stroke="var(--chart-surface)" strokeWidth={2} />
         {glyph && <path d={glyph} transform={`translate(${cx - 12 * s} ${cy - 12 * s}) scale(${s})`} fill="var(--chart-surface)" />}
       </g>

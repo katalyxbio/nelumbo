@@ -29,7 +29,7 @@ export default function PieChartsPage() {
 
       <Section
         title="Simple and Separator None"
-        description="The default pie has paddingAngle gaps and a large cornerRadius, so each slice is a rounded wedge. Set both to 0 (and stroke none) for one continuous disc."
+        description="Slices are rounded and parted by even gaps: a stroke in the card's color, so a gap keeps its width from rim to center, around a small hole so the slices never meet in a point. Drop the stroke, the hole and the corners for one continuous disc."
       >
         <Preview className={grid}>
           <PieSimpleDemo />

@@ -63,7 +63,7 @@ const TRIO = {
 } satisfies ChartConfig
 
 const tickMonth = (v: string) => v.slice(0, 3)
-const chartMargin = { top: 12, right: 0, left: 0, bottom: 0 }
+const chartMargin = { top: 12, right: 0, left: 16, bottom: 0 }
 const xPad = { left: 14, right: 14 }
 
 function trend(i: number, key: "desktop" | "mobile") {
@@ -118,7 +118,7 @@ export function SingleAreaDemo({ id, title, description, curve = "monotone", ave
             <ChartGradient id={`fill-${id}`} k="desktop" />
           </defs>
           <CartesianGrid vertical={false} />
-          <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={10} padding={xPad} tickFormatter={tickMonth} />
+          <XAxis dataKey="month" interval="preserveStartEnd" tickLine={false} axisLine={false} tickMargin={10} padding={xPad} tickFormatter={tickMonth} />
           <YAxis
             orientation="right"
             tickLine={false}
@@ -165,7 +165,7 @@ export function GradientAreaDemo() {
             <ChartGradient id="fill-gradient-mobile" k="mobile" from={0.5} to={0} />
           </defs>
           <CartesianGrid vertical={false} />
-          <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={10} padding={xPad} tickFormatter={tickMonth} />
+          <XAxis dataKey="month" interval="preserveStartEnd" tickLine={false} axisLine={false} tickMargin={10} padding={xPad} tickFormatter={tickMonth} />
           <YAxis orientation="right" tickLine={false} axisLine={false} width={40} domain={[0, 300]} ticks={[0, 100, 200, 300]} tick={chartTicks()} />
           <ChartTooltip cursor={false} content={() => null} />
           <Area {...chartArea("mobile", "url(#fill-gradient-mobile)")} {...motion} />
