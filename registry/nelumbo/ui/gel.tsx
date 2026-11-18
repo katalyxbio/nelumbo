@@ -10,7 +10,8 @@ import { cn } from "@/lib/utils"
  * An agarose gel, simulated: each band where a model of how DNA runs puts it
  * for the gel's agarose, buffer, voltage and time, as wide as it spreads and
  * as bright as the DNA in it, drawn a pixel at a time as a stain shows it
- * (light falling off to the corners, dust, grain, lanes that smile).
+ * (light falling off to the corners, dust, grain, lanes that smile). `mode`
+ * draws the ideal bands over it, or alone.
  *
  *   const lanes = [
  *     { label: "Ladder", ladder: "neb-1kb" },
@@ -367,13 +368,15 @@ export function digest(sequence: string, enzymes: Record<string, string>, { circ
 
 // ---------------------------------------------------------------- drawing
 
-export type GelStain = "auto" | "uv" | "print" | "ethidium" | "sybr"
+export type GelStain = "ethidium" | "sybr" | "print"
+
+/** How a gel is drawn: as a stain shows it, with the ideal bands over it, or the ideal bands alone. */
+export type GelMode = "real" | "overlay" | "ideal"
 
 type Ramp = { ramp: [number, number, number][]; well: string; light: boolean }
 
-/** How a gel is imaged: a neutral glow on dark, a print, ethidium under UV, SYBR Safe under blue light. */
-const STAINS: Record<Exclude<GelStain, "auto">, Ramp> = {
-  uv: { ramp: [[16, 16, 17], [58, 58, 60], [150, 150, 150], [226, 226, 222], [252, 252, 250]], well: "rgba(0,0,0,0.6)", light: true },
+/** How a gel is imaged: ethidium under UV, SYBR Safe under blue light, or printed dark on light, as a gel doc prints it. */
+const STAINS: Record<GelStain, Ramp> = {
   print: { ramp: [[236, 236, 232], [198, 198, 196], [120, 120, 122], [48, 48, 52], [14, 14, 16]], well: "rgba(0,0,0,0.16)", light: false },
   // as a colour camera sees it: orange where there's DNA, white where it saturates, on the gel's violet
   ethidium: { ramp: [[20, 7, 28], [120, 30, 80], [236, 110, 80], [255, 190, 130], [255, 246, 228]], well: "rgba(0,0,0,0.55)", light: true },
@@ -565,20 +568,6 @@ function useWidth() {
   return [ref, width] as const
 }
 
-// whether the page is dark, for stain="auto"
-function useDark() {
-  const [dark, setDark] = React.useState(false)
-  React.useEffect(() => {
-    const el = document.documentElement
-    const read = () => setDark(el.classList.contains("dark"))
-    read()
-    const mo = new MutationObserver(read)
-    mo.observe(el, { attributes: true, attributeFilter: ["class"] })
-    return () => mo.disconnect()
-  }, [])
-  return dark
-}
-
 const RUN_MS = 1800
 // a label character's width, px
 const CHAR = 6.2
@@ -588,8 +577,10 @@ type GelProps = Omit<React.ComponentProps<"div">, "children"> &
     lanes: GelLane[]
     /** The slab's height in px; its `length` in cm is drawn to fit. Default 320. */
     height?: number
-    /** "auto" (default): printed dark on light, or a neutral glow in dark mode. */
+    /** How it's imaged: "ethidium" (default) under UV, "sybr" under blue light, or "print", dark on light. */
     stain?: GelStain
+    /** "real" (default) as the stain shows it; "overlay", the ideal bands drawn over it; "ideal", the ideal bands alone. */
+    mode?: GelMode
     /** The ladder's sizes along the left. Default true. */
     sizes?: boolean
     /** The loading dyes' fronts along the right. Default true. */
@@ -611,7 +602,8 @@ function Gel({
   minutes = DEFAULT_GEL.minutes,
   length = DEFAULT_GEL.length,
   height = 320,
-  stain = "auto",
+  stain = "ethidium",
+  mode = "real",
   sizes = true,
   dyes = true,
   run,
@@ -623,8 +615,8 @@ function Gel({
   ...props
 }: GelProps) {
   const [ref, width] = useWidth()
-  const dark = useDark()
-  const ink = stain === "auto" ? (dark ? "uv" : "print") : stain
+  const ink = stain
+  const ideal = mode === "ideal"
   const [seed] = React.useState(() => (Math.random() * 1e6) | 0)
 
   // a run playing: the minutes climbing to those set, eased
@@ -705,11 +697,11 @@ function Gel({
   const canvas = React.useRef<HTMLCanvasElement>(null)
   React.useLayoutEffect(() => {
     const c = canvas.current
-    if (!c || !width) return
+    if (!c || !width || ideal) return
     const dpr = Math.min(2, window.devicePixelRatio || 1)
     paintSlab(c, runs, g, ink, { slabX, slabW, laneX: laneXs, laneW, H: height, cm }, dpr, seed)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runs, g, ink, width, height, seed])
+  }, [runs, g, ink, width, height, seed, ideal])
 
   // ---- focus
   const flat = React.useMemo(() => rows.flatMap((r, lane) => r.map((_, band) => ({ lane, band }))), [rows])
@@ -770,7 +762,7 @@ function Gel({
     }
   }
   const fronts = dyeFronts(g)
-  const light = STAINS[ink].light
+  const light = !ideal && STAINS[ink].light
 
   return (
     <div data-slot="gel" className={cn("grid w-full min-w-0 gap-3", className)} {...props}>
@@ -815,8 +807,43 @@ function Gel({
       >
         {width > 0 && (
           <>
-            <canvas ref={canvas} aria-hidden className="absolute rounded-xl" style={{ left: slabX, top, width: slabW, height }} />
+            {!ideal && <canvas ref={canvas} aria-hidden className="absolute rounded-xl" style={{ left: slabX, top, width: slabW, height }} />}
             <svg width={W} height={H} aria-hidden className="absolute inset-0 block overflow-visible">
+              {/* the ideal run: a plain slab, each band a line where its size runs */}
+              {ideal && (
+                <>
+                  <rect x={slabX} y={top} width={slabW} height={height} rx={12} className="fill-surface-container-high" />
+                  {lanes.map((_, i) => (
+                    <rect key={i} x={laneXs[i]} y={top + WELL_TOP} width={laneW} height={WELL_H} rx={1.5} className="fill-foreground/15" />
+                  ))}
+                </>
+              )}
+              {mode !== "real" &&
+                runs.map((r, i) =>
+                  r.map((b, j) => {
+                    if (!on(b.size)) return null
+                    const y = yOf(b.size)
+                    const ladder = !!lanes[i].ladder
+                    const color = ideal ? "fill-foreground" : light ? "fill-[#4fe3ff]" : "fill-[#d61f1f]"
+                    if (b.smear) {
+                      const sm = Math.max(2, spread(b.size, g) * cm * 2.6)
+                      return <rect key={`${i}-${j}`} x={laneXs[i]} y={y - sm} width={laneW} height={2 * sm} rx={sm} className={color} opacity={0.3} />
+                    }
+                    const t = ladder ? 1.2 : ideal ? 2.2 : 1.8
+                    return (
+                      <rect
+                        key={`${i}-${j}`}
+                        x={laneXs[i] - (ideal ? 0 : 3)}
+                        y={y - t / 2}
+                        width={laneW + (ideal ? 0 : 6)}
+                        height={t}
+                        rx={t / 2}
+                        className={color}
+                        opacity={ladder ? (ideal ? 0.55 : 0.8) : 1}
+                      />
+                    )
+                  })
+                )}
               {/* lane labels: the lane in focus lights its label as a pill */}
               {lanes.map((l, i) => {
                 const parts = numbered ? [String(i + 1)] : linesOf(l.label)
@@ -873,7 +900,7 @@ function Gel({
               {/* a lane whose bands have all run off says so */}
               {rows.map((r, i) =>
                 r.length && r.every((b) => !b.smear && !on(b.apparent ?? b.size)) && laneW >= 22 ? (
-                  <text key={i} x={cx(i)} y={top + height - 10} textAnchor="middle" className={cn("text-[0.5625rem]", light ? "fill-white/70" : "fill-black/60")}>
+                  <text key={i} x={cx(i)} y={top + height - 10} textAnchor="middle" className={cn("text-[0.5625rem]", ideal ? "fill-muted-foreground" : light ? "fill-white/70" : "fill-black/60")}>
                     Ran off
                   </text>
                 ) : null

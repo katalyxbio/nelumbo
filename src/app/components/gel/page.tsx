@@ -11,6 +11,8 @@ import {
   gelField,
   resolves,
   type GelBuffer,
+  type GelMode,
+  type GelStain,
   type GelFocus,
   type GelLane,
   type GelSettings,
@@ -75,14 +77,21 @@ export default function GelPage() {
       </Section>
 
       <Section
-        title="Stains"
-        description='"auto" prints dark bands on a light gel, and glows neutral on dark in dark mode. "ethidium" and "sybr" show the colors a camera sees: ethidium bromide under UV, SYBR Safe under blue light.'
+        title="Stains and ideal bands"
+        description='Ethidium bromide under UV (the default) and SYBR Safe under blue light in the colors a camera sees them, or printed dark on light as a gel doc prints it. mode="overlay" draws the ideal bands, each a line where its size runs, over the stained gel; mode="ideal" draws them alone, on a plain slab that follows the theme.'
       >
         <Preview className="grid gap-8 sm:grid-cols-2">
-          {(["print", "uv", "ethidium", "sybr"] as const).map((s) => (
-            <div key={s} className="grid gap-2">
-              <span className="type-label-lg text-muted-foreground">{{ print: "Print", uv: "UV, neutral", ethidium: "Ethidium bromide", sybr: "SYBR Safe" }[s]}</span>
-              <Gel lanes={DIGESTS.slice(0, 4)} stain={s} height={240} dyes={false} aria-label={`Gel, ${s} stain`} />
+          {(
+            [
+              ["Ethidium bromide", { stain: "ethidium" }],
+              ["SYBR Safe", { stain: "sybr" }],
+              ["Print, ideal bands over it", { stain: "print", mode: "overlay" }],
+              ["Ideal", { mode: "ideal" }],
+            ] as const
+          ).map(([name, look]) => (
+            <div key={name} className="grid gap-2">
+              <span className="type-label-lg text-muted-foreground">{name}</span>
+              <Gel lanes={DIGESTS.slice(0, 4)} {...look} height={240} dyes={false} aria-label={`Gel, ${name}`} />
             </div>
           ))}
         </Preview>
@@ -105,7 +114,8 @@ export default function GelPage() {
             ["volts / electrodes", "number, number", "100, 12", "Volts across electrodes this many cm apart: the field."],
             ["minutes / length", "number, number", "40, 8", "How long it runs; the gel's length from the wells, cm."],
             ["height", "number", "320", "The slab's height in px."],
-            ["stain", '"auto" | "uv" | "print" | "ethidium" | "sybr"', '"auto"', "How it's imaged."],
+            ["stain", '"ethidium" | "sybr" | "print"', '"ethidium"', "How it's imaged: under UV, under blue light, or printed dark on light."],
+            ["mode", '"real" | "overlay" | "ideal"', '"real"', "As the stain shows it; the ideal bands drawn over it; or the ideal bands alone."],
             ["sizes / dyes", "boolean, boolean", "true, true", "The ladder's sizes on the left; the loading dyes' fronts on the right."],
             ["run / onRunProgress", "number, (minutes) => void", "", "Change run to play the gel from the wells; each frame's minutes."],
             ["selectable / onActiveChange", "boolean, (focus | null) => void", "false", "A keyboard stop: up and down a lane, left and right across lanes."],
@@ -135,6 +145,8 @@ function RunDemo() {
   const [g, setG] = React.useState<GelSettings>(DEFAULT_GEL)
   const [ladder, setLadder] = React.useState<LadderId>("neb-1kb")
   const [run, setRun] = React.useState(0)
+  const [stain, setStain] = React.useState<GelStain>("ethidium")
+  const [mode, setMode] = React.useState<GelMode>("real")
   const [clock, setClock] = React.useState(DEFAULT_GEL.minutes)
   const [fitted, setFitted] = React.useState(false)
   const [focus, setFocus] = React.useState<GelFocus>(null)
@@ -198,6 +210,20 @@ function RunDemo() {
               })}
             </SelectContent>
           </Select>
+          <Setting label="Imaged">
+            <SegmentedButton type="single" size="sm" value={stain} onValueChange={(v) => v && setStain(v as GelStain)} aria-label="Stain">
+              <SegmentedButtonItem value="ethidium">EtBr</SegmentedButtonItem>
+              <SegmentedButtonItem value="sybr">SYBR</SegmentedButtonItem>
+              <SegmentedButtonItem value="print">Print</SegmentedButtonItem>
+            </SegmentedButton>
+          </Setting>
+          <Setting label="Bands">
+            <SegmentedButton type="single" size="sm" value={mode} onValueChange={(v) => v && setMode(v as GelMode)} aria-label="Bands">
+              <SegmentedButtonItem value="real">Real</SegmentedButtonItem>
+              <SegmentedButtonItem value="overlay">Overlay</SegmentedButtonItem>
+              <SegmentedButtonItem value="ideal">Ideal</SegmentedButtonItem>
+            </SegmentedButton>
+          </Setting>
           <div className="flex flex-wrap gap-2">
             <Button variant="secondary" size="sm" onClick={() => setRun((r) => r + 1)}>
               <Icon name="play_arrow" />
@@ -230,7 +256,7 @@ function RunDemo() {
               />
             )}
           </div>
-          <Gel lanes={lanes} {...g} run={run} onRunProgress={setClock} selectable onActiveChange={setFocus} height={360} aria-label="Digest run with these settings" />
+          <Gel lanes={lanes} {...g} stain={stain} mode={mode} run={run} onRunProgress={setClock} selectable onActiveChange={setFocus} height={360} aria-label="Digest run with these settings" />
         </div>
       </div>
     </div>

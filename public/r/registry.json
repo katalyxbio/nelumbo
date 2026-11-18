@@ -2103,7 +2103,7 @@
       "name": "gel",
       "type": "registry:ui",
       "title": "Gel",
-      "description": "An agarose gel, simulated: bands placed by a mobility model for the agarose, TAE or TBE buffer, voltage, electrode spacing and run time (a sigmoid in log length fitted to the loading dyes, with the reptation floor rising with the field), spread by well depth, diffusion and crowding, brightness saturating with ng; drawn pixel by pixel as a print, a neutral UV glow, ethidium or SYBR Safe, with smiling lanes, trails, dust and grain; NEB and GeneRuler ladders at their listed masses, loading dye fronts, a run animation, a hover card and a keyboard stop. digest cuts a linear or circular sequence into equimolar fragments; autoGel picks the agarose, voltage, time and ladder that best separate a set of sizes; resolves, spread, dyeFronts and mobility helpers.",
+      "description": "An agarose gel, simulated: bands placed by a mobility model for the agarose, TAE or TBE buffer, voltage, electrode spacing and run time (a sigmoid in log length fitted to the loading dyes, with the reptation floor rising with the field), spread by well depth, diffusion and crowding, brightness saturating with ng; drawn pixel by pixel as ethidium under UV, SYBR Safe or a print, with the ideal bands drawn over it or alone, with smiling lanes, trails, dust and grain; NEB and GeneRuler ladders at their listed masses, loading dye fronts, a run animation, a hover card and a keyboard stop. digest cuts a linear or circular sequence into equimolar fragments; autoGel picks the agarose, voltage, time and ladder that best separate a set of sizes; resolves, spread, dyeFronts and mobility helpers.",
       "dependencies": [],
       "registryDependencies": [
         "utils"
