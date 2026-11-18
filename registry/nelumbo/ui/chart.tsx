@@ -1174,13 +1174,20 @@ export function chartCookiePath(cx: number, cy: number, r: number, lobes = 9, de
 
 type LineDotProps = { cx?: number; cy?: number; index?: number; value?: number | string; payload?: Record<string, unknown> }
 
+/** A data row as Recharts hands it to a renderer: whatever fields your data has. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ChartRow = Record<string, any>
+/** A label's value: a number or a category, from your data. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ChartValue = any
+
 /**
  * A Line `dot` renderer that colors each dot from the data: the series color is
  * the fallback. Dots are ringed in the chart surface like chartDot.
  *
  *   <Line dot={chartColorDot((d) => (d.in ? "var(--color-inRange)" : "var(--color-outRange)"))} />
  */
-export function chartColorDot(colorOf: (payload: any, index: number) => string, { r = 5 }: { r?: number } = {}) {
+export function chartColorDot(colorOf: (payload: ChartRow, index: number) => string, { r = 5 }: { r?: number } = {}) {
   function ColorDot({ cx, cy, index = 0, payload }: LineDotProps) {
     if (cx === undefined || cy === undefined || !payload) return <g key={`dot-${index}`} />
     return <circle key={`dot-${index}`} cx={cx} cy={cy} r={r} fill={colorOf(payload, index)} stroke="var(--chart-surface)" strokeWidth={2} />
@@ -1198,7 +1205,7 @@ export function chartColorDot(colorOf: (payload: any, index: number) => string, 
  */
 export function chartCookieDot(
   key: string,
-  { when, glyph, r = 11 }: { when?: (payload: any, index: number) => boolean; glyph?: string; r?: number } = {}
+  { when, glyph, r = 11 }: { when?: (payload: ChartRow, index: number) => boolean; glyph?: string; r?: number } = {}
 ) {
   const color = `var(--color-${key})`
   function CookieDot({ cx, cy, index = 0, payload }: LineDotProps) {
@@ -1224,7 +1231,7 @@ export function chartCookieDot(
  */
 export function chartPillLabel(
   key: string,
-  { text = (v: number | string) => String(v), tone = "inverse", offset = 22 }: { text?: (value: any, index: number) => string; tone?: "inverse" | "tonal"; offset?: number } = {}
+  { text = (v: number | string) => String(v), tone = "inverse", offset = 22 }: { text?: (value: ChartValue, index: number) => string; tone?: "inverse" | "tonal"; offset?: number } = {}
 ) {
   function PillLabel(props: { x?: number | string; y?: number | string; value?: number | string; index?: number; payload?: unknown }) {
     const x = Number(props.x)
@@ -1776,7 +1783,7 @@ export function chartTooltipFormatter(
   config: ChartConfig,
   { unit, icons, total, totalLabel = "Total" }: { unit?: string; icons?: Record<string, React.ReactNode>; total?: boolean; totalLabel?: React.ReactNode } = {}
 ) {
-  return (value: unknown, name: unknown, item: { color?: string }, index: number, row: unknown) => {
+  return function ChartTooltipFormatter(value: unknown, name: unknown, item: { color?: string }, index: number, row: unknown) {
     const key = String(name)
     const data = (row ?? {}) as Record<string, unknown>
     const keys = Object.keys(config).filter((k) => typeof data[k] === "number")
