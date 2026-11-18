@@ -24,14 +24,14 @@ export default function LineChartsPage() {
     <>
       <PageHeader eyebrow="Component 51" title="Line charts">
         Every line chart from shadcn&apos;s gallery in Material 3 Expressive: 3px round lines, a big readout that follows the
-        point in focus, a ring and a line to mark it, and the value axis on the right with the average called out. Hover to
-        preview, click or tap to select, or tab to a chart and use the arrow keys.
+        point in focus, a ring and a line to mark it, and the value axis on the right with a reference value called out. The
+        demos follow an E. coli culture. Hover to preview, click or tap to select, or tab to a chart and use the arrow keys.
       </PageHeader>
       <ChartNav />
 
       <Section
         title="Default, Linear and Step"
-        description="The three curve types. Default is monotone: smooth, and never overshoots a point. Linear joins the points with straight segments, Step holds each value until the next."
+        description="The three curve types. Default is monotone: smooth, and never overshoots a point. Linear joins the points with straight segments, Step holds each value until the next. The readout gives the fold change since the previous reading."
       >
         <Preview className={grid3}>
           <LineDefault />
@@ -51,7 +51,7 @@ export default function LineChartsPage() {
 
       <Section
         title="Dots, Custom Dots and Dots Colors"
-        description="Dots are ringed in the card surface. Custom dots can be any shape: here the peak month is a scalloped cookie with a bolt. Dots Colors takes each dot's color from a band in the config, and the legend names the bands."
+        description="Dots are ringed in the card surface. Custom dots can be any shape: here the induction point is a scalloped cookie with a bolt. Dots Colors takes each dot's color from a band in the config, here the growth phase, and the legend names the bands."
       >
         <Preview className={grid3}>
           <LineDots />
@@ -80,15 +80,15 @@ export default function LineChartsPage() {
       </Section>
 
       <Section title="Usage">
-        <Code>{`const focus = useChartFocus({ count: data.length, describe: (i) => \`\${data[i].month}: \${data[i].desktop} visitors\` })
+        <Code>{`const focus = useChartFocus({ count: data.length, describe: (i) => \`\${data[i].hour}: OD600 \${data[i].od}\` })
 
-<ChartContainer config={config} focus={focus} aria-label="Desktop visitors by month">
+<ChartContainer config={config} focus={focus} aria-label="E. coli growth curve, OD600 every two hours">
   <LineChart data={data} {...focus.chartProps}>
-    <XAxis dataKey="month" tickLine={false} axisLine={false} />
+    <XAxis dataKey="hour" tickLine={false} axisLine={false} />
     <YAxis orientation="right" tickLine={false} axisLine={false} tick={chartTicks()} />
     <ChartTooltip cursor={false} content={() => null} />
-    <Line {...chartLine("desktop")} dot={chartCookieDot("desktop", { when: (d) => d.desktop > 300 })} />
-    <ReferenceLine x={data[focus.index].month} {...chartFocusLine} />
+    <Line {...chartLine("od")} dot={chartCookieDot("od", { when: (d) => d.induced })} />
+    <ReferenceLine x={data[focus.index].hour} {...chartFocusLine} />
   </LineChart>
 </ChartContainer>`}</Code>
       </Section>

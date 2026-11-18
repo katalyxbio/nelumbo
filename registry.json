@@ -1499,7 +1499,7 @@
       "name": "chart",
       "type": "registry:ui",
       "title": "Chart",
-      "description": "shadcn-compatible Chart on Recharts in Material 3 Expressive, after Google's health app: a big readout that follows one point in focus (hover, click or arrow keys), pill bars with goal badges, dotted zone and goal lines, a right-hand value axis, inverse tooltips, pill labels, donuts with a growing active slice, dotted radar grids, radial bars on tonal tracks, stage lanes and progress rings. Every shadcn area, bar, line, pie, radar, radial and tooltip variant has a Material counterpart in the docs.",
+      "description": "shadcn-compatible Chart on Recharts in Material 3 Expressive, after Google's health app: a big readout that follows one point in focus (hover, click or arrow keys), pill bars with goal badges, dotted zone and goal lines, a right-hand value axis, inverse tooltips, pill labels, donuts with a growing active slice, dotted radar grids, radial bars on tonal tracks, stage lanes and progress rings. Scatter charts get points ringed in the surface (chartPoint), a least-squares fit with its 95% band (chartLinearFit) and collision-free point labels (ChartPointLabels), for log axes, groups, standard curves, volcano plots and bubble dot plots. Every shadcn area, bar, line, pie, radar, radial and tooltip variant has a Material counterpart in the docs.",
       "dependencies": [
         "recharts"
       ],

@@ -20,7 +20,7 @@ export default function TooltipChartsPage() {
   return (
     <>
       <PageHeader eyebrow="Component 51" title="Tooltip charts">
-        ChartTooltipContent on the inverse surface, shown open on the focused day so each variant reads without hovering. Hover or tap
+        ChartTooltipContent on the inverse surface, over a week of DNA and RNA extractions (illustrative), shown open on the focused day so each variant reads without hovering. Hover or tap
         a day, or tab to a chart and use the arrow keys: the tooltip glides to it and a focus line replaces the gray cursor band.
       </PageHeader>
       <ChartNav />

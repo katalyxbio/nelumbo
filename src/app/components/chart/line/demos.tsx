@@ -27,20 +27,25 @@ import {
 } from "@/registry/nelumbo/ui/chart"
 import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
 
-/* data, after shadcn's line chart examples ---------------------------- */
+/* data: an E. coli growth curve, illustrative ---------------------------- */
 
-const MONTHS = ["January", "February", "March", "April", "May", "June"]
-const desktop = [186, 305, 237, 73, 209, 214]
-const mobile = [80, 200, 120, 190, 130, 140]
-const monthly = MONTHS.map((month, i) => ({ month, tick: month.slice(0, 3), desktop: desktop[i], mobile: mobile[i] }))
+// OD600 every two hours after inoculation: logistic growth from 0.05, the wild type
+// to about 2, a slower mutant to about 1.4.
+const HOURS = [0, 2, 4, 6, 8, 10]
+const wt = [0.05, 0.19, 0.59, 1.26, 1.75, 1.93]
+const mutant = [0.05, 0.13, 0.31, 0.63, 1.02, 1.32]
+const growth = HOURS.map((h, i) => ({ hour: `${h} h`, wt: wt[i], mutant: mutant[i] }))
 const fmt = (n: number) => Math.round(n).toLocaleString("en-US")
+const fmtOD = (n: number) => n.toFixed(2)
 const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0)
-const avgDesktop = Math.round(sum(desktop) / desktop.length)
+/** Where you would induce expression: mid-log. */
+const INDUCE = 0.6
+const odTicks = chartTicks({ format: (v) => (v === 0 ? "0" : v.toFixed(1)) })
 
 const cardClass = "[--card:var(--surface-container-low)]"
 const margin = { top: 12, right: 0, left: 16, bottom: 0 }
 
-const singleConfig = { desktop: { label: "Desktop", color: "var(--blue)" } } satisfies ChartConfig
+const singleConfig = { wt: { label: "OD600", color: "var(--blue)" } } satisfies ChartConfig
 
 function Heading({ title, description }: { title: string; description: string }) {
   return (
@@ -51,14 +56,14 @@ function Heading({ title, description }: { title: string; description: string })
   )
 }
 
-/** Change against the previous point, as a tonal badge. */
+/** Fold change against the previous reading, as a tonal badge. */
 function Trend({ now, before, against }: { now: number; before?: number; against?: string }) {
-  if (before === undefined || before === 0) return <span>First month on record</span>
-  const pct = ((now - before) / before) * 100
-  const up = pct >= 0
+  if (before === undefined || before === 0) return <span>Inoculated at OD600 0.05</span>
+  const fold = now / before
+  const up = fold >= 1
   return (
     <Badge variant={up ? "success" : "destructive"} icon={up ? "trending_up" : "trending_down"}>
-      {Math.abs(pct).toFixed(1)}% {up ? "up" : "down"} from {against}
+      {fold.toFixed(1)}× since {against}
     </Badge>
   )
 }
@@ -69,13 +74,14 @@ type DotKind = "none" | "dots" | "cookie" | "colors"
 
 const BOLT = "M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"
 
+// growth phase by OD600, roughly: lag below 0.2, stationary from 1.5
 const colorsConfig = {
-  desktop: { label: "Desktop", color: "var(--blue)" },
-  low: { label: "Under 150", color: "var(--orange)" },
-  mid: { label: "150 to 249", color: "var(--blue)" },
-  high: { label: "250 and up", color: "var(--green)" },
+  wt: { label: "OD600", color: "var(--blue)" },
+  lag: { label: "Lag", color: "var(--amber)" },
+  log: { label: "Exponential", color: "var(--blue)" },
+  stationary: { label: "Stationary", color: "var(--green)" },
 } satisfies ChartConfig
-const bandOf = (v: number) => (v >= 250 ? "high" : v >= 150 ? "mid" : "low")
+const phaseOf = (v: number) => (v >= 1.5 ? "stationary" : v >= 0.2 ? "log" : "lag")
 
 function ReadoutLine({
   title,
@@ -83,7 +89,7 @@ function ReadoutLine({
   aria,
   curve = "monotone",
   dots = "none",
-  average = false,
+  induction = false,
   legendKeys,
   config = singleConfig,
 }: {
@@ -92,26 +98,27 @@ function ReadoutLine({
   aria: string
   curve?: "monotone" | "linear" | "step"
   dots?: DotKind
-  average?: boolean
+  induction?: boolean
   legendKeys?: string[]
   config?: ChartConfig
 }) {
   const motion = useChartAnimation()
   const focus = useChartFocus({
-    count: monthly.length,
-    describe: (i) => `${monthly[i].month} 2026: ${fmt(monthly[i].desktop)} visitors`,
+    count: growth.length,
+    describe: (i) => `${growth[i].hour}: OD600 ${fmtOD(growth[i].wt)}${dots === "colors" ? `, ${colorsConfig[phaseOf(growth[i].wt)].label.toLowerCase()} phase` : ""}`,
   })
   const i = Math.max(0, focus.index)
-  const point = monthly[i]
-  const peak = Math.max(...desktop)
+  const point = growth[i]
+  // the reading closest to the induction OD
+  const induced = wt.reduce((best, v, k) => (Math.abs(v - INDUCE) < Math.abs(wt[best] - INDUCE) ? k : best), 0)
 
   const dot =
     dots === "dots"
-      ? chartDot("desktop")
+      ? chartDot("wt")
       : dots === "cookie"
-        ? chartCookieDot("desktop", { when: (d) => d.desktop === peak, glyph: BOLT, r: 13 })
+        ? chartCookieDot("wt", { when: (_, k) => k === induced, glyph: BOLT, r: 13 })
         : dots === "colors"
-          ? chartColorDot((d) => `var(--color-${bandOf(d.desktop)})`)
+          ? chartColorDot((d) => `var(--color-${phaseOf(d.wt)})`)
           : false
 
   return (
@@ -119,39 +126,39 @@ function ReadoutLine({
       <CardContent className="grid gap-6 pt-6">
         <Heading title={title} description={description} />
         <ChartReadout
-          value={fmt(point.desktop)}
-          unit="visitors"
-          label={`${point.month} 2026`}
-          detail={<Trend now={point.desktop} before={monthly[i - 1]?.desktop} against={monthly[i - 1]?.month} />}
+          value={fmtOD(point.wt)}
+          unit="OD600"
+          label={`${point.hour} after inoculation`}
+          detail={<Trend now={point.wt} before={growth[i - 1]?.wt} against={growth[i - 1]?.hour} />}
           onClear={focus.isDefault ? undefined : focus.reset}
         />
         <ChartContainer config={config} focus={focus} aria-label={aria} className="aspect-auto h-64">
-          <LineChart data={monthly} margin={{ ...margin, top: dots === "cookie" ? 20 : margin.top }} {...focus.chartProps}>
+          <LineChart data={growth} margin={{ ...margin, top: dots === "cookie" ? 20 : margin.top }} {...focus.chartProps}>
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="month" interval="preserveStartEnd" tickLine={false} axisLine={false} tickMargin={10} tickFormatter={(v: string) => v.slice(0, 3)} />
+            <XAxis dataKey="hour" interval="preserveStartEnd" tickLine={false} axisLine={false} tickMargin={10} />
             <YAxis
               orientation="right"
               tickLine={false}
               axisLine={false}
               width={40}
-              domain={[0, 320]}
-              ticks={average ? [0, 100, avgDesktop, 300] : [0, 100, 200, 300]}
-              tick={chartTicks({ highlight: average ? { [avgDesktop]: "var(--color-desktop)" } : {} })}
+              domain={[0, 2]}
+              ticks={induction ? [0, INDUCE, 1, 1.5, 2] : [0, 0.5, 1, 1.5, 2]}
+              tick={induction ? chartTicks({ highlight: { [INDUCE]: "var(--color-wt)" }, format: (v) => (v === 0 ? "0" : v.toFixed(1)) }) : odTicks}
             />
             <ChartTooltip cursor={false} content={() => null} />
-            {average && (
+            {induction && (
               <ReferenceLine
-                y={avgDesktop}
-                stroke="var(--color-desktop)"
+                y={INDUCE}
+                stroke="var(--color-wt)"
                 strokeWidth={3}
                 strokeDasharray="0 9"
                 strokeLinecap="round"
                 ifOverflow="extendDomain"
               />
             )}
-            <Line {...chartLine("desktop")} type={curve} dot={dot} {...motion} />
-            <ReferenceLine x={point.month} {...chartFocusLine} />
-            <ReferenceDot x={point.month} y={point.desktop} {...chartFocusDot} />
+            <Line {...chartLine("wt")} type={curve} dot={dot} {...motion} />
+            <ReferenceLine x={point.hour} {...chartFocusLine} />
+            <ReferenceDot x={point.hour} y={point.wt} {...chartFocusDot} />
             {legendKeys && <ChartLegend content={<ChartLegendContent keys={legendKeys} />} />}
           </LineChart>
         </ChartContainer>
@@ -163,88 +170,91 @@ function ReadoutLine({
 export const LineDefault = () => (
   <ReadoutLine
     title="Line Chart"
-    description="Visitors by month, January to June 2026. The dotted line is the average."
-    aria="Desktop visitors by month, January to June 2026, smooth curve"
-    average
+    description="E. coli growth, OD600 every two hours. The dotted line is OD600 0.6, where you would induce."
+    aria="E. coli growth curve, OD600 every two hours from 0 to 10 hours, smooth curve, with OD600 0.6 marked"
+    induction
   />
 )
 export const LineLinear = () => (
   <ReadoutLine
     title="Line Chart - Linear"
-    description="Straight segments between months."
-    aria="Desktop visitors by month, January to June 2026, straight segments"
+    description="Straight segments between readings."
+    aria="E. coli growth curve, OD600 every two hours, straight segments"
     curve="linear"
   />
 )
 export const LineStep = () => (
   <ReadoutLine
     title="Line Chart - Step"
-    description="Each month holds its value until the next."
-    aria="Desktop visitors by month, January to June 2026, as steps"
+    description="Each reading holds until the next."
+    aria="E. coli growth curve, OD600 every two hours, as steps"
     curve="step"
   />
 )
 export const LineDots = () => (
   <ReadoutLine
     title="Line Chart - Dots"
-    description="Every month marked with a ringed dot."
-    aria="Desktop visitors by month, January to June 2026, with a dot for each month"
+    description="Every reading marked with a ringed dot."
+    aria="E. coli growth curve, OD600 every two hours, with a dot for each reading"
     dots="dots"
   />
 )
 export const LineCustomDots = () => (
   <ReadoutLine
     title="Line Chart - Custom Dots"
-    description="The best month wears a scalloped bolt."
-    aria="Desktop visitors by month, January to June 2026, with a scalloped badge on February, the peak"
+    description="The reading where you would induce wears a scalloped bolt."
+    aria="E. coli growth curve, OD600 every two hours, with a scalloped badge at 4 hours, OD600 0.59, the induction point"
     dots="cookie"
   />
 )
 export const LineDotsColors = () => (
   <ReadoutLine
     title="Line Chart - Dots Colors"
-    description="Each dot takes the color of its band."
-    aria="Desktop visitors by month, January to June 2026, with dots colored by band: under 150, 150 to 249, and 250 and up"
+    description="Each reading takes the color of its growth phase."
+    aria="E. coli growth curve, OD600 every two hours, with dots colored by growth phase: lag, exponential and stationary"
     dots="colors"
     config={colorsConfig}
-    legendKeys={["low", "mid", "high"]}
+    legendKeys={["lag", "log", "stationary"]}
   />
 )
 
 /* Multiple: inverse tooltip and a focus line ------------------------- */
 
 const multiConfig = {
-  desktop: { label: "Desktop", color: "var(--blue)", swatch: "line" },
-  mobile: { label: "Mobile", color: "var(--orange)", swatch: "line" },
+  wt: { label: "Wild type", color: "var(--blue)", swatch: "line" },
+  mutant: { label: "Mutant", color: "var(--orange)", swatch: "line" },
 } satisfies ChartConfig
 
 export function LineMultiple() {
   const motion = useChartAnimation()
   const focus = useChartFocus({
-    count: monthly.length,
-    describe: (i) => `${monthly[i].month} 2026: ${monthly[i].desktop} desktop and ${monthly[i].mobile} mobile visitors`,
+    count: growth.length,
+    describe: (i) => `${growth[i].hour}: wild type OD600 ${fmtOD(growth[i].wt)}, mutant ${fmtOD(growth[i].mutant)}`,
   })
-  const point = monthly[Math.max(0, focus.index)]
+  const point = growth[Math.max(0, focus.index)]
+  const last = growth[growth.length - 1]
   return (
     <Card className={cardClass}>
       <CardContent className="grid gap-6 pt-6">
         <div className="grid gap-3">
-          <Heading title="Line Chart - Multiple" description="Desktop and mobile visitors, January to June 2026." />
+          <Heading title="Line Chart - Multiple" description="Wild type and a slow-growing mutant, OD600 every two hours. Illustrative." />
           <div>
-            <Trend now={monthly[5].desktop} before={monthly[4].desktop} against={monthly[4].month} />
+            <Badge variant="success" icon="trending_up">
+              Wild type {(last.wt / last.mutant).toFixed(1)}× denser at {last.hour}
+            </Badge>
           </div>
         </div>
-        <ChartContainer config={multiConfig} focus={focus} aria-label="Desktop and mobile visitors by month, January to June 2026" className="aspect-auto h-72">
-          <LineChart data={monthly} margin={margin} {...focus.chartProps}>
+        <ChartContainer config={multiConfig} focus={focus} aria-label="OD600 of the wild type and a mutant every two hours, 0 to 10 hours" className="aspect-auto h-72">
+          <LineChart data={growth} margin={margin} {...focus.chartProps}>
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="month" interval="preserveStartEnd" tickLine={false} axisLine={false} tickMargin={10} tickFormatter={(v: string) => v.slice(0, 3)} />
-            <YAxis orientation="right" tickLine={false} axisLine={false} width={40} domain={[0, 320]} ticks={[0, 100, 200, 300]} tick={chartTicks()} />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
-            <Line {...chartLine("desktop")} {...motion} />
-            <Line {...chartLine("mobile")} {...motion} />
-            <ReferenceLine x={point.month} {...chartFocusLine} />
-            <ReferenceDot x={point.month} y={point.desktop} {...chartFocusDot} />
-            <ReferenceDot x={point.month} y={point.mobile} {...chartFocusDot} />
+            <XAxis dataKey="hour" interval="preserveStartEnd" tickLine={false} axisLine={false} tickMargin={10} />
+            <YAxis orientation="right" tickLine={false} axisLine={false} width={40} domain={[0, 2]} ticks={[0, 0.5, 1, 1.5, 2]} tick={odTicks} />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" labelFormatter={(l) => `${l}, OD600`} />} />
+            <Line {...chartLine("wt")} {...motion} />
+            <Line {...chartLine("mutant")} {...motion} />
+            <ReferenceLine x={point.hour} {...chartFocusLine} />
+            <ReferenceDot x={point.hour} y={point.wt} {...chartFocusDot} />
+            <ReferenceDot x={point.hour} y={point.mutant} {...chartFocusDot} />
             <ChartLegend content={<ChartLegendContent />} />
           </LineChart>
         </ChartContainer>
@@ -260,18 +270,18 @@ export function LineLabel() {
   return (
     <Card className={cardClass}>
       <CardContent className="grid gap-6 pt-6">
-        <Heading title="Line Chart - Label" description="Visitors by month, January to June 2026, with each value on its point." />
+        <Heading title="Line Chart - Label" description="E. coli growth, with each OD600 reading on its point." />
         <ChartContainer
           config={singleConfig}
-          aria-label="Desktop visitors by month: January 186, February 305, March 237, April 73, May 209, June 214"
+          aria-label={`E. coli growth curve, OD600: ${growth.map((d) => `${d.hour} ${fmtOD(d.wt)}`).join(", ")}`}
           className="aspect-auto h-64"
         >
-          <LineChart data={monthly} margin={{ top: 40, right: 26, left: 26, bottom: 0 }}>
+          <LineChart data={growth} margin={{ top: 40, right: 26, left: 26, bottom: 0 }}>
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="month" interval="preserveStartEnd" tickLine={false} axisLine={false} tickMargin={10} tickFormatter={(v: string) => v.slice(0, 3)} />
-            <YAxis hide domain={[0, 340]} />
-            <Line {...chartLine("desktop")} dot={chartDot("desktop")} {...motion}>
-              <LabelList dataKey="desktop" content={chartPillLabel("desktop")} />
+            <XAxis dataKey="hour" interval="preserveStartEnd" tickLine={false} axisLine={false} tickMargin={10} />
+            <YAxis hide domain={[0, 2.2]} />
+            <Line {...chartLine("wt")} dot={chartDot("wt")} {...motion}>
+              <LabelList dataKey="wt" content={chartPillLabel("wt", { text: (v) => fmtOD(Number(v)) })} />
             </Line>
           </LineChart>
         </ChartContainer>
@@ -280,37 +290,38 @@ export function LineLabel() {
   )
 }
 
-const browsers = [
-  { name: "Chrome", visitors: 275 },
-  { name: "Safari", visitors: 200 },
-  { name: "Firefox", visitors: 187 },
-  { name: "Edge", visitors: 173 },
-  { name: "Other", visitors: 90 },
+// E. coli doubling time on each carbon source, minutes, illustrative
+const media = [
+  { name: "LB", minutes: 20 },
+  { name: "Glucose", minutes: 55 },
+  { name: "Glycerol", minutes: 80 },
+  { name: "Succinate", minutes: 95 },
+  { name: "Acetate", minutes: 150 },
 ]
-const browserConfig = { visitors: { label: "Visitors", color: "var(--purple)" } } satisfies ChartConfig
-const browserColors = ["var(--blue)", "var(--orange)", "var(--pink)", "var(--cyan)", "var(--amber)"]
+const mediaConfig = { minutes: { label: "Doubling time", color: "var(--purple)" } } satisfies ChartConfig
+const mediaColors = ["var(--blue)", "var(--orange)", "var(--pink)", "var(--cyan)", "var(--amber)"]
 
 export function LineCustomLabel() {
   const motion = useChartAnimation()
   return (
     <Card className={cardClass}>
       <CardContent className="grid gap-6 pt-6">
-        <Heading title="Line Chart - Custom Label" description="Visitors by browser, each point named in a chip." />
+        <Heading title="Line Chart - Custom Label" description="E. coli doubling time on each carbon source, each point named in a chip. Illustrative." />
         <ChartContainer
-          config={browserConfig}
-          aria-label="Visitors by browser: Chrome 275, Safari 200, Firefox 187, Edge 173, Other 90"
+          config={mediaConfig}
+          aria-label={`E. coli doubling time by carbon source: ${media.map((m) => `${m.name} ${m.minutes} minutes`).join(", ")}`}
           className="aspect-auto h-64"
         >
-          <LineChart data={browsers} margin={{ top: 40, right: 28, left: 28, bottom: 8 }}>
+          <LineChart data={media} margin={{ top: 40, right: 36, left: 36, bottom: 8 }}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" hide />
-            <YAxis hide domain={[0, 300]} />
+            <YAxis hide domain={[0, 170]} />
             <Line
-              {...chartLine("visitors")}
-              dot={chartColorDot((_, i) => browserColors[i % browserColors.length], { r: 6 })}
+              {...chartLine("minutes")}
+              dot={chartColorDot((_, i) => mediaColors[i % mediaColors.length], { r: 6 })}
               {...motion}
             >
-              <LabelList dataKey="visitors" content={chartPillLabel("visitors", { tone: "tonal", text: (_v, i) => browsers[i]?.name ?? "" })} />
+              <LabelList dataKey="minutes" content={chartPillLabel("minutes", { tone: "tonal", text: (_v, i) => media[i]?.name ?? "" })} />
             </Line>
           </LineChart>
         </ChartContainer>
@@ -338,15 +349,15 @@ const daily = (() => {
     return {
       date: d,
       key: d.toISOString().slice(0, 10),
-      desktop: Math.round((weekend ? 150 : 270) * trend + noise(n + 1) * 120),
-      mobile: Math.round((weekend ? 210 : 170) * trend + noise(n + 400) * 110),
+      dna: Math.round((weekend ? 14 : 38) * trend + noise(n + 1) * (weekend ? 6 : 14)),
+      rna: Math.round((weekend ? 8 : 24) * trend + noise(n + 400) * (weekend ? 5 : 10)),
     }
   })
 })()
 
 const interactiveConfig = {
-  desktop: { label: "Desktop", color: "var(--blue)" },
-  mobile: { label: "Mobile", color: "var(--orange)" },
+  dna: { label: "DNA", color: "var(--blue)" },
+  rna: { label: "RNA", color: "var(--orange)" },
 } satisfies ChartConfig
 
 const RANGES = [
@@ -355,12 +366,12 @@ const RANGES = [
   { value: "3M", label: "Last 3 months", days: 91 },
 ] as const
 type Range = (typeof RANGES)[number]["value"]
-type Series = "desktop" | "mobile"
+type Series = "dna" | "rna"
 
 export function LineInteractive() {
   const motion = useChartAnimation()
   const [range, setRange] = React.useState<Range>("30D")
-  const [series, setSeries] = React.useState<Series>("desktop")
+  const [series, setSeries] = React.useState<Series>("dna")
   const { days, label: rangeLabel } = RANGES.find((r) => r.value === range)!
 
   const data = React.useMemo(
@@ -382,14 +393,14 @@ export function LineInteractive() {
     [days, range]
   )
   const tickOf = new Map(data.map((d) => [d.key, d.tick]))
-  const totals = { desktop: sum(data.map((d) => d.desktop)), mobile: sum(data.map((d) => d.mobile)) }
+  const totals = { dna: sum(data.map((d) => d.dna)), rna: sum(data.map((d) => d.rna)) }
   const focus = useChartFocus({
     count: data.length,
-    describe: (i) => `${data[i].label}: ${fmt(data[i][series])} ${interactiveConfig[series].label} visitors`,
+    describe: (i) => `${data[i].label}: ${fmt(data[i][series])} ${interactiveConfig[series].label} samples`,
   })
   const point = data[Math.max(0, focus.index)]
   const values = data.map((d) => d[series])
-  const top = Math.ceil(Math.max(...values) / 100) * 100
+  const top = Math.ceil(Math.max(...values) / 10) * 10
   const avg = Math.round(sum(values) / values.length)
   const ticks = avg > top * 0.18 && avg < top * 0.86 ? [0, avg, top] : [0, Math.round(top / 2), top]
   const color = `var(--color-${series})`
@@ -397,7 +408,7 @@ export function LineInteractive() {
   return (
     <Card className={cardClass}>
       <CardContent className="grid gap-6 pt-6">
-        <Heading title="Line Chart - Interactive" description="Visitors by device. Pick a series and a period; the chart follows." />
+        <Heading title="Line Chart - Interactive" description="Samples received by a sequencing core each day, DNA and RNA. Pick a series and a period; the chart follows." />
         <ToggleGroup
           type="single"
           value={range}
@@ -412,7 +423,7 @@ export function LineInteractive() {
           ))}
         </ToggleGroup>
         <div role="group" aria-label="Series" className="grid grid-cols-2 gap-3">
-          {(["desktop", "mobile"] as const).map((k) => {
+          {(["dna", "rna"] as const).map((k) => {
             const on = series === k
             const c = interactiveConfig[k].color
             return (
@@ -439,7 +450,7 @@ export function LineInteractive() {
         </div>
         <ChartReadout
           value={fmt(point[series])}
-          unit="visitors"
+          unit="samples"
           label={point.label}
           detail={`${interactiveConfig[series].label}, ${rangeLabel.toLowerCase()}. Average ${fmt(avg)} a day.`}
           onClear={focus.isDefault ? undefined : focus.reset}
@@ -447,7 +458,7 @@ export function LineInteractive() {
         <ChartContainer
           config={interactiveConfig}
           focus={focus}
-          aria-label={`${interactiveConfig[series].label} visitors a day, ${rangeLabel.toLowerCase()}`}
+          aria-label={`${interactiveConfig[series].label} samples received a day, ${rangeLabel.toLowerCase()}`}
           className="aspect-auto h-64"
         >
           <LineChart data={data} margin={margin} {...focus.chartProps}>

@@ -21,14 +21,14 @@ export default function BarChartsPage() {
   return (
     <>
       <PageHeader eyebrow="Component 51" title="Bar charts">
-        Every bar chart from shadcn&apos;s gallery in Material 3 Expressive: full pill bars, a value axis on the right, a goal
-        line with a badge on the days that reach it, one point in focus with a big readout, and value labels as small pills.
+        Every bar chart from shadcn&apos;s gallery in Material 3 Expressive: full pill bars, a value axis on the right, a target
+        line with a badge on the bars that reach it, one point in focus with a big readout, and value labels as small pills. The data is lab work: libraries through a sequencing core, variants in an exome, blood cell types and a gene expression response.
       </PageHeader>
       <ChartNav />
 
       <Section
         title="Default and horizontal"
-        description="The default bar chart is a column of pills with a goal line; months that reach the goal take the full color and a check badge. The horizontal variant lays the same data in rows, with the value in a pill after each bar."
+        description="The default bar chart is a column of pills with a target line; weeks that reach the target take the full color and a check badge. The horizontal variant lays the same data in rows, with the value in a pill after each bar. Week 4 is low: the DNA line was down for maintenance."
       >
         <Preview className={grid}>
           <DefaultBarDemo />
@@ -38,7 +38,7 @@ export default function BarChartsPage() {
 
       <Section
         title="Multiple and stacked"
-        description="Grouped bars sit side by side as separate pills. Stacked segments each round and are separated by a 3px surface gap. Both keep the inverse tooltip, with a focus line in place of the gray band, and chip legends."
+        description="Grouped bars sit side by side as separate pills, in two hues for two kinds of library. Stacked segments split one total, so they take two tones of one color; each rounds and they are parted by a 3px surface gap. Both keep the inverse tooltip, with a focus line in place of the gray band, and chip legends."
       >
         <Preview className={grid}>
           <MultipleBarDemo />
@@ -68,7 +68,7 @@ export default function BarChartsPage() {
 
       <Section
         title="Negative"
-        description="Gains and losses on either side of a zero line, each in its own color, with the value pill on the outer end of the bar."
+        description="Up and down on either side of a zero line, each in its own color, with the value pill on the outer end of the bar: p53 targets rise after DNA damage and proliferation genes fall (fold changes illustrative)."
       >
         <Preview className="block max-w-2xl">
           <NegativeBarDemo />

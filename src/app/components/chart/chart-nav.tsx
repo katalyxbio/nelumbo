@@ -13,6 +13,7 @@ export const chartPages = [
   { href: "/components/chart/pie", label: "Pie" },
   { href: "/components/chart/radar", label: "Radar" },
   { href: "/components/chart/radial", label: "Radial" },
+  { href: "/components/chart/scatter", label: "Scatter" },
   { href: "/components/chart/tooltip", label: "Tooltip" },
 ]
 

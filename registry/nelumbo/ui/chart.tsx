@@ -394,11 +394,14 @@ function ChartLegendContent({
       {payload
         .filter((item) => item.type !== "none")
         .map((item) => {
-          const key = `${nameKey || item.dataKey || "value"}`
-          const itemConfig = getPayloadConfigFromPayload(config, item, key)
+          const field = `${nameKey || item.dataKey || "value"}`
+          // the config key: the field's value when it names one (a scatter's name), else the field itself
+          const named = (item as unknown as Record<string, unknown>)[field]
+          const key = typeof named === "string" && named in config ? named : field
+          const itemConfig = getPayloadConfigFromPayload(config, item, field)
           const off = hiddenKeys?.includes(key)
           const kind = itemConfig?.swatch ?? "dot"
-          const swatch = !hideIcon && <LegendSwatch kind={kind} color={item.color} off={off} />
+          const swatch = !hideIcon && <LegendSwatch kind={kind} color={item.color || (key in config ? `var(--color-${key})` : undefined)} off={off} />
           const body = (
             <>
               {itemConfig?.icon && !hideIcon ? <itemConfig.icon /> : swatch}
@@ -588,6 +591,8 @@ function useChartFocus({ count, defaultIndex, index: controlled, onIndexChange, 
     },
     count,
     select,
+    /** Preview a point without selecting it (null ends the preview): for charts that track hover per item, like scatter. */
+    preview: setHover,
     chartProps,
     onKeyDown,
     fill,
@@ -1804,6 +1809,162 @@ export function chartTooltipFormatter(
 }
 
 /* end tooltip helpers */
+
+/* ================================================================== */
+/* SCATTER HELPERS                                                     */
+/* Points ringed in the surface, a least-squares fit with its band,    */
+/* and pill labels for the points that matter.                         */
+/* ================================================================== */
+
+type PointShapeProps = { cx?: number; cy?: number; index?: number; payload?: ChartRow; size?: number }
+
+/**
+ * A Scatter `shape`: a dot ringed in the surface, so overlapping points stay
+ * apart. `fill` picks a color per point (default the series color); `r` its
+ * radius, or the ZAxis size when `bubble` is on.
+ *
+ *   <Scatter data={cells} shape={chartPoint("area")} />
+ *   <Scatter data={genes} shape={chartPoint("up", { fill: (d, i) => focus.fill("up", i) })} />
+ */
+export function chartPoint(
+  key: string,
+  { r = 4.5, fill, bubble = false, opacity = 1 }: { r?: number; fill?: (payload: ChartRow, index: number) => string; bubble?: boolean; opacity?: number } = {}
+) {
+  const color = `var(--color-${key})`
+  function Point({ cx, cy, index = 0, payload, size }: PointShapeProps) {
+    if (cx === undefined || cy === undefined || !Number.isFinite(cx) || !Number.isFinite(cy)) return <g key={`pt-${index}`} />
+    // ZAxis size is an area, as in Recharts
+    const radius = bubble && size ? Math.sqrt(size / Math.PI) : r
+    return (
+      <circle
+        key={`pt-${index}`}
+        cx={cx}
+        cy={cy}
+        r={radius}
+        fill={fill && payload ? fill(payload, index) : color}
+        fillOpacity={opacity}
+        stroke="var(--chart-surface)"
+        strokeWidth={bubble ? 2 : 1.5}
+      />
+    )
+  }
+  return Point
+}
+
+/** Student's t for a two-sided 95% interval, close enough for plotting. */
+function t975(df: number) {
+  if (df <= 0) return NaN
+  const table = [12.706, 4.303, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262, 2.228]
+  return df <= 10 ? table[df - 1] : 1.96 + 2.4 / df + 2.9 / (df * df)
+}
+
+export type ChartFit = {
+  slope: number
+  intercept: number
+  /** Coefficient of determination. */
+  r2: number
+  n: number
+  predict: (x: number) => number
+  /** The 95% confidence band for the fitted line at x. */
+  band: (x: number) => [number, number]
+  /** `steps` rows from `from` to `to`, { x, fit, band: [lo, hi] }, for a Line and a range Area. */
+  rows: (from: number, to: number, steps?: number) => { x: number; fit: number; band: [number, number] }[]
+}
+
+/**
+ * Ordinary least squares, y on x, with a 95% confidence band for the line.
+ *
+ *   const fit = chartLinearFit(standards.map((d) => ({ x: d.ug, y: d.a595 })))
+ *   <ComposedChart data={fit.rows(0, 2000)}> <Area dataKey="band" /> <Line dataKey="fit" /> …
+ */
+export function chartLinearFit(points: { x: number; y: number }[]): ChartFit {
+  const n = points.length
+  const mx = points.reduce((a, p) => a + p.x, 0) / n
+  const my = points.reduce((a, p) => a + p.y, 0) / n
+  let sxx = 0
+  let sxy = 0
+  let syy = 0
+  for (const p of points) {
+    sxx += (p.x - mx) ** 2
+    sxy += (p.x - mx) * (p.y - my)
+    syy += (p.y - my) ** 2
+  }
+  const slope = sxx ? sxy / sxx : 0
+  const intercept = my - slope * mx
+  const predict = (x: number) => intercept + slope * x
+  const sse = points.reduce((a, p) => a + (p.y - predict(p.x)) ** 2, 0)
+  const se = n > 2 ? Math.sqrt(sse / (n - 2)) : 0
+  const t = t975(n - 2)
+  const band = (x: number): [number, number] => {
+    const h = Number.isFinite(t) && sxx ? t * se * Math.sqrt(1 / n + (x - mx) ** 2 / sxx) : 0
+    return [predict(x) - h, predict(x) + h]
+  }
+  return {
+    slope,
+    intercept,
+    r2: syy ? 1 - sse / syy : 1,
+    n,
+    predict,
+    band,
+    rows: (from, to, steps = 40) =>
+      Array.from({ length: steps + 1 }, (_, i) => {
+        const x = from + ((to - from) * i) / steps
+        return { x, fit: predict(x), band: band(x) }
+      }),
+  }
+}
+
+/** A point label: the inverse pill used across Nelumbo charts, pointing at a point in plot coordinates. */
+export function ChartPointLabel({ x, y, text, side = "top", tone = "inverse", color }: { x: number; y: number; text: string; side?: "top" | "right" | "left" | "bottom"; tone?: "inverse" | "tonal"; color?: string }) {
+  const w = Math.max(28, text.length * 6.6 + 16)
+  const h = 22
+  const gap = 12
+  const cx = side === "right" ? x + gap + w / 2 : side === "left" ? x - gap - w / 2 : x
+  const cy = side === "top" ? y - gap - h / 2 : side === "bottom" ? y + gap + h / 2 : y
+  return (
+    <g aria-hidden>
+      <rect x={cx - w / 2} y={cy - h / 2} width={w} height={h} rx={h / 2} fill={tone === "inverse" ? "var(--inverse-surface)" : chartTrackColor(color ?? "var(--foreground)", 22)} />
+      <text x={cx} y={cy} dy="0.35em" textAnchor="middle" className={cn("text-[0.75rem] font-[620]", tone === "inverse" ? "fill-inverse-foreground" : "fill-foreground")}>
+        {text}
+      </text>
+    </g>
+  )
+}
+
+/**
+ * Labels for several points, placed so they don't collide: each tries above,
+ * right, left and below its point in turn and is dropped if none is free.
+ * Pass points in priority order. Render inside a Customized component, with
+ * x and y already in plot coordinates.
+ */
+export function ChartPointLabels({ points, width, height }: { points: { x: number; y: number; text: string }[]; width?: number; height?: number }) {
+  const h = 22
+  const gap = 12
+  const placed: { x0: number; y0: number; x1: number; y1: number }[] = []
+  const out: { x: number; y: number; text: string; side: "top" | "right" | "left" | "bottom" }[] = []
+  for (const p of points) {
+    const w = Math.max(28, p.text.length * 6.6 + 16)
+    for (const side of ["top", "right", "left", "bottom"] as const) {
+      const cx = side === "right" ? p.x + gap + w / 2 : side === "left" ? p.x - gap - w / 2 : p.x
+      const cy = side === "top" ? p.y - gap - h / 2 : side === "bottom" ? p.y + gap + h / 2 : p.y
+      const r = { x0: cx - w / 2 - 2, y0: cy - h / 2 - 2, x1: cx + w / 2 + 2, y1: cy + h / 2 + 2 }
+      if (r.x0 < 0 || r.y0 < 0 || (width && r.x1 > width) || (height && r.y1 > height)) continue
+      if (placed.some((q) => r.x0 < q.x1 && r.x1 > q.x0 && r.y0 < q.y1 && r.y1 > q.y0)) continue
+      placed.push(r)
+      out.push({ ...p, side })
+      break
+    }
+  }
+  return (
+    <g aria-hidden>
+      {out.map((l) => (
+        <ChartPointLabel key={l.text} {...l} />
+      ))}
+    </g>
+  )
+}
+
+/* end scatter helpers */
 
 export {
   ChartContainer,

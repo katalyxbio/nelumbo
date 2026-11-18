@@ -13,7 +13,8 @@ export default function RadarChartsPage() {
     <>
       <PageHeader eyebrow="Component 51" title="Radar charts">
         Polygons with a tonal fill, a 3px round stroke and dots ringed in the card. The grid is dotted round hairlines, or tonal rings
-        where the variant is filled. Every shadcn variant, drawn in Material 3 Expressive.
+        where the variant is filled. Every shadcn variant, drawn in Material 3 Expressive, on a compound profile: a lead and a backup
+        scored 0 to 100 on six assays (illustrative numbers).
       </PageHeader>
       <ChartNav />
 
@@ -34,7 +35,7 @@ export default function RadarChartsPage() {
         </Preview>
       </Section>
 
-      <Section title="Legend and Radius Axis" description="Two series overlap in translucent tones. The legend chips toggle a series and can carry Material Symbols; the radius axis can be labelled along one spoke.">
+      <Section title="Legend and Radius Axis" description="Two series overlap in translucent tones. The legend chips toggle a series (they can also carry Material Symbols, through icon in the config); the radius axis can be labelled along one spoke.">
         <Preview className={grid}>
           <RadarLegend />
           <RadarRadiusAxis />

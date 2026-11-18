@@ -18,32 +18,29 @@ import {
 } from "@/registry/nelumbo/ui/chart"
 import { Icon } from "@/registry/nelumbo/ui/icon"
 
-/* A week of workouts: minutes running and swimming (deterministic) ---- */
+/* A week of nucleic acid extractions: samples through each kit per day (illustrative) */
 
 const week = [
-  { day: "Mon", date: "Monday, Nov 9", running: 42, swimming: 18 },
-  { day: "Tue", date: "Tuesday, Nov 10", running: 28, swimming: 24 },
-  { day: "Wed", date: "Wednesday, Nov 11", running: 0, swimming: 36 },
-  { day: "Thu", date: "Thursday, Nov 12", running: 51, swimming: 12 },
-  { day: "Fri", date: "Friday, Nov 13", running: 34, swimming: 30 },
-  { day: "Sat", date: "Saturday, Nov 14", running: 64, swimming: 22 },
-  { day: "Sun", date: "Sunday, Nov 15", running: 38, swimming: 40 },
+  { day: "Mon", date: "Monday, Nov 9", dna: 42, rna: 18 },
+  { day: "Tue", date: "Tuesday, Nov 10", dna: 28, rna: 24 },
+  { day: "Wed", date: "Wednesday, Nov 11", dna: 0, rna: 36 },
+  { day: "Thu", date: "Thursday, Nov 12", dna: 51, rna: 12 },
+  { day: "Fri", date: "Friday, Nov 13", dna: 34, rna: 30 },
+  { day: "Sat", date: "Saturday, Nov 14", dna: 16, rna: 8 },
+  { day: "Sun", date: "Sunday, Nov 15", dna: 0, rna: 6 },
 ]
 type Day = (typeof week)[number]
 
 const config = {
-  running: { label: "Running", color: "var(--blue)" },
-  swimming: { label: "Swimming", color: "var(--cyan)" },
+  dna: { label: "DNA", color: "var(--blue)" },
+  rna: { label: "RNA", color: "var(--cyan)" },
 } satisfies ChartConfig
 
-const iconConfig = {
-  running: { label: "Running", color: "var(--blue)" },
-  swimming: { label: "Swimming", color: "var(--cyan)" },
-} satisfies ChartConfig
+const iconConfig = config
 
 const icons = {
-  running: <Icon name="directions_run" fill />,
-  swimming: <Icon name="pool" fill />,
+  dna: <Icon name="genetics" fill />,
+  rna: <Icon name="labs" fill />,
 }
 
 /** One card: a stacked pill chart with its tooltip held open on the point in focus. */
@@ -63,7 +60,7 @@ function TooltipCard({
   const focus = useChartFocus({
     count: week.length,
     defaultIndex: 4,
-    describe: (i) => `${week[i].date}: ${week[i].running} minutes running, ${week[i].swimming} minutes swimming`,
+    describe: (i) => `${week[i].date}: ${week[i].dna} DNA and ${week[i].rna} RNA extractions`,
   })
   const point: Day = week[Math.max(0, focus.index)]
   // Recharts only places a default tooltip once the plot has laid out: remount it after the first paint
@@ -83,15 +80,15 @@ function TooltipCard({
         <ChartContainer
           config={chartConfig}
           focus={focus}
-          aria-label={`${title}: minutes running and swimming each day, Nov 9 to 15. Arrow keys move the tooltip.`}
+          aria-label={`${title}: DNA and RNA extractions each day, Nov 9 to 15. Arrow keys move the tooltip.`}
           className="aspect-auto h-64"
         >
           <BarChart key={String(laidOut)} data={week} margin={{ top: 8, right: 0, left: 0, bottom: 0 }} barCategoryGap="14%" {...focus.chartProps}>
             <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={10} />
             <YAxis orientation="right" tickLine={false} axisLine={false} width={34} domain={[0, 100]} ticks={[0, 50, 100]} tick={chartTicks()} />
             <ChartTooltip cursor={false} active defaultIndex={focus.index} content={tooltip} wrapperStyle={{ outline: "none" }} />
-            <Bar dataKey="running" stackId="a" fill="var(--color-running)" {...chartSegment} {...motion} />
-            <Bar dataKey="swimming" stackId="a" fill="var(--color-swimming)" {...chartSegment} {...motion} />
+            <Bar dataKey="dna" stackId="a" fill="var(--color-dna)" {...chartSegment} {...motion} />
+            <Bar dataKey="rna" stackId="a" fill="var(--color-rna)" {...chartSegment} {...motion} />
             <ReferenceLine x={point.day} {...chartFocusLine} />
           </BarChart>
         </ChartContainer>
@@ -114,7 +111,7 @@ export function NoIndicatorDemo() {
 
 const customConfig = {
   ...config,
-  activities: { label: "Activities" },
+  extractions: { label: "Extractions" },
 } satisfies ChartConfig
 
 export function CustomLabelDemo() {
@@ -123,7 +120,7 @@ export function CustomLabelDemo() {
       title="Tooltip - Custom Label"
       description="The heading comes from a config entry through labelKey."
       chartConfig={customConfig}
-      tooltip={<ChartTooltipContent labelKey="activities" indicator="line" />}
+      tooltip={<ChartTooltipContent labelKey="extractions" indicator="line" />}
     />
   )
 }
@@ -147,7 +144,7 @@ export function FormatterDemo() {
     <TooltipCard
       title="Tooltip - Formatter"
       description="Each value carries its unit."
-      tooltip={<ChartTooltipContent formatter={chartTooltipFormatter(config, { unit: "min" })} />}
+      tooltip={<ChartTooltipContent formatter={chartTooltipFormatter(config, { unit: "samples" })} />}
     />
   )
 }
@@ -158,7 +155,7 @@ export function IconsDemo() {
       title="Tooltip - Icons"
       description="A Material Symbol in a tonal chip for each series."
       chartConfig={iconConfig}
-      tooltip={<ChartTooltipContent formatter={chartTooltipFormatter(iconConfig, { unit: "min", icons })} />}
+      tooltip={<ChartTooltipContent formatter={chartTooltipFormatter(iconConfig, { unit: "samples", icons })} />}
     />
   )
 }
@@ -171,7 +168,7 @@ export function AdvancedDemo() {
       tooltip={
         <ChartTooltipContent
           labelFormatter={(_, payload) => (payload?.[0]?.payload as Day | undefined)?.date}
-          formatter={chartTooltipFormatter(config, { unit: "min", total: true, totalLabel: "Active time" })}
+          formatter={chartTooltipFormatter(config, { unit: "samples", total: true, totalLabel: "Extractions" })}
         />
       }
     />
