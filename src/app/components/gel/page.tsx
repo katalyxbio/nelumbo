@@ -4,7 +4,8 @@ import * as React from "react"
 import { Gel, ENZYMES, digest, type GelFocus, type GelLane } from "@/registry/nelumbo/ui/gel"
 import { parseGenBank } from "@/registry/nelumbo/ui/plasmid-map"
 import { ChartReadout } from "@/registry/nelumbo/ui/chart"
-import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
+import { SegmentedButton, SegmentedButtonItem } from "@/registry/nelumbo/ui/segmented-button"
+import { ChipGroup, FilterChip } from "@/registry/nelumbo/ui/chip"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 import { PGL3_GENBANK } from "../construct-map/data"
 
@@ -93,20 +94,20 @@ function PlanDemo() {
   return (
     <div className="grid gap-6">
       <div className="grid gap-3">
-        <ToggleGroup type="multiple" size="sm" value={picked} onValueChange={setPicked} aria-label="Enzymes" className="flex-wrap justify-start">
+        <ChipGroup aria-label="Enzymes">
           {PICKABLE.map((e) => (
-            <ToggleGroupItem key={e} value={e}>
+            <FilterChip key={e} selected={picked.includes(e)} onSelectedChange={(on) => setPicked(on ? [...picked, e] : picked.filter((p) => p !== e))}>
               {e}
-            </ToggleGroupItem>
+            </FilterChip>
           ))}
-        </ToggleGroup>
-        <ToggleGroup type="single" size="sm" value={percent} onValueChange={(v) => v && setPercent(v)} aria-label="Agarose" className="w-fit">
+        </ChipGroup>
+        <SegmentedButton type="single" size="sm" value={percent} onValueChange={(v) => v && setPercent(v)} aria-label="Agarose">
           {["0.7", "1", "1.5", "2"].map((p) => (
-            <ToggleGroupItem key={p} value={p}>
+            <SegmentedButtonItem key={p} value={p}>
               {`${p}%`}
-            </ToggleGroupItem>
+            </SegmentedButtonItem>
           ))}
-        </ToggleGroup>
+        </SegmentedButton>
       </div>
       <div className="grid items-start gap-6 sm:grid-cols-[minmax(0,16rem)_1fr]">
         <Gel lanes={lanes} percent={Number(percent)} selectable onActiveChange={setFocus} height={300} aria-label="Planned digest" />

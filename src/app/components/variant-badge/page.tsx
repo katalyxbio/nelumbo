@@ -3,8 +3,7 @@
 import * as React from "react"
 import { VariantBadge, VariantEvidence, VARIANT_CLASSES, classifyVariant, type VariantClassification } from "@/registry/nelumbo/ui/variant-badge"
 import { AminoAcidChange } from "@/registry/nelumbo/ui/amino-acid"
-import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
-import { Button } from "@/registry/nelumbo/ui/button"
+import { Chip, ChipGroup, FilterChip } from "@/registry/nelumbo/ui/chip"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 
 const TIERS: VariantClassification[] = ["pathogenic", "likely-pathogenic", "uncertain", "likely-benign", "benign"]
@@ -139,29 +138,29 @@ function EvidenceDemo() {
   const c = classifyVariant(picked)
   return (
     <div className="grid gap-6">
-      <div className="flex flex-wrap gap-2">
+      <ChipGroup aria-label="Examples">
         {PRESETS.map((p) => (
-          <Button key={p.name} variant="outline" size="sm" onClick={() => setPicked(p.criteria)}>
+          <Chip key={p.name} variant="suggestion" onClick={() => setPicked(p.criteria)}>
             {p.name}
-          </Button>
+          </Chip>
         ))}
-      </div>
+      </ChipGroup>
       {(["pathogenic", "benign"] as const).map((dir) => (
-        <ToggleGroup
-          key={dir}
-          type="multiple"
-          size="sm"
-          value={picked.filter((p) => CRITERIA[dir].includes(p))}
-          onValueChange={(v) => setPicked([...picked.filter((p) => !CRITERIA[dir].includes(p)), ...v])}
-          aria-label={dir === "pathogenic" ? "Pathogenic criteria" : "Benign criteria"}
-          className="flex-wrap justify-start"
-        >
-          {CRITERIA[dir].map((k) => (
-            <ToggleGroupItem key={k} value={k} className="font-mono">
-              {k.replace("_", " ")}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+        <div key={dir} className="grid gap-2">
+          <span className="type-label-lg text-muted-foreground">{dir === "pathogenic" ? "Pathogenic criteria" : "Benign criteria"}</span>
+          <ChipGroup aria-label={dir === "pathogenic" ? "Pathogenic criteria" : "Benign criteria"}>
+            {CRITERIA[dir].map((k) => (
+              <FilterChip
+                key={k}
+                selected={picked.includes(k)}
+                onSelectedChange={(on) => setPicked(on ? [...picked, k] : picked.filter((p) => p !== k))}
+                className="font-mono"
+              >
+                {k.replace("_", " ")}
+              </FilterChip>
+            ))}
+          </ChipGroup>
+        </div>
       ))}
       <div className="grid gap-3 rounded-2xl bg-surface-container px-4 py-4">
         <div className="flex flex-wrap items-center gap-3">

@@ -425,7 +425,7 @@ function ProteinDomains({
             {/* secondary structure */}
             {structure && (
               <g>
-                <text x={pad} y={ssTop + 11} className="fill-muted-foreground text-[0.6875rem]">
+                <text x={pad} y={ssTop + 11} className="fill-muted-foreground text-[0.75rem] font-medium">
                   Secondary structure
                 </text>
                 <rect x={pad} y={ssTop + CAP + 8 - 1} width={inner} height={2} rx={1} fill="var(--outline-variant)" />
@@ -444,7 +444,7 @@ function ProteinDomains({
             {/* confidence */}
             {confidence && (
               <g>
-                <text x={pad} y={cfTop + 11} className="fill-muted-foreground text-[0.6875rem]">
+                <text x={pad} y={cfTop + 11} className="fill-muted-foreground text-[0.75rem] font-medium">
                   {confidenceLabel}
                 </text>
                 {[50, 70, 90].map((t) => (

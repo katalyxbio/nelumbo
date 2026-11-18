@@ -323,15 +323,29 @@ function Gel({
               // long labels break at " + " onto two lines, then shorten
               const fit = (t: string) => (t.length * 6 > laneW + 6 ? `${t.slice(0, Math.max(3, Math.floor(laneW / 6.2)))}…` : t)
               const parts = l.label.length * 6 > laneW + 6 && l.label.includes(" + ") ? [l.label.slice(0, l.label.indexOf(" + ")), l.label.slice(l.label.indexOf(" + ") + 1)] : [l.label]
+              const lit = active?.lane === i
+              const w = Math.min(laneW - 4, Math.max(...parts.map((p) => fit(p).length)) * 6.2 + 14)
+              const h = parts.length > 1 ? 28 : 18
               return (
-                <text key={i} x={laneX(i)} y={parts.length > 1 ? 8 : 18} textAnchor="middle" className={cn("text-[0.6875rem]", active?.lane === i ? "fill-foreground font-semibold" : "fill-muted-foreground")}>
-                  <title>{l.label}</title>
-                  {parts.map((p, k) => (
-                    <tspan key={k} x={laneX(i)} dy={k ? 12 : 0}>
-                      {fit(p)}
-                    </tspan>
-                  ))}
-                </text>
+                <g key={i}>
+                  {/* the lane in focus lights its label as a pill, as table headers do */}
+                  <rect
+                    x={laneX(i) - w / 2}
+                    y={(parts.length > 1 ? 13 : 13) - h / 2 + (parts.length > 1 ? 1 : 0)}
+                    width={w}
+                    height={h}
+                    rx={h > 20 ? 10 : h / 2}
+                    className={cn("transition-opacity duration-200", lit ? "fill-foreground opacity-100" : "fill-foreground opacity-0")}
+                  />
+                  <text x={laneX(i)} y={parts.length > 1 ? 10 : 17} textAnchor="middle" className={cn("text-[0.6875rem] transition-colors duration-200", lit ? "fill-background font-semibold" : "fill-muted-foreground")}>
+                    <title>{l.label}</title>
+                    {parts.map((p, k) => (
+                      <tspan key={k} x={laneX(i)} dy={k ? 12 : 0}>
+                        {fit(p)}
+                      </tspan>
+                    ))}
+                  </text>
+                </g>
               )
             })}
             {/* slab and wells */}

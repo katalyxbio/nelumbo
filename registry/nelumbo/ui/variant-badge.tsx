@@ -283,7 +283,7 @@ function VariantEvidence({ criteria, size = "default", className, ...props }: Va
             key={`${c.code}${i}`}
             title={`${c.base}: ${c.direction}, ${STRENGTH_NAME[c.strength]}`}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-md font-mono font-semibold leading-none",
+              "inline-flex items-center gap-1.5 rounded-sm font-mono font-semibold leading-none",
               size === "sm" ? "h-5 px-1.5 text-[0.6875rem]" : "h-6 px-2 text-[0.75rem]",
               c.direction === "pathogenic" ? "bg-red-container text-red-container-foreground" : "bg-green-container text-green-container-foreground"
             )}

@@ -481,7 +481,7 @@ function Karyotype({
                     : {})}
                   className={cn(onChromosomeChange && "cursor-pointer outline-none [&:focus-visible>rect:first-child]:stroke-ring [&:focus-visible>rect:first-child]:stroke-2")}
                 >
-                  <rect x={cx - col / 2 + 1} y={0} width={col - 2} height={H} rx={10} className={cn(chosen ? "fill-foreground/[0.07]" : "fill-transparent", "stroke-transparent")} />
+                  <rect x={cx - col / 2 + 1} y={0} width={col - 2} height={H} rx={10} className={cn(chosen ? "fill-surface-container-highest" : "fill-transparent", "stroke-transparent")} />
                   <defs>
                     <clipPath id={id}>
                       {shape.arms.map((a, k) => {

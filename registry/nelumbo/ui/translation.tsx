@@ -389,7 +389,14 @@ function Translation({
           const rev = frameList.filter((f) => f < 0)
           const row = (f: TranslationFrame) => (
             <div key={f} className="grid items-center gap-y-0.5" style={{ gridTemplateColumns: cols }} aria-hidden>
-              <span className={cn("select-none pr-2 text-right type-label-sm tabular-nums", frames === 1 ? "invisible" : "text-muted-foreground")}>{frameName(f)}</span>
+              <span
+                className={cn(
+                  "mr-2 select-none justify-self-end rounded-full bg-surface-container-high px-1.5 py-0.5 type-label-sm tabular-nums text-muted-foreground",
+                  frames === 1 && "invisible"
+                )}
+              >
+                {frameName(f)}
+              </span>
               {(codons.get(f) ?? [])
                 .filter((c) => c.start + 2 >= line.start && c.start <= line.end)
                 // left to right, whichever way the frame reads, so the grid places them in one row

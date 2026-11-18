@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { ButtonGroup } from "@/registry/nelumbo/ui/button-group"
 import { IconButton } from "@/registry/nelumbo/ui/icon-button"
 import { complement, nucleotideTone, reverseComplement, translate, type NucleotideScheme } from "@/registry/nelumbo/ui/nucleotide"
 import { featureColor, featureLength, type PlasmidFeature, type PlasmidSite } from "@/registry/nelumbo/ui/plasmid-map"
@@ -509,29 +510,29 @@ function ConstructMap({
     <div data-slot="construct-map" className={cn("grid w-full gap-3", className)} {...props}>
       {zoomable && (
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <div className="flex min-w-0 items-baseline gap-2 type-label-md tabular-nums" aria-live="polite">
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 tabular-nums" aria-live="polite">
             {selection ? (
               <>
-                <span className="font-semibold text-foreground">{fmt(selection.end - selection.start + 1)} bp</span>
-                <span className="text-muted-foreground">
+                <span className="type-title-sm text-foreground">{fmt(selection.end - selection.start + 1)} bp</span>
+                <span className="type-body-sm text-muted-foreground">
                   {fmt(selection.start)}–{fmt(selection.end)}
                   {selGC != null && `, ${selGC.toFixed(0)}% GC`}
                 </span>
               </>
             ) : (
               <>
-                {name && <span className="font-semibold text-foreground">{name}</span>}
-                <span className="text-muted-foreground">
+                {name && <span className="type-title-sm text-foreground">{name}</span>}
+                <span className="type-body-sm text-muted-foreground">
                   {zoomed ? `${fmt(view.start)}–${fmt(view.end - 1)} of ${fmt(length)} bp` : `${fmt(length)} bp${circular ? ", circular" : ""}`}
                 </span>
               </>
             )}
           </div>
-          <div className="flex items-center gap-1">
-            <IconButton size="sm" icon="zoom_out" label="Zoom out" disabled={!zoomed} onClick={() => zoomAt(2)} />
-            <IconButton size="sm" icon="zoom_in" label="Zoom in" disabled={span <= minSpan + 0.5} onClick={() => zoomAt(0.5)} />
-            <IconButton size="sm" icon="fit_width" label="Show the whole construct" disabled={!zoomed} onClick={() => setView(full)} />
-          </div>
+          <ButtonGroup variant="connected" aria-label="Zoom">
+            <IconButton variant="secondary" size="sm" width="wide" icon="zoom_out" label="Zoom out" disabled={!zoomed} onClick={() => zoomAt(2)} />
+            <IconButton variant="secondary" size="sm" width="wide" icon="zoom_in" label="Zoom in" disabled={span <= minSpan + 0.5} onClick={() => zoomAt(0.5)} />
+            <IconButton variant="secondary" size="sm" width="wide" icon="fit_width" label="Show the whole construct" disabled={!zoomed} onClick={() => setView(full)} />
+          </ButtonGroup>
         </div>
       )}
 
@@ -660,13 +661,13 @@ function ConstructMap({
                     })}
                   </g>
                 ) : (
-                  <rect x={x(1)} y={backboneY - 1.5} width={x(length + 1) - x(1)} height={3} rx={1.5} className="fill-outline-variant" />
+                  <rect x={x(1)} y={backboneY - 3} width={x(length + 1) - x(1)} height={6} rx={3} className="fill-surface-container-highest" />
                 )}
 
                 {/* site ticks across the backbone */}
                 {!showBases &&
                   siteMarks.map((s) => (
-                    <line key={`t${s.name}${s.position}`} x1={s.px} x2={s.px} y1={backboneY - 5} y2={backboneY + 5} className="stroke-foreground/60" strokeWidth={1.5} strokeLinecap="round" />
+                    <line key={`t${s.name}${s.position}`} x1={s.px} x2={s.px} y1={backboneY - 6} y2={backboneY + 6} className="stroke-foreground/70" strokeWidth={2} strokeLinecap="round" />
                   ))}
 
                 {/* features */}
@@ -868,7 +869,7 @@ function Overview({
       aria-valuenow={Math.round(view.start)}
       aria-valuetext={`${fmt(view.start)} to ${fmt(view.end - 1)} of ${fmt(length)} bp`}
       onKeyDown={onKey}
-      className="relative h-7 cursor-grab touch-none rounded-lg outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:cursor-grabbing"
+      className="relative h-7 cursor-grab touch-none rounded-full outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:cursor-grabbing"
       onPointerDown={(e) => {
         ;(e.currentTarget as Element).setPointerCapture(e.pointerId)
         const b = toBase(e)
@@ -882,13 +883,31 @@ function Overview({
       onPointerUp={() => (grab.current = null)}
     >
       <svg width="100%" height={28} aria-hidden className="block overflow-visible">
-        <rect x={pad} y={13} width={inner} height={2} rx={1} className="fill-outline-variant" />
+        {/* a slider's track: the whole construct, its features, and the window as a pill with a handle at each end */}
+        <rect x={pad} y={4} width={inner} height={20} rx={10} className="fill-surface-container-high" />
         {features.map((f, i) =>
           piecesOf(f, length).map((p, k) => (
-            <rect key={`${i}-${k}`} x={ox(p.start)} y={f.strand === -1 ? 16 : 7} width={Math.max(1.5, ox(p.end + 1) - ox(p.start))} height={5} rx={2.5} fill={fillOf(featureColor(f))} />
+            <rect key={`${i}-${k}`} x={ox(p.start)} y={f.strand === -1 ? 15 : 9} width={Math.max(2, ox(p.end + 1) - ox(p.start))} height={4} rx={2} fill={fillOf(featureColor(f))} />
           ))
         )}
-        <rect x={ox(view.start)} y={1} width={Math.max(6, ox(view.end) - ox(view.start))} height={26} rx={7} className="fill-foreground/[0.06] stroke-foreground/60" strokeWidth={1.5} />
+        {(() => {
+          const x0 = ox(view.start)
+          const w = Math.max(14, ox(view.end) - x0)
+          return (
+            <g>
+              <rect x={x0} y={1} width={w} height={26} rx={13} className="fill-foreground/[0.1]" />
+              {w >= 24 ? (
+                <>
+                  <rect x={x0 + 3} y={5} width={4} height={18} rx={2} className="fill-foreground" />
+                  <rect x={x0 + w - 7} y={5} width={4} height={18} rx={2} className="fill-foreground" />
+                </>
+              ) : (
+                // a narrow window keeps one handle in its middle
+                <rect x={x0 + w / 2 - 2} y={5} width={4} height={18} rx={2} className="fill-foreground" />
+              )}
+            </g>
+          )
+        })()}
       </svg>
     </div>
   )

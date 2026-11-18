@@ -381,7 +381,8 @@ function SangerTrace({
                     y={RULER}
                     width={(b === r1 ? W : (callX(b - 1) + callX(b)) / 2) - (a === r0 - 1 ? 0 : (callX(a - 1) + callX(a)) / 2)}
                     height={H - RULER}
-                    className="fill-foreground/[0.05]"
+                    rx={12}
+                    className="fill-surface-container-high"
                   />
                 ) : null
               )}
@@ -444,7 +445,7 @@ function SangerTrace({
             })}
 
             {/* curves */}
-            <line x1={edge / 2} x2={W - edge / 2} y1={top + height + 0.5} y2={top + height + 0.5} className="stroke-outline-variant" strokeWidth={1} />
+            <rect x={edge / 2} y={top + height} width={W - edge} height={3} rx={1.5} className="fill-surface-container-highest" />
             {CHANNELS.map((c) => (
               <g key={c} style={toneVars(c, scheme)}>
                 {fill && <path data-fill d={`${paths[c]}L${px(Math.min(s1, traces[c].length - 1))},${top + height}L${px(s0)},${top + height}Z`} />}

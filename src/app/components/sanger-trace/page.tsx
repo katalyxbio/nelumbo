@@ -4,7 +4,8 @@ import * as React from "react"
 import { SangerTrace, parseAbif, qualityTrim, type SangerBase, type SangerRead } from "@/registry/nelumbo/ui/sanger-trace"
 import { ChartReadout } from "@/registry/nelumbo/ui/chart"
 import { Button } from "@/registry/nelumbo/ui/button"
-import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
+import { Icon } from "@/registry/nelumbo/ui/icon"
+import { SegmentedButton, SegmentedButtonItem } from "@/registry/nelumbo/ui/segmented-button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 import { MCHERRY_REFERENCE, READ } from "./data"
 
@@ -90,10 +91,10 @@ function ReferenceDemo() {
   const [ref, setRef] = React.useState("edited")
   return (
     <div className="grid gap-6">
-      <ToggleGroup type="single" value={ref} onValueChange={(v) => v && setRef(v)} aria-label="Reference" className="w-fit">
-        <ToggleGroupItem value="mcherry">mCherry</ToggleGroupItem>
-        <ToggleGroupItem value="edited">With one edit</ToggleGroupItem>
-      </ToggleGroup>
+      <SegmentedButton type="single" size="sm" value={ref} onValueChange={(v) => v && setRef(v)} aria-label="Reference" >
+        <SegmentedButtonItem value="mcherry">mCherry</SegmentedButtonItem>
+        <SegmentedButtonItem value="edited">With one edit</SegmentedButtonItem>
+      </SegmentedButton>
       <SangerTrace {...READ} range={{ start: 80, end: 140 }} reference={ref === "edited" ? EDITED : MCHERRY_REFERENCE} baseWidth={16} />
     </div>
   )
@@ -107,8 +108,9 @@ function FileDemo() {
   return (
     <div className="grid gap-6">
       <div className="flex flex-wrap items-center gap-3">
-        <Button variant="outline" size="sm" onClick={() => input.current?.click()}>
-          Open an .ab1 file
+        <Button variant="secondary" size="sm" onClick={() => input.current?.click()}>
+          <Icon name="upload_file" />
+            Open an .ab1 file
         </Button>
         <input
           ref={input}

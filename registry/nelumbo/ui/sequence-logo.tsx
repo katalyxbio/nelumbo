@@ -320,7 +320,7 @@ function SequenceLogo({
   const colW = Math.max(12, Math.min(maxColumnWidth, room / Math.max(n, 1)))
   const plotW = colW * n
   const svgW = axisW + plotW + 4
-  const padTop = highlight?.some((h) => h.label) ? 24 : 8
+  const padTop = highlight?.some((h) => h.label) ? 28 : 8
   const rulerH = ruler ? 18 : 0
   const svgH = padTop + height + 4 + rulerH
   const y = (v: number) => padTop + height - (v / top) * height
@@ -453,7 +453,7 @@ function SequenceLogo({
         <div
           ref={scroller}
           className={cn("w-full", scrolls && "overflow-x-auto overscroll-x-contain pb-1")}
-          {...(scrolls && !selectable ? { tabIndex: 0, role: "region", "aria-label": "Sequence logo, scrolls sideways" } : {})}
+          {...(scrolls && !selectable ? { tabIndex: 0, role: "region", "aria-label": `${label}, scrolls sideways` } : {})}
         >
           <div
             className={cn(
@@ -481,11 +481,15 @@ function SequenceLogo({
                 const b = band(h, 0)
                 return (
                   <g key={`${h.start}-${h.end}`}>
-                    <rect x={b.x} y={h.label ? padTop - 20 : padTop - 4} width={b.w} height={height + (h.label ? 24 : 8)} rx={8} className="fill-foreground/[0.045]" />
+                    <rect x={b.x} y={h.label ? padTop - 22 : padTop - 4} width={b.w} height={height + (h.label ? 26 : 8)} rx={12} className="fill-surface-container-high" />
                     {h.label && (
-                      <text x={b.x + 7} y={padTop - 7} className="fill-muted-foreground font-sans text-[0.6875rem] font-medium">
-                        {h.label}
-                      </text>
+                      // the stretch's name as a tonal chip at its top
+                      <g className="font-sans">
+                        <rect x={b.x + 4} y={padTop - 18} width={h.label.length * 6.6 + 16} height={18} rx={9} className="fill-surface-container-highest" />
+                        <text x={b.x + 12} y={padTop - 5.5} className="fill-foreground text-[0.6875rem] font-semibold">
+                          {h.label}
+                        </text>
+                      </g>
                     )}
                   </g>
                 )
@@ -503,13 +507,12 @@ function SequenceLogo({
                 <g className="font-sans font-normal">
                   {yTicks.map((t) => (
                     <g key={t}>
-                      <line x1={axisW - 5} x2={axisW - 1} y1={y(t)} y2={y(t)} className="stroke-outline-variant" strokeWidth={1} />
+                      {t > 0 && <line x1={axisW} x2={axisW + plotW} y1={y(t)} y2={y(t)} className="stroke-outline-variant" strokeWidth={1} strokeDasharray="2 4" />}
                       <text x={axisW - 8} y={y(t) + 3.5} textAnchor="end" className="fill-muted-foreground text-[0.625rem] tabular-nums">
                         {t}
                       </text>
                     </g>
                   ))}
-                  <line x1={axisW - 1} x2={axisW - 1} y1={y(top)} y2={y(0)} className="stroke-outline-variant" strokeWidth={1} />
                   <text
                     transform={`translate(8 ${padTop + height / 2}) rotate(-90)`}
                     textAnchor="middle"
@@ -555,7 +558,7 @@ function SequenceLogo({
               })}
 
               {/* baseline */}
-              <line x1={axisW} x2={axisW + plotW} y1={y(0) + 0.5} y2={y(0) + 0.5} className="stroke-outline-variant" strokeWidth={1} />
+              <rect x={axisW} y={y(0)} width={plotW} height={3} rx={1.5} className="fill-surface-container-highest" />
 
               {/* ruler */}
               {ruler &&

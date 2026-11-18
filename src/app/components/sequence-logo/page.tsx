@@ -3,7 +3,7 @@
 import * as React from "react"
 import { SequenceLogo, logoColumns, logoConsensus, logoCounts, type LogoColumn, type LogoRange } from "@/registry/nelumbo/ui/sequence-logo"
 import { ChartReadout } from "@/registry/nelumbo/ui/chart"
-import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
+import { SegmentedButton, SegmentedButtonItem } from "@/registry/nelumbo/ui/segmented-button"
 import { Switch } from "@/registry/nelumbo/ui/switch"
 import { Label } from "@/registry/nelumbo/ui/label"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
@@ -106,11 +106,11 @@ function ModeDemo() {
   const [mode, setMode] = React.useState<"bits" | "probability" | "gc">("bits")
   return (
     <div className="grid gap-6">
-      <ToggleGroup type="single" value={mode} onValueChange={(v) => v && setMode(v as typeof mode)} aria-label="Scale" className="w-fit">
-        <ToggleGroupItem value="bits">Bits</ToggleGroupItem>
-        <ToggleGroupItem value="probability">Probability</ToggleGroupItem>
-        <ToggleGroupItem value="gc">Against 60% GC</ToggleGroupItem>
-      </ToggleGroup>
+      <SegmentedButton type="single" size="sm" value={mode} onValueChange={(v) => v && setMode(v as typeof mode)} aria-label="Scale" >
+        <SegmentedButtonItem value="bits">Bits</SegmentedButtonItem>
+        <SegmentedButtonItem value="probability">Probability</SegmentedButtonItem>
+        <SegmentedButtonItem value="gc">Against 60% GC</SegmentedButtonItem>
+      </SegmentedButton>
       <SequenceLogo
         matrix={P53_MOTIF}
         mode={mode === "probability" ? "probability" : "bits"}
@@ -125,10 +125,10 @@ function StrandDemo() {
   const [strand, setStrand] = React.useState("forward")
   return (
     <div className="grid gap-6">
-      <ToggleGroup type="single" value={strand} onValueChange={(v) => v && setStrand(v)} aria-label="Strand" className="w-fit">
-        <ToggleGroupItem value="forward">Forward</ToggleGroupItem>
-        <ToggleGroupItem value="reverse">Reverse complement</ToggleGroupItem>
-      </ToggleGroup>
+      <SegmentedButton type="single" size="sm" value={strand} onValueChange={(v) => v && setStrand(v)} aria-label="Strand" >
+        <SegmentedButtonItem value="forward">Forward</SegmentedButtonItem>
+        <SegmentedButtonItem value="reverse">Reverse complement</SegmentedButtonItem>
+      </SegmentedButton>
       <SequenceLogo matrix={CTCF_MOTIF} reverseComplement={strand === "reverse"} consensus height={140} />
     </div>
   )

@@ -4,7 +4,7 @@ import * as React from "react"
 import { Translation, findOrfs, type TranslationRange } from "@/registry/nelumbo/ui/translation"
 import { translate } from "@/registry/nelumbo/ui/nucleotide"
 import { ChartReadout } from "@/registry/nelumbo/ui/chart"
-import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
+import { SegmentedButton, SegmentedButtonItem } from "@/registry/nelumbo/ui/segmented-button"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 import { TP53_CDS_HEAD, TP53_MRNA, TP53_START } from "./data"
 
@@ -86,11 +86,11 @@ function FramesDemo() {
   return (
     <div className="grid gap-6">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <ToggleGroup type="single" value={frames} onValueChange={(v) => v && setFrames(v as typeof frames)} aria-label="Frames" className="w-fit">
-          <ToggleGroupItem value="1">One</ToggleGroupItem>
-          <ToggleGroupItem value="3">Three</ToggleGroupItem>
-          <ToggleGroupItem value="6">Six</ToggleGroupItem>
-        </ToggleGroup>
+        <SegmentedButton type="single" size="sm" value={frames} onValueChange={(v) => v && setFrames(v as typeof frames)} aria-label="Frames" >
+          <SegmentedButtonItem value="1">One</SegmentedButtonItem>
+          <SegmentedButtonItem value="3">Three</SegmentedButtonItem>
+          <SegmentedButtonItem value="6">Six</SegmentedButtonItem>
+        </SegmentedButton>
         {best && (
           <span className="type-body-sm text-muted-foreground tabular-nums">
             Longest open frame: +{best.frame}, from {best.start + TP53_START - 1}, {best.length} codons{best.open ? " and still open" : ""}

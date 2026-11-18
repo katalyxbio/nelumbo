@@ -3,9 +3,10 @@
 import * as React from "react"
 import { ConstructMap, sliceConstruct, type ConstructFocus, type ConstructRange } from "@/registry/nelumbo/ui/construct-map"
 import { PlasmidMap, parseGenBank, uniqueSites } from "@/registry/nelumbo/ui/plasmid-map"
-import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
+import { SegmentedButton, SegmentedButtonItem } from "@/registry/nelumbo/ui/segmented-button"
 import { Textarea } from "@/registry/nelumbo/ui/textarea"
 import { Button } from "@/registry/nelumbo/ui/button"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { ChartReadout } from "@/registry/nelumbo/ui/chart"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
 import { ENZYMES, PGL3_GENBANK } from "./data"
@@ -119,10 +120,10 @@ function BothDemo() {
   const [shape, setShape] = React.useState("line")
   return (
     <div className="grid gap-6">
-      <ToggleGroup type="single" value={shape} onValueChange={(v) => v && setShape(v)} aria-label="View" className="w-fit">
-        <ToggleGroupItem value="circle">Circle</ToggleGroupItem>
-        <ToggleGroupItem value="line">Line</ToggleGroupItem>
-      </ToggleGroup>
+      <SegmentedButton type="single" size="sm" value={shape} onValueChange={(v) => v && setShape(v)} aria-label="View" >
+        <SegmentedButtonItem value="circle">Circle</SegmentedButtonItem>
+        <SegmentedButtonItem value="line">Line</SegmentedButtonItem>
+      </SegmentedButton>
       {shape === "circle" ? (
         <PlasmidMap name={PGL3_NAME} length={PGL3.length} features={PGL3.features} sites={SITES} selectable />
       ) : (
@@ -155,7 +156,8 @@ function GenBankDemo() {
           className="h-40 font-mono text-[0.75rem] leading-snug"
         />
         <div className="flex flex-wrap items-center gap-3">
-          <Button variant="outline" size="sm" onClick={() => file.current?.click()}>
+          <Button variant="secondary" size="sm" onClick={() => file.current?.click()}>
+            <Icon name="upload_file" />
             Open a .gb file
           </Button>
           <input
