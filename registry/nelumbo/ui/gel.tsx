@@ -315,7 +315,8 @@ export type GelLane = {
   ng?: number
 }
 
-export type GelFocus = { lane: number; band: number; data: GelBand } | null
+/** The band in focus: its lane (as drawn, the repeated ladder included) and that lane's label. */
+export type GelFocus = { lane: number; band: number; label: string; data: GelBand } | null
 
 export type Fragment = GelBand & { start: number; end: number; left?: string; right?: string }
 
@@ -575,6 +576,8 @@ const CHAR = 6.2
 type GelProps = Omit<React.ComponentProps<"div">, "children"> &
   Partial<GelSettings> & {
     lanes: GelLane[]
+    /** The first ladder again in a last lane, so sizes read from either side, as gels are often loaded. Default false. */
+    bothSides?: boolean
     /** The slab's height in px; its `length` in cm is drawn to fit. Default 440. */
     height?: number
     /** How it's imaged: "ethidium" (default) under UV, "sybr" under blue light, or "print", dark on light. */
@@ -594,7 +597,8 @@ type GelProps = Omit<React.ComponentProps<"div">, "children"> &
   }
 
 function Gel({
-  lanes,
+  lanes: given,
+  bothSides = false,
   agarose = DEFAULT_GEL.agarose,
   buffer = DEFAULT_GEL.buffer,
   volts = DEFAULT_GEL.volts,
@@ -615,6 +619,10 @@ function Gel({
   ...props
 }: GelProps) {
   const [ref, width] = useWidth()
+  const lanes = React.useMemo(() => {
+    const first = given.find((l) => l.ladder)
+    return bothSides && first && given[given.length - 1] !== first ? [...given, first] : given
+  }, [given, bothSides])
   const ink = stain
   const ideal = mode === "ideal"
   const [seed] = React.useState(() => (Math.random() * 1e6) | 0)
@@ -714,7 +722,7 @@ function Gel({
   const cb = React.useRef(onActiveChange)
   cb.current = onActiveChange
   const k = active ? `${active.lane}-${active.band}` : ""
-  React.useEffect(() => cb.current?.(active && activeBand ? { ...active, data: activeBand } : null), [k]) // eslint-disable-line react-hooks/exhaustive-deps
+  React.useEffect(() => cb.current?.(active && activeBand ? { ...active, label: lanes[active.lane].label, data: activeBand } : null), [k]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const describe = (a: { lane: number; band: number } | null) => {
     if (!a) return ""

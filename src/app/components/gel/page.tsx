@@ -60,10 +60,10 @@ export default function GelPage() {
 
       <Section
         title="A digest"
-        description="pGL3-Basic (4,818 bp) cut with single and double digests, the fragments computed from its sequence by digest. One cut linearizes it; two give two bands that add up to the whole; DraI's 19 bp piece runs off the end. Uncut, it runs as plasmid does: a supercoiled band ahead of its size and a fainter nicked one behind. Each lane holds 250 ng, shared by length, so shorter fragments are fainter. Hover a band for where it came from."
+        description="pGL3-Basic (4,818 bp) cut with single and double digests, the fragments computed from its sequence by digest. One cut linearizes it; two give two bands that add up to the whole; DraI's 19 bp piece runs off the end. Uncut, it runs as plasmid does: a supercoiled band ahead of its size and a fainter nicked one behind. Each lane holds 250 ng, shared by length, so shorter fragments are fainter. bothSides repeats the ladder in a last lane, so sizes read from either side. Hover a band for where it came from."
       >
         <Preview className="block">
-          <Gel lanes={DIGESTS} />
+          <Gel lanes={DIGESTS} bothSides />
         </Preview>
       </Section>
 
@@ -110,6 +110,7 @@ export default function GelPage() {
         <PropsTable
           rows={[
             ["lanes", "GelLane[]", "", "label, and bands (size, mass, apparent, smear, description), or a ladder; ng loaded, shared by mass."],
+            ["bothSides", "boolean", "false", "The first ladder again in a last lane, so sizes read from either side."],
             ["agarose / buffer", 'number, "tae" | "tbe"', '1, "tae"', "Agarose % w/v, 0.5 to 4; the running buffer."],
             ["volts / electrodes", "number, number", "100, 12", "Volts across electrodes this many cm apart: the field."],
             ["minutes / length", "number, number", "40, 8", "How long it runs; the gel's length from the wells, cm."],
@@ -244,7 +245,7 @@ function RunDemo() {
               <ChartReadout
                 value={focus.data.size.toLocaleString("en-US")}
                 unit="bp"
-                label={lanes[focus.lane].label}
+                label={focus.label}
                 detail={focus.data.description && <span className="type-body-sm text-muted-foreground">{focus.data.description}</span>}
               />
             ) : (
@@ -256,7 +257,7 @@ function RunDemo() {
               />
             )}
           </div>
-          <Gel lanes={lanes} {...g} stain={stain} mode={mode} run={run} onRunProgress={setClock} selectable onActiveChange={setFocus} height={480} aria-label="Digest run with these settings" />
+          <Gel lanes={lanes} bothSides {...g} stain={stain} mode={mode} run={run} onRunProgress={setClock} selectable onActiveChange={setFocus} height={480} aria-label="Digest run with these settings" />
         </div>
       </div>
     </div>
