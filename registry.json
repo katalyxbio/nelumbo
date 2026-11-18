@@ -2006,6 +2006,25 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "sequence-logo",
+      "type": "registry:ui",
+      "title": "Sequence Logo",
+      "description": "A sequence logo: stacks of letters sized by information content (bits, with small-sample correction, or relative entropy against a background) or probability, from aligned sequences or a position matrix, in the Nucleotide and Amino Acid hues; a bits axis, a ruler, an IUPAC consensus row of residue tiles, marked stretches, reverse complement, a hover card with every letter's share, and keyboard and pointer range selection; logoCounts, logoColumns, logoConsensus and reverseComplementMatrix helpers.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@nelumbo/residue",
+        "@nelumbo/nucleotide",
+        "@nelumbo/amino-acid"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/sequence-logo.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

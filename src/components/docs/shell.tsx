@@ -106,6 +106,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/plasmid-map", label: "Plasmid Map", isNew: true },
       { href: "/components/sequence-alignment", label: "Sequence Alignment", isNew: true },
       { href: "/components/plate-map", label: "Plate Map", isNew: true },
+      { href: "/components/sequence-logo", label: "Sequence Logo", isNew: true },
     ],
   },
   {

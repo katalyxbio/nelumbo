@@ -175,6 +175,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - Plasmid Map (new, biology: circular map with directional feature arcs, names along arcs or outside with non-crossing leaders, unique restriction sites, a center readout and keyboard focus)
 - Sequence Alignment (new, biology: aligned DNA or protein as connected residue rows with gap lines, wrapping blocks or a scrolling row with an overview, feature and marker tracks, identity bars, a consensus row, color by residue, conservation or difference, and block selection that copies as FASTA)
 - Plate Map (new, biology: 6 to 1536-well plates, bare or drawn to scale with a chosen notch corner and a scannable barcode on its front wall, wells by group or value, excluded wells, hover cards, and selection traced as one filleted outline with full keyboard navigation)
+- Sequence Logo (new, biology: motifs as stacks of letters sized by information or probability, from aligned sequences or a position matrix, with small-sample correction, a background, reverse complement, an IUPAC consensus row and range selection)
 
 ## License
 
