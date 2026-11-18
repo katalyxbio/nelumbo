@@ -319,19 +319,19 @@ const restData = [
   { lo: 57, hi: 65, rhr: 58 },
 ].map((d, i) => {
   const day = dayAt(-6 + i)
-  return { ...d, band: [d.lo, d.hi] as [number, number], key: day.toISOString(), tick: fmtNarrow.format(day), label: i === 6 ? "Today" : fmtShort.format(day), in: d.rhr >= d.lo && d.rhr <= d.hi }
+  return { ...d, band: [d.lo, d.hi] as [number, number], key: day.toISOString(), tick: fmtNarrow.format(day), label: i === 6 ? "Today" : fmtShort.format(day), inRange: d.rhr >= d.lo && d.rhr <= d.hi }
 })
 
 function RestDot({ cx, cy, payload }: { cx?: number; cy?: number; payload?: (typeof restData)[number] }) {
   if (cx === undefined || cy === undefined || !payload) return <g />
-  return <circle cx={cx} cy={cy} r={5} fill={payload.in ? "var(--color-inRange)" : "var(--color-outRange)"} stroke="var(--chart-surface)" strokeWidth={2} />
+  return <circle cx={cx} cy={cy} r={5} fill={payload.inRange ? "var(--color-inRange)" : "var(--color-outRange)"} stroke="var(--chart-surface)" strokeWidth={2} />
 }
 
 export function RestingHeartRateDemo() {
   const motion = useChartAnimation()
   const focus = useChartFocus({
     count: restData.length,
-    describe: (i) => `${restData[i].label}: ${restData[i].rhr} bpm, ${restData[i].in ? "in" : "below"} your personal range of ${restData[i].lo} to ${restData[i].hi}`,
+    describe: (i) => `${restData[i].label}: ${restData[i].rhr} bpm, ${restData[i].inRange ? "in" : "below"} your personal range of ${restData[i].lo} to ${restData[i].hi}`,
   })
   const point = restData[Math.max(0, focus.index)]
   return (
@@ -341,7 +341,7 @@ export function RestingHeartRateDemo() {
           value={point.rhr}
           unit="bpm"
           label={point.label}
-          detail={point.in ? undefined : `Below your personal range of ${point.lo}–${point.hi}`}
+          detail={point.inRange ? undefined : `Below your personal range of ${point.lo}–${point.hi}`}
           onClear={focus.isDefault ? undefined : focus.reset}
         />
         <ChartContainer config={restConfig} focus={focus} aria-label="Resting heart rate this week against your personal range" className="aspect-auto h-64">

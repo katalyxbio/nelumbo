@@ -20,29 +20,32 @@ import {
 } from "@/registry/nelumbo/ui/chart"
 import { Icon } from "@/registry/nelumbo/ui/icon"
 
-const fmt = (n: number) => n.toLocaleString("en-US")
 const cardCls = "[--card:var(--surface-container-low)]"
 
-/* Simple: minutes by activity ------------------------------------------ */
+/* Simple: run QC for one library, in percent ------------------------ */
 
-const activity = [
-  { key: "walk", label: "Walk", minutes: 275, fill: "var(--color-walk)" },
-  { key: "run", label: "Run", minutes: 200, fill: "var(--color-run)" },
-  { key: "cycle", label: "Cycle", minutes: 187, fill: "var(--color-cycle)" },
-  { key: "swim", label: "Swim", minutes: 173, fill: "var(--color-swim)" },
-  { key: "yoga", label: "Yoga", minutes: 90, fill: "var(--color-yoga)" },
+// Quality metrics for one exome library on a short-read run, in percent: bases at
+// Q30 or better, reads aligned, reads on target, target covered 20x or deeper, and
+// clusters passing filter (PF). Illustrative values.
+const qc = [
+  { key: "q30", label: "Q30", value: 92, fill: "var(--color-q30)" },
+  { key: "aligned", label: "Aligned", value: 88, fill: "var(--color-aligned)" },
+  { key: "target", label: "On target", value: 74, fill: "var(--color-target)" },
+  { key: "cov", label: "20x", value: 96, fill: "var(--color-cov)" },
+  { key: "pf", label: "PF", value: 81, fill: "var(--color-pf)" },
 ]
 
-const activityConfig = {
-  minutes: { label: "Minutes" },
-  walk: { label: "Walk", color: "var(--blue)" },
-  run: { label: "Run", color: "var(--orange)" },
-  cycle: { label: "Cycle", color: "var(--green)" },
-  swim: { label: "Swim", color: "var(--purple)" },
-  yoga: { label: "Yoga", color: "var(--pink)" },
+const qcConfig = {
+  value: { label: "Percent" },
+  q30: { label: "Q30", color: "var(--blue)" },
+  aligned: { label: "Aligned", color: "var(--orange)" },
+  target: { label: "On target", color: "var(--green)" },
+  cov: { label: "20x", color: "var(--purple)" },
+  pf: { label: "PF", color: "var(--pink)" },
 } satisfies ChartConfig
 
-const ACTIVITY_KEYS = ["walk", "run", "cycle", "swim", "yoga"]
+const QC_KEYS = ["q30", "aligned", "target", "cov", "pf"]
+const qcSummary = qc.map((d) => `${qcConfig[d.key as keyof typeof qcConfig].label} ${d.value}%`).join(", ")
 
 function CardTop({ title, description }: { title: string; description: string }) {
   return (
@@ -53,13 +56,13 @@ function CardTop({ title, description }: { title: string; description: string })
   )
 }
 
-function ActivityTrend() {
+function QcPass() {
   return (
     <div className="flex items-center gap-2">
-      <Badge variant="success" icon="trending_up">
-        5.2%
+      <Badge variant="success" icon="check">
+        Pass
       </Badge>
-      <span className="type-body-md text-muted-foreground">more active minutes than last week</span>
+      <span className="type-body-md text-muted-foreground">all five above the lab&apos;s thresholds</span>
     </div>
   )
 }
@@ -68,19 +71,19 @@ export function RadialSimpleDemo() {
   const motion = useChartAnimation()
   return (
     <Card className={cardCls}>
-      <CardTop title="Radial Chart" description="Active minutes by activity, Nov 9 to 15" />
+      <CardTop title="Radial Chart" description="Run QC for one exome library, in percent" />
       <CardContent>
-        <ChartContainer config={activityConfig} aria-label="Radial chart of active minutes this week: walk 275, run 200, cycle 187, swim 173, yoga 90" className="mx-auto aspect-square max-h-[320px]">
-          <RadialBarChart data={activity} innerRadius="26%" outerRadius="100%" barSize={20} startAngle={90} endAngle={-270}>
-            <PolarAngleAxis type="number" domain={[0, 300]} tick={false} axisLine={false} />
+        <ChartContainer config={qcConfig} aria-label={`Run QC for one library: ${qcSummary}`} className="mx-auto aspect-square max-h-[320px]">
+          <RadialBarChart data={qc} cy="42%" innerRadius="22%" outerRadius="84%" barSize={18} startAngle={90} endAngle={-270}>
+            <PolarAngleAxis type="number" domain={[0, 100]} tick={false} axisLine={false} />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel nameKey="key" />} />
-            <RadialBar dataKey="minutes" shape={chartRadialShape({ trackAmount: 14 })} {...motion} />
-            <ChartLegend verticalAlign="bottom" content={<ChartLegendContent keys={ACTIVITY_KEYS} />} />
+            <RadialBar dataKey="value" shape={chartRadialShape({ trackAmount: 14 })} {...motion} />
+            <ChartLegend verticalAlign="bottom" content={<ChartLegendContent keys={QC_KEYS} />} />
           </RadialBarChart>
         </ChartContainer>
       </CardContent>
       <CardContent>
-        <ActivityTrend />
+        <QcPass />
       </CardContent>
     </Card>
   )
@@ -94,18 +97,18 @@ export function RadialLabelDemo() {
     <Card className={cardCls}>
       <CardTop title="Radial Chart - Label" description="The name sits in a chip at the start of each bar" />
       <CardContent>
-        <ChartContainer config={activityConfig} aria-label="Radial chart with labels: walk 275, run 200, cycle 187, swim 173, yoga 90 active minutes" className="mx-auto aspect-square max-h-[320px]">
-          <RadialBarChart data={activity} innerRadius="16%" outerRadius="100%" barSize={20} startAngle={90} endAngle={-270}>
-            <PolarAngleAxis type="number" domain={[0, 300]} tick={false} axisLine={false} />
+        <ChartContainer config={qcConfig} aria-label={`Run QC with labels: ${qcSummary}`} className="mx-auto aspect-square max-h-[320px]">
+          <RadialBarChart data={qc} innerRadius="16%" outerRadius="100%" barSize={20} startAngle={90} endAngle={-270}>
+            <PolarAngleAxis type="number" domain={[0, 100]} tick={false} axisLine={false} />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel nameKey="key" />} />
-            <RadialBar dataKey="minutes" shape={chartRadialShape({ trackAmount: 14 })} {...motion}>
+            <RadialBar dataKey="value" shape={chartRadialShape({ trackAmount: 14 })} {...motion}>
               <LabelList dataKey="label" content={chartRadialLabel({ height: 18 })} />
             </RadialBar>
           </RadialBarChart>
         </ChartContainer>
       </CardContent>
       <CardContent>
-        <ActivityTrend />
+        <QcPass />
       </CardContent>
     </Card>
   )
@@ -119,17 +122,17 @@ export function RadialGridDemo() {
     <Card className={cardCls}>
       <CardTop title="Radial Chart - Grid" description="Dotted round-dot circles guide each bar" />
       <CardContent>
-        <ChartContainer config={activityConfig} aria-label="Radial chart with a dotted grid: walk 275, run 200, cycle 187, swim 173, yoga 90 active minutes" className="mx-auto aspect-square max-h-[320px]">
-          <RadialBarChart data={activity} innerRadius="26%" outerRadius="100%" barSize={18} startAngle={90} endAngle={-270}>
-            <PolarAngleAxis type="number" domain={[0, 300]} tick={false} axisLine={false} />
+        <ChartContainer config={qcConfig} aria-label={`Run QC on a dotted grid: ${qcSummary}`} className="mx-auto aspect-square max-h-[320px]">
+          <RadialBarChart data={qc} cy="42%" innerRadius="22%" outerRadius="84%" barSize={16} startAngle={90} endAngle={-270}>
+            <PolarAngleAxis type="number" domain={[0, 100]} tick={false} axisLine={false} />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel nameKey="key" />} />
-            <RadialBar dataKey="minutes" shape={chartRadialShape({ track: "dots" })} {...motion} />
-            <ChartLegend verticalAlign="bottom" content={<ChartLegendContent keys={ACTIVITY_KEYS} />} />
+            <RadialBar dataKey="value" shape={chartRadialShape({ track: "dots" })} {...motion} />
+            <ChartLegend verticalAlign="bottom" content={<ChartLegendContent keys={QC_KEYS} />} />
           </RadialBarChart>
         </ChartContainer>
       </CardContent>
       <CardContent>
-        <ActivityTrend />
+        <QcPass />
       </CardContent>
     </Card>
   )
@@ -137,30 +140,28 @@ export function RadialGridDemo() {
 
 /* Text: one bar, a big number ------------------------------------------ */
 
-const stepsConfig = { steps: { label: "Steps", color: "var(--cyan)" } } satisfies ChartConfig
+const readsConfig = { reads: { label: "Reads", color: "var(--cyan)" } } satisfies ChartConfig
 
 export function RadialTextDemo() {
   const motion = useChartAnimation()
-  const data = [{ key: "steps", steps: 8240, fill: "var(--color-steps)" }]
+  const data = [{ key: "reads", reads: 312, fill: "var(--color-reads)" }]
   return (
     <Card className={cardCls}>
-      <CardTop title="Radial Chart - Text" description="Today's steps against a 10,000 goal" />
+      <CardTop title="Radial Chart - Text" description="Reads so far against a 400 million target" />
       <CardContent>
         <div className="relative mx-auto aspect-square max-h-[320px]">
-          <ChartContainer config={stepsConfig} aria-label="Radial chart: 8,240 of 10,000 steps today" className="aspect-square h-full">
+          <ChartContainer config={readsConfig} aria-label="Radial chart: 312 of 400 million reads sequenced" className="aspect-square h-full">
             <RadialBarChart data={data} innerRadius="70%" outerRadius="100%" barSize={30} startAngle={90} endAngle={-270}>
-              <PolarAngleAxis type="number" domain={[0, 10000]} tick={false} axisLine={false} />
-              <RadialBar dataKey="steps" shape={chartRadialShape({ trackAmount: 18 })} {...motion} />
+              <PolarAngleAxis type="number" domain={[0, 400]} tick={false} axisLine={false} />
+              <RadialBar dataKey="reads" shape={chartRadialShape({ trackAmount: 18 })} {...motion} />
             </RadialBarChart>
           </ChartContainer>
-          <ChartRadialReadout value={fmt(8240)} label="Steps today" />
+          <ChartRadialReadout value="312" unit="M" label="Reads so far" />
         </div>
       </CardContent>
       <CardContent className="flex items-center gap-2">
-        <Badge variant="success" icon="trending_up">
-          12%
-        </Badge>
-        <span className="type-body-md text-muted-foreground">above your weekday average</span>
+        <Icon name="schedule" className="size-5 text-muted-foreground" />
+        <span className="type-body-md text-muted-foreground">78% of target, about 6 h left in the run</span>
       </CardContent>
     </Card>
   )
@@ -168,28 +169,28 @@ export function RadialTextDemo() {
 
 /* Shape: a progress ring ----------------------------------------------- */
 
-const sleepConfig = { score: { label: "Sleep score", color: "var(--purple)" } } satisfies ChartConfig
+const wellsConfig = { wells: { label: "Wells imaged", color: "var(--purple)" } } satisfies ChartConfig
 
 export function RadialShapeDemo() {
   const motion = useChartAnimation()
-  const data = [{ key: "score", score: 84, fill: "var(--color-score)" }]
+  const data = [{ key: "wells", wells: 84, fill: "var(--color-wells)" }]
   return (
     <Card className={cardCls}>
-      <CardTop title="Radial Chart - Shape" description="A thick tonal track with round caps, like a circular progress" />
+      <CardTop title="Radial Chart - Shape" description="A thick tonal track with round caps: a 96-well plate being imaged" />
       <CardContent>
         <div className="relative mx-auto aspect-square max-h-[320px]">
-          <ChartContainer config={sleepConfig} aria-label="Progress ring: sleep score 84 out of 100" className="aspect-square h-full">
+          <ChartContainer config={wellsConfig} aria-label="Progress ring: 84 of 96 wells imaged" className="aspect-square h-full">
             <RadialBarChart data={data} innerRadius="74%" outerRadius="100%" barSize={34} startAngle={90} endAngle={-270}>
-              <PolarAngleAxis type="number" domain={[0, 100]} tick={false} axisLine={false} />
-              <RadialBar dataKey="score" shape={chartRadialShape({ trackAmount: 22 })} {...motion} />
+              <PolarAngleAxis type="number" domain={[0, 96]} tick={false} axisLine={false} />
+              <RadialBar dataKey="wells" shape={chartRadialShape({ trackAmount: 22 })} {...motion} />
             </RadialBarChart>
           </ChartContainer>
-          <ChartRadialReadout value="84" unit="/ 100" label="Sleep score" />
+          <ChartRadialReadout value="84" unit="/ 96" label="Wells imaged" />
         </div>
       </CardContent>
       <CardContent className="flex items-center gap-2">
-        <Icon name="bedtime" className="size-5 text-muted-foreground" />
-        <span className="type-body-md text-muted-foreground">7 h 42 min asleep, 4 min to fall asleep</span>
+        <Icon name="grid_view" className="size-5 text-muted-foreground" />
+        <span className="type-body-md text-muted-foreground">Row H next, 4 fields per well in 3 channels</span>
       </CardContent>
     </Card>
   )
@@ -197,37 +198,38 @@ export function RadialShapeDemo() {
 
 /* Stacked: a half ring ------------------------------------------------- */
 
-const zonesConfig = {
-  moderate: { label: "Moderate", color: "var(--amber)" },
-  vigorous: { label: "Vigorous", color: "var(--red)" },
+// Two parts of one quantity, so two tones of one color; the chips name them.
+const readsByKind = {
+  unique: { label: "Unique", color: "var(--blue)" },
+  duplicate: { label: "Duplicate", color: "color-mix(in oklab, var(--blue) 55%, var(--card))" },
 } satisfies ChartConfig
 
 export function RadialStackedDemo() {
   const motion = useChartAnimation()
-  const data = [{ week: "Nov 9 to 15", moderate: 1260, vigorous: 570 }]
-  const total = data[0].moderate + data[0].vigorous
+  const data = [{ run: "Run 2611", unique: 268, duplicate: 44 }]
+  const total = data[0].unique + data[0].duplicate
   const angles = { startAngle: 180, endAngle: 0 }
   return (
     <Card className={cardCls}>
-      <CardTop title="Radial Chart - Stacked" description="Active zone minutes this week, two series in a half ring" />
+      <CardTop title="Radial Chart - Stacked" description="Reads so far, unique and duplicate, against a 400 million target" />
       <CardContent>
         <div className="relative mx-auto aspect-[2/1.15] w-full max-w-[380px]">
-          <ChartContainer config={zonesConfig} aria-label={`Half ring of active zone minutes: ${fmt(data[0].moderate)} moderate and ${fmt(data[0].vigorous)} vigorous, ${fmt(total)} in total`} className="aspect-auto h-full">
+          <ChartContainer config={readsByKind} aria-label={`Half ring of reads: ${data[0].unique} million unique and ${data[0].duplicate} million duplicate, ${total} million of a 400 million target`} className="aspect-auto h-full">
             <RadialBarChart data={data} cy="88%" innerRadius="140%" outerRadius="205%" barSize={34} {...angles}>
-              <PolarAngleAxis type="number" domain={[0, 2400]} tick={false} axisLine={false} />
+              <PolarAngleAxis type="number" domain={[0, 400]} tick={false} axisLine={false} />
               <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-              <RadialBar dataKey="moderate" stackId="a" fill="var(--color-moderate)" shape={chartRadialShape({ ...angles, gap: true, cornerRadius: 12 })} {...motion} />
-              <RadialBar dataKey="vigorous" stackId="a" fill="var(--color-vigorous)" shape={chartRadialShape({ ...angles, track: false, gap: true, cornerRadius: 12 })} {...motion} />
+              <RadialBar dataKey="unique" stackId="a" fill="var(--color-unique)" shape={chartRadialShape({ ...angles, gap: true, cornerRadius: 12 })} {...motion} />
+              <RadialBar dataKey="duplicate" stackId="a" fill="var(--color-duplicate)" shape={chartRadialShape({ ...angles, track: false, gap: true, cornerRadius: 12 })} {...motion} />
             </RadialBarChart>
           </ChartContainer>
-          <ChartRadialReadout half value={fmt(total)} unit="min" label="Zone minutes" />
+          <ChartRadialReadout half value={total} unit="M" label="Reads" />
         </div>
         <ul className="mt-4 flex flex-wrap justify-center gap-2">
-          {(["moderate", "vigorous"] as const).map((k) => (
+          {(["unique", "duplicate"] as const).map((k) => (
             <li key={k} className="inline-flex h-7 items-center gap-1.5 rounded-full bg-secondary px-2.5 type-label-md text-secondary-foreground">
-              <span aria-hidden className="size-2.5 rounded-full" style={{ background: `var(--${k === "moderate" ? "amber" : "red"})` }} />
-              {zonesConfig[k].label}
-              <span className="tabular-nums text-muted-foreground">{fmt(data[0][k])}</span>
+              <span aria-hidden className="size-2.5 rounded-full" style={{ background: readsByKind[k].color }} />
+              {readsByKind[k].label}
+              <span className="tabular-nums text-muted-foreground">{data[0][k]}M</span>
             </li>
           ))}
         </ul>
@@ -236,51 +238,51 @@ export function RadialStackedDemo() {
   )
 }
 
-/* Gauge: heart rate zones ---------------------------------------------- */
+/* Gauge: incubator CO2 on its bands ----------------------------------- */
 
+// The reading fills the bands up to it; past it each band stays tonal. Green is
+// the setpoint band, amber and red are outside it.
 const gaugeConfig = {
-  light: { label: "Light", color: "var(--cyan)", swatch: 1 },
-  moderate: { label: "Moderate", color: "var(--amber)", swatch: 2 },
-  vigorous: { label: "Vigorous", color: "var(--orange)", swatch: 3 },
-  peak: { label: "Peak", color: "var(--red)", swatch: 4 },
+  low: { label: "Low", color: "var(--amber)" },
+  ok: { label: "In range", color: "var(--green)" },
+  high: { label: "High", color: "var(--red)" },
 } satisfies ChartConfig
 
-const ZONES = [
-  { key: "light", from: 40, to: 113 },
-  { key: "moderate", from: 113, to: 142 },
-  { key: "vigorous", from: 142, to: 170 },
-  { key: "peak", from: 170, to: 200 },
+const BANDS = [
+  { key: "low", from: 3, to: 4.5 },
+  { key: "ok", from: 4.5, to: 5.5 },
+  { key: "high", from: 5.5, to: 7 },
 ] as const
 
 export function RadialGaugeDemo() {
   const motion = useChartAnimation()
-  const bpm = 128
+  const co2 = 5.1
   const angles = { startAngle: 180, endAngle: 0 }
-  const [min, max] = [ZONES[0].from, ZONES[ZONES.length - 1].to]
-  // each zone is a filled part up to the reading and a tonal rest, so the reading shows in its zone's color
+  const [min, max] = [BANDS[0].from, BANDS[BANDS.length - 1].to]
+  // each band is a filled part up to the reading and a tonal rest, so the reading shows in its band's color
   const row: Record<string, number> = {}
   const series: { id: string; color: string; on: boolean }[] = []
-  for (const z of ZONES) {
-    const on = Math.max(0, Math.min(bpm, z.to) - z.from)
+  for (const z of BANDS) {
+    const on = Math.max(0, Math.min(co2, z.to) - z.from)
     const off = z.to - z.from - on
     row[`${z.key}On`] = on
     row[`${z.key}Off`] = off
     series.push({ id: `${z.key}On`, color: `var(--color-${z.key})`, on: true }, { id: `${z.key}Off`, color: `var(--color-${z.key})`, on: false })
   }
-  const zone = ZONES.find((z) => bpm >= z.from && bpm < z.to) ?? ZONES[0]
+  const band = BANDS.find((z) => co2 >= z.from && co2 < z.to) ?? BANDS[0]
   return (
     <Card className={cardCls}>
-      <CardTop title="Gauge" description="Heart rate now, drawn on its zones" />
+      <CardTop title="Gauge" description="Incubator CO2 now, against its setpoint band" />
       <CardContent>
         <div className="relative mx-auto aspect-[2/1.15] w-full max-w-[380px]">
-          <ChartContainer config={gaugeConfig} aria-label={`Gauge: heart rate ${bpm} beats per minute, in the ${gaugeConfig[zone.key].label.toLowerCase()} zone`} className="aspect-auto h-full">
+          <ChartContainer config={gaugeConfig} aria-label={`Gauge: incubator CO2 at ${co2}%, ${gaugeConfig[band.key].label.toLowerCase()} (4.5 to 5.5%)`} className="aspect-auto h-full">
             <RadialBarChart data={[row]} cy="88%" innerRadius="140%" outerRadius="205%" barSize={30} {...angles}>
               <PolarAngleAxis type="number" domain={[0, max - min]} tick={false} axisLine={false} />
               {series.map((s) => (
                 <RadialBar
                   key={s.id}
                   dataKey={s.id}
-                  stackId="hr"
+                  stackId="co2"
                   fill={s.on ? s.color : chartTrackColor(s.color, 30)}
                   shape={chartRadialShape({ ...angles, track: false, gap: true, cornerRadius: 10 })}
                   {...motion}
@@ -288,20 +290,18 @@ export function RadialGaugeDemo() {
               ))}
             </RadialBarChart>
           </ChartContainer>
-          <ChartRadialReadout half value={bpm} unit="bpm" label={`${gaugeConfig[zone.key].label} zone`} />
-          <span aria-hidden className="absolute bottom-0 left-[4%] type-label-md text-muted-foreground tabular-nums">{min}</span>
-          <span aria-hidden className="absolute right-[4%] bottom-0 type-label-md text-muted-foreground tabular-nums">{max}</span>
+          <ChartRadialReadout half value={co2.toFixed(1)} unit="% CO2" label={gaugeConfig[band.key].label} />
+          <span aria-hidden className="absolute bottom-0 left-[4%] type-label-md text-muted-foreground tabular-nums">{min}%</span>
+          <span aria-hidden className="absolute right-[4%] bottom-0 type-label-md text-muted-foreground tabular-nums">{max}%</span>
         </div>
         <ul className="mt-4 flex flex-wrap justify-center gap-2">
-          {ZONES.map((z) => (
+          {BANDS.map((z) => (
             <li key={z.key} className="inline-flex h-7 items-center gap-1.5 rounded-full bg-secondary px-2.5 type-label-md text-secondary-foreground">
-              <svg aria-hidden width={(1 + ZONES.indexOf(z)) * 6} height={10} className="shrink-0">
-                {Array.from({ length: 1 + ZONES.indexOf(z) }, (_, i) => (
-                  <circle key={i} cx={3 + i * 6} cy={5} r={1.75} fill={gaugeConfig[z.key].color} />
-                ))}
-              </svg>
+              <span aria-hidden className="size-2.5 rounded-full" style={{ background: gaugeConfig[z.key].color }} />
               {gaugeConfig[z.key].label}
-              <span className="tabular-nums text-muted-foreground">{z.from} to {z.to}</span>
+              <span className="tabular-nums text-muted-foreground">
+                {z.from} to {z.to}%
+              </span>
             </li>
           ))}
         </ul>

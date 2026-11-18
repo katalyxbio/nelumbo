@@ -20,28 +20,33 @@ import {
 } from "@/registry/nelumbo/ui/chart"
 import { ToggleGroup, ToggleGroupItem } from "@/registry/nelumbo/ui/toggle-group"
 
-/* data (deterministic, same as shadcn's gallery) ------------------- */
+/* data: PBMCs by cell type ----------------------------------------- */
 
-const browserConfig = {
-  visitors: { label: "Visitors" },
-  chrome: { label: "Chrome", color: "var(--blue)" },
-  safari: { label: "Safari", color: "var(--orange)" },
-  firefox: { label: "Firefox", color: "var(--green)" },
-  edge: { label: "Edge", color: "var(--purple)" },
+// Live single cells from a flow panel on peripheral blood mononuclear cells,
+// gated by lineage. Illustrative shares for a healthy adult donor.
+const cellConfig = {
+  cells: { label: "Cells" },
+  t: { label: "T cells", color: "var(--blue)" },
+  mono: { label: "Monocytes", color: "var(--orange)" },
+  nk: { label: "NK cells", color: "var(--green)" },
+  b: { label: "B cells", color: "var(--purple)" },
   other: { label: "Other", color: "var(--pink)" },
 } satisfies ChartConfig
+type CellKey = Exclude<keyof typeof cellConfig, "cells">
 
-const browserData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
+const cellData = [
+  { type: "t", cells: 27400, fill: "var(--color-t)" },
+  { type: "mono", cells: 9150, fill: "var(--color-mono)" },
+  { type: "nk", cells: 5600, fill: "var(--color-nk)" },
+  { type: "b", cells: 5450, fill: "var(--color-b)" },
+  { type: "other", cells: 2400, fill: "var(--color-other)" },
 ]
-const browserTotal = browserData.reduce((a, d) => a + d.visitors, 0)
+const cellTotal = cellData.reduce((a, d) => a + d.cells, 0)
 const fmt = (n: number) => n.toLocaleString("en-US")
-const browserSummary = browserData.map((d) => `${browserConfig[d.browser as keyof typeof browserConfig].label} ${d.visitors}`).join(", ")
 const pct = (v: number, total: number) => `${Math.round((v / total) * 100)}%`
+const nameOf = (k: string) => cellConfig[k as CellKey].label
+const cellSummary = cellData.map((d) => `${nameOf(d.type)} ${pct(d.cells, cellTotal)}`).join(", ")
+const share = (v: unknown) => pct(Number(v), cellTotal)
 
 /* shared frame ----------------------------------------------------- */
 
@@ -72,10 +77,10 @@ function PieCard({
 
 const trend = (
   <>
-    <Badge variant="success" icon="trending_up">
-      5.2%
+    <Badge variant="secondary" icon="labs">
+      {fmt(cellTotal)} cells
     </Badge>
-    <span className="type-body-sm text-muted-foreground">more than last month</span>
+    <span className="type-body-sm text-muted-foreground">live single cells, one donor</span>
   </>
 )
 
@@ -85,18 +90,18 @@ const trend = (
 // (paddingAngle gaps are wedges that narrow to a point), and a small hole keeps the
 // slices from meeting in one point.
 const slices = { innerRadius: "14%", paddingAngle: 0, cornerRadius: 10, stroke: "var(--card)", strokeWidth: 4 } as const
-const tip = <ChartTooltipContent hideLabel nameKey="browser" />
+const tip = <ChartTooltipContent hideLabel nameKey="type" />
 
 /* Simple ----------------------------------------------------------- */
 
 export function PieSimpleDemo() {
   const motion = useChartAnimation()
   return (
-    <PieCard title="Pie Chart" description="Visitors by browser, last 30 days" footer={trend}>
-      <ChartContainer config={browserConfig} aria-label={`Visitors by browser: ${browserSummary}`} className={plot}>
+    <PieCard title="Pie Chart" description="PBMCs by cell type, from a flow panel" footer={trend}>
+      <ChartContainer config={cellConfig} aria-label={`PBMCs by cell type: ${cellSummary}`} className={plot}>
         <PieChart>
           <ChartTooltip cursor={false} content={tip} />
-          <Pie data={browserData} dataKey="visitors" nameKey="browser" outerRadius="86%" {...slices} {...motion} />
+          <Pie data={cellData} dataKey="cells" nameKey="type" outerRadius="86%" {...slices} {...motion} />
         </PieChart>
       </ChartContainer>
     </PieCard>
@@ -108,11 +113,11 @@ export function PieSimpleDemo() {
 export function PieSeparatorNoneDemo() {
   const motion = useChartAnimation()
   return (
-    <PieCard title="Pie Chart - Separator None" description="No gaps: one continuous pie">
-      <ChartContainer config={browserConfig} aria-label={`Visitors by browser, without separators: ${browserSummary}`} className={plot}>
+    <PieCard title="Pie Chart - Separator None" description="No gaps: one continuous disc">
+      <ChartContainer config={cellConfig} aria-label={`PBMCs by cell type, without separators: ${cellSummary}`} className={plot}>
         <PieChart>
           <ChartTooltip cursor={false} content={tip} />
-          <Pie data={browserData} dataKey="visitors" nameKey="browser" outerRadius="86%" stroke="none" paddingAngle={0} cornerRadius={0} {...motion} />
+          <Pie data={cellData} dataKey="cells" nameKey="type" outerRadius="86%" stroke="none" paddingAngle={0} cornerRadius={0} {...motion} />
         </PieChart>
       </ChartContainer>
     </PieCard>
@@ -124,16 +129,16 @@ export function PieSeparatorNoneDemo() {
 export function PieLabelDemo() {
   const motion = useChartAnimation()
   return (
-    <PieCard title="Pie Chart - Label" description="The value of each slice, on a chip">
-      <ChartContainer config={browserConfig} aria-label={`Visitors by browser with values: ${browserSummary}`} className={plot}>
+    <PieCard title="Pie Chart - Label" description="Each cell type’s share, on a chip">
+      <ChartContainer config={cellConfig} aria-label={`PBMCs by cell type with shares: ${cellSummary}`} className={plot}>
         <PieChart>
           <ChartTooltip cursor={false} content={tip} />
           <Pie
-            data={browserData}
-            dataKey="visitors"
-            nameKey="browser"
+            data={cellData}
+            dataKey="cells"
+            nameKey="type"
             outerRadius="62%"
-            label={piePillLabel({ config: browserConfig })}
+            label={piePillLabel({ config: cellConfig, text: share })}
             labelLine={false}
             {...slices}
             {...motion}
@@ -150,15 +155,15 @@ export function PieCustomLabelDemo() {
   const motion = useChartAnimation()
   return (
     <PieCard title="Pie Chart - Custom Label" description="Name and value in a chip outside the pie">
-      <ChartContainer config={browserConfig} aria-label={`Visitors by browser with names and values: ${browserSummary}`} className={plot}>
+      <ChartContainer config={cellConfig} aria-label={`PBMCs by cell type with names and shares: ${cellSummary}`} className={plot}>
         <PieChart>
           <ChartTooltip cursor={false} content={tip} />
           <Pie
-            data={browserData}
-            dataKey="visitors"
-            nameKey="browser"
+            data={cellData}
+            dataKey="cells"
+            nameKey="type"
             outerRadius="56%"
-            label={piePillLabel({ config: browserConfig, dot: true, offset: 16, text: (v, name) => `${name} ${v}` })}
+            label={piePillLabel({ config: cellConfig, dot: true, offset: 16, text: (v, name) => `${name} ${share(v)}` })}
             labelLine={false}
             {...slices}
             {...motion}
@@ -175,15 +180,15 @@ export function PieLabelListDemo() {
   const motion = useChartAnimation()
   return (
     <PieCard title="Pie Chart - Label List" description="Each slice carries its own name">
-      <ChartContainer config={browserConfig} aria-label={`Visitors by browser with names on the slices: ${browserSummary}`} className={plot}>
+      <ChartContainer config={cellConfig} aria-label={`PBMCs by cell type, named on the slices: ${cellSummary}`} className={plot}>
         <PieChart>
           <ChartTooltip cursor={false} content={tip} />
           <Pie
-            data={browserData}
-            dataKey="visitors"
-            nameKey="browser"
+            data={cellData}
+            dataKey="cells"
+            nameKey="type"
             outerRadius="92%"
-            label={piePillLabel({ config: browserConfig, position: "inside", text: (_, name) => name })}
+            label={piePillLabel({ config: cellConfig, position: "inside", text: (_, name) => name })}
             labelLine={false}
             {...slices}
             {...motion}
@@ -200,11 +205,11 @@ export function PieLegendDemo() {
   const motion = useChartAnimation()
   return (
     <PieCard title="Pie Chart - Legend" description="Chips name the slices">
-      <ChartContainer config={browserConfig} aria-label={`Visitors by browser with a legend: ${browserSummary}`} className="mx-auto aspect-[4/5] w-full max-w-80">
+      <ChartContainer config={cellConfig} aria-label={`PBMCs by cell type with a legend: ${cellSummary}`} className="mx-auto aspect-[4/5] w-full max-w-80">
         <PieChart>
           <ChartTooltip cursor={false} content={tip} />
-          <Pie data={browserData} dataKey="visitors" nameKey="browser" outerRadius="80%" {...slices} {...motion} />
-          <ChartLegend content={<ChartLegendContent nameKey="browser" />} />
+          <Pie data={cellData} dataKey="cells" nameKey="type" outerRadius="80%" {...slices} {...motion} />
+          <ChartLegend content={<ChartLegendContent nameKey="type" />} />
         </PieChart>
       </ChartContainer>
     </PieCard>
@@ -218,11 +223,11 @@ const donut = { ...slices, innerRadius: "56%", outerRadius: "84%" } as const
 export function PieDonutDemo() {
   const motion = useChartAnimation()
   return (
-    <PieCard title="Pie Chart - Donut" description="Visitors by browser, last 30 days" footer={trend}>
-      <ChartContainer config={browserConfig} aria-label={`Visitors by browser: ${browserSummary}`} className={plot}>
+    <PieCard title="Pie Chart - Donut" description="PBMCs by cell type, from a flow panel" footer={trend}>
+      <ChartContainer config={cellConfig} aria-label={`PBMCs by cell type: ${cellSummary}`} className={plot}>
         <PieChart>
           <ChartTooltip cursor={false} content={tip} />
-          <Pie data={browserData} dataKey="visitors" nameKey="browser" {...donut} {...motion} />
+          <Pie data={cellData} dataKey="cells" nameKey="type" {...donut} {...motion} />
         </PieChart>
       </ChartContainer>
     </PieCard>
@@ -231,26 +236,26 @@ export function PieDonutDemo() {
 
 /* Donut Active: the slice in focus grows ---------------------------- */
 
-const describeBrowser = (i: number) => {
-  const d = browserData[i]
-  return d ? `${browserConfig[d.browser as keyof typeof browserConfig].label}: ${fmt(d.visitors)} visitors, ${pct(d.visitors, browserTotal)} of the total` : ""
+const describeCell = (i: number) => {
+  const d = cellData[i]
+  return d ? `${nameOf(d.type)}: ${fmt(d.cells)} cells, ${pct(d.cells, cellTotal)} of live cells` : ""
 }
 
 export function PieDonutActiveDemo() {
   const motion = useChartAnimation()
-  const focus = useChartFocus({ count: browserData.length, defaultIndex: 0, describe: describeBrowser })
+  const focus = useChartFocus({ count: cellData.length, defaultIndex: 0, describe: describeCell })
   return (
     <PieCard
       title="Pie Chart - Donut Active"
       description="Hover or tap a slice, or tab to the chart and use the arrow keys"
     >
-      <ChartContainer config={browserConfig} focus={focus} aria-label="Visitors by browser, one slice in focus" className={plot}>
+      <ChartContainer config={cellConfig} focus={focus} aria-label="PBMCs by cell type, one slice in focus" className={plot}>
         <PieChart>
           <ChartTooltip cursor={false} content={tip} />
           <Pie
-            data={browserData}
-            dataKey="visitors"
-            nameKey="browser"
+            data={cellData}
+            dataKey="cells"
+            nameKey="type"
             activeIndex={focus.index}
             rootTabIndex={-1}
             activeShape={PieActiveSector}
@@ -270,114 +275,119 @@ export function PieDonutActiveDemo() {
 export function PieDonutTextDemo() {
   const motion = useChartAnimation()
   return (
-    <PieCard title="Pie Chart - Donut with Text" description="Total visitors, last 30 days" footer={trend}>
+    <PieCard title="Pie Chart - Donut with Text" description="Live single cells after gating" footer={trend}>
       <div className="relative mx-auto w-full max-w-80">
-        <ChartContainer config={browserConfig} aria-label={`${fmt(browserTotal)} visitors by browser: ${browserSummary}`} className={plot}>
+        <ChartContainer config={cellConfig} aria-label={`${fmt(cellTotal)} live cells by type: ${cellSummary}`} className={plot}>
           <PieChart>
             <ChartTooltip cursor={false} content={tip} />
-            <Pie data={browserData} dataKey="visitors" nameKey="browser" {...donut} {...motion} />
+            <Pie data={cellData} dataKey="cells" nameKey="type" {...donut} {...motion} />
           </PieChart>
         </ChartContainer>
-        <PieCenter value={fmt(browserTotal)} label="Visitors" />
+        <PieCenter value={fmt(cellTotal)} label="Live cells" />
       </div>
     </PieCard>
   )
 }
 
-/* Stacked: two rings, October inside and November outside ----------- */
+/* Stacked: two donors, A inside and B outside ---------------------- */
 
-const octData = [
-  { browser: "chrome", visitors: 240, month: "October", fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 190, month: "October", fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 150, month: "October", fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 160, month: "October", fill: "var(--color-edge)" },
-  { browser: "other", visitors: 70, month: "October", fill: "var(--color-other)" },
+const donorA = cellData.map((d) => ({ ...d, donor: "Donor A" }))
+const donorB = [
+  { type: "t", cells: 30100, donor: "Donor B", fill: "var(--color-t)" },
+  { type: "mono", cells: 6900, donor: "Donor B", fill: "var(--color-mono)" },
+  { type: "nk", cells: 7200, donor: "Donor B", fill: "var(--color-nk)" },
+  { type: "b", cells: 4300, donor: "Donor B", fill: "var(--color-b)" },
+  { type: "other", cells: 1500, donor: "Donor B", fill: "var(--color-other)" },
 ]
-const novData = browserData.map((d) => ({ ...d, month: "November" }))
-const sum = (rows: { visitors: number }[]) => rows.reduce((a, r) => a + r.visitors, 0)
+const sum = (rows: { cells: number }[]) => rows.reduce((a, r) => a + r.cells, 0)
+const shares = (rows: { type: string; cells: number }[]) => rows.map((d) => `${nameOf(d.type)} ${pct(d.cells, sum(rows))}`).join(", ")
 
 export function PieStackedDemo() {
   const motion = useChartAnimation()
-  const ring = { dataKey: "visitors", nameKey: "browser", paddingAngle: 0, cornerRadius: 9, stroke: "var(--card)", strokeWidth: 4 } as const
+  const ring = { dataKey: "cells", nameKey: "type", paddingAngle: 0, cornerRadius: 9, stroke: "var(--card)", strokeWidth: 4 } as const
   return (
-    <PieCard title="Pie Chart - Stacked" description="October on the inside, November on the outside">
+    <PieCard title="Pie Chart - Stacked" description="Donor A on the inside, donor B on the outside">
       <ChartContainer
-        config={browserConfig}
-        aria-label={`Visitors by browser in two rings. October, ${fmt(sum(octData))} in total: ${octData.map((d) => d.visitors).join(", ")}. November, ${fmt(sum(novData))}: ${novData.map((d) => d.visitors).join(", ")}`}
+        config={cellConfig}
+        aria-label={`PBMCs by cell type for two donors. Donor A: ${shares(donorA)}. Donor B: ${shares(donorB)}`}
         className="mx-auto aspect-[4/5] w-full max-w-80 [&_.recharts-surface]:overflow-visible"
       >
         <PieChart>
           <ChartTooltip
             cursor={false}
-            content={<ChartTooltipContent nameKey="browser" labelFormatter={(_, p) => p?.[0]?.payload?.month} />}
+            content={<ChartTooltipContent nameKey="type" labelFormatter={(_, p) => p?.[0]?.payload?.donor} />}
           />
-          <Pie data={octData} innerRadius="30%" outerRadius="58%" {...ring} {...motion} />
-          <Pie data={novData} innerRadius="63%" outerRadius="88%" {...ring} {...motion} />
-          <ChartLegend content={<ChartLegendContent keys={["chrome", "safari", "firefox", "edge", "other"]} />} />
+          <Pie data={donorA} innerRadius="30%" outerRadius="58%" {...ring} {...motion} />
+          <Pie data={donorB} innerRadius="63%" outerRadius="88%" {...ring} {...motion} />
+          <ChartLegend content={<ChartLegendContent keys={["t", "mono", "nk", "b", "other"]} />} />
         </PieChart>
       </ChartContainer>
     </PieCard>
   )
 }
 
-/* Interactive: pick a month ----------------------------------------- */
+/* Interactive: pick a library ---------------------------------------- */
 
-const monthConfig = {
-  visitors: { label: "Visitors" },
-  january: { label: "January", color: "var(--blue)" },
-  february: { label: "February", color: "var(--orange)" },
-  march: { label: "March", color: "var(--green)" },
-  april: { label: "April", color: "var(--purple)" },
-  may: { label: "May", color: "var(--pink)" },
+// Reads per library in one pooled ChIP-seq run (illustrative): two replicates
+// each of wild type and knockout, and the input control.
+const libraryConfig = {
+  reads: { label: "Reads" },
+  wt1: { label: "WT rep 1", color: "var(--blue)" },
+  wt2: { label: "WT rep 2", color: "var(--orange)" },
+  ko1: { label: "KO rep 1", color: "var(--green)" },
+  ko2: { label: "KO rep 2", color: "var(--purple)" },
+  input: { label: "Input", color: "var(--pink)" },
 } satisfies ChartConfig
 
-const monthData = [
-  { month: "january", short: "Jan", visitors: 186, fill: "var(--color-january)" },
-  { month: "february", short: "Feb", visitors: 305, fill: "var(--color-february)" },
-  { month: "march", short: "Mar", visitors: 237, fill: "var(--color-march)" },
-  { month: "april", short: "Apr", visitors: 173, fill: "var(--color-april)" },
-  { month: "may", short: "May", visitors: 209, fill: "var(--color-may)" },
+const libraryData = [
+  { library: "wt1", short: "WT1", reads: 5_420_000, fill: "var(--color-wt1)" },
+  { library: "wt2", short: "WT2", reads: 6_180_000, fill: "var(--color-wt2)" },
+  { library: "ko1", short: "KO1", reads: 4_870_000, fill: "var(--color-ko1)" },
+  { library: "ko2", short: "KO2", reads: 3_960_000, fill: "var(--color-ko2)" },
+  { library: "input", short: "Input", reads: 4_570_000, fill: "var(--color-input)" },
 ]
-const monthTotal = sum(monthData)
+const readsTotal = libraryData.reduce((a, d) => a + d.reads, 0)
+const millions = (n: number) => `${(n / 1e6).toFixed(1)}M`
+const libraryName = (k: string) => libraryConfig[k as Exclude<keyof typeof libraryConfig, "reads">].label
 
 export function PieInteractiveDemo() {
   const motion = useChartAnimation()
   const focus = useChartFocus({
-    count: monthData.length,
+    count: libraryData.length,
     defaultIndex: 1,
     describe: (i) => {
-      const d = monthData[i]
-      return d ? `${monthConfig[d.month as keyof typeof monthConfig].label}: ${fmt(d.visitors)} visitors, ${pct(d.visitors, monthTotal)} of the total` : ""
+      const d = libraryData[i]
+      return d ? `${libraryName(d.library)}: ${millions(d.reads)} reads, ${pct(d.reads, readsTotal)} of the run` : ""
     },
   })
   // hovering previews a slice; the selector and the center follow the one picked
-  const active = monthData[focus.selected]
+  const active = libraryData[focus.selected]
   return (
-    <PieCard title="Pie Chart - Interactive" description="Pick a month; its slice grows and the center shows its visitors">
+    <PieCard title="Pie Chart - Interactive" description="Pick a library; its slice grows and the center shows its reads">
       <ToggleGroup
         type="single"
-        value={active.month}
+        value={active.library}
         onValueChange={(v) => {
-          const i = monthData.findIndex((d) => d.month === v)
+          const i = libraryData.findIndex((d) => d.library === v)
           if (i >= 0) focus.select(i)
         }}
-        aria-label="Month"
+        aria-label="Library"
         className="w-full *:flex-1"
       >
-        {monthData.map((d) => (
-          <ToggleGroupItem key={d.month} value={d.month} aria-label={monthConfig[d.month as keyof typeof monthConfig].label}>
+        {libraryData.map((d) => (
+          <ToggleGroupItem key={d.library} value={d.library} aria-label={libraryName(d.library)}>
             {d.short}
           </ToggleGroupItem>
         ))}
       </ToggleGroup>
       <div className="relative mx-auto w-full max-w-80">
-        <ChartContainer config={monthConfig} focus={focus} aria-label="Desktop visitors by month, January to May" className={plot}>
+        <ChartContainer config={libraryConfig} focus={focus} aria-label={`Reads per library in a pooled run, ${millions(readsTotal)} in total`} className={plot}>
           <PieChart>
-            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel nameKey="month" />} />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel nameKey="library" />} />
             <Pie
-              data={monthData}
-              dataKey="visitors"
-              nameKey="month"
+              data={libraryData}
+              dataKey="reads"
+              nameKey="library"
               activeIndex={focus.selected}
               rootTabIndex={-1}
               activeShape={PieActiveSector}
@@ -387,7 +397,7 @@ export function PieInteractiveDemo() {
             />
           </PieChart>
         </ChartContainer>
-        <PieCenter value={fmt(active.visitors)} label={monthConfig[active.month as keyof typeof monthConfig].label} />
+        <PieCenter value={millions(active.reads)} label={`${libraryName(active.library)} reads`} />
       </div>
     </PieCard>
   )

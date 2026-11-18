@@ -22,8 +22,9 @@ export default function PieChartsPage() {
   return (
     <>
       <PageHeader eyebrow="Component 51" title="Pie charts">
-        Every pie and donut from shadcn&apos;s gallery in Nelumbo&apos;s Material style: slices separated by gaps with pill ends, a slice that grows
-        on a spring when it is in focus, labels on inverse chips and a big readout in the middle of a donut.
+        Every pie and donut from shadcn&apos;s gallery in Nelumbo&apos;s Material style: slices parted by even gaps with rounded ends, a slice that grows
+        on a spring when it is in focus, labels on inverse chips and a big readout in the middle of a donut. The demos show
+        blood immune cells by type from a flow panel, and reads per library in a pooled run, with illustrative numbers.
       </PageHeader>
       <ChartNav />
 
@@ -65,7 +66,7 @@ export default function PieChartsPage() {
         </Preview>
       </Section>
 
-      <Section title="Stacked" description="Two Pie series with different radii make concentric rings. The tooltip names the month through labelFormatter.">
+      <Section title="Stacked" description="Two Pie series with different radii make concentric rings. The tooltip names the donor through labelFormatter.">
         <Preview className="block max-w-xl">
           <PieStackedDemo />
         </Preview>
@@ -73,7 +74,7 @@ export default function PieChartsPage() {
 
       <Section
         title="Interactive"
-        description="A connected switcher picks the month. The chart, the selector and the arrow keys share one useChartFocus selection, so the grown slice, the pressed month and the center value always agree."
+        description="A connected switcher picks the library. The chart, the selector and the arrow keys share one useChartFocus selection, so the grown slice, the pressed library and the center value always agree."
       >
         <Preview className="block max-w-xl">
           <PieInteractiveDemo />
