@@ -1994,7 +1994,7 @@
       "name": "plate-map",
       "type": "registry:ui",
       "title": "Plate Map",
-      "description": "A 6 to 1536-well microplate as an ARIA grid, as bare wells or the whole plate to scale (SBS footprint, true pitch, molded labels, a chamfered corner where notch puts it): wells by group or by value on a sequential or diverging scale, excluded wells, a hover card with lit headers, a legend, and rectangle, additive and line selection traced as one filleted outline; wellRange, parseWell, wellName and cellsOutline helpers.",
+      "description": "A 6 to 1536-well microplate as an ARIA grid, as bare wells or the whole plate to scale (SBS footprint, true pitch, molded labels, a chamfered corner where notch puts it, drawn as a solid fill or an outline): wells by group or by value on a sequential or diverging scale, excluded wells, a hover card with lit headers, a legend, and rectangle, additive and line selection traced as one filleted outline; wellRange, parseWell, wellName and cellsOutline helpers.",
       "dependencies": [],
       "registryDependencies": [
         "utils",

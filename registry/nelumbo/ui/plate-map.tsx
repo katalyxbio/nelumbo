@@ -17,12 +17,14 @@ import { RESIDUE_HUES } from "@/registry/nelumbo/ui/residue"
  *   <PlateMap format={96} groups={[{ id: "std", name: "Standard", color: "blue" }]}
  *     wells={[{ well: "A1", group: "std" }, ...]} selectable />
  *   <PlateMap variant="plate" notch="bottom-left" ... />   // the plate itself, to scale
+ *   <PlateMap variant="plate" frame="outline" ... />       // drawn as a line, no fill
  *
  * Variants:
  * - "grid" (default): the wells and their headers, filling the width.
  * - "plate": the whole plate at the standard footprint (127.76 by 85.48 mm),
  *   wells at their true pitch and offset, the labels on the frame as they are
- *   molded, and the chamfered corner where `notch` puts it.
+ *   molded, and the chamfered corner where `notch` puts it. `frame` draws it as
+ *   one flat fill ("solid") or one line ("outline").
  *
  * It is an ARIA grid: one tab stop, arrows move, Shift and the arrows (or a
  * drag) select a rectangle, Ctrl or Cmd adds, Space toggles a well, Ctrl+A
@@ -223,6 +225,8 @@ type PlateMapProps = Omit<React.ComponentProps<"div">, "children"> & {
   variant?: "grid" | "plate"
   /** With variant="plate": the chamfered corner. Default "top-left". */
   notch?: PlateCorner
+  /** With variant="plate": a flat "solid" plate (default), or an "outline" with no fill. */
+  frame?: "solid" | "outline"
   wells?: PlateWell[]
   groups?: PlateGroup[]
   /** "groups" colors by group, "values" by value. Default: values when wells carry values and no groups are given. */
@@ -258,6 +262,7 @@ function PlateMap({
   format = 96,
   variant = "grid",
   notch = "top-left",
+  frame = "solid",
   wells = [],
   groups = [],
   colorBy,
@@ -592,7 +597,10 @@ function PlateMap({
                     "outline-2 outline-offset-2 outline-transparent transition-[outline-color,scale,opacity] duration-200 ease-out",
                     "group-focus-visible/well:outline-ring",
                     isActive && "scale-110 outline-foreground/70",
-                    !filled && (plate ? "bg-[var(--plate-well)] shadow-[inset_0_1px_2px_rgb(0_0_0/0.12)]" : "shadow-[inset_0_0_0_1px_var(--outline-variant)]"),
+                    !filled &&
+                      (plate && frame === "solid"
+                        ? "bg-[var(--plate-well)] shadow-[inset_0_1px_2px_rgb(0_0_0/0.12)]"
+                        : "shadow-[inset_0_0_0_1px_var(--outline-variant)]"),
                     filled && (mode === "groups" ? GROUP_WELL : VALUE_WELL),
                     w?.excluded && "opacity-45"
                   )}
@@ -664,16 +672,13 @@ function PlateMap({
           className="@container relative w-full max-w-3xl [--plate-well:var(--surface-container-lowest)] dark:[--plate-well:var(--surface-container-highest)]"
           style={{ aspectRatio: `${W} / ${H}` }}
         >
-          {/* one outline, its 1px stroke kept whole at every corner (not clipped at the edges, not scaled) */}
+          {/* the plate in one piece: a flat fill, or a single 1px line kept whole at every corner */}
           <svg aria-hidden viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 size-full overflow-visible">
-            <path d={plateBody(notch)} vectorEffect="non-scaling-stroke" strokeWidth={1} className="fill-surface-container-high stroke-outline-variant" />
-            <rect
-              x={ax - G.pitch / 2 - 0.9}
-              y={ay - G.pitch / 2 - 0.9}
-              width={cols * G.pitch + 1.8}
-              height={rows * G.pitch + 1.8}
-              rx={1.6}
-              className="fill-surface-container"
+            <path
+              d={plateBody(notch)}
+              vectorEffect="non-scaling-stroke"
+              strokeWidth={frame === "outline" ? 1 : 0}
+              className={frame === "outline" ? "fill-none stroke-outline" : "fill-surface-container-high"}
             />
           </svg>
           {selectionShape}

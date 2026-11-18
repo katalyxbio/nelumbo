@@ -124,7 +124,7 @@ export default function PlateMapPage() {
 
       <Section
         title="Plate"
-        description='variant="plate" draws the plate itself at the standard footprint, 127.76 by 85.48 mm: the frame and its flange, the raised deck, wells at their true pitch and offset, labels molded on the frame. notch puts the chamfered corner where your plates have it.'
+        description='variant="plate" draws the plate itself at the standard footprint, 127.76 by 85.48 mm, with wells at their true pitch and offset and the labels molded on the frame. notch puts the chamfered corner where your plates have it; frame draws the plate as one flat fill or as a single line.'
       >
         <Preview className="block">
           <PlateDemo />
@@ -174,6 +174,7 @@ export default function PlateMapPage() {
             ["format", "6 | 12 | 24 | 48 | 96 | 384 | 1536", "96", "The plate. Round wells up to 96, square beyond."],
             ["variant", '"grid" | "plate"', '"grid"', "The wells alone, or the whole plate to scale with its frame."],
             ["notch", '"top-left" | "top-right" | "bottom-left" | "bottom-right"', '"top-left"', "The chamfered corner of the plate variant."],
+            ["frame", '"solid" | "outline"', '"solid"', "The plate variant as a flat fill, or a single line with no fill."],
             ["wells", "PlateWell[]", "", "well (\"B3\"), group, value, label, description, excluded."],
             ["groups", "PlateGroup[]", "", "id, name, color, description. Colors follow the palette order when left out."],
             ["colorBy", '"groups" | "values"', "groups if given", "What colors the wells."],
@@ -243,19 +244,27 @@ const CORNERS: { value: PlateCorner; label: string }[] = [
 
 function PlateDemo() {
   const [notch, setNotch] = React.useState<PlateCorner>("top-left")
+  const [frame, setFrame] = React.useState<"solid" | "outline">("solid")
   return (
     <div className="grid gap-6">
-      <ToggleGroup type="single" value={notch} onValueChange={(v) => v && setNotch(v as PlateCorner)} aria-label="Notch" className="w-fit flex-wrap">
-        {CORNERS.map((c) => (
-          <ToggleGroupItem key={c.value} value={c.value}>
-            {c.label}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+      <div className="flex flex-wrap gap-3">
+        <ToggleGroup type="single" value={frame} onValueChange={(v) => v && setFrame(v as typeof frame)} aria-label="Frame" className="w-fit">
+          <ToggleGroupItem value="solid">Solid</ToggleGroupItem>
+          <ToggleGroupItem value="outline">Outline</ToggleGroupItem>
+        </ToggleGroup>
+        <ToggleGroup type="single" value={notch} onValueChange={(v) => v && setNotch(v as PlateCorner)} aria-label="Notch" className="w-fit flex-wrap">
+          {CORNERS.map((c) => (
+            <ToggleGroupItem key={c.value} value={c.value}>
+              {c.label}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+      </div>
       <PlateMap
         format={96}
         variant="plate"
         notch={notch}
+        frame={frame}
         wells={ELISA}
         groups={ELISA_GROUPS}
         selectable
