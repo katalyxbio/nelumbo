@@ -178,6 +178,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - Sequence Logo (new, biology: motifs as stacks of letters sized by information or probability, from aligned sequences or a position matrix, with small-sample correction, a background, reverse complement, an IUPAC consensus row and range selection)
 - Construct Map (new, biology: the plasmid map unrolled into a line for inserts, guides and PCR products, with strands above and below the backbone, zoom down to both strands and the amino acids of each codon, range selection, and a GenBank parser shared with Plasmid Map)
 - Translation (new, biology: DNA with each amino acid under its codon, in one, three or six reading frames, with open reading frames lit and base selection)
+- Sanger Trace (new, biology: a chromatogram read straight from .ab1 files, with base calls, quality bars, trimmed ends shaded, differences from a reference and mixed bases marked)
 
 ## License
 

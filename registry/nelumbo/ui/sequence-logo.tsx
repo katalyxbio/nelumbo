@@ -448,7 +448,7 @@ function SequenceLogo({
   const tip = tooltip && activeCol && activeCol.letters.length > 0
 
   return (
-    <div data-slot="sequence-logo" className={cn("grid w-full gap-2", className)} {...props}>
+    <div data-slot="sequence-logo" className={cn("grid w-full min-w-0 grid-cols-[minmax(0,1fr)] gap-2", className)} {...props}>
       <div ref={ref} className="relative w-full">
         <div
           ref={scroller}

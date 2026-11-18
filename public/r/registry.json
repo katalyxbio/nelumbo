@@ -2063,6 +2063,23 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "sanger-trace",
+      "type": "registry:ui",
+      "title": "Sanger Trace",
+      "description": "A Sanger chromatogram: the four dye channels as curves in the trace hues of the tone system, base calls over their peaks, Phred quality bars with Q20 and Q30 lines and faded low calls, the ends a Mott trim cuts shaded, differences from an aligned reference marked with the expected base, mixed (heterozygous) calls flagged by peak share, a hover card with the four peak heights, a ruler, sideways scrolling and a keyboard stop; parseAbif reads .ab1 files and qualityTrim finds the kept stretch.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@nelumbo/nucleotide"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/sanger-trace.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
