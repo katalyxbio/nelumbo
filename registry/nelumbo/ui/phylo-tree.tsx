@@ -491,9 +491,37 @@ function PhyloTree({
   const R = Math.max(20, diameter / 2 - labelW - ring - 6)
   const cx = width / 2
   const cy = cH / 2
-  const step = (2 * Math.PI) / Math.max(rows, 1)
-  const A = (pos: number) => pos * step - Math.PI / 2
-  const Rad = (v: number) => (v / xMax) * R
+  // one empty row's worth of opening at the top, so the first and last leaves don't meet
+  const step = (2 * Math.PI) / (Math.max(rows, 1) + 1)
+  const A = (pos: number) => (pos + 1) * step - Math.PI / 2
+  // radii to scale, but every branch at least MIN_STEP long, so nested arcs near the rim
+  // keep apart; the whole tree shrinks to fit if that pushes it past R
+  const radii = React.useMemo(() => {
+    const node = new Map<number, number>()
+    const end = new Map<number, number>()
+    if (!circular) return { node, end, f: 1 }
+    const MIN_STEP = 12
+    const raw = (v: number) => (v / xMax) * R
+    let max = 0
+    for (const n of visible) {
+      const r = n.parent < 0 ? 0 : Math.max(raw(x0(n)), node.get(n.parent)! + MIN_STEP)
+      node.set(n.id, r)
+      if (n.tip) {
+        const e = n.kids.length ? Math.max(raw(reachOf(n)), r + 14) : r
+        end.set(n.id, e)
+        max = Math.max(max, e)
+      }
+    }
+    const f = max > R ? R / max : 1
+    if (f < 1) {
+      for (const [id, r] of node) node.set(id, r * f)
+      for (const [id, r] of end) end.set(id, r * f)
+    }
+    return { node, end, f }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [circular, visible, xMax, R, lengths])
+  const rOf = (n: Laid) => radii.node.get(n.id) ?? 0
+  const rEnd = (n: Laid) => radii.end.get(n.id) ?? rOf(n)
   const P = (r: number, a: number) => [cx + r * Math.cos(a), cy + r * Math.sin(a)] as const
 
   // ---- focus
@@ -566,8 +594,8 @@ function PhyloTree({
   const bar = React.useMemo(() => {
     if (!showScale) return null
     const v = nice(xMax / 5)
-    return { v, px: v * (circular ? R / xMax : k) }
-  }, [showScale, circular, R, xMax, k])
+    return { v, px: v * (circular ? (R / xMax) * radii.f : k) }
+  }, [showScale, circular, R, xMax, k, radii.f])
   const ticks = React.useMemo(() => {
     if (scale !== "time" || !lengths || circular) return []
     const s = nice(maxDepth / Math.max(2, Math.floor((maxDepth * k) / 70)))
@@ -581,10 +609,10 @@ function PhyloTree({
     const p = nodes[n.parent]
     if (!p) return null
     if (circular) {
-      const rp = Rad(x0(p))
+      const rp = rOf(p)
       const ap = A(p.pos)
       const an = A(n.pos)
-      const rn = Rad(xOf(n))
+      const rn = rOf(n)
       const [ax, ay] = P(rp, ap)
       const [bx, by] = P(rp, an)
       const [ex, ey] = P(rn, an)
@@ -605,8 +633,8 @@ function PhyloTree({
   const fold = (n: Laid) => {
     const h = rowHeight * 0.36
     if (circular) {
-      const r0 = Rad(xOf(n))
-      const r1 = Rad(reachOf(n))
+      const r0 = rOf(n)
+      const r1 = rEnd(n)
       const a = A(n.pos)
       const da = Math.min(step * 0.36, 0.3)
       const [ax, ay] = P(r0, a)
@@ -655,7 +683,7 @@ function PhyloTree({
               if (circular) {
                 const a0 = A(first) - step / 2
                 const a1 = A(last) + step / 2
-                const r0 = Math.max(0, Rad(x0(n)) - 6)
+                const r0 = Math.max(0, rOf(n) - 6)
                 const r1 = R + labelW + 2
                 const r2 = r1 + 6
                 const large = a1 - a0 > Math.PI ? 1 : 0
@@ -693,7 +721,7 @@ function PhyloTree({
               tips.map((n) => {
                 const from = n.kids.length ? Math.max(X(reachOf(n)), X(xOf(n)) + 14) : X(xOf(n))
                 if (circular) {
-                  const [ax, ay] = P(Rad(lengths ? (n.kids.length ? reachOf(n) : xOf(n)) : xOf(n)), A(n.pos))
+                  const [ax, ay] = P(rEnd(n), A(n.pos))
                   const [bx, by] = P(R + 2, A(n.pos))
                   return <line key={`d${n.id}`} x1={ax} y1={ay} x2={bx} y2={by} className="stroke-outline-variant" strokeDasharray="1 3" strokeLinecap="round" opacity={dim(n.id)} />
                 }
@@ -730,7 +758,7 @@ function PhyloTree({
             {support &&
               visible.filter(supportShown).map((n) => {
                 if (circular || support === "dots") {
-                  const [x, y] = circular ? P(Rad(x0(n)), A(n.pos)) : [X(x0(n)), Y(n.pos)]
+                  const [x, y] = circular ? P(rOf(n), A(n.pos)) : [X(x0(n)), Y(n.pos)]
                   return <circle key={`s${n.id}`} cx={x} cy={y} r={3} className="fill-foreground" opacity={dim(n.id)} />
                 }
                 return (
@@ -747,7 +775,7 @@ function PhyloTree({
               const cls = cn("text-[0.75rem]", italic && !folded && "italic", strong || folded ? "fill-foreground font-semibold" : "fill-foreground", activeNode?.id === n.id && "font-semibold")
               if (circular) {
                 const a = A(n.pos)
-                const r = alignLabels ? R + 6 : Rad(n.kids.length ? reachOf(n) : xOf(n)) + 6
+                const r = alignLabels ? R + 6 : rEnd(n) + 6
                 const [x, y] = P(r, a)
                 const flip = Math.cos(a) < -1e-6
                 const deg = (a * 180) / Math.PI + (flip ? 180 : 0)
@@ -767,7 +795,7 @@ function PhyloTree({
             {/* the active node */}
             {activeNode &&
               (() => {
-                const [x, y] = circular ? P(Rad(activeNode.tip && activeNode.kids.length ? xOf(activeNode) : x0(activeNode)), A(activeNode.pos)) : [X(xOf(activeNode)), Y(activeNode.pos)]
+                const [x, y] = circular ? P(rOf(activeNode), A(activeNode.pos)) : [X(xOf(activeNode)), Y(activeNode.pos)]
                 return <circle cx={x} cy={y} r={4.5} className="fill-foreground stroke-background" strokeWidth={2} />
               })()}
 
@@ -810,13 +838,13 @@ function PhyloTree({
               const cls = cn(collapsible && n.kids.length && n.id !== 0 && "cursor-pointer")
               if (n.tip) {
                 if (circular) {
-                  const [x, y] = P(Rad(xOf(n)), A(n.pos))
+                  const [x, y] = P(rOf(n), A(n.pos))
                   return <circle key={`h${n.id}`} cx={x} cy={y} r={10} fill="transparent" onPointerEnter={enter} onClick={click} className={cls} />
                 }
                 const x = X(xOf(n))
                 return <rect key={`h${n.id}`} x={x} y={Y(n.pos) - rowHeight / 2} width={labelPos(n) + tipText(n).length * CHAR - x} height={rowHeight} fill="transparent" onPointerEnter={enter} onClick={click} className={cls} />
               }
-              const [x, y] = circular ? P(Rad(x0(n)), A(n.pos)) : [X(x0(n)), Y(n.pos)]
+              const [x, y] = circular ? P(rOf(n), A(n.pos)) : [X(x0(n)), Y(n.pos)]
               return <circle key={`h${n.id}`} cx={x} cy={y} r={10} fill="transparent" onPointerEnter={enter} onClick={click} className={cls} />
             })}
           </svg>
@@ -827,7 +855,7 @@ function PhyloTree({
             aria-hidden
             className="pointer-events-none absolute z-10 grid -translate-x-1/2 -translate-y-full gap-0.5 whitespace-nowrap rounded-xl bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-e2"
             style={(() => {
-              const [x, y] = circular ? P(Rad(x0(activeNode)), A(activeNode.pos)) : [X(xOf(activeNode)), Y(activeNode.pos)]
+              const [x, y] = circular ? P(rOf(activeNode), A(activeNode.pos)) : [X(xOf(activeNode)), Y(activeNode.pos)]
               return { left: Math.max(80, Math.min(width - 80, x)), top: y - 10 }
             })()}
           >
