@@ -2097,6 +2097,22 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "gel",
+      "type": "registry:ui",
+      "title": "Gel",
+      "description": "An agarose gel: wells, a 1 kb or 100 bp ladder with its sizes, and lanes of bands placed by the log of their size for the agarose percentage (crowding at the wells, small fragments running off), each as bright as its DNA, soft-edged, grayscale as a UV-lit gel or a printed scan; uncut plasmid as supercoiled and nicked bands, a hover card with each fragment's ends, and a keyboard stop. digest cuts a linear or circular sequence with enzymes (caret at the cut) into equimolar fragments; migration, ENZYMES and LADDERS helpers.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/gel.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

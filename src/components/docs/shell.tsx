@@ -111,6 +111,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/translation", label: "Translation", isNew: true },
       { href: "/components/sanger-trace", label: "Sanger Trace", isNew: true },
       { href: "/components/variant-badge", label: "Variant Badge", isNew: true },
+      { href: "/components/gel", label: "Gel", isNew: true },
     ],
   },
   {

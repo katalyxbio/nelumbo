@@ -180,6 +180,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - Translation (new, biology: DNA with each amino acid under its codon, in one, three or six reading frames, with open reading frames lit and base selection)
 - Sanger Trace (new, biology: a chromatogram read straight from .ab1 files, with base calls, quality bars, trimmed ends shaded, differences from a reference and mixed bases marked)
 - Variant Badge (new, biology: ACMG/AMP classifications from pathogenic to benign with a five-pip scale, ClinVar review stars, evidence chips, and a classifier that applies the 2015 combining rules)
+- Gel (new, biology: an agarose gel simulated from a restriction digest of a sequence, with ladders, the agarose percentage, and uncut plasmid forms)
 
 ## License
 
