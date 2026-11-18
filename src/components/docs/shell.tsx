@@ -108,6 +108,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/plate-map", label: "Plate Map", isNew: true },
       { href: "/components/sequence-logo", label: "Sequence Logo", isNew: true },
       { href: "/components/construct-map", label: "Construct Map", isNew: true },
+      { href: "/components/translation", label: "Translation", isNew: true },
     ],
   },
   {

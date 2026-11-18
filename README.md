@@ -177,6 +177,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - Plate Map (new, biology: 6 to 1536-well plates, bare or drawn to scale with a chosen notch corner and a scannable barcode on its front wall, wells by group or value, excluded wells, hover cards, and selection traced as one filleted outline with full keyboard navigation)
 - Sequence Logo (new, biology: motifs as stacks of letters sized by information or probability, from aligned sequences or a position matrix, with small-sample correction, a background, reverse complement, an IUPAC consensus row and range selection)
 - Construct Map (new, biology: the plasmid map unrolled into a line for inserts, guides and PCR products, with strands above and below the backbone, zoom down to both strands and the amino acids of each codon, range selection, and a GenBank parser shared with Plasmid Map)
+- Translation (new, biology: DNA with each amino acid under its codon, in one, three or six reading frames, with open reading frames lit and base selection)
 
 ## License
 

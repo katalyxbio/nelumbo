@@ -2044,6 +2044,25 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "translation",
+      "type": "registry:ui",
+      "title": "Translation",
+      "description": "DNA with its protein underneath: each amino acid a residue tile as wide as its codon, joined along its frame, in one, three or all six reading frames (reverse frames under the bottom strand, read right to left), stops as solid tiles, open reading frames lit with everything else faded, one- or three-letter residues, lines that wrap in whole codons (a split codon keeps its letter on its larger part), and base selection by keyboard, drag or codon that copies as bases; frameCodons and findOrfs helpers.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@nelumbo/residue",
+        "@nelumbo/nucleotide",
+        "@nelumbo/amino-acid"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/translation.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
