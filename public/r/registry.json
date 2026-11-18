@@ -2113,6 +2113,22 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "chromosome-ideogram",
+      "type": "registry:ui",
+      "title": "Chromosome Ideogram",
+      "description": "A chromosome as its Giemsa bands in grayscale: two arms as capsules pinched at the centromere, narrow stalks, hatched variable heterochromatin, band names where they fit, a megabase ruler, markers as stacked pills on stems, a framed region with zoom lines down to a gene model, a hover card and a keyboard stop over the bands. Karyotype lays the genome side by side at one scale with markers, as a radio group to pick a chromosome. parseCytobands reads UCSC's cytoBand.txt; bandAt names the band at a position.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/chromosome-ideogram.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
