@@ -122,7 +122,7 @@ const CSS = (() => {
   const frames = [...polys, polys[0]]
     .map((poly, i) => {
       const at = ((i / SHAPES.length) * 100).toFixed(3)
-      return `${at}% { clip-path: ${poly}; transform: rotate(${(i * TURN).toFixed(2)}deg); animation-timing-function: var(--ease-spring, cubic-bezier(0.2, 0, 0, 1)) }`
+      return `${at}% { clip-path: ${poly}; animation-timing-function: var(--ease-spring, cubic-bezier(0.2, 0, 0, 1)) }`
     })
     .join("\n")
   return `
@@ -130,7 +130,9 @@ const CSS = (() => {
 ${frames}
 }
 @keyframes vlv-pulse { 50% { transform: scale(0.86); opacity: 0.7 } }
-.vlv-morph { clip-path: ${polys[0]}; animation: vlv-morph ${STEP_MS * SHAPES.length}ms infinite }
+/* the turn is its own steady, linear animation, so only the shape eases and the spin never stalls between shapes */
+@keyframes vlv-turn { to { rotate: ${TURN * SHAPES.length}deg } }
+.vlv-morph { clip-path: ${polys[0]}; animation: vlv-morph ${STEP_MS * SHAPES.length}ms infinite, vlv-turn ${STEP_MS * SHAPES.length}ms linear infinite }
 @media (prefers-reduced-motion: reduce) {
   .vlv-morph { animation: vlv-pulse 2s ease-in-out infinite }
 }
