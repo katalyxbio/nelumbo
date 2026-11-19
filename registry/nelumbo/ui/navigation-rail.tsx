@@ -124,7 +124,7 @@ function NavigationRailItem({ className, icon, label, description, active = fals
         "relative flex h-8 w-14 shrink-0 items-center justify-start rounded-full px-4",
         "transition-[width,height,border-radius] duration-[519ms] ease-(--ease-spring) motion-reduce:transition-none",
         // a two-line row is too tall for a full pill: it rounds like a card instead
-        description ? "group-data-expanded/rail:h-14 group-data-expanded/rail:rounded-2xl" : "group-data-expanded/rail:h-10",
+        description ? "group-data-expanded/rail:h-14 group-data-expanded/rail:rounded-xl" : "group-data-expanded/rail:h-10",
         "group-data-expanded/rail:w-full"
       )}
     >
@@ -176,7 +176,8 @@ function NavigationRailItem({ className, icon, label, description, active = fals
     <span
       aria-hidden={expanded || undefined}
       className={cn(
-        "w-full max-w-full truncate px-1 text-center type-label-md transition-[opacity,height] duration-200",
+        // the label may use the item's side padding too, so "Settings" is not cut at 56px
+        "-mx-3 w-[calc(100%+1.5rem)] max-w-none truncate px-1 text-center type-label-md transition-[opacity,height] duration-200",
         "text-muted-foreground group-hover/item:text-foreground group-data-active/item:font-semibold group-data-active/item:text-foreground",
         expanded ? "h-0 opacity-0" : "h-4 opacity-100 delay-75"
       )}
