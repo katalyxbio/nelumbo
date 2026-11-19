@@ -479,6 +479,18 @@ function SequenceAlignment({
   }, [wrap, width, measureView, length])
   const showOverview = wrap === false && overview && view.frac < 1
   const [panning, setPanning] = React.useState(false)
+  const [ovW, setOvW] = React.useState(0)
+  const ovRef = React.useRef<HTMLDivElement>(null)
+  const colW = ovW / Math.max(length, 1)
+  const barW = Math.max(1, Math.round(colW * 0.7))
+  React.useLayoutEffect(() => {
+    const el = ovRef.current
+    if (!el) return
+    const ro = new ResizeObserver(([e]) => setOvW(e.contentRect.width))
+    ro.observe(el)
+    setOvW(el.getBoundingClientRect().width)
+    return () => ro.disconnect()
+  }, [showOverview])
   const panTo = (e: React.PointerEvent<HTMLDivElement>, glide = false) => {
     const el = scroller.current
     if (!el) return
@@ -796,6 +808,7 @@ function SequenceAlignment({
     >
       {showOverview && (
         <div
+          ref={ovRef}
           aria-hidden
           className="relative h-7 cursor-grab touch-none select-none active:cursor-grabbing"
           style={{ marginLeft: nameW, marginRight: numW }}
@@ -826,8 +839,9 @@ function SequenceAlignment({
                 s.identity >= 1 ? "bg-foreground" : s.identity >= threshold ? "bg-muted-foreground" : "bg-outline-variant"
               )}
               style={{
-                left: `${((c + 0.15) / length) * 100}%`,
-                width: `${(0.7 / length) * 100}%`,
+                // whole pixels, so every bar is exactly as thick as the next
+                left: ovW ? Math.round(c * colW + (colW - barW) / 2) : `${((c + 0.15) / length) * 100}%`,
+                width: ovW ? barW : `${(0.7 / length) * 100}%`,
                 height: `${Math.max(1.5, s.identity * 18) * 5}%`,
               }}
             />
