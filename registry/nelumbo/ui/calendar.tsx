@@ -47,6 +47,8 @@ const CSS = `
 /* a range that carries over into another month fades out at the month's last day and in at its first */
 .vlv-cal td.vlv-ml.vlv-rm::before, .vlv-cal td.vlv-ml.vlv-rs::before, .vlv-cal td.vlv-ml.vlv-pm::before, .vlv-cal td.vlv-ml.vlv-ps::before { -webkit-mask-image: linear-gradient(to right, #000 15%, transparent); mask-image: linear-gradient(to right, #000 15%, transparent) }
 .vlv-cal td.vlv-mf.vlv-rm::before, .vlv-cal td.vlv-mf.vlv-re::before, .vlv-cal td.vlv-mf.vlv-pm::before, .vlv-cal td.vlv-mf.vlv-pe::before { -webkit-mask-image: linear-gradient(to left, #000 15%, transparent); mask-image: linear-gradient(to left, #000 15%, transparent) }
+.vlv-cal td.vlv-ml::before { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important }
+.vlv-cal td.vlv-mf::before { border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important }
 .vlv-cal td[data-selected]:not(.vlv-rm) > button { background: var(--primary); color: var(--primary-foreground) }
 .vlv-cal td[data-today]:not([data-selected]) > button { box-shadow: inset 0 0 0 1px var(--foreground); font-weight: 600 }
 .vlv-cal td[data-outside] > button { color: var(--muted-foreground) }
