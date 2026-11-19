@@ -1607,7 +1607,8 @@ export const radarShape = (key: string, { fill = 0.24, dots = true }: { fill?: n
   strokeLinecap: "round" as const,
   fill: fill > 0 ? `var(--color-${key})` : "none",
   fillOpacity: fill,
-  dot: dots ? chartDot(key) : (false as const),
+  // Radar hands its fillOpacity to the dots, so set it back to solid
+  dot: dots ? { ...chartDot(key), fillOpacity: 1 } : (false as const),
   activeDot: false as const,
 })
 
@@ -1622,8 +1623,8 @@ export const radarShape = (key: string, { fill = 0.24, dots = true }: { fill?: n
  * Draws each radial bar as a tonal track plus a round-capped bar in one shape:
  * `<RadialBar shape={chartRadialShape({ startAngle: 90, endAngle: -270 })} />`.
  * Pass the chart's own start and end angle so the track spans the whole arc.
- * `track: "dots"` draws a dotted round-dot circle through the bar instead of a tonal track (the grid look); `track: false` skips the track (stacked series); `gap` adds the 3px surface
- * gap between stacked segments. The track takes the bar's own fill.
+ * `track: "dots"` draws a dotted round-dot circle through the bar instead of a tonal track (the grid look); `track: false` skips the track (stacked series); `gap` leaves a 4px opening
+ * between stacked segments, so the track (or the surface) shows through. The track takes the bar's own fill.
  */
 export function chartRadialShape({
   startAngle = 90,
@@ -1637,6 +1638,16 @@ export function chartRadialShape({
   return function RadialShape(props: any) {
     const { cx, cy, innerRadius, outerRadius, fill } = props
     if (props.endAngle === props.startAngle) return <g />
+    // a real opening at each inner joint, 2px either side, rather than an outline in the surface color
+    let a0 = props.startAngle as number
+    let a1 = props.endAngle as number
+    if (gap) {
+      const dir = Math.sign(a1 - a0)
+      const d = (2 / ((innerRadius + outerRadius) / 2)) * (180 / Math.PI)
+      if (Math.abs(a0 - startAngle) > 0.01) a0 += dir * d
+      if (Math.abs(a1 - endAngle) > 0.01) a1 -= dir * d
+      if (Math.sign(a1 - a0) !== dir) return <g />
+    }
     return (
       <g>
         {track === "dots" && <circle cx={cx} cy={cy} r={(innerRadius + outerRadius) / 2} fill="none" stroke="var(--outline-variant)" strokeWidth={3} strokeDasharray="0 9" strokeLinecap="round" />}
@@ -1646,12 +1657,11 @@ export function chartRadialShape({
           cy={cy}
           innerRadius={innerRadius}
           outerRadius={outerRadius}
-          startAngle={props.startAngle}
-          endAngle={props.endAngle}
+          startAngle={a0}
+          endAngle={a1}
           cornerRadius={cornerRadius}
           fill={fill}
-          stroke={gap ? "var(--chart-surface)" : "none"}
-          strokeWidth={gap ? 3 : 0}
+          stroke="none"
         />
       </g>
     )
