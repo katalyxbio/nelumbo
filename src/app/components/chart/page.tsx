@@ -4,13 +4,13 @@ import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/doc
 import { chartColorNames } from "@/registry/nelumbo/ui/chart"
 
 import { ChartNav } from "./chart-nav"
-import { HeartRateDemo, RestingHeartRateDemo, RingsDemo, SleepDemo, StepsDemo } from "./health-demos"
+import { CellCycleDemo, ControlCtDemo, OxygenDemo, RingsDemo, SamplesDemo } from "./lab-demos"
 
 export default function ChartPage() {
   return (
     <>
       <PageHeader eyebrow="Component 51" title="Chart">
-        Recharts charts in Material 3 Expressive, after Google&apos;s health app: a big readout that follows the point in
+        Recharts charts in Material 3 Expressive: a big readout that follows the point in
         focus, pill bars with a scalloped badge on goal days, dotted zone lines, stage lanes and progress rings. Dotted
         grid, quiet axes, an inverse tooltip and series colors from the accent roles. API-compatible with shadcn&apos;s Chart.
       </PageHeader>
@@ -21,22 +21,22 @@ export default function ChartPage() {
       </Section>
 
       <Section
-        title="Health"
-        description="One point is always in focus. Hover to preview, click or tap to select, or tab to the chart and use the arrow keys (Home, End, Page Up and Down; Escape goes back). The readout above the chart follows it, a line and a ring mark it, and the close button returns to today. Days that reach the goal take the full color and a check badge; the goal value is called out on the axis."
+        title="Goals and ranges"
+        description="One point is always in focus. Hover to preview, click or tap to select, or tab to the chart and use the arrow keys (Home, End, Page Up and Down; Escape goes back). The readout above the chart follows it, a line and a ring mark it, and the close button returns to today. Days that reach the goal, a full 96-well plate, take the full color and a check badge, and the goal is called out on the axis. A control charted against its accepted range marks the run that fell outside it."
       >
         <Preview className="grid items-start gap-4 lg:grid-cols-2">
-          <StepsDemo />
-          <RestingHeartRateDemo />
+          <SamplesDemo />
+          <ControlCtDemo />
         </Preview>
       </Section>
 
       <Section
         title="Zones and stages"
-        description="Zone boundaries are dotted lines in the zone's color, and the line changes color as it crosses them (ChartZoneGradient); the legend counts dots for intensity so it reads without color. ChartStages draws one lane per stage with hand-over connectors, ticks for moments like restlessness, and the totals in the lane labels."
+        description="Zone boundaries are dotted lines in the zone's color, and the line changes color as it crosses them (ChartZoneGradient); the legend counts dots for intensity so it reads without color. ChartStages draws one lane per stage with hand-over connectors, ticks for moments, and the totals in the lane labels: here dissolved oxygen through a fermentation, and one cell's way through the cell cycle."
       >
         <Preview className="grid items-start gap-4 lg:grid-cols-2">
-          <HeartRateDemo />
-          <SleepDemo />
+          <OxygenDemo />
+          <CellCycleDemo />
         </Preview>
       </Section>
 
@@ -81,7 +81,7 @@ export default function ChartPage() {
             ["chartGoalLine(key), chartZoneLine(key)", "props", "", "Spread on ReferenceLine y: a solid goal line, a dotted zone boundary"],
             ["chartTicks({ highlight, format })", "tick", "", "Value axis ticks; highlighted values (the goal) take a color"],
             ["ChartZoneGradient", "id, range, zones", "", "A hard-stop gradient so a line changes color by zone"],
-            ["ChartStages", "config, data, levels, events", "", "Stage lanes (sleep). Items without end in an events lane draw as ticks"],
+            ["ChartStages", "config, data, levels, events", "", "Stage lanes (cell cycle phases). Items without end in an events lane draw as ticks"],
             ["ChartRings", "rings, size, thickness", "", "Concentric progress rings; past the goal a darker second lap"],
             ["config swatch", '"dot" | "band" | "line" | number', '"dot"', "Legend marker; a number draws that many dots. ChartLegendContent keys lists config keys"],
             ["chartBarRadius, chartSegment, chartLine(key), chartDot(key), chartActiveDot(key), ChartGradient", "", "", "Helpers for the Nelumbo marks"],

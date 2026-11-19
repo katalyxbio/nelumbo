@@ -10,38 +10,90 @@ means something: status, categories, charts and focus. One accent is the brand.
 
 ## Components
 
+### Charts
+
+Every chart from shadcn's gallery has a Material counterpart (area, bar, line, pie, radar, radial, scatter and tooltips), and the demos use lab data. One point is always in focus: a big readout follows it, a line and a ring mark it, and the arrow keys move it.
+
 <table>
 <tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/charts-dark.webp"><img src="docs/components/charts-light.webp" alt="Charts" width="100%"></picture><br><sub>Charts</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/buttons-dark.webp"><img src="docs/components/buttons-light.webp" alt="Buttons, split buttons, segmented buttons, FABs" width="100%"></picture><br><sub>Buttons, split buttons, segmented buttons, FABs</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/charts-dark.webp"><img src="docs/components/charts-light.webp" alt="Readout charts: samples against a plate a day, a qPCR control against its range" width="100%"></picture><br><sub>Readout charts: samples against a plate a day, a qPCR control against its range</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/charts-scatter-dark.webp"><img src="docs/components/charts-scatter-light.webp" alt="Scatter: volcano plot and enrichment bubbles" width="100%"></picture><br><sub>Scatter: volcano plot and enrichment bubbles</sub></td>
 </tr>
 <tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/alerts-dark.webp"><img src="docs/components/alerts-light.webp" alt="Alerts" width="100%"></picture><br><sub>Alerts</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/command-dark.webp"><img src="docs/components/command-light.webp" alt="Command palette" width="100%"></picture><br><sub>Command palette</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/charts-line-dark.webp"><img src="docs/components/charts-line-light.webp" alt="Line: growth curves with custom and colored dots" width="100%"></picture><br><sub>Line: growth curves with custom and colored dots</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/charts-bar-dark.webp"><img src="docs/components/charts-bar-light.webp" alt="Bar: stacked libraries, fold changes up and down" width="100%"></picture><br><sub>Bar: stacked libraries, fold changes up and down</sub></td>
 </tr>
 <tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/date-picker-dark.webp"><img src="docs/components/date-picker-light.webp" alt="Date picker" width="100%"></picture><br><sub>Date picker</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/data-table-dark.webp"><img src="docs/components/data-table-light.webp" alt="Data table" width="100%"></picture><br><sub>Data table</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/charts-pie-dark.webp"><img src="docs/components/charts-pie-light.webp" alt="Pie and radial: donut with text, stacked half ring" width="100%"></picture><br><sub>Pie and radial: donut with text, stacked half ring</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/charts-radar-dark.webp"><img src="docs/components/charts-radar-light.webp" alt="Radar grids and a CO2 gauge" width="100%"></picture><br><sub>Radar grids and a CO2 gauge</sub></td>
 </tr>
-<tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/fields-dark.webp"><img src="docs/components/fields-light.webp" alt="Inputs, selects, time fields" width="100%"></picture><br><sub>Inputs, selects, time fields</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/list-dark.webp"><img src="docs/components/list-light.webp" alt="List" width="100%"></picture><br><sub>List</sub></td>
-</tr>
-<tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/phones-dark.webp"><img src="docs/components/phones-light.webp" alt="Navigation bar, FAB menu" width="100%"></picture><br><sub>Navigation bar, FAB menu</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/navigation-rail-dark.webp"><img src="docs/components/navigation-rail-light.webp" alt="Navigation rail" width="100%"></picture><br><sub>Navigation rail</sub></td>
-</tr>
-<tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/selection-dark.webp"><img src="docs/components/selection-light.webp" alt="Switches, checkboxes, chips, sliders" width="100%"></picture><br><sub>Switches, checkboxes, chips, sliders</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/progress-dark.webp"><img src="docs/components/progress-light.webp" alt="Progress, loading indicators, spinners" width="100%"></picture><br><sub>Progress, loading indicators, spinners</sub></td>
-</tr>
-<tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/cards-dark.webp"><img src="docs/components/cards-light.webp" alt="Cards, avatars, badges" width="100%"></picture><br><sub>Cards, avatars, badges</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/carousel-dark.webp"><img src="docs/components/carousel-light.webp" alt="Carousel" width="100%"></picture><br><sub>Carousel</sub></td>
-</tr>
+</table>
+
+### Biology
+
+Components for sequences, maps and trees, built from the same tonal tiles, connected shapes and keyboard focus as the rest.
+
+<table>
 <tr>
 <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/nucleotide-dark.webp"><img src="docs/components/nucleotide-light.webp" alt="Nucleotides: double strand" width="100%"></picture><br><sub>Nucleotides: double strand</sub></td>
 <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/amino-acid-dark.webp"><img src="docs/components/amino-acid-light.webp" alt="Amino acids: protein sequence with selection" width="100%"></picture><br><sub>Amino acids: protein sequence with selection</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/phylo-tree-dark.webp"><img src="docs/components/phylo-tree-light.webp" alt="Phylo Tree: a dated tree with clades" width="100%"></picture><br><sub>Phylo Tree: a dated tree with clades</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/plasmid-map-dark.webp"><img src="docs/components/plasmid-map-light.webp" alt="Plasmid Map" width="100%"></picture><br><sub>Plasmid Map</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/gene-model-dark.webp"><img src="docs/components/gene-model-light.webp" alt="Gene Model: variants, domains and isoforms" width="100%"></picture><br><sub>Gene Model: variants, domains and isoforms</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/sequence-alignment-dark.webp"><img src="docs/components/sequence-alignment-light.webp" alt="Sequence Alignment: overview, features and identity" width="100%"></picture><br><sub>Sequence Alignment: overview, features and identity</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/plate-map-dark.webp"><img src="docs/components/plate-map-light.webp" alt="Plate Map: a 96-well layout with its barcode" width="100%"></picture><br><sub>Plate Map: a 96-well layout with its barcode</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/gel-dark.webp"><img src="docs/components/gel-light.webp" alt="Gel: a restriction digest" width="100%"></picture><br><sub>Gel: a restriction digest</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/sanger-trace-dark.webp"><img src="docs/components/sanger-trace-light.webp" alt="Sanger Trace against a reference" width="100%"></picture><br><sub>Sanger Trace against a reference</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/sequence-logo-dark.webp"><img src="docs/components/sequence-logo-light.webp" alt="Sequence Logo" width="100%"></picture><br><sub>Sequence Logo</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/chromosome-ideogram-dark.webp"><img src="docs/components/chromosome-ideogram-light.webp" alt="Chromosome Ideogram and karyotype" width="100%"></picture><br><sub>Chromosome Ideogram and karyotype</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/construct-map-dark.webp"><img src="docs/components/construct-map-light.webp" alt="Construct Map" width="100%"></picture><br><sub>Construct Map</sub></td>
+</tr>
+</table>
+
+### Interface
+
+<table>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/charts-dark.webp"><img src="docs/components/charts-dark.webp"><img src="docs/components/charts-dark.webp"><img src="docs/components/charts-light.webp" alt="Charts" width="100%"></picture><br><sub>Charts</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/buttons-dark.webp"><img src="docs/components/buttons-dark.webp"><img src="docs/components/buttons-dark.webp"><img src="docs/components/buttons-light.webp" alt="Buttons, split buttons, segmented buttons, FABs" width="100%"></picture><br><sub>Buttons, split buttons, segmented buttons, FABs</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/alerts-dark.webp"><img src="docs/components/alerts-dark.webp"><img src="docs/components/alerts-dark.webp"><img src="docs/components/alerts-light.webp" alt="Alerts" width="100%"></picture><br><sub>Alerts</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/command-dark.webp"><img src="docs/components/command-dark.webp"><img src="docs/components/command-dark.webp"><img src="docs/components/command-light.webp" alt="Command palette" width="100%"></picture><br><sub>Command palette</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/date-picker-dark.webp"><img src="docs/components/date-picker-dark.webp"><img src="docs/components/date-picker-dark.webp"><img src="docs/components/date-picker-light.webp" alt="Date picker" width="100%"></picture><br><sub>Date picker</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/data-table-dark.webp"><img src="docs/components/data-table-dark.webp"><img src="docs/components/data-table-dark.webp"><img src="docs/components/data-table-light.webp" alt="Data table" width="100%"></picture><br><sub>Data table</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/fields-dark.webp"><img src="docs/components/fields-dark.webp"><img src="docs/components/fields-dark.webp"><img src="docs/components/fields-light.webp" alt="Inputs, selects, time fields" width="100%"></picture><br><sub>Inputs, selects, time fields</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/list-dark.webp"><img src="docs/components/list-dark.webp"><img src="docs/components/list-dark.webp"><img src="docs/components/list-light.webp" alt="List" width="100%"></picture><br><sub>List</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/phones-dark.webp"><img src="docs/components/phones-dark.webp"><img src="docs/components/phones-dark.webp"><img src="docs/components/phones-light.webp" alt="Navigation bar, FAB menu" width="100%"></picture><br><sub>Navigation bar, FAB menu</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/navigation-rail-dark.webp"><img src="docs/components/navigation-rail-dark.webp"><img src="docs/components/navigation-rail-dark.webp"><img src="docs/components/navigation-rail-light.webp" alt="Navigation rail" width="100%"></picture><br><sub>Navigation rail</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/selection-dark.webp"><img src="docs/components/selection-dark.webp"><img src="docs/components/selection-dark.webp"><img src="docs/components/selection-light.webp" alt="Switches, checkboxes, chips, sliders" width="100%"></picture><br><sub>Switches, checkboxes, chips, sliders</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/progress-dark.webp"><img src="docs/components/progress-dark.webp"><img src="docs/components/progress-dark.webp"><img src="docs/components/progress-light.webp" alt="Progress, loading indicators, spinners" width="100%"></picture><br><sub>Progress, loading indicators, spinners</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/cards-dark.webp"><img src="docs/components/cards-dark.webp"><img src="docs/components/cards-dark.webp"><img src="docs/components/cards-light.webp" alt="Cards, avatars, badges" width="100%"></picture><br><sub>Cards, avatars, badges</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/carousel-dark.webp"><img src="docs/components/carousel-dark.webp"><img src="docs/components/carousel-dark.webp"><img src="docs/components/carousel-light.webp" alt="Carousel" width="100%"></picture><br><sub>Carousel</sub></td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/nucleotide-dark.webp"><img src="docs/components/nucleotide-dark.webp"><img src="docs/components/nucleotide-dark.webp"><img src="docs/components/nucleotide-light.webp" alt="Nucleotides: double strand" width="100%"></picture><br><sub>Nucleotides: double strand</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/amino-acid-dark.webp"><img src="docs/components/amino-acid-dark.webp"><img src="docs/components/amino-acid-dark.webp"><img src="docs/components/amino-acid-light.webp" alt="Amino acids: protein sequence with selection" width="100%"></picture><br><sub>Amino acids: protein sequence with selection</sub></td>
 </tr>
 </table>
 
@@ -157,7 +209,9 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - Command (cmdk palette with a ⌘K dialog)
 - Alert Dialog (icon tile, destructive), Collapsible (spring chevron), Hover Card
 - Form (react-hook-form; one label per control, spring errors, shake on failed submit), Label
-- Chart (recharts; accent series, spring tooltip, toggleable legend chips)
+- Chart (new: Recharts, API-compatible with shadcn's Chart; a readout that follows the point in focus, keyboard focus over the points, pill bars with goal badges, zone and goal lines, stage lanes and progress rings)
+  - Area, bar, line, pie, radar, radial and tooltip pages with every shadcn variant in Material form: even pie gaps around a small hole, tonal stacks, dotted radar grids, radial bars on tonal tracks with real gaps between stacked segments, pill value labels
+  - Scatter (new): log axes, groups with toggleable legend chips, a least-squares fit with its 95% band (`chartLinearFit`), volcano plots with labels that avoid each other (`ChartPointLabels`), bubble dot plots
 - Carousel (multi-browse, hero, uncontained; spring dots), Resizable (gap instead of a line, growing grip)
 - Navigation Menu (springing pill, morphing viewport, rich links)
 - Sidebar (springing active pill, spring collapse to icons, no lines)
@@ -182,6 +236,7 @@ and `scripts/a11y.cjs` fails if a rendered icon is missing from the subset.
 - Variant Badge (new, biology: ACMG/AMP classifications from pathogenic to benign with a five-pip scale, ClinVar review stars, evidence chips, and a classifier that applies the 2015 combining rules)
 - Gel (new, biology: an agarose gel simulated from a restriction digest of a sequence, with ladders, the agarose percentage, and uncut plasmid forms)
 - Chromosome Ideogram (new, biology: banded chromosomes from UCSC cytobands with markers and a zoom region over a gene model, and a whole-genome karyotype to pick from)
+- Phylo Tree (new, biology: trees from Newick, rectangular or circular, phylogram or cladogram, with rounded elbows, shaded clades that fold, support values or dots, a scale bar or a time axis, keyboard focus through the nodes, and helpers to parse and write Newick, reroot on an outgroup and build a tree by neighbor joining)
 
 ## License
 

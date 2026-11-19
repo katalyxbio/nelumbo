@@ -479,7 +479,7 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
 }
 
 /* ------------------------------------------------------------------ */
-/* Health-style charts, after Google's Material 3 Expressive health     */
+/* Readout charts: one point in focus, a big headline, goals and zones  */
 /* app: a big readout, one point in focus marked by a line and a ring,  */
 /* pill bars with a scalloped badge on goal days, dotted zone lines,    */
 /* lanes for stages. Neutral by default, the series color carries data. */
@@ -502,7 +502,7 @@ type ChartFocusOptions = {
   /** Controlled selection. */
   index?: number
   onIndexChange?: (index: number) => void
-  /** What a screen reader hears for a point, e.g. "Thu, Nov 12: 8,412 steps". Called with -1 for the summary. */
+  /** What a screen reader hears for a point, e.g. "Thu, Nov 12: 88 samples". Called with -1 for the summary. */
   describe?: (index: number) => string
 }
 
@@ -573,7 +573,7 @@ function useChartFocus({ count, defaultIndex, index: controlled, onIndexChange, 
     [selected, last, home, select]
   )
 
-  /** Full color for the point in focus, pushed back for the rest (opt in: the health look keeps all bars). */
+  /** Full color for the point in focus, pushed back for the rest (opt in: the readout look keeps all bars). */
   const fill = React.useCallback(
     (key: string, i: number) => (i === index ? `var(--color-${key})` : chartDimColor(`var(--color-${key})`)),
     [index]
@@ -629,11 +629,11 @@ type BarShapeProps = {
 }
 
 /**
- * A pill bar for health metrics. Days that reach `goal` take the full series
+ * A pill bar for counts against a daily goal. Days that reach `goal` take the full series
  * color and wear a scalloped check badge at the top; the rest are a lighter
  * tint. Without a goal every bar is full color.
  *
- *   <Bar dataKey="steps" shape={chartPillBar("steps", { goal: 10000 })} />
+ *   <Bar dataKey="samples" shape={chartPillBar("samples", { goal: 96 })} />
  */
 function chartPillBar(key: string, { goal, badge = true }: { goal?: number; badge?: boolean } = {}) {
   const color = `var(--color-${key})`
@@ -677,7 +677,7 @@ function chartPillBar(key: string, { goal, badge = true }: { goal?: number; badg
   return PillBar
 }
 
-/** The tonal pill track behind each bar, stronger behind the point in focus: `<Bar background={chartTrack("steps", focus)} />`. */
+/** The tonal pill track behind each bar, stronger behind the point in focus: `<Bar background={chartTrack("samples", focus)} />`. */
 function chartTrack(key: string, focus?: { index: number }) {
   function Track(props: unknown) {
     const { x = 0, y = 0, width = 0, height = 0, index } = props as BarShapeProps
@@ -690,7 +690,7 @@ function chartTrack(key: string, focus?: { index: number }) {
 
 /**
  * Value axis ticks that call out reference values: `<YAxis orientation="right"
- * ticks={[0, 4419, 10000, 13256]} tick={chartTicks({ highlight: { 10000: "var(--color-steps)" } })} />`.
+ * ticks={[0, 48, 96, 120]} tick={chartTicks({ highlight: { 96: "var(--color-samples)" } })} />`.
  */
 function chartTicks({ highlight = {}, format = (v: number) => v.toLocaleString() }: { highlight?: Record<number, string>; format?: (v: number) => string } = {}) {
   function Tick({ x = 0, y = 0, payload, textAnchor = "start" }: { x?: number; y?: number; payload?: { value: number }; textAnchor?: string }) {
@@ -712,7 +712,7 @@ function chartTicks({ highlight = {}, format = (v: number) => v.toLocaleString()
   return Tick
 }
 
-/** Props for a health-style line: thick, round, smooth, no resting dots. Spread on Line. */
+/** Props for a readout line: thick, round, smooth, no resting dots. Spread on Line. */
 const chartLine = (key: string) => ({
   type: "monotone" as const,
   dataKey: key,
@@ -724,7 +724,7 @@ const chartLine = (key: string) => ({
   activeDot: false as const,
 })
 
-/** A goal or threshold: a thin solid line in the series color, `<ReferenceLine y={10000} {...chartGoalLine("steps")} />`. */
+/** A goal or threshold: a thin solid line in the series color, `<ReferenceLine y={96} {...chartGoalLine("samples")} />`. */
 const chartGoalLine = (key: string) => ({
   stroke: `var(--color-${key})`,
   strokeWidth: 2,
@@ -771,7 +771,7 @@ function ChartZoneGradient({ id, range, zones }: { id: string; range: [number, n
 }
 
 /**
- * The headline of a health chart: a large value with its unit, and under it
+ * The headline of a readout chart: a large value with its unit, and under it
  * what the value is (the day, a summary). `onClear` adds the round close
  * button that returns the selection to today.
  */
@@ -928,7 +928,7 @@ const fmtDuration = (ms: number) => {
 }
 
 /**
- * A stage timeline, the sleep chart: one labelled lane per stage, each a
+ * A stage timeline (cell cycle phases, sleep stages): one labelled lane per stage, each a
  * rounded track holding that stage's blocks, thin connectors where one stage
  * hands over to the next, and the start, middle and end times underneath.
  *
