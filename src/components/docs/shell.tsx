@@ -11,7 +11,13 @@ import { ICON_STYLES, NEUTRALS, useStudio } from "./studio"
 type NavItem = { label: string; href?: string; soon?: boolean; isNew?: boolean }
 
 const NAV: { group: string; items: NavItem[] }[] = [
-  { group: "Foundations", items: [{ href: "/", label: "Color, depth & motion" }] },
+  {
+    group: "Foundations",
+    items: [
+      { href: "/", label: "Color, depth & motion" },
+      { href: "/components/typography", label: "Typography", isNew: true },
+    ],
+  },
   {
     group: "Buttons",
     items: [

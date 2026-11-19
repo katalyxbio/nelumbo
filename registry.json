@@ -1823,6 +1823,24 @@
       ]
     },
     {
+      "name": "typography",
+      "type": "registry:ui",
+      "title": "Typography",
+      "description": "Prose for long-form HTML and Markdown in the Nelumbo type scale, plus shadcn's typography pieces (H1-H4, Lead, Muted, InlineCode, Table).",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/typography.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "kbd",
       "type": "registry:ui",
       "title": "Kbd",
