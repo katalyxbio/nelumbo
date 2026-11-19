@@ -1861,8 +1861,10 @@
       "name": "protein-structure",
       "type": "registry:ui",
       "title": "Protein Structure",
-      "description": "A 3D protein backbone viewer with no 3D library: a shaded C-alpha tube you can turn and zoom, colored by secondary structure, AlphaFold pLDDT or N to C, with highlighted residues, linked hover and a PDB parser.",
-      "dependencies": [],
+      "description": "A 3D protein viewer on Mol* (WebGL): cartoon, tube, trace, ball and stick, spacefill and surface, black outlines, colored by secondary structure, AlphaFold pLDDT or N to C, with highlighted side chains, linked hover, PDB/mmCIF/BinaryCIF files and a dependency-free canvas fallback.",
+      "dependencies": [
+        "molstar"
+      ],
       "registryDependencies": [
         "utils",
         "@nelumbo/button",
@@ -1871,6 +1873,10 @@
       "files": [
         {
           "path": "registry/nelumbo/ui/protein-structure.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/nelumbo/ui/protein-structure-molstar.ts",
           "type": "registry:ui"
         }
       ]

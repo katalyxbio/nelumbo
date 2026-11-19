@@ -294,7 +294,7 @@ const HALF = norm(add(LIGHT, [0, 0, 1]))
 /* Component                                                           */
 /* ------------------------------------------------------------------ */
 
-type ProteinStructureProps = Omit<React.ComponentProps<"div">, "children"> & {
+type CanvasStructureProps = Omit<React.ComponentProps<"div">, "children"> & {
   residues: ProteinResidue[]
   representation?: ProteinRepresentation
   colorBy?: ProteinColorBy
@@ -317,7 +317,8 @@ type ProteinStructureProps = Omit<React.ComponentProps<"div">, "children"> & {
 
 type Prim = { z: number; draw: () => void }
 
-function ProteinStructure({
+/** The built-in canvas renderer: no WebGL, no dependencies. ProteinStructure falls back to it. */
+function CanvasStructure({
   residues,
   representation = "cartoon",
   colorBy = "structure",
@@ -332,7 +333,7 @@ function ProteinStructure({
   label = "Protein structure",
   className,
   ...props
-}: ProteinStructureProps) {
+}: CanvasStructureProps) {
   const frameRef = React.useRef<HTMLDivElement>(null)
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const model = React.useMemo(() => buildModel(residues), [residues])
@@ -1026,30 +1027,7 @@ function ProteinStructure({
   const hovRes = hovered != null ? residues[hovered - firstResidue] : undefined
   const announce = hovRes ? `${describe(hovRes, hovered!).title}, ${describe(hovRes, hovered!).meta}` : ""
 
-  const atomView = representation === "ball-and-stick" || representation === "spacefill"
-  const legendItems = [
-    ...(colorBy === "plddt"
-      ? PLDDT_BANDS.map((b) => ({ label: `${b.label} ${b.min === 90 ? "> 90" : b.min === 0 ? "< 50" : `${b.min}–${b.min + 20}`}`, style: { background: b.hex } }))
-      : colorBy === "structure"
-        ? [
-            { label: "Helix", style: { background: "var(--brand)" } },
-            { label: "Strand", style: { background: "var(--amber)" } },
-            { label: "Coil", style: { background: "color-mix(in oklch, var(--foreground) 55%, transparent)" } },
-          ]
-        : colorBy === "rainbow"
-          ? [
-              { label: "N terminus", style: { background: "hsl(250 72% 52%)" } },
-              { label: "C terminus", style: { background: "hsl(0 72% 52%)" } },
-            ]
-          : []),
-    ...(atomView && model.hasAtoms
-      ? [
-          { label: "Nitrogen", style: { background: ELEMENT_HEX.N } },
-          { label: "Oxygen", style: { background: ELEMENT_HEX.O } },
-          { label: "Sulfur", style: { background: ELEMENT_HEX.S } },
-        ]
-      : []),
-  ]
+  const legendItems = legendFor(colorBy, representation, model.hasAtoms)
 
   return (
     <div data-slot="protein-structure" data-representation={representation} className={cn("flex min-w-0 flex-col gap-3", className)} {...props}>
@@ -1071,32 +1049,451 @@ function ProteinStructure({
         <span role="status" className="sr-only">
           {announce}
         </span>
+        {controls && <ViewerControls spinning={spinning} onSpin={() => setSpinning((s) => !s)} onZoom={zoomBy} onReset={reset} />}
+      </div>
+      {legend && <Legend items={legendItems} />}
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* Shared pieces                                                       */
+/* ------------------------------------------------------------------ */
+
+type LegendItem = { label: string; style: React.CSSProperties }
+
+function legendFor(colorBy: ProteinColorBy, representation: ProteinRepresentation, hasAtoms: boolean): LegendItem[] {
+  const atomView = representation === "ball-and-stick" || representation === "spacefill"
+  return [
+    ...(atomView && hasAtoms
+      ? []
+      : colorBy === "plddt"
+        ? PLDDT_BANDS.map((b) => ({ label: `${b.label} ${b.min === 90 ? "> 90" : b.min === 0 ? "< 50" : `${b.min}–${b.min + 20}`}`, style: { background: b.hex } }))
+        : colorBy === "structure"
+          ? [
+              { label: "Helix", style: { background: "var(--brand)" } },
+              { label: "Strand", style: { background: "var(--amber)" } },
+              { label: "Coil", style: { background: "color-mix(in oklch, var(--foreground) 55%, transparent)" } },
+            ]
+          : colorBy === "rainbow"
+            ? [
+                { label: "N terminus", style: { background: "hsl(250 72% 52%)" } },
+                { label: "C terminus", style: { background: "hsl(0 72% 52%)" } },
+              ]
+            : []),
+    ...(atomView && hasAtoms
+      ? [
+          { label: "Carbon", style: { background: "color-mix(in oklch, var(--foreground) 55%, transparent)" } },
+          { label: "Nitrogen", style: { background: ELEMENT_HEX.N } },
+          { label: "Oxygen", style: { background: ELEMENT_HEX.O } },
+          { label: "Sulfur", style: { background: ELEMENT_HEX.S } },
+        ]
+      : []),
+  ]
+}
+
+function Legend({ items }: { items: LegendItem[] }) {
+  if (!items.length) return null
+  return (
+    <ul aria-label="Color key" className="flex flex-wrap gap-x-4 gap-y-1.5 px-1 type-label-md text-muted-foreground">
+      {items.map((it) => (
+        <li key={it.label} className="flex items-center gap-1.5">
+          <span aria-hidden className="size-2.5 rounded-full" style={it.style} />
+          {it.label}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function ViewerControls({ spinning, onSpin, onZoom, onReset }: { spinning: boolean; onSpin: () => void; onZoom: (f: number) => void; onReset: () => void }) {
+  return (
+    <div className="absolute right-3 bottom-3 flex items-center gap-1 rounded-full bg-card p-1 shadow-e2 dark:bg-surface-container-highest">
+      <Button size="icon-sm" variant="ghost" aria-label={spinning ? "Stop turning" : "Turn slowly"} aria-pressed={spinning} onClick={onSpin}>
+        <Icon name={spinning ? "pause" : "3d_rotation"} />
+      </Button>
+      <Button size="icon-sm" variant="ghost" aria-label="Zoom out" onClick={() => onZoom(1 / 1.2)}>
+        <Icon name="remove" />
+      </Button>
+      <Button size="icon-sm" variant="ghost" aria-label="Zoom in" onClick={() => onZoom(1.2)}>
+        <Icon name="add" />
+      </Button>
+      <Button size="icon-sm" variant="ghost" aria-label="Reset view" onClick={onReset}>
+        <Icon name="center_focus_strong" />
+      </Button>
+    </div>
+  )
+}
+
+const ONE_TO_THREE: Record<string, string> = Object.fromEntries(Object.entries(THREE_TO_ONE).map(([k, v]) => [v, k]))
+
+/** Writes residues as a PDB file (chain A, numbered from `first`), with HELIX/SHEET records and pLDDT as B-factors. */
+function toPdb(residues: ProteinResidue[], first = 1): string {
+  const out: string[] = []
+  const f = (v: number, w: number, d: number) => v.toFixed(d).padStart(w)
+  const runs = (ss: "H" | "E") => {
+    const r: [number, number][] = []
+    residues.forEach((x, i) => {
+      if (x.ss !== ss) return
+      const last = r[r.length - 1]
+      if (last && last[1] === i - 1) last[1] = i
+      else r.push([i, i])
+    })
+    return r
+  }
+  const res = (i: number) => ONE_TO_THREE[residues[i].aa ?? ""] ?? "UNK"
+  runs("H").forEach(([a, b], k) =>
+    out.push(`HELIX  ${String(k + 1).padStart(3)} ${String(k + 1).padStart(3)} ${res(a)} A ${String(a + first).padStart(4)}  ${res(b)} A ${String(b + first).padStart(4)}  1${"".padEnd(30)}${String(b - a + 1).padStart(5)}`)
+  )
+  runs("E").forEach(([a, b], k) =>
+    out.push(`SHEET  ${String(k + 1).padStart(3)} ${String.fromCharCode(65 + (k % 26)).padStart(3)} 1 ${res(a)} A${String(a + first).padStart(4)}  ${res(b)} A${String(b + first).padStart(4)}  0`)
+  )
+  let serial = 1
+  residues.forEach((r, i) => {
+    const atoms: ProteinAtom[] = r.atoms?.length ? r.atoms : [{ name: "CA", element: "C", x: r.x, y: r.y, z: r.z }]
+    for (const a of atoms) {
+      const name = a.name.length < 4 ? ` ${a.name}`.padEnd(4) : a.name.slice(0, 4)
+      out.push(
+        `ATOM  ${String(serial++).padStart(5)} ${name} ${res(i)} A${String(i + first).padStart(4)}    ${f(a.x, 8, 3)}${f(a.y, 8, 3)}${f(a.z, 8, 3)}${f(1, 6, 2)}${f(r.plddt ?? 0, 6, 2)}          ${a.element.padStart(2)}`
+      )
+    }
+  })
+  out.push("END")
+  return out.join("\n")
+}
+
+/* ------------------------------------------------------------------ */
+/* Mol* view                                                           */
+/* ------------------------------------------------------------------ */
+
+type MolstarEngine = import("./protein-structure-molstar").MolstarEngine
+
+type MolstarViewProps = Omit<CanvasStructureProps, "residues"> & {
+  residues?: ProteinResidue[]
+  url?: string
+  format?: "pdb" | "mmcif" | "bcif"
+  onEngineState: (state: "ready" | "failed") => void
+}
+
+function MolstarStructure({
+  residues,
+  url,
+  format = "pdb",
+  representation = "cartoon",
+  colorBy = "structure",
+  outline = "black",
+  highlight = [],
+  firstResidue = 1,
+  hovered: hoveredProp,
+  onHoveredChange,
+  spin = false,
+  controls = true,
+  legend = true,
+  label = "Protein structure",
+  onEngineState,
+  className,
+  ...props
+}: MolstarViewProps) {
+  const frameRef = React.useRef<HTMLDivElement>(null)
+  const canvasRef = React.useRef<HTMLCanvasElement>(null)
+  const engineRef = React.useRef<MolstarEngine | null>(null)
+  const [ready, setReady] = React.useState(false)
+  const [loadError, setLoadError] = React.useState(false)
+  const [innerHover, setInnerHover] = React.useState<{ residue: number; name?: string } | null>(null)
+  const hovered = hoveredProp !== undefined ? hoveredProp : (innerHover?.residue ?? null)
+  const [spinning, setSpinning] = React.useState(spin)
+  const reduced = React.useRef(false)
+  const labelRefs = React.useRef(new Map<number, HTMLSpanElement>())
+  const tipRef = React.useRef<HTMLSpanElement>(null)
+  const centers = React.useRef(new Map<number, [number, number, number]>())
+  const hasAtoms = !!residues?.some((r) => r.atoms?.length) || !!url
+
+  React.useEffect(() => {
+    reduced.current = matchMedia("(prefers-reduced-motion: reduce)").matches
+    setSpinning(spin && !reduced.current)
+  }, [spin])
+
+  const hoverCb = React.useRef<(r: { residue: number; name?: string } | null) => void>(() => {})
+  hoverCb.current = (r) => {
+    if (hoveredProp === undefined) setInnerHover(r)
+    if ((r?.residue ?? null) !== hovered) onHoveredChange?.(r?.residue ?? null)
+  }
+
+  // start Mol* once
+  React.useEffect(() => {
+    let disposed = false
+    let unsub: (() => void)[] = []
+    const canvas = canvasRef.current
+    const frame = frameRef.current
+    if (!canvas || !frame) return
+    import("./protein-structure-molstar")
+      .then((m) => m.createMolstarEngine(canvas, frame))
+      .then((engine) => {
+        if (disposed) return engine?.dispose()
+        if (!engine) return onEngineState("failed")
+        engineRef.current = engine
+        unsub = [
+          engine.onHover((info) => hoverCb.current(info)),
+          engine.onDraw(() => placeOverlays()),
+        ]
+        setReady(true)
+      })
+      .catch(() => !disposed && onEngineState("failed"))
+    return () => {
+      disposed = true
+      unsub.forEach((u) => u())
+      engineRef.current?.dispose()
+      engineRef.current = null
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // overlays follow the camera
+  const placeOverlays = () => {
+    const engine = engineRef.current
+    if (!engine) return
+    const place = (el: HTMLElement | null | undefined, residue: number | null | undefined) => {
+      if (!el) return
+      const c = residue != null ? centers.current.get(residue) : undefined
+      if (!c) {
+        el.style.visibility = "hidden"
+        return
+      }
+      const p = engine.project(...c)
+      el.style.visibility = "visible"
+      el.style.transform = `translate(${Math.round(p.x + 12)}px, ${Math.round(p.y - 12)}px) translateY(-100%)`
+    }
+    labelRefs.current.forEach((el, residue) => place(el, residue))
+    place(tipRef.current, live.current.hovered)
+  }
+  const live = React.useRef({ hovered })
+  live.current = { hovered }
+
+  // load the structure
+  const pdb = React.useMemo(() => (residues?.length ? toPdb(residues, firstResidue) : null), [residues, firstResidue])
+  React.useEffect(() => {
+    const engine = engineRef.current
+    if (!engine || !ready) return
+    const source = pdb ? { pdb } : url ? { url, format } : null
+    if (!source) return
+    let cancelled = false
+    setLoadError(false)
+    engine
+      .load(source, label)
+      .then(() => {
+        if (cancelled) return
+        onEngineState("ready")
+        engine.plugin.canvas3d?.requestDraw()
+      })
+      .catch(() => {
+        // the viewer works but the file didn't load: say so, rather than falling back to an empty canvas
+        if (cancelled) return
+        setLoadError(true)
+        onEngineState("ready")
+      })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, pdb, url, format])
+
+  // residue centers for labels and the tooltip
+  React.useEffect(() => {
+    centers.current = new Map()
+    if (residues) residues.forEach((r, i) => centers.current.set(i + firstResidue, [r.x, r.y, r.z]))
+  }, [residues, firstResidue])
+
+  // style: colors come from the design tokens, so read them from the page
+  const [themeTick, setThemeTick] = React.useState(0)
+  React.useEffect(() => {
+    const mo = new MutationObserver(() => setThemeTick((t) => t + 1))
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "style", "data-theme"] })
+    const mq = matchMedia("(prefers-color-scheme: dark)")
+    const on = () => setThemeTick((t) => t + 1)
+    mq.addEventListener("change", on)
+    return () => {
+      mo.disconnect()
+      mq.removeEventListener("change", on)
+    }
+  }, [])
+  const sideChains = React.useMemo(() => highlight.map((m) => m.residue), [highlight])
+  React.useEffect(() => {
+    const engine = engineRef.current
+    const el = frameRef.current
+    if (!engine || !ready || !el) return
+    const cs = getComputedStyle(el)
+    const bg = toRgb(cs.backgroundColor)
+    const fg = toRgb(cs.color)
+    const v = (n: string, fb: string) => toRgb(cs.getPropertyValue(n).trim() || fb)
+    void engine.setStyle({
+      representation,
+      colorBy,
+      outline: outline === "none" ? null : outline === "background" ? bg : toRgb(outline === "black" ? "#000" : outline),
+      background: bg,
+      helix: v("--brand", "#3355cc"),
+      strand: v("--amber", "#d08a00"),
+      coil: mix(fg, bg, 0.45),
+      plain: mix(fg, bg, 0.3),
+      highlightColor: mix(fg, bg, 0.1),
+      sideChains: hasAtoms ? sideChains : [],
+      spin: spinning,
+    })
+  }, [ready, representation, colorBy, outline, sideChains, spinning, themeTick, hasAtoms])
+
+  // hovered from outside (a sequence view) lights the residue in 3D
+  React.useEffect(() => {
+    if (hoveredProp === undefined) return
+    engineRef.current?.highlight(hoveredProp)
+    placeOverlays()
+  }, [hoveredProp, ready])
+
+  React.useEffect(() => {
+    const el = frameRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => engineRef.current?.resize())
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    const engine = engineRef.current
+    if (!engine) return
+    const step = 0.17
+    const map: Record<string, () => void> = {
+      ArrowLeft: () => engine.turn(-step, 0),
+      ArrowRight: () => engine.turn(step, 0),
+      ArrowUp: () => engine.turn(0, -step),
+      ArrowDown: () => engine.turn(0, step),
+      "+": () => engine.zoom(1.15),
+      "=": () => engine.zoom(1.15),
+      "-": () => engine.zoom(1 / 1.15),
+      "0": () => engine.reset(),
+    }
+    const f = map[e.key]
+    if (f) {
+      e.preventDefault()
+      setSpinning(false)
+      f()
+    }
+  }
+
+  const hovRes = hovered != null ? residues?.[hovered - firstResidue] : undefined
+  const tip =
+    hovered != null
+      ? hovRes
+        ? describe(hovRes, hovered)
+        : { title: `${innerHover?.name ? (ONE_TO_NAME[THREE_TO_ONE[innerHover.name] ?? ""] ?? innerHover.name) : "Residue"} ${hovered}`, meta: "" }
+      : null
+  const pill = "pointer-events-none absolute top-0 left-0 rounded-md bg-foreground px-2 py-1 text-background will-change-transform"
+
+  return (
+    <div data-slot="protein-structure" data-engine="molstar" data-representation={representation} className={cn("flex min-w-0 flex-col gap-3", className)} {...props}>
+      <div ref={frameRef} className="relative min-w-0 overflow-hidden rounded-3xl bg-surface-container-low text-foreground dark:bg-surface-container">
+        <canvas
+          ref={canvasRef}
+          role="application"
+          aria-roledescription="3D structure viewer"
+          aria-label={`${label}, ${representation} view${residues ? `. ${residues.length} residues` : ""}. Drag or use the arrow keys to turn, plus and minus to zoom, 0 to reset.`}
+          tabIndex={0}
+          onKeyDown={onKeyDown}
+          onPointerDown={() => setSpinning(false)}
+          onPointerLeave={() => hoveredProp === undefined && setInnerHover(null)}
+          className="block aspect-[4/3] w-full cursor-grab touch-none rounded-3xl outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring active:cursor-grabbing"
+        />
+        {highlight
+          .filter((m) => m.label && m.residue !== hovered)
+          .map((m) => (
+            <span
+              key={m.residue}
+              aria-hidden
+              ref={(el) => {
+                if (el) labelRefs.current.set(m.residue, el)
+                else labelRefs.current.delete(m.residue)
+              }}
+              className={cn(pill, "invisible type-label-md font-semibold")}
+            >
+              {m.label}
+            </span>
+          ))}
+        {tip && (
+          <span ref={tipRef} aria-hidden className={cn(pill, "invisible flex flex-col")}>
+            <span className="type-label-md font-semibold">{tip.title}</span>
+            {tip.meta && <span className="type-label-sm opacity-70">{tip.meta}</span>}
+          </span>
+        )}
+        <span role="status" className="sr-only">
+          {tip ? [tip.title, tip.meta].filter(Boolean).join(", ") : ""}
+        </span>
+        {loadError && (
+          <p className="absolute inset-0 grid place-items-center px-6 text-center type-body-md text-muted-foreground">
+            Couldn&apos;t load {url ? "this structure file" : "the structure"}.
+          </p>
+        )}
         {controls && (
-          <div className="absolute right-3 bottom-3 flex items-center gap-1 rounded-full bg-card p-1 shadow-e2 dark:bg-surface-container-highest">
-            <Button size="icon-sm" variant="ghost" aria-label={spinning ? "Stop turning" : "Turn slowly"} aria-pressed={spinning} onClick={() => setSpinning((s) => !s)}>
-              <Icon name={spinning ? "pause" : "3d_rotation"} />
-            </Button>
-            <Button size="icon-sm" variant="ghost" aria-label="Zoom out" onClick={() => zoomBy(1 / 1.2)}>
-              <Icon name="remove" />
-            </Button>
-            <Button size="icon-sm" variant="ghost" aria-label="Zoom in" onClick={() => zoomBy(1.2)}>
-              <Icon name="add" />
-            </Button>
-            <Button size="icon-sm" variant="ghost" aria-label="Reset view" onClick={reset}>
-              <Icon name="center_focus_strong" />
-            </Button>
-          </div>
+          <ViewerControls
+            spinning={spinning}
+            onSpin={() => setSpinning((s) => !s)}
+            onZoom={(f) => engineRef.current?.zoom(f)}
+            onReset={() => engineRef.current?.reset()}
+          />
         )}
       </div>
-      {legend && legendItems.length > 0 && (
-        <ul aria-label="Color key" className="flex flex-wrap gap-x-4 gap-y-1.5 px-1 type-label-md text-muted-foreground">
-          {legendItems.map((it) => (
-            <li key={it.label} className="flex items-center gap-1.5">
-              <span aria-hidden className="size-2.5 rounded-full" style={it.style} />
-              {it.label}
-            </li>
-          ))}
-        </ul>
+      {legend && <Legend items={legendFor(colorBy, representation, hasAtoms)} />}
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* ProteinStructure                                                    */
+/* ------------------------------------------------------------------ */
+
+type ProteinStructureProps = Omit<CanvasStructureProps, "residues"> & {
+  /** Residues with C-alpha positions and, optionally, atoms. Use this or `url`. */
+  residues?: ProteinResidue[]
+  /** A structure file to load instead of `residues` (Mol* reads PDB, mmCIF and BinaryCIF). */
+  url?: string
+  format?: "pdb" | "mmcif" | "bcif"
+  /** "molstar" (default): GPU rendering with Mol*. "canvas": the built-in renderer, with no WebGL or dependencies. */
+  engine?: "molstar" | "canvas"
+}
+
+function ProteinStructure({ engine = "molstar", url, format = "pdb", residues, className, ...props }: ProteinStructureProps) {
+  const [state, setState] = React.useState<"loading" | "ready" | "failed">("loading")
+  const [fetched, setFetched] = React.useState<ProteinResidue[] | null>(null)
+  const useCanvas = engine === "canvas" || state === "failed"
+
+  // the canvas renderer reads PDB files itself
+  React.useEffect(() => {
+    if (!useCanvas || residues || !url || format !== "pdb") return
+    let alive = true
+    fetch(url)
+      .then((r) => r.text())
+      .then((t) => alive && setFetched(parsePdb(t, { plddt: props.colorBy === "plddt" })))
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [useCanvas, residues, url, format])
+
+  const data = residues ?? fetched ?? []
+  if (useCanvas) return <CanvasStructure residues={data} className={className} {...props} />
+
+  return (
+    <div className={cn("relative min-w-0", className)}>
+      <MolstarStructure
+        residues={residues}
+        url={url}
+        format={format}
+        onEngineState={(s) => setState(s)}
+        className={cn(state !== "ready" && "invisible")}
+        {...props}
+      />
+      {state === "loading" && data.length > 0 && (
+        // while Mol* loads, the canvas renderer stands in, at the same size
+        <div className="absolute inset-0">
+          <CanvasStructure residues={data} {...props} />
+        </div>
       )}
     </div>
   )
@@ -1110,9 +1507,12 @@ function describe(r: ProteinResidue, n: number) {
 
 export {
   ProteinStructure,
+  CanvasStructure,
   parsePdb,
+  toPdb,
   PLDDT_BANDS,
   type ProteinStructureProps,
+  type CanvasStructureProps,
   type ProteinResidue,
   type ProteinAtom,
   type ProteinColorBy,

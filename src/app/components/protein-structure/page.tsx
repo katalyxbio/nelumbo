@@ -116,7 +116,8 @@ export default function ProteinStructurePage() {
     <>
       <PageHeader eyebrow="Component 86" title="Protein Structure">
         A 3D protein viewer you can turn, zoom and point at: cartoon, tube, trace, ball and stick, spacefill or a
-        molecular surface. It reads a PDB file or plain coordinates and needs no 3D library, so it loads as fast as a chart.
+        molecular surface. It renders on the GPU with Mol*, loaded only when a structure is on screen, and falls back
+        to a built-in canvas renderer while Mol* loads or where WebGL isn&apos;t available.
       </PageHeader>
 
       <Section title="Install">
@@ -165,6 +166,30 @@ export default function ProteinStructurePage() {
       </Section>
 
 
+      <Section
+        title="Large structures from a file"
+        description="Pass url and format to load a PDB, mmCIF or BinaryCIF file straight into Mol*: every chain, thousands of atoms, still smooth to turn. This is human hemoglobin, PDB 4HHB, four chains around their heme groups."
+      >
+        <Preview className="block">
+          <ProteinStructure url="https://files.rcsb.org/download/4HHB.cif" format="mmcif" representation="cartoon" colorBy="rainbow" label="Hemoglobin, PDB 4HHB" />
+        </Preview>
+        <Code>{`<ProteinStructure url="https://files.rcsb.org/download/4HHB.cif" format="mmcif" />`}</Code>
+      </Section>
+
+      <Section
+        title="Engines"
+        description='engine "molstar" (the default) draws with WebGL and handles big structures, true molecular surfaces and every chain. engine "canvas" is the built-in renderer: no WebGL and no extra download, for small proteins, thumbnails and places where the GPU is busy. Both take the same props.'
+      >
+        <div className="grid min-w-0 gap-4 lg:grid-cols-2">
+          <Preview label="molstar" className="block">
+            <ProteinStructure residues={UBIQUITIN} representation="surface" label="Ubiquitin surface, Mol*" legend={false} />
+          </Preview>
+          <Preview label="canvas" className="block">
+            <ProteinStructure residues={UBIQUITIN} representation="surface" engine="canvas" label="Ubiquitin surface, canvas" legend={false} />
+          </Preview>
+        </div>
+      </Section>
+
       <Section title="From a PDB file" description="parsePdb reads the first chain's heavy atoms, HELIX and SHEET records and, for AlphaFold models, the pLDDT stored in the B-factor column.">
         <Code>{`import { ProteinStructure, parsePdb } from "@/components/ui/protein-structure"
 
@@ -179,6 +204,9 @@ const text = await fetch("https://files.rcsb.org/download/1UBQ.pdb").then((r) =>
         <PropsTable
           rows={[
             ["residues", "ProteinResidue[]", "—", "C-alpha { x, y, z } in Å, with optional aa, ss (H, E, C), plddt and atoms."],
+            ["url", "string", "—", "A structure file to load instead of residues."],
+            ["format", '"pdb" | "mmcif" | "bcif"', '"pdb"', "The file format at url."],
+            ["engine", '"molstar" | "canvas"', '"molstar"', "GPU rendering with Mol*, or the built-in canvas renderer."],
             ["representation", '"cartoon" | "tube" | "trace" | "ball-and-stick" | "spacefill" | "surface"', '"cartoon"', "How the protein is drawn."],
             ["outline", '"black" | "background" | "none" | string', '"black"', "Outline color; background draws a gap."],
             ["colorBy", '"structure" | "plddt" | "rainbow" | "plain"', '"structure"', "What the color shows."],
