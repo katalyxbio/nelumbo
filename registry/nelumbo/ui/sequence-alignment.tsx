@@ -652,7 +652,7 @@ function SequenceAlignment({
               </span>
             ))}
         {laneCount > 0 && (
-          <span aria-hidden className={cn("select-none pr-3 type-label-sm text-muted-foreground", sticky)} style={{ gridRow: `${annRow} / span ${laneCount}`, gridColumn: 1 }}>
+          <span aria-hidden className={cn("flex items-center self-stretch select-none pr-3 type-label-sm text-muted-foreground", sticky)} style={{ gridRow: `${annRow} / span ${laneCount}`, gridColumn: 1 }}>
             Features
           </span>
         )}
@@ -691,7 +691,7 @@ function SequenceAlignment({
         })}
         {conservation && (
           <>
-            <span aria-hidden className={cn("select-none pr-3 type-label-sm text-muted-foreground", sticky)} style={{ gridRow: barRow, gridColumn: 1 }}>
+            <span aria-hidden className={cn("flex items-center self-stretch select-none pr-3 type-label-sm text-muted-foreground", sticky)} style={{ gridRow: barRow, gridColumn: 1 }}>
               Identity
             </span>
             {cols.map((c) => {
@@ -757,7 +757,7 @@ function SequenceAlignment({
         })}
         {consensus && (
           <>
-            <span className={cn("select-none pr-3 type-label-md text-muted-foreground", sticky)} style={{ gridRow: consensusRow, gridColumn: 1 }}>
+            <span className={cn("flex items-center self-stretch select-none pr-3 type-label-md text-muted-foreground", sticky)} style={{ gridRow: consensusRow, gridColumn: 1 }}>
               Consensus
             </span>
             {cols.map((c) => {
