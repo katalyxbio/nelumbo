@@ -64,36 +64,31 @@ Components for sequences, maps and trees, built from the same tonal tiles, conne
 
 <table>
 <tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/charts-dark.webp"><img src="docs/components/charts-dark.webp"><img src="docs/components/charts-dark.webp"><img src="docs/components/charts-light.webp" alt="Charts" width="100%"></picture><br><sub>Charts</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/buttons-dark.webp"><img src="docs/components/buttons-dark.webp"><img src="docs/components/buttons-dark.webp"><img src="docs/components/buttons-light.webp" alt="Buttons, split buttons, segmented buttons, FABs" width="100%"></picture><br><sub>Buttons, split buttons, segmented buttons, FABs</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/buttons-dark.webp"><img src="docs/components/buttons-light.webp" alt="Buttons, split buttons, segmented buttons, FABs" width="100%"></picture><br><sub>Buttons, split buttons, segmented buttons, FABs</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/alerts-dark.webp"><img src="docs/components/alerts-light.webp" alt="Alerts" width="100%"></picture><br><sub>Alerts</sub></td>
 </tr>
 <tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/alerts-dark.webp"><img src="docs/components/alerts-dark.webp"><img src="docs/components/alerts-dark.webp"><img src="docs/components/alerts-light.webp" alt="Alerts" width="100%"></picture><br><sub>Alerts</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/command-dark.webp"><img src="docs/components/command-dark.webp"><img src="docs/components/command-dark.webp"><img src="docs/components/command-light.webp" alt="Command palette" width="100%"></picture><br><sub>Command palette</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/command-dark.webp"><img src="docs/components/command-light.webp" alt="Command palette" width="100%"></picture><br><sub>Command palette</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/date-picker-dark.webp"><img src="docs/components/date-picker-light.webp" alt="Date picker" width="100%"></picture><br><sub>Date picker</sub></td>
 </tr>
 <tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/date-picker-dark.webp"><img src="docs/components/date-picker-dark.webp"><img src="docs/components/date-picker-dark.webp"><img src="docs/components/date-picker-light.webp" alt="Date picker" width="100%"></picture><br><sub>Date picker</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/data-table-dark.webp"><img src="docs/components/data-table-dark.webp"><img src="docs/components/data-table-dark.webp"><img src="docs/components/data-table-light.webp" alt="Data table" width="100%"></picture><br><sub>Data table</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/data-table-dark.webp"><img src="docs/components/data-table-light.webp" alt="Data table" width="100%"></picture><br><sub>Data table</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/fields-dark.webp"><img src="docs/components/fields-light.webp" alt="Inputs, selects, time fields" width="100%"></picture><br><sub>Inputs, selects, time fields</sub></td>
 </tr>
 <tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/fields-dark.webp"><img src="docs/components/fields-dark.webp"><img src="docs/components/fields-dark.webp"><img src="docs/components/fields-light.webp" alt="Inputs, selects, time fields" width="100%"></picture><br><sub>Inputs, selects, time fields</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/list-dark.webp"><img src="docs/components/list-dark.webp"><img src="docs/components/list-dark.webp"><img src="docs/components/list-light.webp" alt="List" width="100%"></picture><br><sub>List</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/list-dark.webp"><img src="docs/components/list-light.webp" alt="List" width="100%"></picture><br><sub>List</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/phones-dark.webp"><img src="docs/components/phones-light.webp" alt="Navigation bar, FAB menu" width="100%"></picture><br><sub>Navigation bar, FAB menu</sub></td>
 </tr>
 <tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/phones-dark.webp"><img src="docs/components/phones-dark.webp"><img src="docs/components/phones-dark.webp"><img src="docs/components/phones-light.webp" alt="Navigation bar, FAB menu" width="100%"></picture><br><sub>Navigation bar, FAB menu</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/navigation-rail-dark.webp"><img src="docs/components/navigation-rail-dark.webp"><img src="docs/components/navigation-rail-dark.webp"><img src="docs/components/navigation-rail-light.webp" alt="Navigation rail" width="100%"></picture><br><sub>Navigation rail</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/navigation-rail-dark.webp"><img src="docs/components/navigation-rail-light.webp" alt="Navigation rail" width="100%"></picture><br><sub>Navigation rail</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/selection-dark.webp"><img src="docs/components/selection-light.webp" alt="Switches, checkboxes, chips, sliders" width="100%"></picture><br><sub>Switches, checkboxes, chips, sliders</sub></td>
 </tr>
 <tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/selection-dark.webp"><img src="docs/components/selection-dark.webp"><img src="docs/components/selection-dark.webp"><img src="docs/components/selection-light.webp" alt="Switches, checkboxes, chips, sliders" width="100%"></picture><br><sub>Switches, checkboxes, chips, sliders</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/progress-dark.webp"><img src="docs/components/progress-dark.webp"><img src="docs/components/progress-dark.webp"><img src="docs/components/progress-light.webp" alt="Progress, loading indicators, spinners" width="100%"></picture><br><sub>Progress, loading indicators, spinners</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/progress-dark.webp"><img src="docs/components/progress-light.webp" alt="Progress, loading indicators, spinners" width="100%"></picture><br><sub>Progress, loading indicators, spinners</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/cards-dark.webp"><img src="docs/components/cards-light.webp" alt="Cards, avatars, badges" width="100%"></picture><br><sub>Cards, avatars, badges</sub></td>
 </tr>
 <tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/cards-dark.webp"><img src="docs/components/cards-dark.webp"><img src="docs/components/cards-dark.webp"><img src="docs/components/cards-light.webp" alt="Cards, avatars, badges" width="100%"></picture><br><sub>Cards, avatars, badges</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/carousel-dark.webp"><img src="docs/components/carousel-dark.webp"><img src="docs/components/carousel-dark.webp"><img src="docs/components/carousel-light.webp" alt="Carousel" width="100%"></picture><br><sub>Carousel</sub></td>
-</tr>
-<tr>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/nucleotide-dark.webp"><img src="docs/components/nucleotide-dark.webp"><img src="docs/components/nucleotide-dark.webp"><img src="docs/components/nucleotide-light.webp" alt="Nucleotides: double strand" width="100%"></picture><br><sub>Nucleotides: double strand</sub></td>
-<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/amino-acid-dark.webp"><img src="docs/components/amino-acid-dark.webp"><img src="docs/components/amino-acid-dark.webp"><img src="docs/components/amino-acid-light.webp" alt="Amino acids: protein sequence with selection" width="100%"></picture><br><sub>Amino acids: protein sequence with selection</sub></td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/components/carousel-dark.webp"><img src="docs/components/carousel-light.webp" alt="Carousel" width="100%"></picture><br><sub>Carousel</sub></td>
 </tr>
 </table>
 
