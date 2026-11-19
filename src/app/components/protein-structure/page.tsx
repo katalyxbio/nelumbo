@@ -75,6 +75,7 @@ function Explorer() {
   const [rep, setRep] = React.useState<ProteinRepresentation>("cartoon")
   const [mode, setMode] = React.useState<ProteinColorBy>("structure")
   const [outline, setOutline] = React.useState("black")
+  const [shading, setShading] = React.useState<"flat" | "lit">("flat")
   return (
     <div className="flex min-w-0 flex-col gap-4">
       <div role="group" aria-label="Representation" className="flex flex-wrap gap-2">
@@ -95,12 +96,17 @@ function Explorer() {
           <SegmentedButtonItem value="background">Gap</SegmentedButtonItem>
           <SegmentedButtonItem value="none">None</SegmentedButtonItem>
         </SegmentedButton>
+        <SegmentedButton type="single" size="sm" value={shading} onValueChange={(v) => v && setShading(v as "flat" | "lit")} aria-label="Shading">
+          <SegmentedButtonItem value="flat">Flat</SegmentedButtonItem>
+          <SegmentedButtonItem value="lit">Lit</SegmentedButtonItem>
+        </SegmentedButton>
       </div>
       <ProteinStructure
         residues={UBIQUITIN}
         representation={rep}
         colorBy={mode}
         outline={outline}
+        shading={shading}
         label="Ubiquitin, PDB 1UBQ"
         highlight={[
           { residue: 48, label: "K48" },
@@ -152,7 +158,7 @@ export default function ProteinStructurePage() {
 
       <Section
         title="Representations and outline"
-        description="Cartoon, tube and trace follow the backbone. Ball and stick, spacefill and surface draw every atom when the data has them, with nitrogen, oxygen and sulfur in their usual colors. The outline is black by default; a gap in the background color, none, or any CSS color also work."
+        description="Cartoon, tube and trace follow the backbone. Ball and stick, spacefill and surface draw every atom when the data has them, with nitrogen, oxygen and sulfur in their usual colors. Shading is flat by default, plain colors with a bolder black outline and no shadows; lit adds lighting and ambient occlusion. The outline can also be a gap in the background color, none, or any CSS color."
       >
         <Preview className="block">
           <Explorer />
@@ -209,6 +215,7 @@ const text = await fetch("https://files.rcsb.org/download/1UBQ.pdb").then((r) =>
             ["engine", '"molstar" | "canvas"', '"molstar"', "GPU rendering with Mol*, or the built-in canvas renderer."],
             ["representation", '"cartoon" | "tube" | "trace" | "ball-and-stick" | "spacefill" | "surface"', '"cartoon"', "How the protein is drawn."],
             ["outline", '"black" | "background" | "none" | string', '"black"', "Outline color; background draws a gap."],
+            ["shading", '"flat" | "lit"', '"flat"', "Flat colors with a bolder outline, or lighting and shadows."],
             ["colorBy", '"structure" | "plddt" | "rainbow" | "plain"', '"structure"', "What the color shows."],
             ["highlight", "{ residue, label? }[]", "[]", "Residues marked with a label; with atoms, their side chains show as ball and stick."],
             ["hovered", "number | null", "—", "The residue under the pointer, when controlled."],

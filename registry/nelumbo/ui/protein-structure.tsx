@@ -26,6 +26,8 @@ import { Icon } from "@/registry/nelumbo/ui/icon"
  *   atoms otherwise.
  * - `outline`: "black" (default), "background" (a gap that separates
  *   crossings), "none", or any CSS color.
+ * - `shading`: "flat" (default) draws plain colors with no shadows and a
+ *   slightly bolder outline; "lit" adds lighting and ambient occlusion.
  * - `colorBy`: "structure" (helix, strand, coil), "plddt" (AlphaFold's
  *   confidence bands, in their standard colors), "rainbow" (N to C terminus)
  *   or "plain". Atom views also color nitrogen, oxygen and sulfur.
@@ -300,6 +302,8 @@ type CanvasStructureProps = Omit<React.ComponentProps<"div">, "children"> & {
   colorBy?: ProteinColorBy
   /** "black" (default), "background", "none", or any CSS color. */
   outline?: "black" | "background" | "none" | (string & {})
+  /** "flat" (default): plain colors and no shadows, with a bolder outline. "lit": lighting and shadows. */
+  shading?: "flat" | "lit"
   highlight?: ProteinHighlight[]
   /** The number of the first residue, for labels (default 1). */
   firstResidue?: number
@@ -323,6 +327,7 @@ function CanvasStructure({
   representation = "cartoon",
   colorBy = "structure",
   outline = "black",
+  shading = "flat",
   highlight = [],
   firstResidue = 1,
   hovered: hoveredProp,
@@ -343,8 +348,8 @@ function CanvasStructure({
   const reduced = React.useRef(false)
 
   const view = React.useRef({ rot: START, zoom: 1, vx: 0, vy: 0, dragging: false, last: [0, 0] as [number, number] })
-  const live = React.useRef({ representation, colorBy, outline, highlight, hovered, firstResidue, spinning })
-  live.current = { representation, colorBy, outline, highlight, hovered, firstResidue, spinning }
+  const live = React.useRef({ representation, colorBy, outline, shading, highlight, hovered, firstResidue, spinning })
+  live.current = { representation, colorBy, outline, shading, highlight, hovered, firstResidue, spinning }
 
   const frame = React.useRef(0)
   const drawRef = React.useRef<() => void>(() => {})
@@ -391,7 +396,8 @@ function CanvasStructure({
     const el = frameRef.current
     if (!canvas || !el) return
     const v = view.current
-    const { representation, colorBy, outline, highlight, hovered, firstResidue, spinning } = live.current
+    const { representation, colorBy, outline, shading, highlight, hovered, firstResidue, spinning } = live.current
+    const isFlat = shading === "flat"
 
     let more = false
     if (spinning && !v.dragging) {
@@ -449,7 +455,7 @@ function CanvasStructure({
       return { x: w / 2 + x * scale * s, y: h / 2 - y * scale * s, z, s }
     }
     const fogOf = (z: number) => Math.min(0.42, Math.max(0, (radius - z) / (2 * radius)) * 0.5)
-    const ow = Math.max(1.1, Math.min(2.2, Math.min(w, h) * 0.0026)) * Math.sqrt(v.zoom)
+    const ow = Math.max(1.1, Math.min(2.2, Math.min(w, h) * 0.0026)) * Math.sqrt(v.zoom) * (isFlat ? 1.45 : 1)
     const caProj = P.map((p) => proj(p))
     hits.current.ca = caProj
     hits.current.ids = null
@@ -504,7 +510,7 @@ function CanvasStructure({
         const f = (a.f + b.f) / 2
         // ribbons shade by how squarely they face you; tubes are flat with a light band
         const nz = (a.nz + b.nz) / 2
-        const facing = f > 0.5 ? (0.62 + 0.38 * Math.abs(nz)) * (nz < 0 ? 0.88 : 1) : 1
+        const facing = isFlat ? 1 : f > 0.5 ? (0.62 + 0.38 * Math.abs(nz)) * (nz < 0 ? 0.88 : 1) : 1
         const col = mix(shade(colors[res], facing), bg, fogOf(z))
         // the fill reaches a little into the next piece, so no anti-aliasing seam shows between them
         const c2 = edges[Math.min(edges.length - 1, k + 2)]
@@ -520,7 +526,7 @@ function CanvasStructure({
             ctx.closePath()
             ctx.fillStyle = css(col)
             ctx.fill()
-            if (f < 0.5) {
+            if (!isFlat && f < 0.5) {
               // a light band on the side facing the light
               const sa = a.ox * -0.6 + a.oy * -0.8 > 0 ? 1 : -1
               const sb = b.ox * -0.6 + b.oy * -0.8 > 0 ? 1 : -1
@@ -653,12 +659,16 @@ function CanvasStructure({
         prims.push({
           z: p.z,
           draw: () => {
-            const g = ctx.createRadialGradient(p.x - r * 0.35, p.y - r * 0.35, r * 0.1, p.x, p.y, r)
-            g.addColorStop(0, css(mix(col, white, 0.45)))
-            g.addColorStop(1, css(col))
+            let fill: string | CanvasGradient = css(col)
+            if (!isFlat) {
+              const g = ctx.createRadialGradient(p.x - r * 0.35, p.y - r * 0.35, r * 0.1, p.x, p.y, r)
+              g.addColorStop(0, css(mix(col, white, 0.45)))
+              g.addColorStop(1, css(col))
+              fill = g
+            }
             ctx.beginPath()
             ctx.arc(p.x, p.y, r, 0, Math.PI * 2)
-            ctx.fillStyle = g
+            ctx.fillStyle = fill
             ctx.fill()
             if (oc) {
               ctx.strokeStyle = css(oc)
@@ -816,8 +826,9 @@ function CanvasStructure({
             }
             const diff = Math.max(0, nx * LIGHT[0] + ny * LIGHT[1] + nz * LIGHT[2])
             const spec = Math.pow(Math.max(0, nx * HALF[0] + ny * HALF[1] + nz * HALF[2]), 28) * 0.22
-            const lit = shade(sphereColors[id], 0.52 + 0.6 * diff)
-            c = mix(mix(lit, white, spec), bg, ((zmax - z) / zr) * 0.38)
+            c = isFlat
+              ? mix(sphereColors[id], bg, ((zmax - z) / zr) * 0.25)
+              : mix(mix(shade(sphereColors[id], 0.52 + 0.6 * diff), white, spec), bg, ((zmax - z) / zr) * 0.38)
           }
           data[di] = c[0]
           data[di + 1] = c[1]
@@ -851,12 +862,16 @@ function CanvasStructure({
           prims.push({
             z: p.z + 0.01,
             draw: () => {
-              const g = ctx.createRadialGradient(p.x - r * 0.35, p.y - r * 0.35, r * 0.1, p.x, p.y, r)
-              g.addColorStop(0, css(mix(fg, white, 0.5)))
-              g.addColorStop(1, css(fg))
+              let fill: string | CanvasGradient = css(fg)
+              if (!isFlat) {
+                const g = ctx.createRadialGradient(p.x - r * 0.35, p.y - r * 0.35, r * 0.1, p.x, p.y, r)
+                g.addColorStop(0, css(mix(fg, white, 0.5)))
+                g.addColorStop(1, css(fg))
+                fill = g
+              }
               ctx.beginPath()
               ctx.arc(p.x, p.y, r, 0, Math.PI * 2)
-              ctx.fillStyle = g
+              ctx.fillStyle = fill
               ctx.fill()
               if (oc) {
                 ctx.strokeStyle = css(oc)
@@ -920,7 +935,7 @@ function CanvasStructure({
 
   React.useEffect(() => {
     request()
-  }, [request, representation, colorBy, outline, highlight, hovered, firstResidue, spinning, model])
+  }, [request, representation, colorBy, outline, shading, highlight, hovered, firstResidue, spinning, model])
 
   React.useEffect(() => {
     const el = frameRef.current
@@ -1182,6 +1197,7 @@ function MolstarStructure({
   representation = "cartoon",
   colorBy = "structure",
   outline = "black",
+  shading = "flat",
   highlight = [],
   firstResidue = 1,
   hovered: hoveredProp,
@@ -1337,8 +1353,9 @@ function MolstarStructure({
       highlightColor: mix(fg, bg, 0.1),
       sideChains: hasAtoms ? sideChains : [],
       spin: spinning,
+      shading,
     })
-  }, [ready, representation, colorBy, outline, sideChains, spinning, themeTick, hasAtoms])
+  }, [ready, representation, colorBy, outline, shading, sideChains, spinning, themeTick, hasAtoms])
 
   // hovered from outside (a sequence view) lights the residue in 3D
   React.useEffect(() => {

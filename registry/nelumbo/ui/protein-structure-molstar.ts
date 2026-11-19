@@ -40,6 +40,8 @@ type Style = {
   /** residue numbers whose side chains are drawn as ball-and-stick */
   sideChains: number[]
   spin: boolean
+  /** flat: plain colors, no lights or ambient occlusion. lit: Mol*'s lighting and occlusion. */
+  shading: "flat" | "lit"
 }
 
 type Source = { pdb: string } | { url: string; format: "pdb" | "mmcif" | "bcif" }
@@ -184,14 +186,23 @@ export async function createMolstarEngine(canvas: HTMLCanvasElement, container: 
         ...plugin.canvas3d.props.renderer,
         backgroundColor: rgb(s.background),
         highlightColor: rgb(s.highlightColor),
+        // flat: no directional light, full ambient, so every surface shows its true color
+        ...(s.shading === "flat"
+          ? { light: [], ambientIntensity: 1, exposure: 1 }
+          : {
+              light: [{ inclination: 150, azimuth: 320, color: Color.fromNormalizedRgb(1, 1, 1), intensity: 0.6 }],
+              ambientIntensity: 0.4,
+            }),
       },
       // hover edges are drawn by a separate marking pass with its own (pink) default
       marking: { ...plugin.canvas3d.props.marking, highlightEdgeColor: rgb(s.highlightColor), selectEdgeColor: rgb(s.highlightColor) },
       postprocessing: {
         ...post,
-        occlusion: { name: "on", params: PostprocessingParams.occlusion.map("on").defaultValue as never },
+        occlusion:
+          s.shading === "lit" ? { name: "on", params: PostprocessingParams.occlusion.map("on").defaultValue as never } : { name: "off", params: {} },
+        shadow: { name: "off", params: {} },
         outline: s.outline
-          ? { name: "on", params: { scale: 1, threshold: 0.33, color: rgb(s.outline), includeTransparent: true } }
+          ? { name: "on", params: { scale: s.shading === "flat" ? 2 : 1, threshold: 0.33, color: rgb(s.outline), includeTransparent: true } }
           : { name: "off", params: {} },
       },
       camera: {
@@ -251,6 +262,7 @@ export async function createMolstarEngine(canvas: HTMLCanvasElement, container: 
         prev.representation !== next.representation ||
         prev.colorBy !== next.colorBy ||
         prev.sideChains.join() !== next.sideChains.join() ||
+        prev.shading !== next.shading ||
         [prev.helix, prev.strand, prev.coil, prev.plain].join() !== [next.helix, next.strand, next.coil, next.plain].join()
       const reframe = prev && prev.representation !== next.representation
       return rebuild
