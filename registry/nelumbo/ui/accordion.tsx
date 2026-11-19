@@ -96,7 +96,12 @@ function AccordionItem({ className, ...props }: React.ComponentProps<typeof Acco
               // the open tile is a touch more prominent, and rounds all round
               "data-[state=open]:rounded-2xl data-[state=open]:bg-surface-container-high dark:data-[state=open]:bg-surface-container-highest",
             ]
-          : "rounded-2xl",
+          : [
+              // connected shapes: big corners on the outside of the group, tight where items face each other
+              "rounded-xs first:rounded-t-2xl last:rounded-b-2xl",
+              "transition-[border-radius] duration-500 ease-spring motion-reduce:transition-none",
+              "data-[state=open]:rounded-2xl",
+            ],
         className
       )}
       {...props}
