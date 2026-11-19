@@ -878,7 +878,7 @@ function Overview({
       aria-valuenow={Math.round(view.start)}
       aria-valuetext={`${fmt(view.start)} to ${fmt(view.end - 1)} of ${fmt(length)} bp`}
       onKeyDown={onKey}
-      className="relative h-7 cursor-grab touch-none rounded-[0.5625rem] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:cursor-grabbing"
+      className="relative h-7 cursor-grab touch-none rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:cursor-grabbing"
       onPointerDown={(e) => {
         ;(e.currentTarget as Element).setPointerCapture(e.pointerId)
         const b = toBase(e)
@@ -893,7 +893,7 @@ function Overview({
     >
       <svg width="100%" height={28} aria-hidden className="block overflow-visible">
         {/* a slider's track: the whole construct, its features, and the window as a pill with a handle at each end */}
-        <rect x={pad} y={4} width={inner} height={20} rx={6} className="fill-surface-container-high" />
+        <rect x={pad} y={4} width={inner} height={20} rx={3} className="fill-surface-container-high" />
         {features.map((f, i) =>
           piecesOf(f, length).map((p, k) => (
             <rect key={`${i}-${k}`} x={ox(p.start)} y={f.strand === -1 ? 15 : 9} width={Math.max(2, ox(p.end + 1) - ox(p.start))} height={4} rx={2} fill={fillOf(featureColor(f))} />
@@ -904,7 +904,7 @@ function Overview({
           const w = Math.max(14, ox(view.end) - x0)
           return (
             <g>
-              <rect x={x0} y={1} width={w} height={26} rx={9} className="fill-foreground/[0.1]" />
+              <rect x={x0} y={1} width={w} height={26} rx={6} className="fill-foreground/[0.1]" />
               {w >= 24 ? (
                 <>
                   <rect x={x0 + 3} y={5} width={4} height={18} rx={2} className="fill-foreground" />
