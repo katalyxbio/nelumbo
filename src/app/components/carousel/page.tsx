@@ -30,7 +30,7 @@ function art(s: (typeof SCENES)[number]): React.CSSProperties {
 function Photo({ scene, caption = true }: { scene: (typeof SCENES)[number]; caption?: boolean }) {
   return (
     <div className="relative size-full min-w-0" style={art(scene)}>
-      <Icon name={scene.icon} fill size={64} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-30" />
+      <Icon name={scene.icon} fill size={64} className="absolute top-[calc(50%-32px)] left-[calc(50%-32px)] opacity-30" />
       {caption && (
         <div className="absolute inset-x-0 bottom-0 truncate p-5" style={{ opacity: "calc((var(--carousel-p, 1) - 0.6) * 2.5)" }}>
           <p className="type-title-md">{scene.title}</p>

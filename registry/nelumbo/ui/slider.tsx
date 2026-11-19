@@ -159,12 +159,12 @@ function Slider({
                 <Icon
                   name={icon}
                   size={24}
-                  className="absolute top-1/2 left-2 hidden -translate-y-1/2 text-(--on-active) @min-[2.75rem]:block"
+                  className="absolute top-[calc(50%-12px)] left-2 hidden text-(--on-active) @min-[2.75rem]:block"
                 />
                 <Icon
                   name={icon}
                   size={24}
-                  className="absolute top-1/2 left-[calc(100%+2*var(--gap)+0.5rem)] z-10 -translate-y-1/2 text-muted-foreground @min-[2.75rem]:hidden"
+                  className="absolute top-[calc(50%-12px)] left-[calc(100%+2*var(--gap)+0.5rem)] z-10 text-muted-foreground @min-[2.75rem]:hidden"
                   style={{ "--gap": `${GAP}px` } as React.CSSProperties}
                 />
               </>
