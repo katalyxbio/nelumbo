@@ -351,11 +351,10 @@ function Combobox(props: ComboboxProps) {
 
   const openList = (highlight: "selected" | "last" | "none" = "selected") => {
     if (disabled) return
-    // open where the current choice lives (in a cascade, with its menus open)
-    const t = selectedNode ? selectedNode.path.map((p) => p.value) : []
-    const cols = columnsFor(t)
+    // always open on the first level; the chosen option's top-level parent is highlighted, but its menus stay closed
+    const cols = columnsFor([])
     const last = cols.length - 1
-    setTrail(t)
+    setTrail([])
     setCol(last)
     setDir(1)
     setOpen(true)
@@ -979,7 +978,6 @@ function Combobox(props: ComboboxProps) {
         columns.slice(1).map((_, j) =>
           createPortal(
             <div
-              key={j + 1}
               ref={(el) => {
                 flyoutRefs.current[j + 1] = el
               }}
@@ -999,7 +997,8 @@ function Combobox(props: ComboboxProps) {
               {listbox(j + 1)}
             </div>,
             document.body,
-            `${baseId}-flyout-${j + 1}`
+            // keyed by the parent it belongs to, so each new menu mounts and animates in
+            `${baseId}-flyout-${j + 1}-${trail[j] ?? ""}`
           )
         )}
     </PopoverPrimitive.Root>
