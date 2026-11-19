@@ -907,7 +907,11 @@ function Combobox(props: ComboboxProps) {
                   {...inputProps(control)}
                   className={cn(
                     !searchable && "cursor-pointer caret-transparent select-none",
-                    "h-6 min-w-8 flex-1 bg-transparent type-body-lg leading-6 text-foreground outline-none placeholder:text-muted-foreground",
+                    "h-6 flex-1 bg-transparent type-body-lg leading-6 text-foreground outline-none placeholder:text-muted-foreground",
+                    // Empty, the input only needs to be focusable, so it takes no room of its own (the negative margin
+                    // cancels the flex gap, the translate puts it back visually) and a full row of chips stays one row.
+                    // Once there is text it asks for room and wraps if needed.
+                    text ? "min-w-24" : "-ms-1.5 min-w-px translate-x-1.5",
                     floating && "placeholder:opacity-0 placeholder:transition-opacity focus:placeholder:opacity-100"
                   )}
                 />
