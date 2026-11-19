@@ -9,29 +9,40 @@ import { Icon } from "@/registry/nelumbo/ui/icon"
 /**
  * Nelumbo ProteinStructure
  *
- * A 3D view of a protein's backbone, drawn as a shaded tube through the
- * C-alpha atoms, with no 3D library. Drag to turn it, use the arrow keys, or
- * let it spin. Thicker tube marks helices and strands.
+ * A 3D protein viewer with no 3D library. Drag to turn it, use the arrow
+ * keys, or let it spin.
  *
  *   <ProteinStructure residues={ubiquitin} highlight={[{ residue: 48, label: "K48" }]} />
- *   <ProteinStructure residues={parsePdb(text)} colorBy="plddt" />
+ *   <ProteinStructure residues={parsePdb(text)} representation="surface" />
  *
- * - `residues`: C-alpha coordinates in Å, with optional one-letter `aa`,
- *   secondary structure `ss` ("H" helix, "E" strand, "C" coil) and `plddt`.
- *   `parsePdb(text)` reads them from a PDB file: the first chain's CA atoms,
- *   HELIX and SHEET records, and the B-factor column as pLDDT (AlphaFold).
+ * - `representation`:
+ *   - "cartoon" (default): helices as ribbons, strands as arrows, loops as tubes.
+ *   - "tube": one smooth tube, thicker through helices and strands.
+ *   - "trace": a thin line through the C-alpha atoms.
+ *   - "ball-and-stick": atoms and bonds.
+ *   - "spacefill": every atom at its van der Waals radius.
+ *   - "surface": a smooth molecular surface.
+ *   The last three use every atom when `atoms` are given, and the C-alpha
+ *   atoms otherwise.
+ * - `outline`: "black" (default), "background" (a gap that separates
+ *   crossings), "none", or any CSS color.
  * - `colorBy`: "structure" (helix, strand, coil), "plddt" (AlphaFold's
  *   confidence bands, in their standard colors), "rainbow" (N to C terminus)
- *   or "plain". Color is used because it carries the meaning here.
- * - `highlight`: residues marked with a sphere and an optional label.
+ *   or "plain". Atom views also color nitrogen, oxygen and sulfur.
+ * - `highlight`: residues marked with a label; with atoms, their side chains
+ *   are drawn as ball-and-stick in the cartoon, tube and trace views.
  * - `hovered` and `onHoveredChange`: the residue under the pointer, so a
  *   sequence view can follow along (and drive it back).
- * - `spin`: turn slowly until someone drags it. Off with reduced motion.
- * - Keyboard: arrows turn it, + and − zoom, 0 resets the view. Screen readers
- *   hear the residue under the pointer.
+ * - `parsePdb(text)` reads the first chain of a PDB file: atoms, HELIX and
+ *   SHEET records, and the B-factor column as pLDDT for AlphaFold models.
+ * - Keyboard: arrows turn it, + and − zoom, 0 resets. Screen readers hear the
+ *   residue under the pointer. `spin` is off with reduced motion.
  */
 
+type ProteinAtom = { name: string; element: string; x: number; y: number; z: number }
+
 type ProteinResidue = {
+  /** C-alpha position in Å. */
   x: number
   y: number
   z: number
@@ -41,9 +52,12 @@ type ProteinResidue = {
   ss?: "H" | "E" | "C"
   /** AlphaFold per-residue confidence, 0 to 100. */
   plddt?: number
+  /** Heavy atoms, for the atom views and highlighted side chains. */
+  atoms?: ProteinAtom[]
 }
 
 type ProteinColorBy = "structure" | "plddt" | "rainbow" | "plain"
+type ProteinRepresentation = "cartoon" | "tube" | "trace" | "ball-and-stick" | "spacefill" | "surface"
 type ProteinHighlight = { residue: number; label?: string }
 
 /* ------------------------------------------------------------------ */
@@ -58,46 +72,55 @@ const ONE_TO_NAME: Record<string, string> = Object.fromEntries(
   Object.entries(THREE_TO_ONE).map(([k, v]) => [v, k[0] + k.slice(1).toLowerCase()])
 )
 
-/** Reads the first chain's C-alpha atoms (first model), HELIX/SHEET records and B-factors (as pLDDT) from a PDB file. */
+/** Reads the first chain (first model) of a PDB file: heavy atoms, HELIX/SHEET records, and B-factors as pLDDT. */
 function parsePdb(text: string, { plddt = false }: { plddt?: boolean } = {}): ProteinResidue[] {
-  const lines = text.split(/\r?\n/)
   const helix: [number, number][] = []
   const sheet: [number, number][] = []
-  const out: (ProteinResidue & { n: number })[] = []
+  const byRes = new Map<string, { n: number; res: string; atoms: ProteinAtom[]; b?: number }>()
   let chain: string | null = null
-  for (const l of lines) {
+  for (const l of text.split(/\r?\n/)) {
     const rec = l.slice(0, 6).trim()
     if (rec === "HELIX") helix.push([parseInt(l.slice(21, 25)), parseInt(l.slice(33, 37))])
     else if (rec === "SHEET") sheet.push([parseInt(l.slice(22, 26)), parseInt(l.slice(33, 37))])
     else if (rec === "ENDMDL") break
-    else if ((rec === "ATOM" || rec === "HETATM") && l.slice(12, 16).trim() === "CA") {
+    else if (rec === "ATOM" || rec === "HETATM") {
+      const res = l.slice(17, 20).trim()
+      if (!THREE_TO_ONE[res]) continue
       const c = l[21]
       if (chain === null) chain = c
       if (c !== chain) continue
       const alt = l[16]
       if (alt !== " " && alt !== "A") continue
-      const res = l.slice(17, 20).trim()
-      if (rec === "HETATM" && !THREE_TO_ONE[res]) continue
-      const n = parseInt(l.slice(22, 26))
-      out.push({
-        n,
-        x: parseFloat(l.slice(30, 38)),
-        y: parseFloat(l.slice(38, 46)),
-        z: parseFloat(l.slice(46, 54)),
-        aa: THREE_TO_ONE[res] ?? "X",
-        ...(plddt ? { plddt: parseFloat(l.slice(60, 66)) } : {}),
-      })
+      const name = l.slice(12, 16).trim()
+      const element = (l.slice(76, 78).trim() || name.replace(/[^A-Z]/g, "")[0] || "C").toUpperCase()
+      if (element === "H") continue
+      const key = l.slice(22, 27)
+      let r = byRes.get(key)
+      if (!r) byRes.set(key, (r = { n: parseInt(l.slice(22, 26)), res, atoms: [] }))
+      r.atoms.push({ name, element, x: parseFloat(l.slice(30, 38)), y: parseFloat(l.slice(38, 46)), z: parseFloat(l.slice(46, 54)) })
+      if (name === "CA") r.b = parseFloat(l.slice(60, 66))
     }
   }
   const inRange = (n: number, rs: [number, number][]) => rs.some(([a, b]) => n >= a && n <= b)
-  return out.map(({ n, ...r }) => ({
-    ...r,
-    ss: helix.length || sheet.length ? (inRange(n, helix) ? "H" : inRange(n, sheet) ? "E" : "C") : undefined,
-  }))
+  const out: ProteinResidue[] = []
+  for (const r of byRes.values()) {
+    const ca = r.atoms.find((a) => a.name === "CA")
+    if (!ca) continue
+    out.push({
+      x: ca.x,
+      y: ca.y,
+      z: ca.z,
+      aa: THREE_TO_ONE[r.res],
+      ss: helix.length || sheet.length ? (inRange(r.n, helix) ? "H" : inRange(r.n, sheet) ? "E" : "C") : undefined,
+      ...(plddt && r.b != null ? { plddt: r.b } : {}),
+      atoms: r.atoms,
+    })
+  }
+  return out
 }
 
 /* ------------------------------------------------------------------ */
-/* Geometry                                                            */
+/* Vector math                                                         */
 /* ------------------------------------------------------------------ */
 
 type V3 = [number, number, number]
@@ -111,25 +134,61 @@ const mul = (a: M3, b: M3): M3 => [
 const rotY = (t: number): M3 => [Math.cos(t), 0, Math.sin(t), 0, 1, 0, -Math.sin(t), 0, Math.cos(t)]
 const rotX = (t: number): M3 => [1, 0, 0, 0, Math.cos(t), -Math.sin(t), 0, Math.sin(t), Math.cos(t)]
 const apply = (m: M3, [x, y, z]: V3): V3 => [m[0] * x + m[1] * y + m[2] * z, m[3] * x + m[4] * y + m[5] * z, m[6] * x + m[7] * y + m[8] * z]
+const sub = (a: V3, b: V3): V3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
+const add = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]]
+const scl = (a: V3, k: number): V3 => [a[0] * k, a[1] * k, a[2] * k]
+const dot = (a: V3, b: V3) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+const cross = (a: V3, b: V3): V3 => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]
+const norm = (a: V3): V3 => {
+  const l = Math.hypot(a[0], a[1], a[2]) || 1
+  return [a[0] / l, a[1] / l, a[2] / l]
+}
 const START: M3 = mul(rotX(-0.35), rotY(0.6))
 
-const SUB = 6 // spline points per residue
+/* ------------------------------------------------------------------ */
+/* Model: spline frames, atoms and bonds                               */
+/* ------------------------------------------------------------------ */
 
-/** Catmull-Rom spline through the C-alpha atoms, centered, with each point's residue and tube width. */
-function buildTube(residues: ProteinResidue[]) {
+const SUB = 6 // spline points per residue
+const VDW: Record<string, number> = { C: 1.7, N: 1.55, O: 1.52, S: 1.8, P: 1.8 }
+
+type SplinePt = { p: V3; res: number; t: number; N: V3; B: V3 }
+type ModelAtom = { p: V3; res: number; el: string; r: number }
+
+function buildModel(residues: ProteinResidue[]) {
   const n = residues.length
+  const all = residues.flatMap((r) => r.atoms ?? [])
+  const src = all.length ? all : residues
   const c: V3 = [0, 0, 0]
-  residues.forEach((r) => {
-    c[0] += r.x / n
-    c[1] += r.y / n
-    c[2] += r.z / n
+  src.forEach((a) => {
+    c[0] += a.x / src.length
+    c[1] += a.y / src.length
+    c[2] += a.z / src.length
   })
   const P: V3[] = residues.map((r) => [r.x - c[0], r.y - c[1], r.z - c[2]])
   // fit the folded core, not a floppy tail: the 90th percentile distance from the center
-  const ds = P.map(([x, y, z]) => Math.hypot(x, y, z)).sort((a, b) => a - b)
+  const ds = P.map((p) => Math.hypot(...p)).sort((a, b) => a - b)
   const radius = Math.max(1, (ds[Math.floor((ds.length - 1) * 0.9)] ?? 1) * 1.12)
-  const widthOf = (r: ProteinResidue) => (r.ss === "H" || r.ss === "E" ? 1 : 0.55)
-  const pts: { p: V3; res: number; w: number }[] = []
+
+  // per-residue frames from the C-alpha trace: N points across the curve, kept from flipping
+  const T: V3[] = P.map((_, i) => norm(sub(P[Math.min(n - 1, i + 1)], P[Math.max(0, i - 1)])))
+  const N0: V3[] = P.map((_, i) => {
+    if (i === 0 || i === n - 1) return [0, 0, 0]
+    return norm(sub(add(P[i - 1], P[i + 1]), scl(P[i], 2)))
+  })
+  if (n > 2) {
+    N0[0] = N0[1]
+    N0[n - 1] = N0[n - 2]
+  }
+  // strands pleat, so their normals alternate: flip every other one. Helices turn about 100° a residue, so leave them.
+  for (let i = 1; i < n; i++) if (residues[i].ss !== "H" && dot(N0[i], N0[i - 1]) < 0) N0[i] = scl(N0[i], -1)
+  const Nr: V3[] = N0.map((v, i) => {
+    // strands pleat back and forth: smooth so the arrow lies flat in the sheet
+    const s = residues[i].ss === "E" ? norm(add(add(N0[Math.max(0, i - 1)], scl(v, 2)), N0[Math.min(n - 1, i + 1)])) : v
+    return norm(sub(s, scl(T[i], dot(s, T[i]))))
+  })
+
+  const pts: SplinePt[] = []
   for (let i = 0; i < n - 1; i++) {
     const p0 = P[Math.max(0, i - 1)]
     const p1 = P[i]
@@ -142,12 +201,48 @@ function buildTube(residues: ProteinResidue[]) {
       const p = [0, 1, 2].map(
         (k) => 0.5 * (2 * p1[k] + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)
       ) as V3
-      const w = widthOf(residues[i]) * (1 - t) + widthOf(residues[i + 1]) * t
-      pts.push({ p, res: t < 0.5 ? i : i + 1, w })
+      pts.push({ p, res: i, t, N: norm(add(scl(Nr[i], 1 - t), scl(Nr[i + 1], t))), B: [0, 0, 0] })
     }
   }
-  if (n) pts.push({ p: P[n - 1], res: n - 1, w: widthOf(residues[n - 1]) })
-  return { P, pts, radius }
+  if (n) pts.push({ p: P[n - 1], res: n - 1, t: 0, N: Nr[n - 1], B: [0, 0, 0] })
+  pts.forEach((q, k) => {
+    const tan = norm(sub(pts[Math.min(pts.length - 1, k + 1)].p, pts[Math.max(0, k - 1)].p))
+    q.N = norm(sub(q.N, scl(tan, dot(q.N, tan))))
+    q.B = norm(cross(tan, q.N))
+  })
+
+  // atoms and bonds
+  const atoms: ModelAtom[] = []
+  const firstAtom: number[] = []
+  residues.forEach((r, i) => {
+    firstAtom.push(atoms.length)
+    for (const a of r.atoms ?? []) atoms.push({ p: [a.x - c[0], a.y - c[1], a.z - c[2]], res: i, el: a.element, r: VDW[a.element] ?? 1.7 })
+  })
+  firstAtom.push(atoms.length)
+  const bonds: [number, number][] = []
+  const near = (a: number, b: number) => {
+    const lim = atoms[a].el === "S" || atoms[b].el === "S" ? 2.1 : 1.9
+    const d = sub(atoms[a].p, atoms[b].p)
+    return dot(d, d) < lim * lim
+  }
+  residues.forEach((r, i) => {
+    const s = firstAtom[i]
+    const e = firstAtom[i + 1]
+    for (let a = s; a < e; a++) for (let b = a + 1; b < e; b++) if (near(a, b)) bonds.push([a, b])
+    // peptide bond to the next residue
+    const cAt = (r.atoms ?? []).findIndex((x) => x.name === "C")
+    const nAt = (residues[i + 1]?.atoms ?? []).findIndex((x) => x.name === "N")
+    if (cAt >= 0 && nAt >= 0 && near(s + cAt, firstAtom[i + 1] + nAt)) bonds.push([s + cAt, firstAtom[i + 1] + nAt])
+  })
+  const sideChain = residues.map((r, i) => {
+    const ids: number[] = []
+    ;(r.atoms ?? []).forEach((a, k) => {
+      if (!["N", "C", "O"].includes(a.name)) ids.push(firstAtom[i] + k)
+    })
+    return ids
+  })
+
+  return { P, pts, radius, atoms, bonds, sideChain, hasAtoms: atoms.length > 0 }
 }
 
 /* ------------------------------------------------------------------ */
@@ -177,6 +272,7 @@ function toRgb(css: string): RGB {
   return out
 }
 const mix = (a: RGB, b: RGB, t: number): RGB => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]
+const shade = (a: RGB, k: number): RGB => [Math.min(255, a[0] * k), Math.min(255, a[1] * k), Math.min(255, a[2] * k)]
 const css = ([r, g, b]: RGB, a = 1) => `rgba(${r | 0},${g | 0},${b | 0},${a})`
 
 /** AlphaFold's confidence bands and their standard colors. */
@@ -187,8 +283,12 @@ const PLDDT_BANDS = [
   { min: 0, label: "Very low", hex: "#ff7d45" },
 ]
 const plddtHex = (v = 0) => PLDDT_BANDS.find((b) => v >= b.min)!.hex
+/** Conventional element colors for the atoms that aren't carbon. */
+const ELEMENT_HEX: Record<string, string> = { N: "#3a62e8", O: "#e8382e", S: "#e8b62e", P: "#f08a1c" }
 
 const SS_NAME = { H: "Helix", E: "Strand", C: "Coil" } as const
+const LIGHT = norm([-0.45, 0.55, 0.72])
+const HALF = norm(add(LIGHT, [0, 0, 1]))
 
 /* ------------------------------------------------------------------ */
 /* Component                                                           */
@@ -196,7 +296,10 @@ const SS_NAME = { H: "Helix", E: "Strand", C: "Coil" } as const
 
 type ProteinStructureProps = Omit<React.ComponentProps<"div">, "children"> & {
   residues: ProteinResidue[]
+  representation?: ProteinRepresentation
   colorBy?: ProteinColorBy
+  /** "black" (default), "background", "none", or any CSS color. */
+  outline?: "black" | "background" | "none" | (string & {})
   highlight?: ProteinHighlight[]
   /** The number of the first residue, for labels (default 1). */
   firstResidue?: number
@@ -212,9 +315,13 @@ type ProteinStructureProps = Omit<React.ComponentProps<"div">, "children"> & {
   label?: string
 }
 
+type Prim = { z: number; draw: () => void }
+
 function ProteinStructure({
   residues,
+  representation = "cartoon",
   colorBy = "structure",
+  outline = "black",
   highlight = [],
   firstResidue = 1,
   hovered: hoveredProp,
@@ -228,15 +335,15 @@ function ProteinStructure({
 }: ProteinStructureProps) {
   const frameRef = React.useRef<HTMLDivElement>(null)
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
-  const tube = React.useMemo(() => buildTube(residues), [residues])
+  const model = React.useMemo(() => buildModel(residues), [residues])
   const [innerHover, setInnerHover] = React.useState<number | null>(null)
   const hovered = hoveredProp !== undefined ? hoveredProp : innerHover
   const [spinning, setSpinning] = React.useState(spin)
   const reduced = React.useRef(false)
 
-  const view = React.useRef({ rot: START, zoom: 1, vx: 0, vy: 0, dragging: false, last: [0, 0] as [number, number], moved: 0 })
-  const live = React.useRef({ colorBy, highlight, hovered, firstResidue, spinning })
-  live.current = { colorBy, highlight, hovered, firstResidue, spinning }
+  const view = React.useRef({ rot: START, zoom: 1, vx: 0, vy: 0, dragging: false, last: [0, 0] as [number, number] })
+  const live = React.useRef({ representation, colorBy, outline, highlight, hovered, firstResidue, spinning })
+  live.current = { representation, colorBy, outline, highlight, hovered, firstResidue, spinning }
 
   const frame = React.useRef(0)
   const drawRef = React.useRef<() => void>(() => {})
@@ -258,8 +365,24 @@ function ProteinStructure({
   }, [])
   React.useEffect(() => setSpinning(spin && !reduced.current), [spin])
 
-  // project once per draw; kept for hit-testing
-  const projected = React.useRef<{ x: number; y: number; z: number; s: number }[]>([])
+  // kept from the last draw, for hit-testing
+  const hits = React.useRef<{ ca: { x: number; y: number; z: number }[]; ids: Int32Array | null; rw: number; rs: number; atomRes: number[] }>({
+    ca: [],
+    ids: null,
+    rw: 0,
+    rs: 1,
+    atomRes: [],
+  })
+  const raster = React.useRef<{ w: number; h: number; z: Float32Array; id: Int32Array; tmp: Float32Array; tmp2: Float32Array; img: ImageData | null; off: HTMLCanvasElement | null }>({
+    w: 0,
+    h: 0,
+    z: new Float32Array(0),
+    id: new Int32Array(0),
+    tmp: new Float32Array(0),
+    tmp2: new Float32Array(0),
+    img: null,
+    off: null,
+  })
 
   drawRef.current = () => {
     frame.current = 0
@@ -267,9 +390,8 @@ function ProteinStructure({
     const el = frameRef.current
     if (!canvas || !el) return
     const v = view.current
-    const { colorBy, highlight, hovered, firstResidue, spinning } = live.current
+    const { representation, colorBy, outline, highlight, hovered, firstResidue, spinning } = live.current
 
-    // motion: spin and drag momentum
     let more = false
     if (spinning && !v.dragging) {
       v.rot = mul(rotY(0.006), v.rot)
@@ -299,96 +421,467 @@ function ProteinStructure({
     const fg = toRgb(cs.color)
     const varColor = (name: string, fallback: string) => toRgb(cs.getPropertyValue(name).trim() || fallback)
     const white: RGB = [255, 255, 255]
+    const oc: RGB | null = outline === "none" ? null : outline === "background" ? bg : toRgb(outline === "black" ? "#000" : outline)
 
     const n = residues.length
     const resColor = (i: number): RGB => {
       const r = residues[i]
       if (colorBy === "plddt") return toRgb(plddtHex(r.plddt))
       if (colorBy === "rainbow") return toRgb(`hsl(${Math.round(250 - (250 * i) / Math.max(1, n - 1))} 72% 52%)`)
-      if (colorBy === "plain") return fg
+      if (colorBy === "plain") return mix(fg, bg, 0.25)
       if (r.ss === "H") return varColor("--brand", "#3355cc")
       if (r.ss === "E") return varColor("--amber", "#d08a00")
       return mix(fg, bg, 0.45)
     }
     const colors = residues.map((_, i) => resColor(i))
+    const atomColor = (a: ModelAtom) => (ELEMENT_HEX[a.el] ? toRgb(ELEMENT_HEX[a.el]) : colors[a.res])
 
-    const { pts, P, radius } = tube
+    const { P, pts, radius, atoms, bonds, sideChain, hasAtoms } = model
+    // atom views are fatter than the backbone: fit their extra radius in the frame too
+    const extra = representation === "surface" ? (hasAtoms ? 3.1 : 4.2) : representation === "spacefill" ? (hasAtoms ? 1.7 : 3) : 0
     const base = (Math.min(w, h) / 2) * 0.82
-    const scale = (base / radius) * v.zoom
+    const scale = (base / (radius + extra)) * v.zoom
     const F = radius * 4
     const proj = (p: V3) => {
       const [x, y, z] = apply(v.rot, p)
       const s = F / (F - z)
       return { x: w / 2 + x * scale * s, y: h / 2 - y * scale * s, z, s }
     }
-    const SP = pts.map((q) => proj(q.p))
-    projected.current = P.map((p) => proj(p))
-    const tubeW = Math.max(3, Math.min(w, h) * 0.026) * Math.sqrt(v.zoom)
+    const fogOf = (z: number) => Math.min(0.42, Math.max(0, (radius - z) / (2 * radius)) * 0.5)
+    const ow = Math.max(1.1, Math.min(2.2, Math.min(w, h) * 0.0026)) * Math.sqrt(v.zoom)
+    const caProj = P.map((p) => proj(p))
+    hits.current.ca = caProj
+    hits.current.ids = null
 
-    type Item = { z: number; draw: () => void }
-    const items: Item[] = []
-    for (let k = 0; k < SP.length - 1; k++) {
-      const a = SP[k]
-      const b = SP[k + 1]
-      const q = pts[k]
-      const z = (a.z + b.z) / 2
-      const fog = Math.min(0.45, Math.max(0, (radius - z) / (2 * radius)) * 0.55)
-      const col = mix(colors[q.res], bg, fog)
-      const lw = tubeW * ((q.w + pts[k + 1].w) / 2) * ((a.s + b.s) / 2)
-      items.push({
-        z,
-        draw: () => {
-          ctx.lineCap = "butt"
-          ctx.strokeStyle = css(bg)
-          ctx.lineWidth = lw + Math.max(1.6, lw * 0.32)
-          ctx.beginPath()
-          ctx.moveTo(a.x, a.y)
-          ctx.lineTo(b.x, b.y)
-          ctx.stroke()
-          ctx.lineCap = "round"
-          ctx.strokeStyle = css(col)
-          ctx.lineWidth = lw
-          ctx.stroke()
-        },
-      })
-    }
-    const marks = highlight.filter((m) => m.residue - firstResidue >= 0 && m.residue - firstResidue < n)
     const hov = hovered != null && hovered - firstResidue >= 0 && hovered - firstResidue < n ? hovered - firstResidue : null
-    for (const m of marks) {
-      const p = projected.current[m.residue - firstResidue]
-      const r = tubeW * 1.15 * p.s
-      items.push({
-        z: p.z + 0.01,
-        draw: () => {
-          ctx.fillStyle = css(bg)
-          ctx.beginPath()
-          ctx.arc(p.x, p.y, r + 1.5, 0, Math.PI * 2)
-          ctx.fill()
-          const g = ctx.createRadialGradient(p.x - r * 0.35, p.y - r * 0.35, r * 0.1, p.x, p.y, r)
-          g.addColorStop(0, css(mix(fg, white, 0.5)))
-          g.addColorStop(1, css(fg))
-          ctx.fillStyle = g
-          ctx.beginPath()
-          ctx.arc(p.x, p.y, r, 0, Math.PI * 2)
-          ctx.fill()
-        },
+    const marks = highlight.filter((m) => m.residue - firstResidue >= 0 && m.residue - firstResidue < n)
+    const markSet = new Set(marks.map((m) => m.residue - firstResidue))
+
+    const prims: Prim[] = []
+
+    /* ---------- ribbons and tubes ---------- */
+    const ribbon = (mode: "cartoon" | "tube") => {
+      const sp = pts.map((q) => proj(q.p))
+      const isE = (i: number) => residues[i]?.ss === "E"
+      const kind = (j: number) => {
+        const ss = residues[j]?.ss
+        if (mode === "tube") return ss === "H" || ss === "E" ? 0.55 : 0.32
+        return ss === "H" ? 1.25 : ss === "E" ? 1.0 : 0.3
+      }
+      const flat = (j: number) => (mode === "cartoon" && (residues[j]?.ss === "H" || residues[j]?.ss === "E") ? 1 : 0)
+      const shape = (k: number) => {
+        const { res: i, t } = pts[k]
+        // strand arrowheads: widen at the last strand residue, narrow into the loop
+        if (mode === "cartoon" && isE(i) && !isE(i + 1)) return { hw: 1.75 * (1 - t) + 0.3 * t, f: t < 0.85 ? 1 : 0 }
+        const j = Math.min(n - 1, i + 1)
+        return { hw: kind(i) * (1 - t) + kind(j) * t, f: flat(i) * (1 - t) + flat(j) * t }
+      }
+      let side = 1
+      const edges = pts.map((q, k) => {
+        const a = sp[Math.max(0, k - 1)]
+        const b = sp[Math.min(sp.length - 1, k + 1)]
+        const tl = Math.hypot(b.x - a.x, b.y - a.y) || 1
+        const perp = [-(b.y - a.y) / tl, (b.x - a.x) / tl]
+        const { hw, f } = shape(k)
+        const px = hw * scale * sp[k].s
+        const Bv = apply(v.rot, q.B)
+        const bx = Bv[0]
+        const by = -Bv[1]
+        // a ribbon seen edge-on keeps some thickness, on the side it was already leaning to, so it never collapses to crossed lines
+        const lean = bx * perp[0] + by * perp[1]
+        if (Math.abs(lean) > 0.3) side = lean > 0 ? 1 : -1
+        const ox = (f * (bx + perp[0] * side * 0.24) + (1 - f) * perp[0]) * px
+        const oy = (f * (by + perp[1] * side * 0.24) + (1 - f) * perp[1]) * px
+        const nz = apply(v.rot, q.N)[2]
+        return { x: sp[k].x, y: sp[k].y, ox, oy, f, nz, r: px }
+      })
+      for (let k = 0; k < edges.length - 1; k++) {
+        const a = edges[k]
+        const b = edges[k + 1]
+        const res = pts[k].res
+        const z = (sp[k].z + sp[k + 1].z) / 2
+        const f = (a.f + b.f) / 2
+        // ribbons shade by how squarely they face you; tubes are flat with a light band
+        const nz = (a.nz + b.nz) / 2
+        const facing = f > 0.5 ? (0.62 + 0.38 * Math.abs(nz)) * (nz < 0 ? 0.88 : 1) : 1
+        const col = mix(shade(colors[res], facing), bg, fogOf(z))
+        // the fill reaches a little into the next piece, so no anti-aliasing seam shows between them
+        const c2 = edges[Math.min(edges.length - 1, k + 2)]
+        const e = { x: b.x + (c2.x - b.x) * 0.2, y: b.y + (c2.y - b.y) * 0.2, ox: b.ox + (c2.ox - b.ox) * 0.2, oy: b.oy + (c2.oy - b.oy) * 0.2 }
+        prims.push({
+          z,
+          draw: () => {
+            ctx.beginPath()
+            ctx.moveTo(a.x + a.ox, a.y + a.oy)
+            ctx.lineTo(e.x + e.ox, e.y + e.oy)
+            ctx.lineTo(e.x - e.ox, e.y - e.oy)
+            ctx.lineTo(a.x - a.ox, a.y - a.oy)
+            ctx.closePath()
+            ctx.fillStyle = css(col)
+            ctx.fill()
+            if (f < 0.5) {
+              // a light band on the side facing the light
+              const sa = a.ox * -0.6 + a.oy * -0.8 > 0 ? 1 : -1
+              const sb = b.ox * -0.6 + b.oy * -0.8 > 0 ? 1 : -1
+              if (sa === sb) {
+                ctx.beginPath()
+                ctx.moveTo(a.x + a.ox * 0.15 * sa, a.y + a.oy * 0.15 * sa)
+                ctx.lineTo(e.x + e.ox * 0.15 * sb, e.y + e.oy * 0.15 * sb)
+                ctx.lineTo(e.x + e.ox * 0.6 * sb, e.y + e.oy * 0.6 * sb)
+                ctx.lineTo(a.x + a.ox * 0.6 * sa, a.y + a.oy * 0.6 * sa)
+                ctx.closePath()
+                ctx.fillStyle = css(mix(col, white, 0.28))
+                ctx.fill()
+              }
+            }
+            if (oc) {
+              ctx.strokeStyle = css(oc)
+              ctx.lineWidth = ow
+              ctx.lineCap = "round"
+              ctx.beginPath()
+              // outlines run into the next piece too, so a neighbor drawn later can't leave a gap in them
+              ctx.moveTo(a.x + a.ox, a.y + a.oy)
+              ctx.lineTo(e.x + e.ox, e.y + e.oy)
+              ctx.moveTo(a.x - a.ox, a.y - a.oy)
+              ctx.lineTo(e.x - e.ox, e.y - e.oy)
+              ctx.stroke()
+            }
+          },
+        })
+      }
+      // round caps at both ends of the chain
+      for (const k of [0, edges.length - 1]) {
+        const e = edges[k]
+        if (!e) continue
+        const col = mix(colors[pts[k].res], bg, fogOf(sp[k].z))
+        prims.push({
+          z: sp[k].z - 0.01,
+          draw: () => {
+            ctx.beginPath()
+            ctx.arc(e.x, e.y, Math.max(1, e.r), 0, Math.PI * 2)
+            ctx.fillStyle = css(col)
+            ctx.fill()
+            if (oc) {
+              ctx.strokeStyle = css(oc)
+              ctx.lineWidth = ow
+              ctx.stroke()
+            }
+          },
+        })
+      }
+    }
+
+    /* ---------- trace ---------- */
+    const trace = () => {
+      const lw = Math.max(1.5, 0.35 * scale)
+      for (let i = 0; i < n - 1; i++) {
+        const a = caProj[i]
+        const b = caProj[i + 1]
+        const z = (a.z + b.z) / 2
+        const col = mix(colors[i], bg, fogOf(z))
+        prims.push({
+          z,
+          draw: () => {
+            ctx.beginPath()
+            ctx.moveTo(a.x, a.y)
+            ctx.lineTo(b.x, b.y)
+            if (oc) {
+              ctx.lineCap = "butt"
+              ctx.strokeStyle = css(oc)
+              ctx.lineWidth = lw + ow * 2
+              ctx.stroke()
+            }
+            ctx.lineCap = "round"
+            ctx.strokeStyle = css(col)
+            ctx.lineWidth = lw
+            ctx.stroke()
+          },
+        })
+      }
+    }
+
+    /* ---------- ball-and-stick ---------- */
+    const ballAndStick = (only?: Set<number>) => {
+      const useAtoms = hasAtoms
+      const pos = useAtoms ? atoms.map((a) => proj(a.p)) : caProj
+      const colorOf = (i: number) => (useAtoms ? atomColor(atoms[i]) : colors[i])
+      const include = (i: number) => !only || only.has(i)
+      const pairs: [number, number][] = useAtoms ? bonds : P.slice(1).map((_, i) => [i, i + 1] as [number, number])
+      const ballR = (useAtoms ? 0.42 : 0.9) * scale
+      const stickW = (useAtoms ? 0.26 : 0.45) * scale
+      for (const [i, j] of pairs) {
+        if (!include(i) || !include(j)) continue
+        const a = pos[i]
+        const b = pos[j]
+        const mx = (a.x + b.x) / 2
+        const my = (a.y + b.y) / 2
+        const z = (a.z + b.z) / 2 - 0.05
+        const ca = mix(colorOf(i), bg, fogOf(a.z))
+        const cb = mix(colorOf(j), bg, fogOf(b.z))
+        const lw = stickW * ((a.s + b.s) / 2)
+        prims.push({
+          z,
+          draw: () => {
+            ctx.lineCap = "butt"
+            if (oc) {
+              ctx.strokeStyle = css(oc)
+              ctx.lineWidth = lw + ow * 2
+              ctx.beginPath()
+              ctx.moveTo(a.x, a.y)
+              ctx.lineTo(b.x, b.y)
+              ctx.stroke()
+            }
+            ctx.lineWidth = lw
+            ctx.strokeStyle = css(ca)
+            ctx.beginPath()
+            ctx.moveTo(a.x, a.y)
+            ctx.lineTo(mx, my)
+            ctx.stroke()
+            ctx.strokeStyle = css(cb)
+            ctx.beginPath()
+            ctx.moveTo(mx, my)
+            ctx.lineTo(b.x, b.y)
+            ctx.stroke()
+          },
+        })
+      }
+      pos.forEach((p, i) => {
+        if (!include(i)) return
+        const r = ballR * p.s
+        const col = mix(colorOf(i), bg, fogOf(p.z))
+        prims.push({
+          z: p.z,
+          draw: () => {
+            const g = ctx.createRadialGradient(p.x - r * 0.35, p.y - r * 0.35, r * 0.1, p.x, p.y, r)
+            g.addColorStop(0, css(mix(col, white, 0.45)))
+            g.addColorStop(1, css(col))
+            ctx.beginPath()
+            ctx.arc(p.x, p.y, r, 0, Math.PI * 2)
+            ctx.fillStyle = g
+            ctx.fill()
+            if (oc) {
+              ctx.strokeStyle = css(oc)
+              ctx.lineWidth = ow
+              ctx.stroke()
+            }
+          },
+        })
       })
     }
-    items.sort((a, b) => a.z - b.z).forEach((it) => it.draw())
+
+    /* ---------- spacefill and surface: a small z-buffer ---------- */
+    const rasterize = (mode: "spacefill" | "surface") => {
+      const rs = Math.min(1.5, dpr)
+      const RW = Math.max(1, Math.round(w * rs))
+      const RH = Math.max(1, Math.round(h * rs))
+      const R = raster.current
+      if (R.w !== RW || R.h !== RH || !R.img) {
+        R.w = RW
+        R.h = RH
+        R.z = new Float32Array(RW * RH)
+        R.id = new Int32Array(RW * RH)
+        R.tmp = new Float32Array(RW * RH)
+        R.tmp2 = new Float32Array(RW * RH)
+        R.img = new ImageData(RW, RH)
+        R.off = document.createElement("canvas")
+        R.off.width = RW
+        R.off.height = RH
+      }
+      const zb = R.z
+      const idb = R.id
+      zb.fill(-Infinity)
+      idb.fill(-1)
+      const useAtoms = hasAtoms
+      const probeR = mode === "surface" && useAtoms ? 1.4 : 0
+      const sph = useAtoms
+        ? atoms.map((a) => ({ p: a.p, r: a.r + probeR, res: a.res, el: a.el }))
+        : P.map((p, i) => ({ p, r: mode === "surface" ? 4.2 : 3.0, res: i, el: "C" }))
+      const sx = new Float32Array(sph.length)
+      const sy = new Float32Array(sph.length)
+      const sr = new Float32Array(sph.length)
+      const k = scale * rs
+      sph.forEach((s, i) => {
+        const q = proj(s.p)
+        sx[i] = q.x * rs
+        sy[i] = q.y * rs
+        const r = (sr[i] = s.r * k * q.s)
+        const cz = q.z * k
+        const x0 = Math.max(0, Math.floor(sx[i] - r))
+        const x1 = Math.min(RW - 1, Math.ceil(sx[i] + r))
+        const y0 = Math.max(0, Math.floor(sy[i] - r))
+        const y1 = Math.min(RH - 1, Math.ceil(sy[i] + r))
+        const r2 = r * r
+        for (let y = y0; y <= y1; y++) {
+          const dy = y + 0.5 - sy[i]
+          const row = y * RW
+          for (let x = x0; x <= x1; x++) {
+            const dx = x + 0.5 - sx[i]
+            const d2 = dx * dx + dy * dy
+            if (d2 > r2) continue
+            const z = cz + Math.sqrt(r2 - d2)
+            if (z > zb[row + x]) {
+              zb[row + x] = z
+              idb[row + x] = i
+            }
+          }
+        }
+      })
+
+      // surface: smooth the depth so the spheres melt into one skin
+      let zs = zb
+      if (mode === "surface") {
+        let zmin = Infinity
+        for (let i = 0; i < zb.length; i++) if (zb[i] > -Infinity && zb[i] < zmin) zmin = zb[i]
+        const floor = zmin - 3 * k
+        const a = R.tmp
+        const b = R.tmp2
+        for (let i = 0; i < zb.length; i++) a[i] = zb[i] > -Infinity ? zb[i] : floor
+        const rad = Math.max(1, Math.min(8, Math.round(0.75 * k)))
+        const box = (from: Float32Array, to: Float32Array, horizontal: boolean) => {
+          const len = horizontal ? RW : RH
+          const lines = horizontal ? RH : RW
+          const step = horizontal ? 1 : RW
+          for (let l = 0; l < lines; l++) {
+            const o0 = horizontal ? l * RW : l
+            let acc = 0
+            for (let j = -rad; j <= rad; j++) acc += from[o0 + Math.min(len - 1, Math.max(0, j)) * step]
+            for (let j = 0; j < len; j++) {
+              to[o0 + j * step] = acc / (rad * 2 + 1)
+              acc += from[o0 + Math.min(len - 1, j + rad + 1) * step] - from[o0 + Math.max(0, j - rad) * step]
+            }
+          }
+        }
+        box(a, b, true)
+        box(b, a, false)
+        box(a, b, true)
+        box(b, a, false)
+        zs = a
+      }
+
+      const img = R.img!
+      const data = img.data
+      const thr = (mode === "surface" ? 2.2 : 0.9) * k
+      const o = Math.max(1, Math.round(ow * rs * 0.75))
+      let zmax = -Infinity
+      let zlo = Infinity
+      for (let i = 0; i < zb.length; i++)
+        if (zb[i] > -Infinity) {
+          if (zb[i] > zmax) zmax = zb[i]
+          if (zb[i] < zlo) zlo = zb[i]
+        }
+      const zr = Math.max(1, zmax - zlo)
+      const sphereColors = sph.map((s) => {
+        let c = mode === "spacefill" && ELEMENT_HEX[s.el] ? toRgb(ELEMENT_HEX[s.el]) : colors[s.res]
+        if (markSet.has(s.res)) c = mix(fg, bg, 0.15)
+        if (s.res === hov) c = mix(c, fg, 0.45)
+        return c
+      })
+      for (let y = 0; y < RH; y++) {
+        for (let x = 0; x < RW; x++) {
+          const p = y * RW + x
+          const id = idb[p]
+          const di = p * 4
+          if (id < 0) {
+            data[di + 3] = 0
+            continue
+          }
+          const z = zb[p]
+          let edge = false
+          if (oc) {
+            if (x - o < 0 || x + o >= RW || y - o < 0 || y + o >= RH) edge = true
+            else
+              for (const q of [p - o, p + o, p - o * RW, p + o * RW])
+                if (idb[q] < 0 || z - zb[q] > thr) {
+                  edge = true
+                  break
+                }
+          }
+          let c: RGB
+          if (edge) c = oc!
+          else {
+            let nx: number, ny: number, nz: number
+            if (mode === "surface") {
+              const gx = (zs[x + 1 < RW ? p + 1 : p] - zs[x > 0 ? p - 1 : p]) / 2
+              const gy = (zs[y + 1 < RH ? p + RW : p] - zs[y > 0 ? p - RW : p]) / 2
+              const l = Math.hypot(gx, gy, 1)
+              nx = -gx / l
+              ny = gy / l
+              nz = 1 / l
+            } else {
+              const r = sr[id]
+              nx = (x + 0.5 - sx[id]) / r
+              ny = -(y + 0.5 - sy[id]) / r
+              nz = Math.sqrt(Math.max(0, 1 - nx * nx - ny * ny))
+            }
+            const diff = Math.max(0, nx * LIGHT[0] + ny * LIGHT[1] + nz * LIGHT[2])
+            const spec = Math.pow(Math.max(0, nx * HALF[0] + ny * HALF[1] + nz * HALF[2]), 28) * 0.22
+            const lit = shade(sphereColors[id], 0.52 + 0.6 * diff)
+            c = mix(mix(lit, white, spec), bg, ((zmax - z) / zr) * 0.38)
+          }
+          data[di] = c[0]
+          data[di + 1] = c[1]
+          data[di + 2] = c[2]
+          data[di + 3] = 255
+        }
+      }
+      const off = R.off!
+      off.getContext("2d")!.putImageData(img, 0, 0)
+      ctx.imageSmoothingEnabled = true
+      ctx.drawImage(off, 0, 0, w, h)
+      hits.current.ids = idb
+      hits.current.rw = RW
+      hits.current.rs = rs
+      hits.current.atomRes = sph.map((s) => s.res)
+    }
+
+    /* ---------- build and draw ---------- */
+    if (representation === "cartoon" || representation === "tube") ribbon(representation)
+    else if (representation === "trace") trace()
+    else if (representation === "ball-and-stick") ballAndStick()
+
+    const vector = representation === "cartoon" || representation === "tube" || representation === "trace"
+    if (vector && marks.length) {
+      // highlighted residues: side chains as ball-and-stick when atoms are known, otherwise a sphere on the C-alpha
+      if (hasAtoms) ballAndStick(new Set(marks.flatMap((m) => sideChain[m.residue - firstResidue])))
+      else
+        for (const m of marks) {
+          const p = caProj[m.residue - firstResidue]
+          const r = Math.max(4, 1.2 * scale) * p.s
+          prims.push({
+            z: p.z + 0.01,
+            draw: () => {
+              const g = ctx.createRadialGradient(p.x - r * 0.35, p.y - r * 0.35, r * 0.1, p.x, p.y, r)
+              g.addColorStop(0, css(mix(fg, white, 0.5)))
+              g.addColorStop(1, css(fg))
+              ctx.beginPath()
+              ctx.arc(p.x, p.y, r, 0, Math.PI * 2)
+              ctx.fillStyle = g
+              ctx.fill()
+              if (oc) {
+                ctx.strokeStyle = css(oc)
+                ctx.lineWidth = ow
+                ctx.stroke()
+              }
+            },
+          })
+        }
+    }
+    prims.sort((a, b) => a.z - b.z).forEach((p) => p.draw())
+    if (representation === "spacefill" || representation === "surface") rasterize(representation)
 
     // labels on top
     const family = cs.fontFamily
-    const pill = (text: string, x: number, y: number, sub?: string) => {
+    const pill = (text: string, x: number, y: number, subText?: string) => {
       ctx.font = `600 12px ${family}`
       const tw = ctx.measureText(text).width
       ctx.font = `400 11px ${family}`
-      const sw = sub ? ctx.measureText(sub).width : 0
+      const sw = subText ? ctx.measureText(subText).width : 0
       const pw = Math.max(tw, sw) + 16
-      const ph = sub ? 36 : 22
-      let px = x + 10
-      let py = y - ph - 6
-      if (px + pw > w - 4) px = x - pw - 10
-      if (py < 4) py = y + 10
+      const ph = subText ? 36 : 22
+      let px = x + 12
+      let py = y - ph - 8
+      if (px + pw > w - 4) px = x - pw - 12
+      if (py < 4) py = y + 12
       ctx.fillStyle = css(fg)
       ctx.beginPath()
       ctx.roundRect(px, py, pw, ph, 6)
@@ -396,27 +889,29 @@ function ProteinStructure({
       ctx.fillStyle = css(bg)
       ctx.textBaseline = "middle"
       ctx.font = `600 12px ${family}`
-      ctx.fillText(text, px + 8, py + (sub ? 12 : ph / 2))
-      if (sub) {
+      ctx.fillText(text, px + 8, py + (subText ? 12 : ph / 2))
+      if (subText) {
         ctx.font = `400 11px ${family}`
         ctx.fillStyle = css(mix(bg, fg, 0.3))
-        ctx.fillText(sub, px + 8, py + 26)
+        ctx.fillText(subText, px + 8, py + 26)
       }
     }
     for (const m of marks) {
       if (!m.label || m.residue - firstResidue === hov) continue
-      const p = projected.current[m.residue - firstResidue]
+      const p = caProj[m.residue - firstResidue]
       pill(m.label, p.x, p.y)
     }
     if (hov !== null) {
-      const p = projected.current[hov]
-      const r = residues[hov]
-      ctx.strokeStyle = css(fg)
-      ctx.lineWidth = 2
-      ctx.beginPath()
-      ctx.arc(p.x, p.y, tubeW * 1.2 * p.s + 3, 0, Math.PI * 2)
-      ctx.stroke()
-      pill(describe(r, hov + firstResidue).title, p.x, p.y, describe(r, hov + firstResidue).meta)
+      const p = caProj[hov]
+      const d = describe(residues[hov], hov + firstResidue)
+      if (vector || representation === "ball-and-stick") {
+        ctx.strokeStyle = css(fg)
+        ctx.lineWidth = 2
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, Math.max(6, 1.4 * scale * p.s), 0, Math.PI * 2)
+        ctx.stroke()
+      }
+      pill(d.title, p.x, p.y, d.meta)
     }
 
     if (more) request()
@@ -424,7 +919,7 @@ function ProteinStructure({
 
   React.useEffect(() => {
     request()
-  }, [request, colorBy, highlight, hovered, firstResidue, spinning, tube])
+  }, [request, representation, colorBy, outline, highlight, hovered, firstResidue, spinning, model])
 
   React.useEffect(() => {
     const el = frameRef.current
@@ -460,9 +955,14 @@ function ProteinStructure({
   }
 
   const hitTest = (x: number, y: number) => {
+    const H = hits.current
+    if (H.ids) {
+      const id = H.ids[Math.floor(y * H.rs) * H.rw + Math.floor(x * H.rs)]
+      return id !== undefined && id >= 0 ? H.atomRes[id] + firstResidue : null
+    }
     let best: number | null = null
     let bestScore = Infinity
-    projected.current.forEach((p, i) => {
+    H.ca.forEach((p, i) => {
       const d = Math.hypot(p.x - x, p.y - y)
       if (d > 14) return
       const score = d - p.z * 0.05
@@ -477,7 +977,6 @@ function ProteinStructure({
   const onPointerDown = (e: React.PointerEvent) => {
     const v = view.current
     v.dragging = true
-    v.moved = 0
     v.vx = v.vy = 0
     v.last = [e.clientX, e.clientY]
     ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
@@ -489,7 +988,6 @@ function ProteinStructure({
       const dx = (e.clientX - v.last[0]) * 0.01
       const dy = (e.clientY - v.last[1]) * 0.01
       v.last = [e.clientX, e.clientY]
-      v.moved += Math.abs(dx) + Math.abs(dy)
       v.vx = reduced.current ? 0 : dx
       v.vy = reduced.current ? 0 : dy
       turn(dx, dy)
@@ -500,8 +998,7 @@ function ProteinStructure({
     if (hit !== hovered) setHover(hit)
   }
   const onPointerUp = (e: React.PointerEvent) => {
-    const v = view.current
-    v.dragging = false
+    view.current.dragging = false
     ;(e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId)
     request()
   }
@@ -529,8 +1026,9 @@ function ProteinStructure({
   const hovRes = hovered != null ? residues[hovered - firstResidue] : undefined
   const announce = hovRes ? `${describe(hovRes, hovered!).title}, ${describe(hovRes, hovered!).meta}` : ""
 
-  const legendItems =
-    colorBy === "plddt"
+  const atomView = representation === "ball-and-stick" || representation === "spacefill"
+  const legendItems = [
+    ...(colorBy === "plddt"
       ? PLDDT_BANDS.map((b) => ({ label: `${b.label} ${b.min === 90 ? "> 90" : b.min === 0 ? "< 50" : `${b.min}–${b.min + 20}`}`, style: { background: b.hex } }))
       : colorBy === "structure"
         ? [
@@ -543,19 +1041,24 @@ function ProteinStructure({
               { label: "N terminus", style: { background: "hsl(250 72% 52%)" } },
               { label: "C terminus", style: { background: "hsl(0 72% 52%)" } },
             ]
-          : []
+          : []),
+    ...(atomView && model.hasAtoms
+      ? [
+          { label: "Nitrogen", style: { background: ELEMENT_HEX.N } },
+          { label: "Oxygen", style: { background: ELEMENT_HEX.O } },
+          { label: "Sulfur", style: { background: ELEMENT_HEX.S } },
+        ]
+      : []),
+  ]
 
   return (
-    <div data-slot="protein-structure" className={cn("flex min-w-0 flex-col gap-3", className)} {...props}>
-      <div
-        ref={frameRef}
-        className="relative min-w-0 overflow-hidden rounded-3xl bg-surface-container-low text-foreground dark:bg-surface-container"
-      >
+    <div data-slot="protein-structure" data-representation={representation} className={cn("flex min-w-0 flex-col gap-3", className)} {...props}>
+      <div ref={frameRef} className="relative min-w-0 overflow-hidden rounded-3xl bg-surface-container-low text-foreground dark:bg-surface-container">
         <canvas
           ref={canvasRef}
           role="application"
           aria-roledescription="3D structure viewer"
-          aria-label={`${label}. ${residues.length} residues. Drag or use the arrow keys to turn, plus and minus to zoom, 0 to reset.`}
+          aria-label={`${label}, ${representation} view. ${residues.length} residues. Drag or use the arrow keys to turn, plus and minus to zoom, 0 to reset.`}
           tabIndex={0}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
@@ -570,13 +1073,7 @@ function ProteinStructure({
         </span>
         {controls && (
           <div className="absolute right-3 bottom-3 flex items-center gap-1 rounded-full bg-card p-1 shadow-e2 dark:bg-surface-container-highest">
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              aria-label={spinning ? "Stop turning" : "Turn slowly"}
-              aria-pressed={spinning}
-              onClick={() => setSpinning((s) => !s)}
-            >
+            <Button size="icon-sm" variant="ghost" aria-label={spinning ? "Stop turning" : "Turn slowly"} aria-pressed={spinning} onClick={() => setSpinning((s) => !s)}>
               <Icon name={spinning ? "pause" : "3d_rotation"} />
             </Button>
             <Button size="icon-sm" variant="ghost" aria-label="Zoom out" onClick={() => zoomBy(1 / 1.2)}>
@@ -617,6 +1114,8 @@ export {
   PLDDT_BANDS,
   type ProteinStructureProps,
   type ProteinResidue,
+  type ProteinAtom,
   type ProteinColorBy,
+  type ProteinRepresentation,
   type ProteinHighlight,
 }

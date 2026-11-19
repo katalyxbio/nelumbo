@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { ProteinStructure, type ProteinColorBy } from "@/registry/nelumbo/ui/protein-structure"
+import { ProteinStructure, type ProteinColorBy, type ProteinRepresentation } from "@/registry/nelumbo/ui/protein-structure"
+import { FilterChip } from "@/registry/nelumbo/ui/chip"
 import { SegmentedButton, SegmentedButtonItem } from "@/registry/nelumbo/ui/segmented-button"
 import { cn } from "@/lib/utils"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
@@ -61,16 +62,51 @@ function Linked() {
   )
 }
 
-function ColorModes() {
+const REPRESENTATIONS: { value: ProteinRepresentation; label: string }[] = [
+  { value: "cartoon", label: "Cartoon" },
+  { value: "tube", label: "Tube" },
+  { value: "trace", label: "Trace" },
+  { value: "ball-and-stick", label: "Ball and stick" },
+  { value: "spacefill", label: "Spacefill" },
+  { value: "surface", label: "Surface" },
+]
+
+function Explorer() {
+  const [rep, setRep] = React.useState<ProteinRepresentation>("cartoon")
   const [mode, setMode] = React.useState<ProteinColorBy>("structure")
+  const [outline, setOutline] = React.useState("black")
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <SegmentedButton type="single" size="sm" value={mode} onValueChange={(v) => v && setMode(v as ProteinColorBy)} aria-label="Color by">
-        <SegmentedButtonItem value="structure">Structure</SegmentedButtonItem>
-        <SegmentedButtonItem value="rainbow">N to C</SegmentedButtonItem>
-        <SegmentedButtonItem value="plain">Plain</SegmentedButtonItem>
-      </SegmentedButton>
-      <ProteinStructure residues={UBIQUITIN} colorBy={mode} label="Ubiquitin, PDB 1UBQ" className="max-w-xl" />
+      <div role="group" aria-label="Representation" className="flex flex-wrap gap-2">
+        {REPRESENTATIONS.map((r) => (
+          <FilterChip key={r.value} selected={rep === r.value} onSelectedChange={() => setRep(r.value)}>
+            {r.label}
+          </FilterChip>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <SegmentedButton type="single" size="sm" value={mode} onValueChange={(v) => v && setMode(v as ProteinColorBy)} aria-label="Color by">
+          <SegmentedButtonItem value="structure">Structure</SegmentedButtonItem>
+          <SegmentedButtonItem value="rainbow">N to C</SegmentedButtonItem>
+          <SegmentedButtonItem value="plain">Plain</SegmentedButtonItem>
+        </SegmentedButton>
+        <SegmentedButton type="single" size="sm" value={outline} onValueChange={(v) => v && setOutline(v)} aria-label="Outline">
+          <SegmentedButtonItem value="black">Black outline</SegmentedButtonItem>
+          <SegmentedButtonItem value="background">Gap</SegmentedButtonItem>
+          <SegmentedButtonItem value="none">None</SegmentedButtonItem>
+        </SegmentedButton>
+      </div>
+      <ProteinStructure
+        residues={UBIQUITIN}
+        representation={rep}
+        colorBy={mode}
+        outline={outline}
+        label="Ubiquitin, PDB 1UBQ"
+        highlight={[
+          { residue: 48, label: "K48" },
+          { residue: 63, label: "K63" },
+        ]}
+      />
     </div>
   )
 }
@@ -79,8 +115,8 @@ export default function ProteinStructurePage() {
   return (
     <>
       <PageHeader eyebrow="Component 86" title="Protein Structure">
-        A 3D view of a protein backbone: a shaded tube through the C-alpha atoms that you can turn, zoom and point at.
-        It reads a PDB file or plain coordinates and needs no 3D library, so it loads as fast as a chart.
+        A 3D protein viewer you can turn, zoom and point at: cartoon, tube, trace, ball and stick, spacefill or a
+        molecular surface. It reads a PDB file or plain coordinates and needs no 3D library, so it loads as fast as a chart.
       </PageHeader>
 
       <Section title="Install">
@@ -89,7 +125,7 @@ export default function ProteinStructurePage() {
 
       <Section
         title="Ubiquitin"
-        description="Colored by secondary structure, with the tube thicker through helices and strands. K48 and K63, the lysines that chain ubiquitins together for degradation and for signalling, are marked. Drag to turn it."
+        description="The cartoon view: helices as ribbons, strands as arrows, loops as tubes, with a black outline. K48 and K63, the lysines that chain ubiquitins together for degradation and for signalling, show their side chains. Drag to turn it."
       >
         <Preview className="block">
           <ProteinStructure
@@ -113,19 +149,23 @@ export default function ProteinStructurePage() {
         </Preview>
       </Section>
 
+      <Section
+        title="Representations and outline"
+        description="Cartoon, tube and trace follow the backbone. Ball and stick, spacefill and surface draw every atom when the data has them, with nitrogen, oxygen and sulfur in their usual colors. The outline is black by default; a gap in the background color, none, or any CSS color also work."
+      >
+        <Preview className="block">
+          <Explorer />
+        </Preview>
+      </Section>
+
       <Section title="Linked to the sequence" description="hovered and onHoveredChange let a sequence view and the structure follow each other.">
         <Preview className="block">
           <Linked />
         </Preview>
       </Section>
 
-      <Section title="Color modes" description="Structure for folds, N to C for following the chain, plain when another layer carries the color.">
-        <Preview className="block">
-          <ColorModes />
-        </Preview>
-      </Section>
 
-      <Section title="From a PDB file" description="parsePdb reads the first chain's C-alpha atoms, HELIX and SHEET records and, for AlphaFold models, the pLDDT stored in the B-factor column.">
+      <Section title="From a PDB file" description="parsePdb reads the first chain's heavy atoms, HELIX and SHEET records and, for AlphaFold models, the pLDDT stored in the B-factor column.">
         <Code>{`import { ProteinStructure, parsePdb } from "@/components/ui/protein-structure"
 
 const text = await fetch("https://files.rcsb.org/download/1UBQ.pdb").then((r) => r.text())
@@ -138,9 +178,11 @@ const text = await fetch("https://files.rcsb.org/download/1UBQ.pdb").then((r) =>
       <Section title="Props">
         <PropsTable
           rows={[
-            ["residues", "ProteinResidue[]", "—", "{ x, y, z } in Å, with optional aa, ss (H, E, C) and plddt."],
+            ["residues", "ProteinResidue[]", "—", "C-alpha { x, y, z } in Å, with optional aa, ss (H, E, C), plddt and atoms."],
+            ["representation", '"cartoon" | "tube" | "trace" | "ball-and-stick" | "spacefill" | "surface"', '"cartoon"', "How the protein is drawn."],
+            ["outline", '"black" | "background" | "none" | string', '"black"', "Outline color; background draws a gap."],
             ["colorBy", '"structure" | "plddt" | "rainbow" | "plain"', '"structure"', "What the color shows."],
-            ["highlight", "{ residue, label? }[]", "[]", "Residues marked with a sphere and a label."],
+            ["highlight", "{ residue, label? }[]", "[]", "Residues marked with a label; with atoms, their side chains show as ball and stick."],
             ["hovered", "number | null", "—", "The residue under the pointer, when controlled."],
             ["onHoveredChange", "(residue) => void", "—", "Called as the pointer moves over residues."],
             ["firstResidue", "number", "1", "Number of the first residue, for labels."],
