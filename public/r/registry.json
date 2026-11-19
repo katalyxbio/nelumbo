@@ -1803,6 +1803,26 @@
       ]
     },
     {
+      "name": "code-block",
+      "type": "registry:ui",
+      "title": "Code Block",
+      "description": "Code with light built-in highlighting (no dependencies), copy, header, line numbers, highlighted lines, diffs, collapsing and tabs; tonal or inverse.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@nelumbo/button",
+        "@nelumbo/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/code-block.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "kbd",
       "type": "registry:ui",
       "title": "Kbd",

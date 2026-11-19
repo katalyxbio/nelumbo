@@ -4,6 +4,7 @@ import * as React from "react"
 import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Button } from "@/registry/nelumbo/ui/button"
 import { cn } from "@/lib/utils"
+import { CodeBlock } from "@/registry/nelumbo/ui/code-block"
 
 export function PageHeader({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
   return (
@@ -38,33 +39,10 @@ export function Preview({ children, className, label }: { children: React.ReactN
   )
 }
 
-export function Code({ children, className }: { children: string; className?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  return (
-    <div className={cn("relative min-w-0 rounded-2xl bg-inverse-surface text-inverse-foreground dark:bg-surface-container-high dark:text-foreground", className)}>
-      {/* focusable so keyboard users can scroll long lines */}
-      <pre tabIndex={0} className="overflow-x-auto rounded-2xl p-4 pr-14 font-mono text-[0.8125rem] leading-relaxed outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-        <code>{children}</code>
-      </pre>
-      <Button
-        size="icon-xs"
-        variant="ghost"
-        aria-label="Copy code"
-        className="absolute top-3 right-3 text-inverse-foreground dark:text-foreground"
-        onClick={() => {
-          navigator.clipboard?.writeText(children).then(
-            () => {
-              setCopied(true)
-              setTimeout(() => setCopied(false), 1400)
-            },
-            () => {}
-          )
-        }}
-      >
-        {copied ? <Icon name="check" /> : <Icon name="content_copy" />}
-      </Button>
-    </div>
-  )
+/** Docs snippets: the inverse CodeBlock. Install commands read as bash, everything else as TSX. */
+export function Code({ children, className, language }: { children: string; className?: string; language?: string }) {
+  const lang = language ?? (/^(npx|npm|pnpm|yarn|bun)\s/.test(children) ? "bash" : "tsx")
+  return <CodeBlock variant="inverse" language={lang} code={children} className={className} />
 }
 
 export function PropsTable({ rows, note }: { rows: [string, string, string, string][]; note?: string }) {
