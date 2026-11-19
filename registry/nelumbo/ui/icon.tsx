@@ -21,6 +21,17 @@ import { cn } from "@/lib/utils"
 
 export type IconName = MaterialSymbol
 
+/**
+ * Browsers disagree on the icon font's ascent and descent (rounding, hhea vs
+ * OS/2 metrics), which leaves the glyph high or low inside its 1em box. This
+ * inline script measures where the browser puts the baseline once the font has
+ * loaded and publishes the correction as --icon-shift (in em). Browsers that
+ * already center the glyph get 0. Render it once in <head>:
+ *
+ *   <script dangerouslySetInnerHTML={{ __html: iconBaselineScript }} />
+ */
+export const iconBaselineScript = `(function(){try{var r=document.documentElement,f=getComputedStyle(r).getPropertyValue("--icon-font").trim()||"'Material Symbols Rounded'";function m(){var p=document.createElement("div");p.setAttribute("aria-hidden","true");p.style.cssText="position:absolute;visibility:hidden;left:-9999px;top:0;white-space:nowrap;font:400 100px/1 "+f+";font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24";p.innerHTML='add<i style="display:inline-block;width:0;height:0"></i>';document.body.appendChild(p);var b=p.querySelector("i").getBoundingClientRect().top-p.getBoundingClientRect().top;p.remove();var s=Math.max(-.15,Math.min(.15,(100-b)/100));if(isFinite(s)&&Math.abs(s)>.004)r.style.setProperty("--icon-shift",s.toFixed(3))}function go(){document.fonts&&document.fonts.load?document.fonts.load("100px "+f,"add").then(m,m):m()}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",go):go()}catch(e){}})()`
+
 type IconProps = Omit<React.ComponentProps<"span">, "children"> & {
   name: IconName
   /** Filled glyph. Animates when toggled. */
@@ -58,7 +69,7 @@ function Icon({ name, fill, weight, grade, size, label, className, style, ...pro
         // glyph is centered whatever unit --icon-size uses. Otherwise it drops and gets cut off.
         // Written as arbitrary properties so tailwind-merge can't drop them: it
         // treats a font-size class as overriding any earlier leading-* class.
-        "[font-size:var(--icon-size,1.25em)] size-[1em] [line-height:1]",
+        "[font-size:var(--icon-size,1.25em)] size-[1em] [line-height:1] [translate:0_calc(var(--icon-shift,0)*1em)]",
         // Clip only sideways (hides the ligature text before the font loads);
         // never clip vertically, so nothing can crop the glyph.
         "overflow-x-clip overflow-y-visible",

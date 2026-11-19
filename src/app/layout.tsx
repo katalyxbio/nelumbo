@@ -3,7 +3,7 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { StudioProvider } from "@/components/docs/studio"
 import { DocsShell } from "@/components/docs/shell"
-import { materialSymbolsUrl } from "@/registry/nelumbo/ui/icon"
+import { materialSymbolsUrl, iconBaselineScript } from "@/registry/nelumbo/ui/icon"
 import { USED_ICONS } from "@/lib/nelumbo/icons.generated"
 import "./globals.css"
 
@@ -23,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="stylesheet" href={materialSymbolsUrl(USED_ICONS)} />
+        <script dangerouslySetInnerHTML={{ __html: iconBaselineScript }} />
       </head>
       <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans`}>
         <StudioProvider>
