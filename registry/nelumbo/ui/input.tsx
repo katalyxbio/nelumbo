@@ -10,7 +10,7 @@ import { FieldShell as Field, type FieldShellOptions as FieldProps } from "@/reg
  *   <Input label="Email" type="email" icon="mail" description="We send the receipt here." />
  *   <Input variant="outlined" size="sm" label="Phone" error="Enter the full number." />
  *
- * - `filled` (default): tonal container with an underline that thickens on focus.
+ * - `filled` (default): tonal container; focus and error draw an underline. Pass `indicator` for a thin line at rest.
  * - `outlined`: the label sits in a gap cut into the top border, so it works on
  *   any background (the gap is a real hole in the border, not a painted patch).
  * - `size`: default 56px, sm 48px for dense forms, xs 36px for toolbars and filters.

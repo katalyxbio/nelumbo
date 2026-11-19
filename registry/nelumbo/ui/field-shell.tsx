@@ -20,7 +20,7 @@ import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 export type FieldShellOptions = {
   label?: string
   variant?: "filled" | "outlined"
-  /** Filled only: the thin line under the container (default true). Off hides it at rest; focus and error still show it. */
+  /** Filled only: the thin line under the container (default false). On adds it at rest; focus and error still show it. */
   indicator?: boolean
   /** default 56px, sm 48px, xs 36px (compact: toolbars and filters; the label becomes the placeholder). */
   size?: "default" | "sm" | "xs"
@@ -79,7 +79,7 @@ const slide = "transition-[translate] duration-200 ease-(--ease-standard) motion
 function FieldShell({
   label,
   variant = "filled",
-  indicator = true,
+  indicator = false,
   size = "default",
   icon,
   trailing,

@@ -27,7 +27,7 @@ export default function InputPage() {
 
       <Section
         title="Variants"
-        description="Filled is the default: a soft container with an underline that thickens on focus. Outlined puts the label in a gap in the top border. Click into the fields."
+        description="Filled is the default: a soft container that draws an underline on focus. Outlined puts the label in a gap in the top border. Click into the fields."
       >
         <div className="grid gap-4 md:grid-cols-2">
           {VARIANTS.map((v) => (
@@ -128,10 +128,10 @@ export default function InputPage() {
         </div>
       </Section>
 
-      <Section title="Without the line" description="Set indicator={false} to drop the thin line under a filled field. The line still appears on focus and error, so the state stays visible.">
+      <Section title="With the line" description="Filled fields have no line at rest; focus and error draw one. Set indicator to keep the thin line under the container at all times.">
         <Preview className="max-w-md flex-col items-stretch gap-4">
-          <Input indicator={false} label="Full name" icon="person" defaultValue="Maya Lindqvist" autoComplete="off" />
-          <Input indicator={false} label="Email" type="email" icon="mail" autoComplete="off" />
+          <Input indicator label="Full name" icon="person" defaultValue="Maya Lindqvist" autoComplete="off" />
+          <Input indicator label="Email" type="email" icon="mail" autoComplete="off" />
         </Preview>
       </Section>
 
@@ -150,7 +150,7 @@ export default function InputPage() {
           rows={[
             ["label", "string", "", "Floating label. Leave out for search bars (then set aria-label)"],
             ["variant", '"filled" | "outlined"', '"filled"', ""],
-            ["indicator", "boolean", "true", "Filled only: the thin line under the container. Off hides it at rest; focus and error still show it."],
+            ["indicator", "boolean", "false", "Filled only: show the thin line under the container at rest. It always appears on focus and error."],
             ["size", '"default" | "sm" | "xs"', '"default"', "56px, 48px, or 36px compact with the label as placeholder"],
             ["icon", "IconName", "", "Leading Material Symbol"],
             ["trailing", "ReactNode", "", "Trailing slot, e.g. an Icon Button with size sm"],
