@@ -53,7 +53,7 @@ function Checkbox({ className, color = "default", ...props }: CheckboxProps) {
       )}
       {...props}
     >
-      <CheckboxPrimitive.Indicator forceMount data-slot="checkbox-indicator" className="pointer-events-none grid size-3.5 place-items-center">
+      <CheckboxPrimitive.Indicator forceMount data-slot="checkbox-indicator" className="pointer-events-none grid size-3.5 -translate-x-px -translate-y-[1.5px] place-items-center">
         {/* Material Symbols glyphs; the check wipes in from the left, the dash from the center */}
         <Icon
           name="check"
