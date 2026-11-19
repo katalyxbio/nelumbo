@@ -185,6 +185,8 @@ export async function createMolstarEngine(canvas: HTMLCanvasElement, container: 
         backgroundColor: rgb(s.background),
         highlightColor: rgb(s.highlightColor),
       },
+      // hover edges are drawn by a separate marking pass with its own (pink) default
+      marking: { ...plugin.canvas3d.props.marking, highlightEdgeColor: rgb(s.highlightColor), selectEdgeColor: rgb(s.highlightColor) },
       postprocessing: {
         ...post,
         occlusion: { name: "on", params: PostprocessingParams.occlusion.map("on").defaultValue as never },
