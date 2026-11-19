@@ -81,6 +81,7 @@ type SelectTriggerProps = Omit<React.ComponentProps<typeof SelectPrimitive.Trigg
 function SelectTrigger({
   label,
   variant,
+  indicator,
   size,
   icon,
   description,
@@ -95,7 +96,7 @@ function SelectTrigger({
   const invalid = Boolean(error) || ariaInvalid === true || ariaInvalid === "true"
   return (
     <Field
-      {...{ label, variant, size, icon, description, error, className, id, disabled, ariaInvalid }}
+      {...{ label, variant, indicator, size, icon, description, error, className, id, disabled, ariaInvalid }}
       trailing={fieldChevron}
     >
       {/* a button has no placeholder attribute; Radix marks it data-placeholder instead */}

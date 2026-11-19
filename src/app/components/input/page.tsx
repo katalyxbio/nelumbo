@@ -128,6 +128,13 @@ export default function InputPage() {
         </div>
       </Section>
 
+      <Section title="Without the line" description="Set indicator={false} to drop the thin line under a filled field. The line still appears on focus and error, so the state stays visible.">
+        <Preview className="max-w-md flex-col items-stretch gap-4">
+          <Input indicator={false} label="Full name" icon="person" defaultValue="Maya Lindqvist" autoComplete="off" />
+          <Input indicator={false} label="Email" type="email" icon="mail" autoComplete="off" />
+        </Preview>
+      </Section>
+
       <Section title="Usage">
         <Code>{`import { Input } from "@/components/ui/input"
 
@@ -143,6 +150,7 @@ export default function InputPage() {
           rows={[
             ["label", "string", "", "Floating label. Leave out for search bars (then set aria-label)"],
             ["variant", '"filled" | "outlined"', '"filled"', ""],
+            ["indicator", "boolean", "true", "Filled only: the thin line under the container. Off hides it at rest; focus and error still show it."],
             ["size", '"default" | "sm" | "xs"', '"default"', "56px, 48px, or 36px compact with the label as placeholder"],
             ["icon", "IconName", "", "Leading Material Symbol"],
             ["trailing", "ReactNode", "", "Trailing slot, e.g. an Icon Button with size sm"],

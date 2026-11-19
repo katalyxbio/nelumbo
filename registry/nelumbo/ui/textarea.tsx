@@ -27,6 +27,7 @@ type TextareaProps = React.ComponentProps<"textarea"> &
 function Textarea({
   label,
   variant,
+  indicator,
   size,
   description,
   error,
@@ -50,7 +51,7 @@ function Textarea({
     <Field
       multiline
       meta={maxLength !== undefined && `${count} / ${maxLength}`}
-      {...{ label, variant, size, description, error, className, id, placeholder, disabled, ariaInvalid }}
+      {...{ label, variant, indicator, size, description, error, className, id, placeholder, disabled, ariaInvalid }}
     >
       {({ className: controlClass, ...control }) => (
         <textarea

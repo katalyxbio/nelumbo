@@ -20,6 +20,8 @@ import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
 export type FieldShellOptions = {
   label?: string
   variant?: "filled" | "outlined"
+  /** Filled only: the thin line under the container (default true). Off hides it at rest; focus and error still show it. */
+  indicator?: boolean
   /** default 56px, sm 48px, xs 36px (compact: toolbars and filters; the label becomes the placeholder). */
   size?: "default" | "sm" | "xs"
   /** Leading Material Symbol. */
@@ -77,6 +79,7 @@ const slide = "transition-[translate] duration-200 ease-(--ease-standard) motion
 function FieldShell({
   label,
   variant = "filled",
+  indicator = true,
   size = "default",
   icon,
   trailing,
@@ -202,8 +205,9 @@ function FieldShell({
           <span
             aria-hidden
             className={cn(
-              "pointer-events-none absolute inset-x-0 bottom-0 h-px bg-input transition-[height,background-color] duration-200",
-              "group-hover/field:bg-foreground group-focus-within/field:h-0.5 group-focus-within/field:bg-primary",
+              "pointer-events-none absolute inset-x-0 bottom-0 h-px transition-[height,background-color] duration-200",
+              indicator ? "bg-input group-hover/field:bg-foreground" : "bg-transparent",
+              "group-focus-within/field:h-0.5 group-focus-within/field:bg-primary",
               "group-data-invalid/field:h-0.5 group-data-invalid/field:bg-destructive"
             )}
           />

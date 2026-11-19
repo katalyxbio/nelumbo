@@ -36,6 +36,7 @@ type NativeSelectProps = Omit<React.ComponentProps<"select">, "size"> & Omit<Fie
 function NativeSelect({
   label,
   variant,
+  indicator,
   size = "default",
   icon,
   description,
@@ -52,7 +53,7 @@ function NativeSelect({
   const floating = Boolean(label) && !compact
   return (
     <Field
-      {...{ label, variant, size, icon, description, error, className, id, disabled, ariaInvalid }}
+      {...{ label, variant, indicator, size, icon, description, error, className, id, disabled, ariaInvalid }}
       trailing={
         <Icon
           name="arrow_drop_down"

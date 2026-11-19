@@ -208,6 +208,7 @@ function Combobox(props: ComboboxProps) {
   const {
     label,
     variant = "filled",
+    indicator,
     size,
     icon,
     description,
@@ -858,7 +859,7 @@ function Combobox(props: ComboboxProps) {
   return (
     <PopoverPrimitive.Root open={open} onOpenChange={(o) => !o && close()}>
       <Field
-        {...{ label, variant, size, icon, description, error, className, disabled }}
+        {...{ label, variant, indicator, size, icon, description, error, className, disabled }}
         id={baseId}
         placeholder={placeholder}
         grow={multiple}

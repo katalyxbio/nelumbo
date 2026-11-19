@@ -25,6 +25,7 @@ type InputProps = Omit<React.ComponentProps<"input">, "size"> & FieldProps
 function Input({
   label,
   variant,
+  indicator,
   size,
   icon,
   trailing,
@@ -39,7 +40,7 @@ function Input({
 }: InputProps) {
   return (
     <Field
-      {...{ label, variant, size, icon, trailing, description, error, className, id, placeholder, disabled, ariaInvalid }}
+      {...{ label, variant, indicator, size, icon, trailing, description, error, className, id, placeholder, disabled, ariaInvalid }}
     >
       {({ className: controlClass, ...control }) => (
         <input
