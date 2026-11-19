@@ -1,8 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { Icon } from "@/registry/nelumbo/ui/icon"
-import { Button } from "@/registry/nelumbo/ui/button"
 import { cn } from "@/lib/utils"
 import { CodeBlock } from "@/registry/nelumbo/ui/code-block"
 
