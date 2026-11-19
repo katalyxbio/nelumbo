@@ -44,6 +44,9 @@ const CSS = `
 .vlv-cal td.vlv-pm:last-child::before, .vlv-cal td.vlv-ps.vlv-ps:last-child::before { border-radius: 0 9999px 9999px 0 }
 .vlv-cal td.vlv-pm > button { color: var(--secondary-foreground) }
 .vlv-cal td.vlv-pe > button { background: var(--secondary); color: var(--secondary-foreground) }
+/* a range that carries over into another month fades out at the month's last day and in at its first */
+.vlv-cal td.vlv-ml.vlv-rm::before, .vlv-cal td.vlv-ml.vlv-rs::before, .vlv-cal td.vlv-ml.vlv-pm::before, .vlv-cal td.vlv-ml.vlv-ps::before { -webkit-mask-image: linear-gradient(to right, #000 15%, transparent); mask-image: linear-gradient(to right, #000 15%, transparent) }
+.vlv-cal td.vlv-mf.vlv-rm::before, .vlv-cal td.vlv-mf.vlv-re::before, .vlv-cal td.vlv-mf.vlv-pm::before, .vlv-cal td.vlv-mf.vlv-pe::before { -webkit-mask-image: linear-gradient(to left, #000 15%, transparent); mask-image: linear-gradient(to left, #000 15%, transparent) }
 .vlv-cal td[data-selected]:not(.vlv-rm) > button { background: var(--primary); color: var(--primary-foreground) }
 .vlv-cal td[data-today]:not([data-selected]) > button { box-shadow: inset 0 0 0 1px var(--foreground); font-weight: 600 }
 .vlv-cal td[data-outside] > button { color: var(--muted-foreground) }
@@ -152,6 +155,11 @@ function Calendar({
   const open = from !== null && (!sel?.to || day0(sel.to) === from)
   const end = open && hover && day0(hover) > from! ? day0(hover) : null
   const previewMods = end === null ? {} : { vlv_ps: (d: Date) => day0(d) === from, vlv_pm: (d: Date) => day0(d) > from! && day0(d) < end, vlv_pe: (d: Date) => day0(d) === end }
+  // month edges, so a range that continues into the next (or from the previous) month can fade there
+  const edgeMods =
+    props.mode === "range" && !showOutsideDays
+      ? { vlv_mf: (d: Date) => d.getDate() === 1, vlv_ml: (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getDate() === 1 }
+      : {}
   const enter = (d: Date, m: Parameters<NonNullable<typeof onDayMouseEnter>>[1]) => setHover(m.disabled ? null : d)
 
   return (
@@ -223,8 +231,8 @@ function Calendar({
             hideNavigation={ownHeader}
             navLayout={ownHeader ? undefined : "around"}
             animate={animate}
-            modifiers={{ ...modifiers, ...previewMods }}
-            modifiersClassNames={{ vlv_ps: "vlv-ps", vlv_pm: "vlv-pm", vlv_pe: "vlv-pe", ...modifiersClassNames }}
+            modifiers={{ ...edgeMods, ...modifiers, ...previewMods }}
+            modifiersClassNames={{ vlv_ps: "vlv-ps", vlv_pm: "vlv-pm", vlv_pe: "vlv-pe", vlv_mf: "vlv-mf", vlv_ml: "vlv-ml", ...modifiersClassNames }}
             onDayMouseEnter={(d, m, e) => {
               enter(d, m)
               onDayMouseEnter?.(d, m, e)
