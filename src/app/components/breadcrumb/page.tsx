@@ -52,6 +52,26 @@ export default function BreadcrumbPageDocs() {
         </Preview>
       </Section>
 
+      <Section title="Slash separator" description='separator="slash" on Breadcrumb swaps every chevron for a slash. Pass your own children to a BreadcrumbSeparator for anything else.'>
+        <Preview className="flex-col items-start gap-4">
+          <Breadcrumb aria-label="Breadcrumb example slash" separator="slash">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#" onClick={stop}>Home</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#" onClick={stop}>Components</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </Preview>
+      </Section>
+
       <Section
         title="Contained"
         description='variant="contained" sets the trail on a tonal track and raises the current page on it, like the selected segment of a segmented button. Icons in links and in the page sit at 18px; the page&apos;s icon fills.'

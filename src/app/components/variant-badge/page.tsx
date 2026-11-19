@@ -36,17 +36,17 @@ export default function VariantBadgePage() {
 
       <Section
         title="Five tiers"
-        description="Pathogenic and benign at full strength, the likely tiers lighter, uncertain significance neutral. ClinVar's conflicting and not provided sit off the scale."
+        description={'Pathogenic and benign at full strength, the likely tiers lighter, uncertain significance neutral. ClinVar\'s conflicting and not provided sit off the scale. A badge is as wide as its text; give them className="w-full justify-center" in a grid to line them up at one width.'}
       >
         <Preview className="grid gap-4">
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
             {TIERS.map((t) => (
-              <VariantBadge key={t} classification={t} />
+              <VariantBadge key={t} classification={t} className="w-full justify-center" />
             ))}
           </div>
-          <div className="flex flex-wrap gap-3">
-            <VariantBadge classification="conflicting" />
-            <VariantBadge classification="not-provided" />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+            <VariantBadge classification="conflicting" className="w-full justify-center" />
+            <VariantBadge classification="not-provided" className="w-full justify-center" />
           </div>
         </Preview>
       </Section>

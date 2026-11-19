@@ -462,11 +462,20 @@ function ConstructMap({
     const r = Math.min(h / 2, w / 2)
     const tipFwd = f.strand === 1 && isLast
     const tipRev = f.strand === -1 && isFirst
-    const tip = (tipFwd || tipRev) && w > 4 ? Math.min(thin ? 6 : 9, w * 0.5) : 0
+    const tip = (tipFwd || tipRev) && w > 4 ? Math.min(thin ? 8 : 13, w * 0.5) : 0
     if (!tip) return `M${x0 + r},${y0}H${x0 + w - r}A${r},${r} 0 0 1 ${x0 + w - r},${y0 + h}H${x0 + r}A${r},${r} 0 0 1 ${x0 + r},${y0}Z`
-    if (tipFwd)
-      return `M${x0 + r},${y0}H${x0 + w - tip}Q${x0 + w - tip * 0.15},${y0 + h * 0.18} ${x0 + w},${y}Q${x0 + w - tip * 0.15},${y0 + h * 0.82} ${x0 + w - tip},${y0 + h}H${x0 + r}A${r},${r} 0 0 1 ${x0 + r},${y0}Z`
-    return `M${x0 + tip},${y0}H${x0 + w - r}A${r},${r} 0 0 1 ${x0 + w - r},${y0 + h}H${x0 + tip}Q${x0 + tip * 0.15},${y0 + h * 0.82} ${x0},${y}Q${x0 + tip * 0.15},${y0 + h * 0.18} ${x0 + tip},${y0}Z`
+    // A straight-sided point with its very end softened: it sharpens the arrow without a hard spike.
+    const d = 1.6
+    const len = Math.hypot(tip, h / 2)
+    const ux = (tip / len) * d
+    const uy = (h / 2 / len) * d
+    if (tipFwd) {
+      const xt = x0 + w - tip
+      const xe = x0 + w
+      return `M${x0 + r},${y0}H${xt}L${xe - ux},${y - uy}Q${xe},${y} ${xe - ux},${y + uy}L${xt},${y0 + h}H${x0 + r}A${r},${r} 0 0 1 ${x0 + r},${y0}Z`
+    }
+    const xt = x0 + tip
+    return `M${xt},${y0}H${x0 + w - r}A${r},${r} 0 0 1 ${x0 + w - r},${y0 + h}H${xt}L${x0 + ux},${y + uy}Q${x0},${y} ${x0 + ux},${y - uy}Z`
   }
 
   // amino acids under each codon, for contiguous coding features

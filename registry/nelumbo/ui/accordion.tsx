@@ -113,11 +113,12 @@ type AccordionTriggerProps = React.ComponentProps<typeof AccordionPrimitive.Trig
 
 function AccordionTrigger({ className, children, icon, description, ...props }: AccordionTriggerProps) {
   return (
-    <AccordionPrimitive.Header className="flex">
+    <AccordionPrimitive.Header className="flex rounded-[inherit]">
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
           "state-layer group/trigger flex min-h-14 flex-1 cursor-pointer items-center gap-4 rounded-[inherit] px-4 py-3 text-left text-foreground",
+          "data-[state=open]:rounded-b-sm",
           "outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
           "disabled:pointer-events-none disabled:opacity-40",
           className

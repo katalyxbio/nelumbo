@@ -69,7 +69,7 @@ function TeamSwitcher() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton size="lg" tooltip="Switch team">
-              <Avatar name={team.name} shape="rounded" color="auto" size="sm" />
+              <Avatar name={team.name} color="auto" size="sm" />
               <div className="grid flex-1 text-left">
                 <span className="truncate type-label-lg">{team.name}</span>
                 <span className="truncate type-body-sm text-muted-foreground">{team.plan}</span>
@@ -81,7 +81,7 @@ function TeamSwitcher() {
             <DropdownMenuLabel>Teams</DropdownMenuLabel>
             {TEAMS.map((t) => (
               <DropdownMenuItem key={t.name} onSelect={() => setTeam(t)}>
-                <Avatar name={t.name} shape="rounded" color="auto" size="xs" />
+                <Avatar name={t.name} color="auto" size="xs" />
                 {t.name}
               </DropdownMenuItem>
             ))}

@@ -5,6 +5,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { AMINO_ACIDS, aminoAcidTone, type AminoAcidScheme } from "@/registry/nelumbo/ui/amino-acid"
 import { cleanSequence, complement, nucleotideTone, translateCodon, type NucleotideScheme } from "@/registry/nelumbo/ui/nucleotide"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Residue } from "@/registry/nelumbo/ui/residue"
 
 /**
@@ -315,7 +316,7 @@ function Translation({
         className={cn("mx-px min-w-0 px-0", selectable && "cursor-pointer", stop && "bg-foreground/80 text-background dark:bg-foreground/85")}
         style={{ gridColumn: `${a - lineStart + 2} / span ${here}` }}
       >
-        {letterHere ? text : ""}
+        {letterHere ? stop ? <Icon name="asterisk" size={S.tile === "sm" ? 12 : 14} weight={600} /> : text : ""}
       </Residue>
     )
   }
@@ -413,7 +414,11 @@ function Translation({
                 const p = line.start + k
                 const b = bottomStrand ? complement(seq[p - 1]) : seq[p - 1]
                 const isSel = within(p, sel)
-                const isAct = activeBase === p || (!!hoverCodon && p >= hoverCodon.start && p <= hoverCodon.start + 2)
+                const inCodon = (q: number) => !!hoverCodon && q >= hoverCodon.start && q <= hoverCodon.start + 2
+                // a hovered residue lights its three bases as one pill; a hovered base is a pill of its own
+                const isAct = activeBase === p || inCodon(p)
+                const codonLeft = inCodon(p) && (!inCodon(p - 1) || p === line.start)
+                const codonRight = inCodon(p) && (!inCodon(p + 1) || p === line.end)
                 const left = isSel && !within(p - 1, sel)
                 const right = isSel && !within(p + 1, sel)
                 return (
@@ -428,7 +433,8 @@ function Translation({
                       isSel && !bottomStrand && "bg-foreground/[0.09]",
                       left && "rounded-l-md",
                       right && "rounded-r-md",
-                      isAct && !bottomStrand && "rounded-md bg-foreground/[0.14]"
+                      isAct && !bottomStrand && "bg-foreground/[0.14]",
+                      isAct && !bottomStrand && (inCodon(p) ? cn(codonLeft && "rounded-l-md", codonRight && "rounded-r-md") : "rounded-md")
                     )}
                   >
                     {b}

@@ -28,12 +28,12 @@ import { LoadingIndicator } from "@/registry/nelumbo/ui/loading-indicator"
 const CSS = `
 @keyframes vlv-spin-arc {
   /* the arc never shrinks below 8% of the circle, so it always reads as a spinner */
-  0% { stroke-dasharray: 8 200; stroke-dashoffset: 0 }
-  50% { stroke-dasharray: 70 200; stroke-dashoffset: -14 }
-  100% { stroke-dasharray: 8 200; stroke-dashoffset: -92 }
+  0% { stroke-dasharray: 8 92; stroke-dashoffset: 0 }
+  50% { stroke-dasharray: 70 30; stroke-dashoffset: -14 }
+  100% { stroke-dasharray: 8 92; stroke-dashoffset: -100 }
 }
 @keyframes vlv-spin-turn { to { transform: rotate(360deg) } }
-.vlv-spin-turn { animation: vlv-spin-turn 2s linear infinite; transform-origin: center }
+.vlv-spin-turn { animation: vlv-spin-turn 2s linear infinite; transform-origin: 50% 50%; will-change: transform }
 .vlv-spin-arc { animation: vlv-spin-arc 1.5s ease-in-out infinite }
 @media (prefers-reduced-motion: reduce) {
   .vlv-spin-turn, .vlv-spin-arc { animation-duration: 4s }

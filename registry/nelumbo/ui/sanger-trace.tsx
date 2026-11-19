@@ -216,7 +216,24 @@ function SangerTrace({
   // a base's width of room either side, so the end calls and numbers are not cut
   const edge = baseWidth
   const W = shown * baseWidth + edge * 2
-  const px = (scan: number) => edge + ((scan - s0) / Math.max(1, s1 - s0)) * (W - edge * 2)
+  // Calls sit exactly one base width apart, whatever the real spacing of the peaks, and the
+  // curves are stretched between them, so every peak stays under its call.
+  const px = (scan: number) => {
+    const a = r0 - 1
+    const z = r1 - 1
+    const cx = (i: number) => edge + (i - a + 0.5) * baseWidth
+    if (z <= a) return edge + ((scan - s0) / Math.max(1, s1 - s0)) * (W - edge * 2)
+    if (scan <= peaks[a]) return cx(a) + ((scan - peaks[a]) * baseWidth) / Math.max(1, peaks[a + 1] - peaks[a])
+    if (scan >= peaks[z]) return cx(z) + ((scan - peaks[z]) * baseWidth) / Math.max(1, peaks[z] - peaks[z - 1])
+    let lo = a
+    let hi = z
+    while (hi - lo > 1) {
+      const m = (lo + hi) >> 1
+      if (peaks[m] <= scan) lo = m
+      else hi = m
+    }
+    return cx(lo) + ((scan - peaks[lo]) / Math.max(1, peaks[lo + 1] - peaks[lo])) * baseWidth
+  }
 
   const yMax = React.useMemo(() => {
     let m = 1

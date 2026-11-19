@@ -120,17 +120,19 @@ function NavigationRailItem({ className, icon, label, description, active = fals
   const pill = (
     <span
       className={cn(
-        "relative flex h-8 w-14 shrink-0 items-center justify-center rounded-full",
-        "transition-[width,height,padding] duration-[519ms] ease-(--ease-spring) motion-reduce:transition-none",
-        description ? "group-data-expanded/rail:h-14" : "group-data-expanded/rail:h-10",
-        "group-data-expanded/rail:w-full group-data-expanded/rail:justify-start group-data-expanded/rail:px-4"
+        // 16px in on both sides: a 24px icon fills the 56px pill exactly, so it stays put as the pill grows
+        "relative flex h-8 w-14 shrink-0 items-center justify-start rounded-full px-4",
+        "transition-[width,height,border-radius] duration-[519ms] ease-(--ease-spring) motion-reduce:transition-none",
+        // a two-line row is too tall for a full pill: it rounds like a card instead
+        description ? "group-data-expanded/rail:h-14 group-data-expanded/rail:rounded-2xl" : "group-data-expanded/rail:h-10",
+        "group-data-expanded/rail:w-full"
       )}
     >
       {/* active indicator: grows from the center */}
       <span
         aria-hidden
         className={cn(
-          "absolute inset-0 rounded-full bg-secondary",
+          "absolute inset-0 rounded-[inherit] bg-secondary",
           "scale-x-[0.4] opacity-0 transition-[scale,opacity] duration-[396ms] ease-(--ease-spring-snappy) motion-reduce:transition-none",
           "group-data-active/item:scale-x-100 group-data-active/item:opacity-100"
         )}
@@ -138,7 +140,7 @@ function NavigationRailItem({ className, icon, label, description, active = fals
       {/* hover / press layer */}
       <span
         aria-hidden
-        className="absolute inset-0 rounded-full bg-foreground opacity-0 transition-opacity duration-150 group-hover/item:opacity-[0.07] group-active/item:opacity-[0.12] group-focus-visible/item:opacity-[0.1]"
+        className="absolute inset-0 rounded-[inherit] bg-foreground opacity-0 transition-opacity duration-150 group-hover/item:opacity-[0.07] group-active/item:opacity-[0.12] group-focus-visible/item:opacity-[0.1]"
       />
       <span className="relative grid place-items-center">
         <Icon
@@ -174,7 +176,7 @@ function NavigationRailItem({ className, icon, label, description, active = fals
     <span
       aria-hidden={expanded || undefined}
       className={cn(
-        "max-w-full truncate px-1 text-center type-label-md transition-[opacity,height] duration-200",
+        "w-full max-w-full truncate px-1 text-center type-label-md transition-[opacity,height] duration-200",
         "text-muted-foreground group-hover/item:text-foreground group-data-active/item:font-semibold group-data-active/item:text-foreground",
         expanded ? "h-0 opacity-0" : "h-4 opacity-100 delay-75"
       )}
@@ -193,7 +195,7 @@ function NavigationRailItem({ className, icon, label, description, active = fals
       disabled={!asChild && !href ? disabled : undefined}
       aria-disabled={(asChild || href) && disabled ? true : undefined}
       className={cn(
-        "group/item relative flex w-full shrink-0 cursor-pointer flex-col items-center gap-1 px-3 py-1 outline-none select-none",
+        "group/item relative flex w-full shrink-0 cursor-pointer flex-col items-start gap-1 px-3 py-1 outline-none select-none",
         "transition-[padding] duration-[519ms] ease-(--ease-spring)",
         "group-data-expanded/rail:gap-0 group-data-expanded/rail:py-0",
         "[--icon-size:24px] [--icon-opsz:24] data-active:[--icon-fill:1]",

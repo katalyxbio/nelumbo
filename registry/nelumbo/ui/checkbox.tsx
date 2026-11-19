@@ -4,6 +4,7 @@ import * as React from "react"
 import { Checkbox as CheckboxPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 
 /**
  * Nelumbo Checkbox (built on Radix Checkbox)
@@ -12,7 +13,7 @@ import { cn } from "@/lib/utils"
  *   <Checkbox checked="indeterminate" />
  *   <Checkbox color="brand" defaultChecked />
  *
- * An 18px box whose corners follow the text field radius (--radius-control). The check draws itself in, the box gives a
+ * An 18px box whose corners follow the text field radius (--radius-control). The check is a Material Symbols glyph that wipes in, the box gives a
  * small springy press, and a 40px halo shows hover and press (the halo is
  * also the click target, so the small box is easy to hit).
  *
@@ -52,26 +53,26 @@ function Checkbox({ className, color = "default", ...props }: CheckboxProps) {
       )}
       {...props}
     >
-      <CheckboxPrimitive.Indicator forceMount data-slot="checkbox-indicator" className="pointer-events-none size-3.5">
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="size-full">
-          {/* the check draws itself in */}
-          <path
-            d="M3 7.2 5.8 10 11 4.2"
-            pathLength={1}
-            className={cn(
-              "[stroke-dasharray:1] [stroke-dashoffset:1] group-data-[state=checked]/checkbox:[stroke-dashoffset:0]",
-              "transition-[stroke-dashoffset] duration-200 ease-(--ease-emphasized) motion-reduce:transition-none"
-            )}
-          />
-          {/* indeterminate: a dash that grows from the center */}
-          <path
-            d="M3.5 7h7"
-            className={cn(
-              "origin-center scale-x-0 group-data-[state=indeterminate]/checkbox:scale-x-100",
-              "transition-[scale] duration-200 ease-(--ease-emphasized) motion-reduce:transition-none [transform-box:fill-box]"
-            )}
-          />
-        </svg>
+      <CheckboxPrimitive.Indicator forceMount data-slot="checkbox-indicator" className="pointer-events-none grid size-3.5 place-items-center">
+        {/* Material Symbols glyphs; the check wipes in from the left, the dash from the center */}
+        <Icon
+          name="check"
+          size={16}
+          weight={700}
+          className={cn(
+            "col-start-1 row-start-1 [clip-path:inset(0_100%_0_0)] group-data-[state=checked]/checkbox:[clip-path:inset(0_0_0_0)]",
+            "transition-[clip-path] duration-200 ease-(--ease-emphasized) motion-reduce:transition-none"
+          )}
+        />
+        <Icon
+          name="remove"
+          size={16}
+          weight={700}
+          className={cn(
+            "col-start-1 row-start-1 [clip-path:inset(0_50%_0_50%)] group-data-[state=indeterminate]/checkbox:[clip-path:inset(0_0_0_0)]",
+            "transition-[clip-path] duration-200 ease-(--ease-emphasized) motion-reduce:transition-none"
+          )}
+        />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   )

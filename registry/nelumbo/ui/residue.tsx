@@ -75,7 +75,7 @@ const tile =
   " text-[color:oklch(var(--ril)_calc(var(--ric)*var(--rk,1))_var(--rh,0))]" +
   " rounded-l-[var(--rl)] rounded-r-[var(--rr)]" +
   " transition-[border-radius,background-color,color,outline-color] duration-500 ease-spring motion-reduce:transition-none" +
-  " outline-2 outline-offset-1 outline-transparent data-[active=true]:outline-foreground/70"
+  " outline-2 outline-offset-1 outline-transparent data-[active=true]:z-10 data-[active=true]:outline-foreground/70"
 
 type ResidueProps = Omit<React.ComponentProps<"span">, "children"> & {
   children: React.ReactNode

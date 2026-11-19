@@ -43,7 +43,7 @@ const button = "tactile state-layer cursor-pointer"
 
 const surface = (elevated?: boolean) =>
   elevated
-    ? "border border-transparent bg-surface-container-low shadow-e1 hover:shadow-e2 dark:bg-surface-container-high"
+    ? "border border-transparent bg-surface-container-low shadow-e1 hover:shadow-e2 dark:bg-surface-container-high after:-inset-px"
     : "border border-outline-variant bg-transparent hover:border-outline"
 
 /* ----------------------------------------------------------------------- */

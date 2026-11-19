@@ -153,17 +153,25 @@ function CommandInput({ className, ref, ...props }: React.ComponentProps<typeof 
 }
 
 /**
- * The highlighted row sits on a raised pill that springs from row to row as
- * the arrow keys or the pointer move, and follows the list as it filters.
- * Until it is measured, the row draws its own fill.
+ * The highlighted row sits on a raised pill. It springs from row to row as
+ * the arrow keys move; under the pointer it stays put on each row instead of
+ * chasing the cursor. Until it is measured, the row draws its own fill.
  */
 function CommandList({ className, children, ref, ...props }: React.ComponentProps<typeof CommandPrimitive.List>) {
   const own = React.useRef<HTMLDivElement>(null)
   const [pill, setPill] = React.useState<{ y: number; x: number; w: number; h: number; moved: boolean } | null>(null)
 
+  // the pill glides for the keyboard only
+  const byPointer = React.useRef(false)
+
   React.useLayoutEffect(() => {
     const list = own.current
     if (!list) return
+    const root = list.closest<HTMLElement>("[cmdk-root]") ?? list
+    const key = () => (byPointer.current = false)
+    const pointer = () => (byPointer.current = true)
+    root.addEventListener("keydown", key, true)
+    root.addEventListener("pointermove", pointer)
     let frame = 0
     const measure = () => {
       cancelAnimationFrame(frame)
@@ -175,7 +183,7 @@ function CommandList({ className, children, ref, ...props }: React.ComponentProp
         const o = sizer.getBoundingClientRect()
         const next = { x: r.left - o.left, y: r.top - o.top, w: r.width, h: r.height }
         setPill((p) =>
-          p && p.x === next.x && p.y === next.y && p.w === next.w && p.h === next.h ? p : { ...next, moved: p !== null }
+          p && p.x === next.x && p.y === next.y && p.w === next.w && p.h === next.h ? p : { ...next, moved: p !== null && !byPointer.current }
         )
       })
     }
@@ -186,6 +194,8 @@ function CommandList({ className, children, ref, ...props }: React.ComponentProp
     ro.observe(list)
     return () => {
       cancelAnimationFrame(frame)
+      root.removeEventListener("keydown", key, true)
+      root.removeEventListener("pointermove", pointer)
       mo.disconnect()
       ro.disconnect()
     }

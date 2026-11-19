@@ -182,7 +182,7 @@ function NavigationMenuItem({ className, ...props }: React.ComponentProps<typeof
 /** The pill look shared by triggers and top-level links. */
 const navigationMenuTriggerStyle = cva(
   [
-    "state-layer group inline-flex h-10 w-max cursor-pointer items-center justify-center gap-1 rounded-full bg-transparent px-4 type-label-lg whitespace-nowrap text-foreground no-underline select-none",
+    "group inline-flex h-10 w-max cursor-pointer items-center justify-center gap-1 rounded-full bg-transparent px-4 type-label-lg whitespace-nowrap text-foreground no-underline select-none",
     "[--icon-opsz:20] [--icon-size:20px]",
     "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
     "disabled:pointer-events-none disabled:opacity-40 data-[disabled]:pointer-events-none data-[disabled]:opacity-40",
@@ -272,7 +272,8 @@ function NavigationMenuLink({ className, ...props }: React.ComponentProps<typeof
     <NavigationMenuPrimitive.Link
       data-slot="navigation-menu-link"
       className={cn(
-        "state-layer rounded-2xl outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        // a top-level pill link has the list's raised pill under it instead of a state layer
+        "state-layer [&.group]:after:hidden rounded-2xl outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         "data-active:bg-secondary data-active:text-secondary-foreground",
         className
       )}

@@ -127,6 +127,9 @@ function Slider({
       }}
       className={cn(
         "group/slider relative flex w-full touch-none items-center select-none",
+        // the handle glides between steps; while dragging it only smooths a little
+        "[&>span:has(>[data-slot=slider-thumb])]:transition-[left] [&>span:has(>[data-slot=slider-thumb])]:duration-200 [&>span:has(>[data-slot=slider-thumb])]:ease-(--ease-standard)",
+        "data-dragging:[&>span:has(>[data-slot=slider-thumb])]:duration-75 motion-reduce:[&>span:has(>[data-slot=slider-thumb])]:transition-none",
         SIZES[size],
         COLORS[color],
         disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer",
@@ -140,7 +143,7 @@ function Slider({
             key={i}
             data-slot={s.active ? "slider-range" : "slider-rest"}
             className={cn(
-              "absolute inset-y-0 @container",
+              "absolute inset-y-0 @container transition-[left,right] duration-200 ease-(--ease-standard) group-data-dragging/slider:duration-75 motion-reduce:transition-none",
               s.active ? "bg-(--active)" : "bg-surface-container-highest",
               s.gapStart ? "rounded-l-(--inner-r)" : "rounded-l-(--outer-r)",
               s.gapEnd ? "rounded-r-(--inner-r)" : "rounded-r-(--outer-r)"

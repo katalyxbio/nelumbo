@@ -5,6 +5,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { aminoAcidTone, type AminoAcidScheme } from "@/registry/nelumbo/ui/amino-acid"
 import { nucleotideTone, type NucleotideScheme } from "@/registry/nelumbo/ui/nucleotide"
+import { Icon } from "@/registry/nelumbo/ui/icon"
 import { Residue, type ResidueRange } from "@/registry/nelumbo/ui/residue"
 
 /**
@@ -477,13 +478,17 @@ function SequenceAlignment({
     if (wrap === false) measureView()
   }, [wrap, width, measureView, length])
   const showOverview = wrap === false && overview && view.frac < 1
-  const panTo = (e: React.PointerEvent<HTMLDivElement>) => {
+  const [panning, setPanning] = React.useState(false)
+  const panTo = (e: React.PointerEvent<HTMLDivElement>, glide = false) => {
     const el = scroller.current
     if (!el) return
     const box = e.currentTarget.getBoundingClientRect()
     const f = (e.clientX - box.left) / box.width
     const cols = el.scrollWidth - nameW - numW
-    el.scrollLeft = f * cols - (el.clientWidth - nameW) / 2
+    const left = f * cols - (el.clientWidth - nameW) / 2
+    // a tap glides there; a drag follows the pointer exactly
+    if (glide) el.scrollTo({ left, behavior: "smooth" })
+    else el.scrollLeft = left
   }
 
   const label =
@@ -565,7 +570,7 @@ function SequenceAlignment({
         label={`${shown[r].name}, ${name} ${positions[r][c]}`}
         className={cn("w-full min-w-0 px-0", dot && "text-muted-foreground")}
       >
-        {dot ? "." : l.toUpperCase()}
+        {dot ? <Icon name="fiber_manual_record" fill size={S.size === "sm" ? 10 : 12} /> : l.toUpperCase()}
       </Residue>
     )
   }
@@ -628,14 +633,14 @@ function SequenceAlignment({
               <span
                 key={`s${c}`}
                 aria-hidden
-                className="z-10 justify-self-center rounded-full bg-foreground px-1.5 type-label-sm text-background tabular-nums"
+                className="z-10 min-w-9 justify-self-center rounded-full bg-foreground px-1.5 text-center type-label-sm text-background tabular-nums"
                 style={{ gridRow: rulerRow, gridColumn: c - b.start + 2 }}
               >
                 {c + columnStart}
               </span>
             ))}
         {laneCount > 0 && (
-          <span aria-hidden className={cn("select-none pr-3 type-label-sm text-muted-foreground", sticky)} style={{ gridRow: annRow, gridColumn: 1 }}>
+          <span aria-hidden className={cn("select-none pr-3 type-label-sm text-muted-foreground", sticky)} style={{ gridRow: `${annRow} / span ${laneCount}`, gridColumn: 1 }}>
             Features
           </span>
         )}
@@ -658,7 +663,7 @@ function SequenceAlignment({
               title={a.description ?? (a.label ? `${a.label}, columns ${a.start} to ${a.end}` : undefined)}
               className={cn(
                 "flex h-5 items-center justify-center overflow-hidden whitespace-nowrap px-1.5 type-label-sm font-semibold",
-                point && "min-w-max justify-self-center rounded-full"
+                point && "min-w-[max(2.5rem,max-content)] justify-self-center rounded-full"
               )}
               style={{
                 gridRow: annRow + annLanes[i],
@@ -797,31 +802,41 @@ function SequenceAlignment({
           onPointerDown={(e) => {
             e.stopPropagation()
             e.currentTarget.setPointerCapture(e.pointerId)
-            panTo(e)
+            setPanning(true)
+            panTo(e, true)
           }}
           onPointerMove={(e) => {
             e.stopPropagation()
             if (e.buttons) panTo(e)
           }}
+          onPointerUp={() => setPanning(false)}
+          onPointerCancel={() => setPanning(false)}
         >
-          <svg className="absolute inset-0 size-full" viewBox={`0 0 ${length} 20`} preserveAspectRatio="none">
-            {sel && <rect x={sel.c0} width={sel.c1 - sel.c0 + 1} y={0} height={20} className="fill-foreground/15" />}
-            {stats.map((s, c) => {
-              const h = Math.max(1.5, s.identity * 18)
-              return (
-                <rect
-                  key={c}
-                  x={c + 0.15}
-                  width={0.7}
-                  y={20 - h}
-                  height={h}
-                  className={s.identity >= 1 ? "fill-foreground" : s.identity >= threshold ? "fill-muted-foreground" : "fill-outline-variant"}
-                />
-              )
-            })}
-          </svg>
+          {sel && (
+            <span
+              className="absolute inset-y-0 rounded-sm bg-foreground/15"
+              style={{ left: `${(sel.c0 / length) * 100}%`, width: `${((sel.c1 - sel.c0 + 1) / length) * 100}%` }}
+            />
+          )}
+          {stats.map((s, c) => (
+            <span
+              key={c}
+              className={cn(
+                "absolute bottom-0 rounded-full",
+                s.identity >= 1 ? "bg-foreground" : s.identity >= threshold ? "bg-muted-foreground" : "bg-outline-variant"
+              )}
+              style={{
+                left: `${((c + 0.15) / length) * 100}%`,
+                width: `${(0.7 / length) * 100}%`,
+                height: `${Math.max(1.5, s.identity * 18) * 5}%`,
+              }}
+            />
+          ))}
           <span
-            className="absolute -inset-y-1 rounded-lg ring-2 ring-foreground/70"
+            className={cn(
+              "absolute -inset-y-1 rounded-md ring-2 ring-foreground/70",
+              !panning && "transition-[left,width] duration-200 ease-(--ease-standard) motion-reduce:transition-none"
+            )}
             style={{ left: `${view.left * 100}%`, width: `${view.frac * 100}%` }}
           />
         </div>

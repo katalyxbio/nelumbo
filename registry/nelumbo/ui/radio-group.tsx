@@ -14,7 +14,7 @@ import { selectionHalo } from "@/registry/nelumbo/ui/checkbox"
  *     <label><RadioGroupItem value="express" /> Express</label>
  *   </RadioGroup>
  *
- * A 20px ring; the selected dot springs in from the center. Arrow keys move
+ * A 20px ring; the selected dot grows in from the exact center. Arrow keys move
  * the selection, like native radios. Set `color="brand"` on an item for the
  * accent, and `aria-invalid` for the error color.
  */
@@ -36,7 +36,7 @@ function RadioGroupItem({ className, color = "default", ...props }: RadioGroupIt
     <RadioGroupPrimitive.Item
       data-slot="radio-group-item"
       className={cn(
-        "group/radio peer relative inline-grid size-5 shrink-0 cursor-pointer place-items-center rounded-full border-2 border-muted-foreground",
+        "group/radio peer relative inline-grid aspect-square size-5 shrink-0 cursor-pointer place-items-center rounded-full border-2 border-muted-foreground",
         "transition-[border-color,scale] duration-200 ease-(--ease-standard) hover:border-foreground",
         "active:scale-90 active:duration-100",
         COLORS[color],
@@ -52,8 +52,8 @@ function RadioGroupItem({ className, color = "default", ...props }: RadioGroupIt
         forceMount
         data-slot="radio-group-indicator"
         className={cn(
-          "pointer-events-none size-2.5 rounded-full bg-(--radio-dot) scale-0 data-[state=checked]:scale-100",
-          "transition-[scale] duration-[727ms] ease-(--ease-spring-bouncy) data-[state=unchecked]:duration-150 data-[state=unchecked]:ease-(--ease-standard)",
+          "pointer-events-none absolute inset-[3px] rounded-full bg-(--radio-dot) scale-0 data-[state=checked]:scale-100",
+          "transition-[scale] duration-300 ease-(--ease-spring) data-[state=unchecked]:duration-150 data-[state=unchecked]:ease-(--ease-standard)",
           "motion-reduce:transition-none"
         )}
       />

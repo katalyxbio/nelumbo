@@ -126,6 +126,29 @@ function shapeOf(bands: Cytoband[], at: (bp: number) => number, thick: number) {
   return { arms, cen, thick }
 }
 
+/** A rectangle with its own radius at each corner: top-left, top-right, bottom-right, bottom-left. */
+function roundedRect(x: number, y: number, w: number, h: number, [tl, tr, br, bl]: [number, number, number, number]) {
+  return `M${x + tl},${y}H${x + w - tr}A${tr},${tr} 0 0 1 ${x + w},${y + tr}V${y + h - br}A${br},${br} 0 0 1 ${x + w - br},${y + h}H${x + bl}A${bl},${bl} 0 0 1 ${x},${y + h - bl}V${y + tl}A${tl},${tl} 0 0 1 ${x + tl},${y}Z`
+}
+
+/**
+ * One arm's outline. The telomere end, the outer end of the first and last
+ * arm, is softly rounded; the end that meets the centromere is tighter, so the
+ * pinch reads as a join. Stalks stay nearly square. `inset` shrinks it for the
+ * outline stroke. `across` is true for a vertical chromosome.
+ */
+function armPath(a: { a: number; b: number; narrow?: boolean }, k: number, n: number, T: number, center: number, across: boolean, inset = 0) {
+  const t = (a.narrow ? T * 0.4 : T) - inset * 2
+  const len = Math.max(a.b - a.a - inset * 2, inset ? 0.5 : 1)
+  const outer = Math.min(T * 0.36, t / 2, len / 2)
+  const join = Math.min(2.5, t / 2, len / 2)
+  const [r0, r1] = a.narrow ? [1, 1] : [k === 0 ? outer : join, k === n - 1 ? outer : join]
+  const r = (v: number) => Math.max(v - inset, 0)
+  return across
+    ? roundedRect(center - t / 2, a.a + inset, t, len, [r(r0), r(r0), r(r1), r(r1)])
+    : roundedRect(a.a + inset, center - t / 2, len, t, [r(r0), r(r1), r(r1), r(r0)])
+}
+
 type ChromosomeIdeogramProps = Omit<React.ComponentProps<"div">, "children"> & {
   /** Every band, or just this chromosome's. */
   bands: Cytoband[]
@@ -274,10 +297,9 @@ function ChromosomeIdeogram({
           <svg width={width} height={H} aria-hidden className="block overflow-visible">
             <defs>
               <clipPath id={clipId}>
-                {shape.arms.map((a, i) => {
-                  const t = a.narrow ? T * 0.4 : T
-                  return <rect key={i} x={a.a} y={mid - t / 2} width={Math.max(a.b - a.a, 1)} height={t} rx={a.narrow ? 1 : Math.min(T / 2, (a.b - a.a) / 2)} />
-                })}
+                {shape.arms.map((a, i) => (
+                  <path key={i} d={armPath(a, i, shape.arms.length, T, mid, false)} />
+                ))}
                 {shape.cen && <path d={`M${shape.cen.a},${top}L${shape.cen.m},${mid - T * 0.18}L${shape.cen.b},${top}V${top + T}L${shape.cen.m},${mid + T * 0.18}L${shape.cen.a},${top + T}Z`} />}
               </clipPath>
               <pattern id={hatchId} width={4} height={4} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -306,8 +328,7 @@ function ChromosomeIdeogram({
             </g>
             {/* outline */}
             {shape.arms.map((a, i) => {
-              const t = a.narrow ? T * 0.4 : T
-              return <rect key={i} x={a.a + 0.5} y={mid - t / 2 + 0.5} width={Math.max(a.b - a.a - 1, 0.5)} height={t - 1} rx={a.narrow ? 1 : Math.min(T / 2, (a.b - a.a) / 2) - 0.5} fill="none" className="stroke-outline" strokeWidth={1} />
+              return <path key={i} d={armPath(a, i, shape.arms.length, T, mid, false, 0.5)} fill="none" className="stroke-outline" strokeWidth={1} />
             })}
 
             {/* band names where they fit */}
@@ -484,10 +505,9 @@ function Karyotype({
                   <rect x={cx - col / 2 + 1} y={0} width={col - 2} height={H} rx={10} className={cn(chosen ? "fill-surface-container-highest" : "fill-transparent", "stroke-transparent")} />
                   <defs>
                     <clipPath id={id}>
-                      {shape.arms.map((a, k) => {
-                        const t = a.narrow ? T * 0.4 : T
-                        return <rect key={k} x={cx - t / 2} y={a.a} width={t} height={Math.max(a.b - a.a, 1)} rx={a.narrow ? 1 : Math.min(T / 2, (a.b - a.a) / 2)} />
-                      })}
+                      {shape.arms.map((a, k) => (
+                        <path key={k} d={armPath(a, k, shape.arms.length, T, cx, true)} />
+                      ))}
                       {shape.cen && (
                         <path d={`M${cx - T / 2},${shape.cen.a}L${cx - T * 0.18},${shape.cen.m}L${cx - T / 2},${shape.cen.b}H${cx + T / 2}L${cx + T * 0.18},${shape.cen.m}L${cx + T / 2},${shape.cen.a}Z`} />
                       )}
@@ -498,10 +518,9 @@ function Karyotype({
                       <rect key={b.name + b.start} x={cx - T / 2 - 1} y={y(b.start)} width={T + 2} height={Math.max(y(b.end) - y(b.start), 0.4)} className={stainOf(b.stain).cls} />
                     ))}
                   </g>
-                  {shape.arms.map((a, k) => {
-                    const t = a.narrow ? T * 0.4 : T
-                    return <rect key={k} aria-hidden x={cx - t / 2 + 0.5} y={a.a + 0.5} width={t - 1} height={Math.max(a.b - a.a - 1, 0.5)} rx={a.narrow ? 1 : Math.min(T / 2, (a.b - a.a) / 2) - 0.5} fill="none" className={chosen ? "stroke-foreground" : "stroke-outline"} strokeWidth={1} />
-                  })}
+                  {shape.arms.map((a, k) => (
+                    <path key={k} aria-hidden d={armPath(a, k, shape.arms.length, T, cx, true, 0.5)} fill="none" className={chosen ? "stroke-foreground" : "stroke-outline"} strokeWidth={1} />
+                  ))}
                   {ms.map((m, k) => {
                     const my = y((m.start + (m.end ?? m.start)) / 2)
                     return (

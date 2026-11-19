@@ -105,7 +105,14 @@ export default function SequenceAlignmentPage() {
         description="Rows of A, C, G and T are read as nucleotides and take a Nucleotide scheme. TP53 codons 242 to 252, where synonymous changes in the third position stand out."
       >
         <Preview className="block">
-          <SequenceAlignment sequences={TP53_CDS} wrap={false} colorBy="difference" dots aria-label="TP53 codons 242 to 252 in four species" />
+          <SequenceAlignment
+            sequences={TP53_CDS}
+            wrap={false}
+            colorBy="difference"
+            dots
+            className="[--alignment-bg:var(--surface-container-low)] dark:[--alignment-bg:var(--surface-container-lowest)]"
+            aria-label="TP53 codons 242 to 252 in four species"
+          />
         </Preview>
       </Section>
 

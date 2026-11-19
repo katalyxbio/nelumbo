@@ -183,7 +183,13 @@ function SearchField({
           "transition-[grid-template-columns] duration-[560ms] ease-(--ease-spring-bouncy) motion-reduce:transition-none"
         )}
       >
-        <span className="flex min-w-0 items-center overflow-hidden">
+        <span
+          className={cn(
+            "flex min-w-0 items-center overflow-hidden transition-[padding] duration-[560ms] ease-(--ease-spring) motion-reduce:transition-none",
+            // with nothing after it, the button sits as far from the end as from the top and bottom
+            hasValue && !trailing && !avatar && (size === "default" || size == null ? "pr-2" : "pr-1")
+          )}
+        >
           <IconButton
             icon="close"
             label={clearLabel}

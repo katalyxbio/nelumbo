@@ -15,8 +15,9 @@ import { Icon } from "@/registry/nelumbo/ui/icon"
  *
  * Links are muted text that turns to foreground on hover, inside a rounded
  * state-layer pill. The current page is foreground and medium weight with
- * aria-current="page". Separators are a small chevron, hidden from assistive
- * tech; pass children to use your own (a "/" works). The trail wraps onto
+ * aria-current="page". Separators are a small chevron (or a slash, with
+ * `separator="slash"` on Breadcrumb), hidden from assistive
+ * tech; pass children to use your own. The trail wraps onto
  * more lines at phone width instead of overflowing.
  *
  *   <Breadcrumb>
@@ -52,8 +53,23 @@ type BreadcrumbVariant = "plain" | "contained"
  * page raised on it like a selected segment. "plain" (default) puts the
  * current page in a tonal chip and leaves the rest on the page.
  */
-function Breadcrumb({ variant = "plain", className, ...props }: React.ComponentProps<"nav"> & { variant?: BreadcrumbVariant }) {
-  return <nav aria-label="breadcrumb" data-slot="breadcrumb" data-variant={variant} className={cn("group/breadcrumb", className)} {...props} />
+const BreadcrumbSeparatorContext = React.createContext<"chevron" | "slash">("chevron")
+
+/**
+ * `separator="slash"` swaps the chevrons for slashes, for every
+ * BreadcrumbSeparator inside (default "chevron").
+ */
+function Breadcrumb({
+  variant = "plain",
+  separator = "chevron",
+  className,
+  ...props
+}: React.ComponentProps<"nav"> & { variant?: BreadcrumbVariant; separator?: "chevron" | "slash" }) {
+  return (
+    <BreadcrumbSeparatorContext.Provider value={separator}>
+      <nav aria-label="breadcrumb" data-slot="breadcrumb" data-variant={variant} className={cn("group/breadcrumb", className)} {...props} />
+    </BreadcrumbSeparatorContext.Provider>
+  )
 }
 
 function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
@@ -120,6 +136,7 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
 }
 
 function BreadcrumbSeparator({ children, className, ...props }: React.ComponentProps<"li">) {
+  const separator = React.useContext(BreadcrumbSeparatorContext)
   return (
     <li
       data-slot="breadcrumb-separator"
@@ -131,7 +148,15 @@ function BreadcrumbSeparator({ children, className, ...props }: React.ComponentP
       )}
       {...props}
     >
-      {children ?? <Icon name="chevron_right" />}
+      {children ??
+        (separator === "slash" ? (
+          // Material Symbols has no slash glyph, so this is drawn to match the chevron's weight
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" className="size-4">
+            <path d="M10.5 3 5.5 13" />
+          </svg>
+        ) : (
+          <Icon name="chevron_right" />
+        ))}
     </li>
   )
 }
