@@ -209,17 +209,40 @@ function plateBody(notch: PlateCorner) {
 const CODE128 = "212222 222122 222221 121223 121322 131222 122213 122312 132212 221213 221312 231212 112232 122132 122231 113222 123122 123221 223211 221132 221231 213212 223112 312131 311222 321122 321221 312212 322112 322211 212123 212321 232121 111323 131123 131321 112313 132113 132311 211313 231113 231311 112133 112331 132131 113123 113321 133121 313121 211331 231131 213113 213311 213131 311123 311321 331121 312113 312311 332111 314111 221411 431111 111224 111422 121124 121421 141122 141221 112214 112412 122114 122411 142112 142211 241211 221114 413111 241112 134111 111242 121142 121241 114212 124112 124211 411212 421112 421211 212141 214121 412121 111143 111341 131141 114113 114311 411113 411311 113141 114131 311141 411131 211412 211214 211232".split(" ")
 
 /**
- * Code 128 (set B) for printable ASCII: the bar and space widths in modules,
- * starting with a bar, with its check symbol and stop. Scannable as drawn.
+ * Code 128 for printable ASCII, with its check symbol and stop: the bar and
+ * space widths in modules, starting with a bar. Set B carries the text; a run of
+ * four or more digits switches to set C, which packs two digits to a symbol, so
+ * numbered IDs print noticeably shorter. Scannable as drawn.
  */
 export function code128(value: string) {
-  const codes = [
-    104,
-    ...[...value].map((ch) => {
-      const c = ch.charCodeAt(0) - 32
-      return c >= 0 && c < 95 ? c : 31 // "?" for what set B cannot carry
-    }),
-  ]
+  const chars = [...value]
+  const isDigit = (k: number) => k < chars.length && chars[k] >= "0" && chars[k] <= "9"
+  const codes = [104]
+  let setC = false
+  let k = 0
+  while (k < chars.length) {
+    let run = 0
+    while (isDigit(k + run)) run++
+    if (!setC && run >= 4) {
+      // an odd run keeps its first digit in set B, so the rest pair up
+      if (run % 2) codes.push(chars[k++].charCodeAt(0) - 32)
+      codes.push(99)
+      setC = true
+      continue
+    }
+    if (setC) {
+      if (run >= 2) {
+        codes.push(Number(chars[k] + chars[k + 1]))
+        k += 2
+      } else {
+        codes.push(100)
+        setC = false
+      }
+      continue
+    }
+    const c = chars[k++].charCodeAt(0) - 32
+    codes.push(c >= 0 && c < 95 ? c : 31) // "?" for what set B cannot carry
+  }
   codes.push(codes.slice(1).reduce((sum, c, i) => sum + c * (i + 1), 104) % 103)
   return [...codes.flatMap((c) => [...CODE128[c]].map(Number)), 2, 3, 3, 1, 1, 1, 2]
 }
