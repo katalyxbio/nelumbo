@@ -47,8 +47,24 @@ export function StudioProvider({ children }: { children: React.ReactNode }) {
     else root.style.setProperty("--icon-font", `'Material Symbols ${iconStyle}'`)
   }, [iconStyle])
 
+  // Saved choice wins; otherwise follow the system until the user picks.
   React.useEffect(() => {
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) setDark(true)
+    let saved: string | null = null
+    try { saved = localStorage.getItem("nelumbo-theme") } catch {}
+    if (saved === "dark" || saved === "light") {
+      setDark(saved === "dark")
+      return
+    }
+    const mq = window.matchMedia("(prefers-color-scheme: dark)")
+    setDark(mq.matches)
+    const on = (e: MediaQueryListEvent) => setDark(e.matches)
+    mq.addEventListener("change", on)
+    return () => mq.removeEventListener("change", on)
+  }, [])
+
+  const setDarkChosen = React.useCallback((v: boolean) => {
+    setDark(v)
+    try { localStorage.setItem("nelumbo-theme", v ? "dark" : "light") } catch {}
   }, [])
 
   React.useEffect(() => {
@@ -66,7 +82,7 @@ export function StudioProvider({ children }: { children: React.ReactNode }) {
   }, [brand, neutral, vibrance])
 
   return (
-    <Ctx.Provider value={{ brand, neutral, vibrance, dark, setBrand, setNeutral, setVibrance, setDark, iconStyle, setIconStyle }}>
+    <Ctx.Provider value={{ brand, neutral, vibrance, dark, setBrand, setNeutral, setVibrance, setDark: setDarkChosen, iconStyle, setIconStyle }}>
       {iconStyle !== "Rounded" && <link rel="stylesheet" href={materialSymbolsUrl(USED_ICONS, iconStyle)} />}
       {css && <style id="nelumbo-live">{css}</style>}
       {children}
