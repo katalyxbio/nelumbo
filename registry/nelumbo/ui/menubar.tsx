@@ -134,7 +134,7 @@ function MenubarTrigger({ className, ...props }: React.ComponentProps<typeof Men
     <MenubarPrimitive.Trigger
       data-slot="menubar-trigger"
       className={cn(
-        "tactile state-layer flex h-10 cursor-pointer items-center gap-2 rounded-[1rem] px-4 type-label-lg text-muted-foreground outline-none select-none",
+        "tactile flex h-10 cursor-pointer items-center gap-2 rounded-[1rem] px-4 type-label-lg text-muted-foreground outline-none select-none",
         "[--icon-size:18px] [--icon-opsz:20]",
         "data-[state=open]:text-foreground data-highlighted:text-foreground",
         "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
