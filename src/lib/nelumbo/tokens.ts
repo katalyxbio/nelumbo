@@ -38,13 +38,16 @@ function spring({ stiffness, damping, mass = 1, samples = 48 }: { stiffness: num
   return { easing: `linear(${pts.join(", ")})`, durationMs: Math.round(trace.length) }
 }
 
+// All three are critically damped (damping >= 2 * sqrt(stiffness)): they start
+// fast and settle without passing their target. The names are kept for
+// compatibility; "bouncy" and "snappy" are now just quicker, never springy.
 export const springs = {
-  /** Critically damped-ish. Default for UI movement. */
-  smooth: spring({ stiffness: 260, damping: 30 }),
-  /** Slight overshoot. Press release, toggles, chips. */
-  bouncy: spring({ stiffness: 380, damping: 22 }),
-  /** Snappy, small overshoot. Micro feedback. */
-  snappy: spring({ stiffness: 600, damping: 36 }),
+  /** Default for UI movement. */
+  smooth: spring({ stiffness: 260, damping: 33 }),
+  /** Quicker. Press release, toggles, chips. */
+  bouncy: spring({ stiffness: 380, damping: 39 }),
+  /** Quickest. Micro feedback. */
+  snappy: spring({ stiffness: 600, damping: 49 }),
 }
 
 // ---------------------------------------------------------------------------

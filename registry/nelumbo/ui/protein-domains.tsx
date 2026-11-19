@@ -490,7 +490,7 @@ function ProteinDomains({
         {card && active != null && (
           <div
             aria-hidden
-            className="pointer-events-none absolute z-10 grid min-w-40 -translate-x-1/2 -translate-y-full gap-0.5 rounded-xl bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-e2"
+            className="pointer-events-none absolute z-10 grid min-w-40 -translate-x-1/2 -translate-y-full gap-0.5 rounded-md bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-e2"
             style={{ left: Math.max(84, Math.min(width - 84, x(active + 0.5))), top: (structure ? ssTop : cfTop) - 2 }}
           >
             <span className="type-label-lg font-semibold tabular-nums">

@@ -28,7 +28,7 @@ const FOLDERS = [
 
 const MAILS = [
   { who: PEOPLE[0], subject: "Review moved to Thursday", body: "The prototype needs one more pass before we show it. Can everyone confirm Thursday at 10?" },
-  { who: PEOPLE[1], subject: "New easing curves", body: "The spring presets are in the motion doc. The bouncy one overshoots about 4%, which felt right." },
+  { who: PEOPLE[1], subject: "New easing curves", body: "The spring presets are in the motion doc. None of them overshoot now; the quick one still feels lively." },
   { who: PEOPLE[2], subject: "Icon subset", body: "The generated subset now covers every symbol used in the docs. Nothing is missing in dark mode." },
   { who: PEOPLE[3], subject: "Date picker fix", body: "Shipped the fix for the drifting header. Let me know if you still see it on narrow screens." },
 ]

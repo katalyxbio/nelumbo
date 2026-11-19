@@ -298,7 +298,7 @@ function ChartTooltipContent({
     <div
       data-slot="chart-tooltip"
       className={cn(
-        "grid min-w-36 max-w-64 items-start gap-2 rounded-2xl bg-inverse-surface px-3.5 py-3 text-inverse-foreground shadow-e2",
+        "grid min-w-36 max-w-64 items-start gap-2 rounded-md bg-inverse-surface px-3.5 py-3 text-inverse-foreground shadow-e2",
         // muted text on the inverse surface
         "[--muted-foreground:color-mix(in_oklab,var(--inverse-foreground)_72%,var(--inverse-surface))] [--foreground:var(--inverse-foreground)]",
         className
@@ -1777,7 +1777,7 @@ export function ChartTooltipRow({
 /** A total row under the series rows: on a tonal band (spacing, no divider), bold label and value. Render after the last series row. */
 export function ChartTooltipTotal({ label = "Total", value, unit }: { label?: React.ReactNode; value: React.ReactNode; unit?: React.ReactNode }) {
   return (
-    <div data-slot="chart-tooltip-total" className="-mx-1.5 mt-1 flex basis-full items-baseline gap-2 rounded-lg bg-inverse-foreground/10 px-1.5 py-1.5">
+    <div data-slot="chart-tooltip-total" className="-mx-1.5 mt-1 flex basis-full items-baseline gap-2 rounded-[6px] bg-inverse-foreground/10 px-1.5 py-1.5">
       <span className="type-label-md font-semibold text-foreground">{label}</span>
       <span className="ml-auto flex items-baseline gap-1 type-title-sm font-semibold text-foreground tabular-nums">
         {value}

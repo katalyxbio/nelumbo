@@ -458,7 +458,7 @@ function SangerTrace({
         {activeInfo && hover != null && (
           <div
             aria-hidden
-            className="pointer-events-none absolute z-10 grid min-w-36 -translate-x-1/2 -translate-y-full gap-1 rounded-xl bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-e2"
+            className="pointer-events-none absolute z-10 grid min-w-36 -translate-x-1/2 -translate-y-full gap-1 rounded-md bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-e2"
             style={{
               left: Math.max(76, Math.min(width - 76, callX(hover) - (scroller.current?.scrollLeft ?? 0))),
               top: RULER - 4,

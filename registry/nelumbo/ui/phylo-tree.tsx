@@ -859,7 +859,7 @@ function PhyloTree({
         {activeNode && hover != null && (
           <div
             aria-hidden
-            className="pointer-events-none absolute z-10 grid -translate-x-1/2 -translate-y-full gap-0.5 whitespace-nowrap rounded-xl bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-e2"
+            className="pointer-events-none absolute z-10 grid -translate-x-1/2 -translate-y-full gap-0.5 whitespace-nowrap rounded-md bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-e2"
             style={(() => {
               const [x, y] = circular ? P(rOf(activeNode), A(activeNode.pos)) : [X(xOf(activeNode)), Y(activeNode.pos)]
               return { left: Math.max(80, Math.min(width - 80, x)), top: y - 10 }

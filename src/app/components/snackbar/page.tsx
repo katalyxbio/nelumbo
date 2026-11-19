@@ -16,7 +16,7 @@ const wait = (ms: number, fail = false) => new Promise<number>((res, rej) => set
 export default function SnackbarPage() {
   const [inbox, setInbox] = React.useState(MESSAGES)
   const [failNext, setFailNext] = React.useState(false)
-  const [mode, setMode] = React.useState("queue")
+  const [mode, setMode] = React.useState("stack")
   const [rich, setRich] = React.useState(false)
 
   const archive = () => {

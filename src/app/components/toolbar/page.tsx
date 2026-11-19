@@ -172,8 +172,8 @@ function CollapseDemo() {
           <h3 className="type-headline-sm">Designing with springs</h3>
           {Array.from({ length: 8 }, (_, i) => (
             <p key={i} className="mt-4 max-w-prose type-body-md text-muted-foreground">
-              Motion that follows a spring feels physical because it starts fast, overshoots a little and settles. Tune stiffness for how quickly a control reacts and damping
-              for how much it wobbles, then reuse the same few curves everywhere.
+              Motion that follows a damped spring feels physical because it starts fast and settles without passing its target. Tune stiffness for how quickly a control reacts and damping
+              for how gently it lands, then reuse the same few curves everywhere.
             </p>
           ))}
         </div>

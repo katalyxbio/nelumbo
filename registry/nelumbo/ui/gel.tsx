@@ -940,7 +940,7 @@ function Gel({
         {active && activeBand && hover && (
           <div
             aria-hidden
-            className="pointer-events-none absolute z-10 grid max-w-56 -translate-y-1/2 gap-0.5 rounded-xl bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-e2"
+            className="pointer-events-none absolute z-10 grid max-w-56 -translate-y-1/2 gap-0.5 rounded-md bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-e2"
             style={{
               left: cx(active.lane) + pitch / 2 + 8 + 200 > W ? undefined : cx(active.lane) + pitch / 2 + 8,
               right: cx(active.lane) + pitch / 2 + 8 + 200 > W ? W - cx(active.lane) + pitch / 2 + 8 : undefined,

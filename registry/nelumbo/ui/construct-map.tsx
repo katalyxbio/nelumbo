@@ -793,7 +793,7 @@ function ConstructMap({
         {active && hover && tipAt && (
           <div
             aria-hidden
-            className="pointer-events-none absolute z-10 grid max-w-64 -translate-x-1/2 -translate-y-full gap-0.5 rounded-xl bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-e2"
+            className="pointer-events-none absolute z-10 grid max-w-64 -translate-x-1/2 -translate-y-full gap-0.5 rounded-md bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-e2"
             style={{ left: Math.max(90, Math.min(width - 90, tipAt.x)), top: tipAt.y - 8 }}
           >
             <span className="type-label-lg font-semibold">{active.name}</span>

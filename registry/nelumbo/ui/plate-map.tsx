@@ -693,7 +693,7 @@ function PlateMap({
     tooltip && act && box ? (
       <div
         aria-hidden
-        className="pointer-events-none absolute z-30 w-max max-w-56 -translate-x-1/2 -translate-y-full rounded-xl bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-lg"
+        className="pointer-events-none absolute z-30 w-max max-w-56 -translate-x-1/2 -translate-y-full rounded-md bg-inverse-surface px-3 py-2 text-inverse-foreground shadow-lg"
         style={{
           left: Math.max(80, Math.min(box.width - 80, box.x + (act.column + 0.5) * box.w)),
           top: box.y + act.row * box.h - 6,
