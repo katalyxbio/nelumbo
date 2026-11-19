@@ -157,7 +157,7 @@ export default function FoundationsPage() {
 
       <Section
         title="Elevation"
-        description={<>Two layers per level: a tight contact shadow and a soft ambient one, both cast in the neutral. Use <code className="font-mono type-body-sm">shadow-e1</code> to <code className="font-mono type-body-sm">shadow-e5</code>; pair with <code className="font-mono type-body-sm">inset-shadow-highlight</code> on filled controls.</>}
+        description={<>Two layers per level: a tight contact shadow and a soft ambient one, both cast in the neutral. Use <code className="font-mono type-body-sm">shadow-e1</code> to <code className="font-mono type-body-sm">shadow-e5</code>.</>}
       >
         <div className="grid grid-cols-2 gap-5 rounded-3xl bg-surface-container p-6 sm:grid-cols-5 sm:p-8">
           {[1, 2, 3, 4, 5].map((e) => (
@@ -230,7 +230,7 @@ function MotionDemo() {
             </div>
             <div className="relative h-10 min-w-0 flex-1 rounded-full bg-surface-container-high">
               <div
-                className="absolute top-1 size-8 rounded-full bg-primary shadow-e2 inset-shadow-highlight motion-reduce:transition-none"
+                className="absolute top-1 size-8 rounded-full bg-primary shadow-e2 motion-reduce:transition-none"
                 style={{
                   left: on ? "calc(100% - 2.25rem)" : "0.25rem",
                   transition: `left 700ms var(--${name})`,

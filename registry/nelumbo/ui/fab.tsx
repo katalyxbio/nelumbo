@@ -32,7 +32,7 @@ const fabVariants = cva(
         secondary: "bg-secondary text-secondary-foreground",
         brand: "bg-brand-container text-brand-container-foreground",
         surface: "bg-surface-container-high text-primary dark:bg-surface-container-highest",
-        solid: "bg-primary text-primary-foreground inset-shadow-highlight",
+        solid: "bg-primary text-primary-foreground",
       },
       size: {
         sm: "[--fab-h:2.5rem] [--fab-radius:0.75rem] [--fab-pad:0.5rem] [--icon-size:20px] [--icon-opsz:20] type-label-lg",

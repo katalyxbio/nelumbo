@@ -35,7 +35,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-e1 inset-shadow-highlight hover:shadow-e2",
+          "bg-primary text-primary-foreground shadow-e1 hover:shadow-e2",
         secondary: "bg-secondary text-secondary-foreground hover:shadow-e1",
         elevated:
           "bg-surface-container-low text-primary shadow-e2 hover:shadow-e3 dark:bg-surface-container-high",
@@ -43,7 +43,7 @@ const buttonVariants = cva(
           "border border-outline-variant bg-transparent text-foreground hover:border-outline",
         ghost: "bg-transparent text-foreground",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-e1 inset-shadow-highlight hover:shadow-e2 focus-visible:outline-destructive",
+          "bg-destructive text-destructive-foreground shadow-e1 hover:shadow-e2 focus-visible:outline-destructive",
         link: "h-auto! px-0! text-primary underline-offset-4 [--press-scale:1] after:hidden hover:underline",
       },
       size: {

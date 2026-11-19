@@ -133,7 +133,7 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
       <aside className="flex shrink-0 flex-col gap-6 border-b border-border px-5 py-5 md:sticky md:top-0 md:h-dvh md:w-64 md:overflow-y-auto md:overscroll-contain md:border-r md:border-b-0 md:py-8">
         <div className="flex items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-2.5 rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring">
-            <span className="size-6 rounded-[0.55rem] bg-primary bg-linear-to-br from-white/25 to-transparent shadow-e1 inset-shadow-highlight" />
+            <span className="size-6 rounded-[0.55rem] bg-primary shadow-e1" />
             <span className="type-title-md">Nelumbo</span>
           </Link>
           <ThemeToggle />
@@ -235,7 +235,7 @@ function ThemePanel() {
               aria-label={`Use ${n} as brand accent`}
               aria-pressed={brand === n}
               onClick={() => setBrand(n)}
-              className="tactile aspect-square cursor-pointer rounded-full bg-(--sw) outline-none ring-offset-2 ring-offset-surface-container-low inset-shadow-highlight focus-visible:outline-2 focus-visible:outline-ring aria-pressed:ring-2 aria-pressed:ring-foreground dark:ring-offset-surface-container"
+              className="tactile aspect-square cursor-pointer rounded-full bg-(--sw) outline-none ring-offset-2 ring-offset-surface-container-low focus-visible:outline-2 focus-visible:outline-ring aria-pressed:ring-2 aria-pressed:ring-foreground dark:ring-offset-surface-container"
               style={{ ["--sw" as string]: `var(--${n})` }}
             />
           ))}
