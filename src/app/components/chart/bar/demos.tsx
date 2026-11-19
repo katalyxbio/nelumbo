@@ -13,6 +13,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
   chartBarLabel,
+  chartBarLabelNeeds,
   chartBarRadius,
   chartFocusDot,
   chartFocusLine,
@@ -269,7 +270,10 @@ function chartBarLabelPerColor(rows: typeof variantData) {
     const i = p.index ?? 0
     const row = rows[i]
     const inside = chartBarLabel({ horizontal: true, position: "inside-start", onColor: `var(--${row.color}-foreground)`, text: () => row.name })
-    const end = chartBarLabel({ horizontal: true })
+    // a name wider than its bar moves past the bar end, so the value pill steps out after it
+    const { width = 0, height = 0 } = p as { width?: number; height?: number }
+    const spill = Math.abs(width) < chartBarLabelNeeds(row.name, Math.abs(height)) ? row.name.length * 7.4 + 14 : 0
+    const end = chartBarLabel({ horizontal: true, offset: spill })
     return (
       <g>
         {inside(props)}

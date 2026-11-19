@@ -1095,9 +1095,13 @@ export const chartArea = (key: string, fill?: string) => ({
  *   <LabelList dataKey="v" content={chartBarLabel()} />                       // inverse pill above each column
  *   <LabelList dataKey="v" content={chartBarLabel({ horizontal: true })} />    // pill after each row
  *   <LabelList dataKey="v" content={chartBarLabel({ horizontal: true, position: "inside-start", onColor: "var(--blue-foreground)", text: (i) => names[i] })} />
- * Negative values put the pill on the far side of the zero line.
+ * Negative values put the pill on the far side of the zero line. In-bar text that is wider than its bar
+ * moves just past the bar end in the normal text color.
  * `tone` "tonal" tints the pill with `color`; `onColor` colors in-bar text.
  */
+/** Width in px that an in-bar label needs (text plus its inset); a bar narrower than this moves the label past its end. */
+export const chartBarLabelNeeds = (label: string, barHeight: number) => barHeight / 2 + label.length * 7.4 + 8
+
 export function chartBarLabel({
   horizontal = false,
   position = "end",
@@ -1106,6 +1110,7 @@ export function chartBarLabel({
   onColor = "var(--foreground)",
   tone = "inverse",
   color = "var(--foreground)",
+  offset = 0,
 }: {
   horizontal?: boolean
   position?: "end" | "inside-start"
@@ -1115,6 +1120,8 @@ export function chartBarLabel({
   onColor?: string
   tone?: "inverse" | "tonal"
   color?: string
+  /** Extra px between the bar end and the pill, for when something else (an overflowed name) sits there. */
+  offset?: number
 } = {}) {
   function BarLabel(props: unknown) {
     const { x = 0, y = 0, width = 0, height = 0, value, index = 0 } = props as BarShapeProps
@@ -1126,9 +1133,23 @@ export function chartBarLabel({
     const h = Math.abs(height)
     const label = text ? text(index, v) : format(v)
     if (position === "inside-start") {
-      if (w < 24) return <g />
-      return (
-        <text x={left + h / 2} y={top + h / 2} dominantBaseline="central" className="text-[0.8125rem] font-[620] tracking-[0.01em]" style={{ fill: onColor }}>
+      // A label wider than its bar would spill onto the page in the on-bar color and vanish. When it
+      // doesn't fit, it moves just past the end of the bar in the normal text color instead.
+      const need = chartBarLabelNeeds(label, h)
+      const common = { y: top + h / 2, dominantBaseline: "central" as const, className: "text-[0.8125rem] font-[620] tracking-[0.01em]" }
+      if (w >= need) {
+        return (
+          <text x={left + h / 2} {...common} style={{ fill: onColor }}>
+            {label}
+          </text>
+        )
+      }
+      return v < 0 ? (
+        <text x={left - 8} textAnchor="end" {...common} className={cn(common.className, "fill-foreground")}>
+          {label}
+        </text>
+      ) : (
+        <text x={left + w + 8} {...common} className={cn(common.className, "fill-foreground")}>
           {label}
         </text>
       )
@@ -1137,7 +1158,7 @@ export function chartBarLabel({
     const ph = 22
     const gap = 6
     const neg = v < 0
-    const px = horizontal ? (neg ? left - gap - pw : left + w + gap) : left + w / 2 - pw / 2
+    const px = horizontal ? (neg ? left - gap - pw - offset : left + w + gap + offset) : left + w / 2 - pw / 2
     const py = horizontal ? top + h / 2 - ph / 2 : neg ? top + h + gap : top - gap - ph
     const tonal = tone === "tonal"
     return (
