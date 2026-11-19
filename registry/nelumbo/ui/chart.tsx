@@ -1054,17 +1054,21 @@ function ChartStages({
                   const w = Math.max(2, x(endOf(d)) - x1)
                   return <rect key={i} x={x1 - w / 2} y={y + 4} width={w} height={trackHeight - 8} rx={1} fill={color} />
                 }
-                const x1 = x(startOf(d))
-                const w = Math.max(3, x(endOf(d)) - x1)
-                const r = Math.min(trackHeight / 2, w / 2)
+                const x0 = x(startOf(d))
+                const w0 = Math.max(3, x(endOf(d)) - x0)
+                const r = Math.min(trackHeight / 2, w0 / 2)
                 // the corner a connector leaves from or arrives at is square, so the line springs from a point
                 const j = chain.indexOf(d)
                 const into = j > 0 && chain[j - 1].stage !== d.stage ? chain[j - 1] : null
                 const out = j >= 0 && j < chain.length - 1 && chain[j + 1].stage !== d.stage ? chain[j + 1] : null
                 const sharp = { tl: false, tr: false, br: false, bl: false }
-                if (into && Math.abs(x(startOf(d)) - x(endOf(into))) < 2) trackY(d.stage) > trackY(into.stage) ? (sharp.tl = true) : (sharp.bl = true)
+                if (into && Math.abs(x0 - x(endOf(into))) < 2) trackY(d.stage) > trackY(into.stage) ? (sharp.tl = true) : (sharp.bl = true)
                 if (out && Math.abs(x(startOf(out)) - x(endOf(d))) < 2) trackY(out.stage) > trackY(d.stage) ? (sharp.br = true) : (sharp.tr = true)
                 const c = (on: boolean) => (on ? 0 : r)
+                // a block a connector arrives at starts a line-width earlier, so the line is flush with its left edge too
+                const lead = sharp.tl || sharp.bl ? 1.5 : 0
+                const x1 = x0 - lead
+                const w = w0 + lead
                 const X2 = x1 + w
                 const Y2 = y + trackHeight
                 const path = `M${x1 + c(sharp.tl)},${y} H${X2 - c(sharp.tr)} A${c(sharp.tr)},${c(sharp.tr)} 0 0 1 ${X2},${y + c(sharp.tr)} V${Y2 - c(sharp.br)} A${c(sharp.br)},${c(sharp.br)} 0 0 1 ${X2 - c(sharp.br)},${Y2} H${x1 + c(sharp.bl)} A${c(sharp.bl)},${c(sharp.bl)} 0 0 1 ${x1},${Y2 - c(sharp.bl)} V${y + c(sharp.tl)} A${c(sharp.tl)},${c(sharp.tl)} 0 0 1 ${x1 + c(sharp.tl)},${y} Z`
