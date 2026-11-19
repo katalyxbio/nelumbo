@@ -40,12 +40,12 @@ type TabsListProps = React.ComponentProps<typeof TabsPrimitive.List> & {
 }
 
 const LIST = {
-  pill: "h-11 gap-1 rounded-full bg-surface-container-high p-1 dark:bg-surface-container",
+  pill: "h-12 gap-1 rounded-full bg-surface-container p-1 dark:bg-surface-container-low",
   underline: "h-12 overflow-x-auto overflow-y-hidden border-b border-outline-variant [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
 }
 
 const INDICATOR = {
-  pill: "inset-y-1 rounded-full bg-card shadow-e2 dark:bg-surface-container-highest",
+  pill: "inset-y-1 rounded-full bg-inverse-surface shadow-e1",
   underline: "bottom-0 h-[3px] rounded-t-full",
 }
 
@@ -131,7 +131,7 @@ function TabsTrigger({ className, icon, badge, children, ...props }: TabsTrigger
         "type-label-lg text-muted-foreground transition-colors duration-200 hover:text-foreground data-[state=active]:text-foreground",
         "[--icon-size:18px] [--icon-opsz:20] data-[state=active]:[--icon-fill:1]",
         // pill
-        "group-data-[variant=pill]/tabs-list:rounded-full group-data-[variant=pill]/tabs-list:px-5 group-data-[variant=pill]/tabs-list:data-[state=active]:font-semibold",
+        "group-data-[variant=pill]/tabs-list:rounded-full group-data-[variant=pill]/tabs-list:px-5 group-data-[variant=pill]/tabs-list:data-[state=active]:font-semibold group-data-[variant=pill]/tabs-list:data-[state=active]:text-inverse-foreground",
         "group-data-[variant=pill]/tabs-list:data-[state=active]:after:opacity-0",
         // underline
         "group-data-[variant=underline]/tabs-list:px-4 group-data-[variant=underline]/tabs-list:after:rounded-t-lg",
