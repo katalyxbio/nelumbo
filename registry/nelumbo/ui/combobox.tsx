@@ -872,7 +872,7 @@ function Combobox(props: ComboboxProps) {
               <div
                 className={cn(
                   "flex min-w-0 flex-1 flex-wrap items-center gap-1.5",
-                  filled && floating ? "pt-(--value-pt) pb-(--value-pb)" : "py-2"
+                  filled && floating ? "pt-[calc(var(--value-pt)+0.375rem)] pb-(--value-pb)" : "py-2"
                 )}
               >
                 {selected.map((v) => {
