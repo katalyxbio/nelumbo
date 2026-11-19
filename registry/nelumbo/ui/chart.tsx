@@ -1030,8 +1030,8 @@ function ChartStages({
                   const cx = x(startOf(d))
                   return (
                     <linearGradient key={`g${i}`} id={`${chartId}-c${i}`} gradientUnits="userSpaceOnUse" x1={cx} x2={cx} y1={a} y2={b}>
-                      <stop offset="0" stopColor={`var(--color-${prev.stage})`} />
-                      <stop offset="1" stopColor={`var(--color-${d.stage})`} />
+                      <stop offset="0" stopColor={`var(--color-${prev.stage})`} stopOpacity={0.5} />
+                      <stop offset="1" stopColor={`var(--color-${d.stage})`} stopOpacity={0.5} />
                     </linearGradient>
                   )
                 })}
@@ -1043,7 +1043,8 @@ function ChartStages({
                 const a = trackY(prev.stage) + (down ? trackHeight : 0)
                 const b = trackY(d.stage) + (down ? 0 : trackHeight)
                 const cx = x(startOf(d))
-                return <line key={`c${i}`} x1={cx} x2={cx} y1={Math.min(a, b)} y2={Math.max(a, b)} strokeWidth={2} stroke={`url(#${chartId}-c${i})`} />
+                // drawn just inside the block it leaves, so the stroke never pokes out past the square corner
+                return <line key={`c${i}`} x1={cx - 0.75} x2={cx - 0.75} y1={Math.min(a, b)} y2={Math.max(a, b)} strokeWidth={1.5} stroke={`url(#${chartId}-c${i})`} />
               })}
               {data.map((d, i) => {
                 const y = trackY(d.stage)
