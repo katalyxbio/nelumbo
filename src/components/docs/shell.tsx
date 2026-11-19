@@ -16,6 +16,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
     items: [
       { href: "/", label: "Color, depth & motion" },
       { href: "/components/typography", label: "Typography", isNew: true },
+      { href: "/components/shape", label: "Shape", isNew: true },
     ],
   },
   {
