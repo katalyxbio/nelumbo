@@ -39,7 +39,8 @@ const base = [
   "disabled:pointer-events-none disabled:opacity-40 aria-disabled:pointer-events-none aria-disabled:opacity-40",
 ]
 
-const button = "tactile state-layer cursor-pointer"
+// the state layer covers the 1px border too, so a hovered chip is one even tone
+const button = "tactile state-layer cursor-pointer after:-inset-px"
 
 const surface = (elevated?: boolean) =>
   elevated
@@ -100,8 +101,8 @@ type FilterChipProps = Omit<React.ComponentProps<"button">, "color"> & {
 }
 
 const SELECTED = {
-  default: "data-selected:border-transparent data-selected:bg-secondary data-selected:text-secondary-foreground",
-  brand: "data-selected:border-transparent data-selected:bg-brand-container data-selected:text-brand-container-foreground",
+  default: "data-selected:border-transparent data-selected:hover:border-transparent data-selected:bg-secondary data-selected:text-secondary-foreground",
+  brand: "data-selected:border-transparent data-selected:hover:border-transparent data-selected:bg-brand-container data-selected:text-brand-container-foreground",
 }
 
 function FilterChip({
