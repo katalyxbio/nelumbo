@@ -1901,6 +1901,26 @@
       ]
     },
     {
+      "name": "math",
+      "type": "registry:ui",
+      "title": "Math",
+      "description": "TeX math with KaTeX: inline Formula and display Equation with numbers, captions and copy, MathML for screen readers, chemistry via mhchem, readable errors.",
+      "dependencies": [
+        "katex"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@nelumbo/button",
+        "@nelumbo/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/math.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "kbd",
       "type": "registry:ui",
       "title": "Kbd",
