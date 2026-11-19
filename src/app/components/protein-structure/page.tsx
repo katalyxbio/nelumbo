@@ -2,7 +2,8 @@
 
 import * as React from "react"
 import { ProteinStructure, type ProteinColorBy, type ProteinRepresentation } from "@/registry/nelumbo/ui/protein-structure"
-import { FilterChip } from "@/registry/nelumbo/ui/chip"
+import { FilterChip, InputChip } from "@/registry/nelumbo/ui/chip"
+import { Button } from "@/registry/nelumbo/ui/button"
 import { SegmentedButton, SegmentedButtonItem } from "@/registry/nelumbo/ui/segmented-button"
 import { cn } from "@/lib/utils"
 import { Code, PageHeader, Preview, PropsTable, Section } from "@/components/docs/primitives"
@@ -10,8 +11,28 @@ import { SUMO1, UBIQUITIN } from "./data"
 
 const SS_TINT = { H: "bg-brand-container text-brand-container-foreground", E: "bg-warning-container text-warning-container-foreground", C: "" }
 
+const THREE: Record<string, string> = {
+  A: "Ala", R: "Arg", N: "Asn", D: "Asp", C: "Cys", Q: "Gln", E: "Glu", G: "Gly", H: "His", I: "Ile",
+  L: "Leu", K: "Lys", M: "Met", F: "Phe", P: "Pro", S: "Ser", T: "Thr", W: "Trp", Y: "Tyr", V: "Val",
+}
+
 function Linked() {
   const [hovered, setHovered] = React.useState<number | null>(null)
+  const [selected, setSelected] = React.useState<number[]>([48, 63])
+  const anchor = React.useRef<number | null>(null)
+
+  // click toggles one residue; shift-click selects the run from the last one clicked
+  const pick = (n: number, range: boolean) => {
+    if (range && anchor.current != null) {
+      const [a, b] = [Math.min(anchor.current, n), Math.max(anchor.current, n)]
+      const run = Array.from({ length: b - a + 1 }, (_, k) => a + k)
+      setSelected((s) => [...new Set([...s, ...run])].sort((x, y) => x - y))
+    } else {
+      setSelected((s) => (s.includes(n) ? s.filter((x) => x !== n) : [...s, n].sort((x, y) => x - y)))
+    }
+    anchor.current = n
+  }
+
   return (
     <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <ProteinStructure
@@ -19,43 +40,67 @@ function Linked() {
         label="Ubiquitin, PDB 1UBQ"
         hovered={hovered}
         onHoveredChange={setHovered}
+        selected={selected}
+        onSelectedChange={setSelected}
         legend={false}
-        controls={false}
       />
       <div className="flex min-w-0 flex-col gap-3">
         <p className="type-label-md text-muted-foreground">Ubiquitin sequence, 76 residues</p>
         <div
           role="group"
-          aria-label="Ubiquitin sequence"
+          aria-label="Ubiquitin sequence. Press a residue to select it; shift selects a run."
           className="grid grid-cols-[repeat(10,minmax(0,1fr))] gap-0.5 font-mono type-body-md"
           onPointerLeave={() => setHovered(null)}
         >
-          {UBIQUITIN.map((r, i) => (
-            <button
-              key={i}
-              type="button"
-              aria-label={`${r.aa}${i + 1}`}
-              onPointerEnter={() => setHovered(i + 1)}
-              onFocus={() => setHovered(i + 1)}
-              onBlur={() => setHovered(null)}
-              className={cn(
-                "relative grid h-8 place-items-center rounded-md outline-none transition-colors focus-visible:outline-2 focus-visible:outline-ring",
-                SS_TINT[r.ss ?? "C"],
-                hovered === i + 1 && "bg-inverse-surface text-inverse-foreground"
-              )}
-            >
-              {r.aa}
-              {(i + 1) % 10 === 0 && (
-                <span aria-hidden className="absolute -top-0.5 right-0.5 text-[0.5625rem] leading-none text-muted-foreground">
-                  {i + 1}
-                </span>
-              )}
-            </button>
-          ))}
+          {UBIQUITIN.map((r, i) => {
+            const n = i + 1
+            const on = selected.includes(n)
+            return (
+              <button
+                key={i}
+                type="button"
+                aria-label={`${THREE[r.aa ?? ""] ?? r.aa} ${n}, ${r.aa}${n}`}
+                aria-pressed={on}
+                onPointerEnter={() => setHovered(n)}
+                onFocus={() => setHovered(n)}
+                onBlur={() => setHovered(null)}
+                onClick={(e) => pick(n, e.shiftKey)}
+                className={cn(
+                  "relative grid h-8 place-items-center rounded-md outline-none transition-colors focus-visible:outline-2 focus-visible:outline-ring",
+                  SS_TINT[r.ss ?? "C"],
+                  hovered === n && !on && "bg-surface-container-highest text-foreground",
+                  on && "bg-inverse-surface font-semibold text-inverse-foreground"
+                )}
+              >
+                {r.aa}
+                {n % 10 === 0 && (
+                  <span aria-hidden className={cn("absolute -top-0.5 right-0.5 text-[0.5625rem] leading-none", on ? "text-inverse-foreground/70" : "text-muted-foreground")}>
+                    {n}
+                  </span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+        <div className="flex min-h-9 flex-wrap items-center gap-2" aria-live="polite">
+          {selected.length === 0 ? (
+            <span className="type-body-sm text-muted-foreground">No residues selected.</span>
+          ) : (
+            <>
+              {selected.map((n) => (
+                <InputChip key={n} onRemove={() => setSelected((s) => s.filter((x) => x !== n))} removeLabel={`Deselect ${THREE[UBIQUITIN[n - 1].aa ?? ""]} ${n}`}>
+                  {`${UBIQUITIN[n - 1].aa}${n}`}
+                </InputChip>
+              ))}
+              <Button size="sm" variant="ghost" onClick={() => setSelected([])}>
+                Clear
+              </Button>
+            </>
+          )}
         </div>
         <p className="type-body-sm text-muted-foreground">
-          Hover or tab through the sequence and the residue lights up in the structure; hover the structure and the
-          letter lights up here. Tinted letters are helix and strand.
+          Press letters to select residues, or shift-press to select a run; click residues in the structure to add or
+          remove them there. Selected residues show their side chains. Hovering either side lights up the other.
         </p>
       </div>
     </div>
@@ -122,8 +167,8 @@ export default function ProteinStructurePage() {
     <>
       <PageHeader eyebrow="Component 86" title="Protein Structure">
         A 3D protein viewer you can turn, zoom and point at: cartoon, tube, trace, ball and stick, spacefill or a
-        molecular surface. It renders on the GPU with Mol*, loaded only when a structure is on screen, and falls back
-        to a built-in canvas renderer while Mol* loads or where WebGL isn&apos;t available.
+        molecular surface. It renders on the GPU with Mol*, loaded only when a structure is on screen, so pages without
+        one stay light.
       </PageHeader>
 
       <Section title="Install">
@@ -165,7 +210,10 @@ export default function ProteinStructurePage() {
         </Preview>
       </Section>
 
-      <Section title="Linked to the sequence" description="hovered and onHoveredChange let a sequence view and the structure follow each other.">
+      <Section
+        title="Linked to the sequence"
+        description="hovered and selected pair a sequence view with the structure. Select residues in either place; the other follows."
+      >
         <Preview className="block">
           <Linked />
         </Preview>
@@ -180,20 +228,6 @@ export default function ProteinStructurePage() {
           <ProteinStructure url="https://files.rcsb.org/download/4HHB.cif" format="mmcif" representation="cartoon" colorBy="rainbow" label="Hemoglobin, PDB 4HHB" />
         </Preview>
         <Code>{`<ProteinStructure url="https://files.rcsb.org/download/4HHB.cif" format="mmcif" />`}</Code>
-      </Section>
-
-      <Section
-        title="Engines"
-        description='engine "molstar" (the default) draws with WebGL and handles big structures, true molecular surfaces and every chain. engine "canvas" is the built-in renderer: no WebGL and no extra download, for small proteins, thumbnails and places where the GPU is busy. Both take the same props.'
-      >
-        <div className="grid min-w-0 gap-4 lg:grid-cols-2">
-          <Preview label="molstar" className="block">
-            <ProteinStructure residues={UBIQUITIN} representation="surface" label="Ubiquitin surface, Mol*" legend={false} />
-          </Preview>
-          <Preview label="canvas" className="block">
-            <ProteinStructure residues={UBIQUITIN} representation="surface" engine="canvas" label="Ubiquitin surface, canvas" legend={false} />
-          </Preview>
-        </div>
       </Section>
 
       <Section title="From a PDB file" description="parsePdb reads the first chain's heavy atoms, HELIX and SHEET records and, for AlphaFold models, the pLDDT stored in the B-factor column.">
@@ -212,7 +246,6 @@ const text = await fetch("https://files.rcsb.org/download/1UBQ.pdb").then((r) =>
             ["residues", "ProteinResidue[]", "—", "C-alpha { x, y, z } in Å, with optional aa, ss (H, E, C), plddt and atoms."],
             ["url", "string", "—", "A structure file to load instead of residues."],
             ["format", '"pdb" | "mmcif" | "bcif"', '"pdb"', "The file format at url."],
-            ["engine", '"molstar" | "canvas"', '"molstar"', "GPU rendering with Mol*, or the built-in canvas renderer."],
             ["representation", '"cartoon" | "tube" | "trace" | "ball-and-stick" | "spacefill" | "surface"', '"cartoon"', "How the protein is drawn."],
             ["outline", '"black" | "background" | "none" | string', '"black"', "Outline color; background draws a gap."],
             ["shading", '"flat" | "lit"', '"flat"', "Flat colors with a bolder outline, or lighting and shadows."],
@@ -220,6 +253,9 @@ const text = await fetch("https://files.rcsb.org/download/1UBQ.pdb").then((r) =>
             ["highlight", "{ residue, label? }[]", "[]", "Residues marked with a label; with atoms, their side chains show as ball and stick."],
             ["hovered", "number | null", "—", "The residue under the pointer, when controlled."],
             ["onHoveredChange", "(residue) => void", "—", "Called as the pointer moves over residues."],
+            ["selected", "number[]", "—", "Selected residues, when controlled. Outlined, with side chains shown."],
+            ["defaultSelected", "number[]", "[]", "Selected residues to start with, when uncontrolled."],
+            ["onSelectedChange", "(residues) => void", "—", "Called when a click in 3D adds or removes a residue."],
             ["firstResidue", "number", "1", "Number of the first residue, for labels."],
             ["spin", "boolean", "false", "Turns slowly until someone drags it. Off with reduced motion."],
             ["controls", "boolean", "true", "Turn, zoom and reset buttons."],

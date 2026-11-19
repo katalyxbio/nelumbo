@@ -1861,14 +1861,15 @@
       "name": "protein-structure",
       "type": "registry:ui",
       "title": "Protein Structure",
-      "description": "A 3D protein viewer on Mol* (WebGL): cartoon, tube, trace, ball and stick, spacefill and surface, black outlines, colored by secondary structure, AlphaFold pLDDT or N to C, with highlighted side chains, linked hover, PDB/mmCIF/BinaryCIF files and a dependency-free canvas fallback.",
+      "description": "A 3D protein viewer on Mol* (WebGL): cartoon, tube, trace, ball and stick, spacefill and surface, black outlines, colored by secondary structure, AlphaFold pLDDT or N to C, with highlighted side chains, residue selection and hover linked to a sequence, and PDB, mmCIF and BinaryCIF files.",
       "dependencies": [
         "molstar"
       ],
       "registryDependencies": [
         "utils",
         "@nelumbo/button",
-        "@nelumbo/icon"
+        "@nelumbo/icon",
+        "@nelumbo/loading-indicator"
       ],
       "files": [
         {

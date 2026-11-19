@@ -18,6 +18,7 @@ import { Script } from "molstar/lib/mol-script/script"
 import { SecondaryStructureColors } from "molstar/lib/mol-theme/color/secondary-structure"
 import { ColorThemeCategory } from "molstar/lib/mol-theme/color/categories"
 import { PostprocessingParams } from "molstar/lib/mol-canvas3d/passes/postprocessing"
+import { clearStructureOverpaint, setStructureOverpaint } from "molstar/lib/mol-plugin-state/helpers/structure-overpaint"
 import type { ColorTheme } from "molstar/lib/mol-theme/color"
 import type { Location } from "molstar/lib/mol-model/location"
 import type { StateObjectSelector } from "molstar/lib/mol-state"
@@ -37,6 +38,7 @@ type Style = {
   coil: RGB
   plain: RGB
   highlightColor: RGB
+  selectColor: RGB
   /** residue numbers whose side chains are drawn as ball-and-stick */
   sideChains: number[]
   spin: boolean
@@ -115,6 +117,21 @@ export async function createMolstarEngine(canvas: HTMLCanvasElement, container: 
   let reps: StateObjectSelector[] = []
   let style: Style | null = null
   let busy = Promise.resolve()
+  let selection: number[] = []
+
+  // selected residues are overpainted in the selection color; rebuilding representations drops overpaint, so it is re-applied after every build
+  async function applySelection() {
+    const s = structureData()
+    const components = plugin.managers.structure.hierarchy.current.structures[0]?.components ?? []
+    if (!s || !components.length) return
+    await clearStructureOverpaint(plugin, components)
+    if (!selection.length || !style) return
+    const residues = selection
+    await setStructureOverpaint(plugin, components, rgb(style.selectColor), async (structure) => {
+      const sel = Script.getStructureSelection(residueQuery(residues, false), structure)
+      return StructureSelection.toLociWithSourceUnits(sel)
+    })
+  }
 
   const structureData = () => (structureRef?.cell?.obj?.data as Structure | undefined) ?? null
 
@@ -176,6 +193,13 @@ export async function createMolstarEngine(canvas: HTMLCanvasElement, container: 
     }
   }
 
+  /** Flat shading gets a bolder outline, but Mol*'s outline only comes in whole pixels: keep it at 1 in small viewers. */
+  function outlineScale(s: Style) {
+    const c3d = plugin.canvas3d
+    const cssWidth = c3d ? c3d.camera.viewport.width / c3d.webgl.pixelRatio : 0
+    return s.shading === "flat" && cssWidth >= 480 ? 2 : 1
+  }
+
   function applyCanvas() {
     const s = style
     if (!s || !plugin.canvas3d) return
@@ -186,6 +210,7 @@ export async function createMolstarEngine(canvas: HTMLCanvasElement, container: 
         ...plugin.canvas3d.props.renderer,
         backgroundColor: rgb(s.background),
         highlightColor: rgb(s.highlightColor),
+        selectColor: rgb(s.selectColor),
         // flat: no directional light, full ambient, so every surface shows its true color
         ...(s.shading === "flat"
           ? { light: [], ambientIntensity: 1, exposure: 1 }
@@ -195,18 +220,20 @@ export async function createMolstarEngine(canvas: HTMLCanvasElement, container: 
             }),
       },
       // hover edges are drawn by a separate marking pass with its own (pink) default
-      marking: { ...plugin.canvas3d.props.marking, highlightEdgeColor: rgb(s.highlightColor), selectEdgeColor: rgb(s.highlightColor) },
+      marking: { ...plugin.canvas3d.props.marking, highlightEdgeColor: rgb(s.highlightColor), selectEdgeColor: rgb(s.selectColor) },
       postprocessing: {
         ...post,
         occlusion:
           s.shading === "lit" ? { name: "on", params: PostprocessingParams.occlusion.map("on").defaultValue as never } : { name: "off", params: {} },
         shadow: { name: "off", params: {} },
         outline: s.outline
-          ? { name: "on", params: { scale: s.shading === "flat" ? 2 : 1, threshold: 0.33, color: rgb(s.outline), includeTransparent: true } }
+          ? { name: "on", params: { scale: outlineScale(s), threshold: 0.33, color: rgb(s.outline), includeTransparent: true } }
           : { name: "off", params: {} },
       },
       camera: {
         ...plugin.canvas3d.props.camera,
+        // adding side chains changes the scene's bounds; don't let Mol* re-center on every change
+        manualReset: true,
         helper: { ...plugin.canvas3d.props.camera.helper, axes: { name: "off", params: {} } },
       },
       trackball: {
@@ -246,6 +273,7 @@ export async function createMolstarEngine(canvas: HTMLCanvasElement, container: 
         structureRef = await plugin.builders.structure.createStructure(model)
         polymerRef = (await plugin.builders.structure.tryCreateComponentStatic(structureRef, "polymer")) ?? null
         await build()
+        await applySelection()
         // loading resets the canvas settings, so apply ours again
         applyCanvas()
         await frameIt(0)
@@ -268,6 +296,7 @@ export async function createMolstarEngine(canvas: HTMLCanvasElement, container: 
       return rebuild
         ? queue(async () => {
             await build()
+            await applySelection()
             applyCanvas()
             // a new representation changes the scene's bounds and Mol* re-centers; frame it the way we do on load
             if (reframe) await frameIt(0)
@@ -297,6 +326,24 @@ export async function createMolstarEngine(canvas: HTMLCanvasElement, container: 
         if (residue === last) return
         last = residue
         cb(loc && residue != null ? { residue, name: StructureProperties.atom.label_comp_id(loc) } : null)
+      })
+      return () => sub.unsubscribe()
+    },
+
+    /** Marks residues as selected (tinted and edged), replacing any earlier selection. */
+    select(residues: number[]) {
+      selection = residues
+      return queue(applySelection)
+    },
+
+    /** Calls back with the residue number when someone clicks a residue (not after a drag). */
+    onClick(cb: (residue: number) => void) {
+      const sub = plugin.behaviors.interaction.click.subscribe(({ current, button }) => {
+        if (button !== 1) return
+        const loci = current.loci
+        if (!StructureElement.Loci.is(loci) || StructureElement.Loci.isEmpty(loci)) return
+        const loc = StructureElement.Loci.getFirstLocation(loci)
+        if (loc) cb(StructureProperties.residue.auth_seq_id(loc))
       })
       return () => sub.unsubscribe()
     },
@@ -353,6 +400,7 @@ export async function createMolstarEngine(canvas: HTMLCanvasElement, container: 
 
     resize() {
       plugin.canvas3d?.handleResize()
+      applyCanvas()
     },
 
     dispose() {
