@@ -38,7 +38,7 @@ const iconButtonVariants = cva(
       variant: {
         standard: "bg-transparent text-muted-foreground data-[state=on]:text-primary",
         filled: [
-          "bg-primary bg-linear-to-b from-white/10 to-transparent text-primary-foreground shadow-e1 inset-shadow-highlight hover:shadow-e2",
+          "bg-primary text-primary-foreground shadow-e1 inset-shadow-highlight hover:shadow-e2",
           "data-[state=off]:bg-surface-container-highest data-[state=off]:bg-none data-[state=off]:text-primary data-[state=off]:shadow-none data-[state=off]:inset-shadow-none",
         ],
         secondary: [
