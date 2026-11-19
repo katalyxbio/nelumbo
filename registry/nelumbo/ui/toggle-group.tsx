@@ -42,17 +42,14 @@ type ToggleGroupProps = React.ComponentProps<typeof ToggleGroupPrimitive.Root> &
   }
 
 // Connected: one row of quiet tiles. The selected item turns inverse and
-// swells into a full pill while its neighbours give way; pressing an item
-// widens it and squeezes the rest, as in ButtonGroup.
+// rounds into a full pill. Only its corners move: no item changes width, so
+// nothing around the group shifts.
 const connectedClasses = [
   "gap-0.5",
   "*:[--press-scale:1]",
   "*:[--btn-radius-start:calc(var(--btn-h)/5)] *:[--btn-radius-end:calc(var(--btn-h)/5)]",
   "*:first:[--btn-radius-start:var(--btn-radius)] *:last:[--btn-radius-end:var(--btn-radius)]",
   "[&>[data-state=on][data-state]]:[--btn-radius-start:calc(var(--btn-h)/2)] [&>[data-state=on][data-state]]:[--btn-radius-end:calc(var(--btn-h)/2)]",
-  "[&>[data-state=on]]:[--btn-px-delta:0.375rem]",
-  "*:active:[--btn-px-delta:0.5rem]",
-  "[&:has(>:active)>:not(:active)]:[--btn-px-delta:-0.125rem]",
 ]
 
 // item colors in a connected group; cn() lets these replace the variant's

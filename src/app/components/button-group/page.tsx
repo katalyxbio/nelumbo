@@ -23,7 +23,7 @@ export default function ButtonGroupPage() {
 
       <Section
         title="Standard"
-        description="Separate buttons that react together: press and hold one and it widens while its neighbors make room."
+        description="Separate buttons that react together: press and hold one and its corners round, without any button changing width."
       >
         <Preview>
           <ButtonGroup>

@@ -355,16 +355,13 @@ const connectedGroup = [
   "*:[--btn-radius-start:calc(var(--btn-h)/5)] *:[--btn-radius-end:calc(var(--btn-h)/5)]",
   "*:first:[--btn-radius-start:var(--btn-radius)] *:last:[--btn-radius-end:var(--btn-radius)]",
   "[&>[data-state=on]]:[--btn-radius-start:calc(var(--btn-h)/2)] [&>[data-state=on]]:[--btn-radius-end:calc(var(--btn-h)/2)]",
-  "[&>[data-state=on]]:[--btn-px-delta:0.375rem]",
-  "*:active:[--btn-px-delta:0.5rem]",
-  "[&:has(>:active)>:not(:active)]:[--btn-px-delta:-0.125rem]",
 ]
 
 type ToolbarToggleGroupProps = React.ComponentProps<typeof ToolbarPrimitive.ToggleGroup> & { keep?: boolean }
 
 /**
- * Nelumbo's connected toggle group inside a toolbar: the selected item swells
- * and its neighbours give way. In a vertical toolbar the items stack as
+ * Nelumbo's connected toggle group inside a toolbar: the selected item rounds
+ * into a pill without changing width. In a vertical toolbar the items stack as
  * separate pills. One tab stop with the other toolbar items, arrows move on.
  */
 function ToolbarToggleGroup({ className, keep = false, children, ...props }: ToolbarToggleGroupProps) {

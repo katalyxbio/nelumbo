@@ -8,13 +8,13 @@ import { cn } from "@/lib/utils"
  *
  * Lays out Buttons and IconButtons as one unit (Material 3 Expressive).
  *
- *  - `standard`: separate buttons. Pressing one widens it while its
- *    neighbors give up a little space, so the row feels physically linked.
+ *  - `standard`: separate buttons that gap evenly. Pressing one rounds its
+ *    corners; no button changes width, so nothing around the group shifts.
  *  - `connected`: a tight row with small inner corners. A selected toggle
  *    (IconButton with `toggle`) rounds out fully.
  *
  * Everything works through CSS variables the buttons already read
- * (--btn-px-delta, --btn-radius-start/end, --press-scale), so the group
+ * (--btn-radius-start/end, --press-scale), so the group
  * adds no JavaScript and any Nelumbo button can be a child.
  */
 const buttonGroupVariants = cva("inline-flex w-fit items-center", {
@@ -24,8 +24,6 @@ const buttonGroupVariants = cva("inline-flex w-fit items-center", {
         "gap-2",
         // the group's own motion replaces the per-button squeeze
         "*:[--press-scale:1]",
-        "*:active:[--btn-px-delta:0.5rem]",
-        "[&:has(>:active)>:not(:active)]:[--btn-px-delta:-0.25rem]",
       ],
       connected: [
         "gap-0.5",
