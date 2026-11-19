@@ -121,10 +121,11 @@ function NavigationRailItem({ className, icon, label, description, active = fals
     <span
       className={cn(
         // 16px in on both sides: a 24px icon fills the 56px pill exactly, so it stays put as the pill grows
-        "relative flex h-8 w-14 shrink-0 items-center justify-start rounded-full px-4",
+        // a real radius, not "full": 9999px cannot be animated, it would hold and then snap
+        "relative flex h-8 w-14 shrink-0 items-center justify-start rounded-[1rem] px-4",
         "transition-[width,height,border-radius] duration-[519ms] ease-(--ease-spring) motion-reduce:transition-none",
         // a two-line row is too tall for a full pill: it rounds like a card instead
-        description ? "group-data-expanded/rail:h-14 group-data-expanded/rail:rounded-xl" : "group-data-expanded/rail:h-10",
+        description ? "group-data-expanded/rail:h-14 group-data-expanded/rail:rounded-[0.875rem]" : "group-data-expanded/rail:h-10 group-data-expanded/rail:rounded-[1.25rem]",
         "group-data-expanded/rail:w-full"
       )}
     >
