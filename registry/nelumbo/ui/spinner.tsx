@@ -26,15 +26,16 @@ import { LoadingIndicator } from "@/registry/nelumbo/ui/loading-indicator"
  */
 
 const CSS = `
-@keyframes vlv-spin-arc {
-  /* the arc never shrinks below 8% of the circle, so it always reads as a spinner */
-  0% { stroke-dasharray: 8 92; stroke-dashoffset: 0 }
-  50% { stroke-dasharray: 70 30; stroke-dashoffset: -14 }
-  100% { stroke-dasharray: 8 92; stroke-dashoffset: -100 }
+/* The tail runs at one steady speed and only the arc's length eases, so the head never stalls or jumps.
+   The dash pattern is exactly the circle (100), so the last frame equals the first. */
+@keyframes vlv-spin-tail { from { stroke-dashoffset: 0 } to { stroke-dashoffset: -100 } }
+@keyframes vlv-spin-length {
+  0%, 100% { stroke-dasharray: 8 92 }
+  50% { stroke-dasharray: 70 30 }
 }
 @keyframes vlv-spin-turn { to { transform: rotate(360deg) } }
 .vlv-spin-turn { animation: vlv-spin-turn 2s linear infinite; transform-origin: 50% 50%; will-change: transform }
-.vlv-spin-arc { animation: vlv-spin-arc 1.5s ease-in-out infinite }
+.vlv-spin-arc { animation: vlv-spin-tail 1.5s linear infinite, vlv-spin-length 1.5s ease-in-out infinite }
 @media (prefers-reduced-motion: reduce) {
   .vlv-spin-turn, .vlv-spin-arc { animation-duration: 4s }
 }

@@ -16,12 +16,14 @@ import { cn } from "@/lib/utils"
  * with aria-busy, and announce when it's ready if that matters.
  */
 const CSS = `
-@keyframes vlv-shimmer { to { background-position-x: 200% } }
+/* A strip twice the width, tiled with one soft band per element width, slides left by exactly one tile:
+   the last frame equals the first and a band is always in view, so it loops with no gap or restart. */
+@keyframes vlv-shimmer { to { transform: translateX(-50%) } }
 @keyframes vlv-skeleton-pulse { 50% { opacity: 0.55 } }
 .vlv-shimmer::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--surface-bright) 70%, transparent), transparent) 0 0 / 200% 100% repeat-x;
-  animation: vlv-shimmer 2s linear infinite;
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 200%;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--surface-bright) 70%, transparent), transparent) 0 0 / 50% 100% repeat-x;
+  animation: vlv-shimmer 1.8s linear infinite; will-change: transform;
 }
 @media (prefers-reduced-motion: reduce) {
   .vlv-shimmer { animation: vlv-skeleton-pulse 2s ease-in-out infinite }
