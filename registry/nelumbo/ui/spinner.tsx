@@ -26,30 +26,65 @@ import { LoadingIndicator } from "@/registry/nelumbo/ui/loading-indicator"
  */
 
 const CSS = `
-/* The tail runs at one steady speed and only the arc's length eases, so the head never stalls or jumps.
-   The dash pattern is exactly the circle (100), so the last frame equals the first. */
-@keyframes vlv-spin-tail { from { stroke-dashoffset: 0 } to { stroke-dashoffset: -100 } }
-@keyframes vlv-spin-length {
-  0%, 100% { stroke-dasharray: 8 92 }
-  50% { stroke-dasharray: 70 30 }
+/* Every moving part is a rotation, so the compositor runs it off the main thread and a busy page can't make it stutter.
+   Two half-circle arcs swing inside left/right clippers (that is what grows and shrinks the arc), a thin patch
+   hides the seam at the top, a layer steps forward 135deg per beat, and the whole thing turns steadily. */
+.vlv-spin { position: relative; display: inline-block; vertical-align: middle }
+.vlv-spin-c, .vlv-spin-l { position: absolute; inset: 0 }
+.vlv-spin-c { animation: vlv-spin-c 1568ms linear infinite }
+.vlv-spin-l { display: flex; animation: vlv-spin-l 5332ms cubic-bezier(0.4, 0, 0.2, 1) infinite both }
+.vlv-spin-clip { position: relative; width: 50%; height: 100%; overflow: hidden }
+.vlv-spin-gap { position: absolute; top: 0; left: 47.5%; width: 5%; height: 100%; overflow: hidden }
+.vlv-spin svg { position: absolute; top: 0; display: block; max-width: none; height: 100% !important }
+.vlv-spin-clip svg { width: 200% !important; left: 0 }
+.vlv-spin-clip + .vlv-spin-gap + .vlv-spin-clip svg { left: -100% }
+.vlv-spin-gap svg { width: 2000% !important; left: -950%; transform: rotate(180deg) }
+.vlv-spin-a { animation: vlv-spin-a 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both }
+.vlv-spin-b { animation: vlv-spin-b 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both }
+@keyframes vlv-spin-c { to { transform: rotate(360deg) } }
+@keyframes vlv-spin-l {
+  0% { transform: rotate(0deg) } 12.5% { transform: rotate(135deg) } 25% { transform: rotate(270deg) }
+  37.5% { transform: rotate(405deg) } 50% { transform: rotate(540deg) } 62.5% { transform: rotate(675deg) }
+  75% { transform: rotate(810deg) } 87.5% { transform: rotate(945deg) } 100% { transform: rotate(1080deg) }
 }
-@keyframes vlv-spin-turn { to { transform: rotate(360deg) } }
-.vlv-spin-turn { animation: vlv-spin-turn 2s linear infinite; transform-origin: 50% 50%; will-change: transform }
-.vlv-spin-arc { animation: vlv-spin-tail 1.5s linear infinite, vlv-spin-length 1.5s ease-in-out infinite }
+@keyframes vlv-spin-a { 0%, 100% { transform: rotate(265deg) } 50% { transform: rotate(130deg) } }
+@keyframes vlv-spin-b { 0%, 100% { transform: rotate(-265deg) } 50% { transform: rotate(-130deg) } }
 @media (prefers-reduced-motion: reduce) {
-  .vlv-spin-turn, .vlv-spin-arc { animation-duration: 4s }
+  .vlv-spin-c { animation-duration: 4704ms }
+  .vlv-spin-l { animation-duration: 15996ms }
+  .vlv-spin-a, .vlv-spin-b { animation-duration: 3999ms }
 }
 `
 
-type SpinnerProps = Omit<React.ComponentProps<"svg">, "children"> & {
+/** Most of the ring's bottom half, before rotation. Each side trims its hidden end (the left one at 9 o'clock, the right
+ *  one at 3) so that end's round cap never pokes past the clipper's edge. The patch draws it a little thinner so no edge shows. */
+function Arc({ className, thin, late }: { className?: string; thin?: boolean; late?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
+      <circle
+        cx="12"
+        cy="12"
+        r="9"
+        pathLength={100}
+        stroke="currentColor"
+        strokeWidth={thin ? 2 : 2.5}
+        strokeDasharray="46 154"
+        strokeDashoffset={late ? -4 : 0}
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+type SpinnerProps = Omit<React.ComponentProps<"span">, "children"> & {
   variant?: "ring" | "shapes"
 }
 
-function Spinner({ className, variant = "ring", ...props }: SpinnerProps) {
+function Spinner({ className, variant = "ring", "aria-label": label = "Loading", ...props }: SpinnerProps) {
   const size = "size-[var(--icon-size,1.25em)] shrink-0"
 
   if (variant === "shapes") {
-    const { "aria-label": label = "Loading", style, ...rest } = props as React.ComponentProps<"span">
+    const { style, ...rest } = props
     return (
       <span
         data-slot="spinner"
@@ -66,30 +101,24 @@ function Spinner({ className, variant = "ring", ...props }: SpinnerProps) {
   }
 
   return (
-    <svg
-      data-slot="spinner"
-      data-variant="ring"
-      role="status"
-      aria-label="Loading"
-      viewBox="0 0 24 24"
-      fill="none"
-      className={cn(size, "vlv-spin-turn", className)}
-      {...props}
-    >
+    <span data-slot="spinner" data-variant="ring" role="status" aria-label={label} className={cn("vlv-spin", size, className)} {...props}>
       <style href="nelumbo-spinner" precedence="default">
         {CSS}
       </style>
-      <circle
-        cx="12"
-        cy="12"
-        r="9"
-        pathLength={100}
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        className="vlv-spin-arc"
-      />
-    </svg>
+      <span className="vlv-spin-c">
+        <span className="vlv-spin-l">
+          <span className="vlv-spin-clip">
+            <Arc className="vlv-spin-a" />
+          </span>
+          <span className="vlv-spin-gap">
+            <Arc thin />
+          </span>
+          <span className="vlv-spin-clip">
+            <Arc className="vlv-spin-b" late />
+          </span>
+        </span>
+      </span>
+    </span>
   )
 }
 

@@ -70,7 +70,8 @@ function InputGroup({ className, children, ...props }: React.ComponentProps<"div
         "has-[>[data-align=block-start]]:items-stretch has-[>[data-align=block-end]]:items-stretch has-[>textarea]:h-auto",
         // a control next to an addon gives up its own padding on that side
         "has-[>[data-align=inline-start]]:[&>input]:ps-2 has-[>[data-align=inline-end]]:[&>input]:pe-2",
-        "has-[>[data-align=block-start]]:[&>input]:h-10 has-[>[data-align=block-end]]:[&>input]:h-10",
+        // In a column flex-1 would collapse the input to its text height, so block layouts give it a fixed row.
+        "has-[>[data-align=block-start]]:[&>input]:h-10 has-[>[data-align=block-end]]:[&>input]:h-10 has-[>[data-align=block-start]]:[&>input]:flex-none has-[>[data-align=block-end]]:[&>input]:flex-none",
         "has-[>[data-align=block-start]]:[&>textarea]:pt-1 has-[>[data-align=block-end]]:[&>textarea]:pb-1",
         className
       )}

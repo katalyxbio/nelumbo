@@ -47,11 +47,11 @@ const buttonVariants = cva(
         link: "h-auto! px-0! text-primary underline-offset-4 [--press-scale:1] after:hidden hover:underline",
       },
       size: {
-        xs: "h-7 type-label-md [--btn-h:1.75rem] [--btn-px:0.75rem] has-[>[data-slot=icon]]:[--btn-px:0.625rem] has-[>svg]:[--btn-px:0.625rem]",
-        sm: "h-8 type-label-md [--btn-h:2rem] [--btn-px:0.875rem] has-[>[data-slot=icon]]:[--btn-px:0.75rem] has-[>svg]:[--btn-px:0.75rem]",
-        default: "h-10 type-label-lg [--btn-h:2.5rem] [--btn-px:1.25rem] has-[>[data-slot=icon]]:[--btn-px:1rem] has-[>svg]:[--btn-px:1rem]",
-        lg: "h-12 text-[0.9375rem] font-[520] tracking-[-0.006em] [--btn-h:3rem] [--btn-px:1.5rem] has-[>[data-slot=icon]]:[--btn-px:1.25rem] has-[>svg]:[--btn-px:1.25rem] [--icon-opsz:24]",
-        xl: "h-14 gap-2.5 type-title-sm [--btn-h:3.5rem] [--btn-px:2rem] has-[>[data-slot=icon]]:[--btn-px:1.75rem] has-[>svg]:[--btn-px:1.75rem] [--icon-opsz:24]",
+        xs: "h-7 type-label-md [--btn-h:1.75rem] [--btn-px:0.75rem] has-[>[data-slot=icon]]:[--btn-px:0.625rem] has-[>svg]:[--btn-px:0.625rem] has-[>[data-slot=spinner]]:[--btn-px:0.625rem]",
+        sm: "h-8 type-label-md [--btn-h:2rem] [--btn-px:0.875rem] has-[>[data-slot=icon]]:[--btn-px:0.75rem] has-[>svg]:[--btn-px:0.75rem] has-[>[data-slot=spinner]]:[--btn-px:0.75rem]",
+        default: "h-10 type-label-lg [--btn-h:2.5rem] [--btn-px:1.25rem] has-[>[data-slot=icon]]:[--btn-px:1rem] has-[>svg]:[--btn-px:1rem] has-[>[data-slot=spinner]]:[--btn-px:1rem]",
+        lg: "h-12 text-[0.9375rem] font-[520] tracking-[-0.006em] [--btn-h:3rem] [--btn-px:1.5rem] has-[>[data-slot=icon]]:[--btn-px:1.25rem] has-[>svg]:[--btn-px:1.25rem] has-[>[data-slot=spinner]]:[--btn-px:1.25rem] [--icon-opsz:24]",
+        xl: "h-14 gap-2.5 type-title-sm [--btn-h:3.5rem] [--btn-px:2rem] has-[>[data-slot=icon]]:[--btn-px:1.75rem] has-[>svg]:[--btn-px:1.75rem] has-[>[data-slot=spinner]]:[--btn-px:1.75rem] [--icon-opsz:24]",
         "icon-xs": "size-7 [--btn-h:1.75rem] [--btn-px:0px]",
         "icon-sm": "size-8 [--btn-h:2rem] [--btn-px:0px]",
         icon: "size-10 [--btn-h:2.5rem] [--btn-px:0px]",
@@ -124,7 +124,7 @@ function stripLeadingIcon(children: React.ReactNode) {
  * The shared Spinner ring, decorative: inside a busy button the button itself
  * carries aria-busy, so the ring is hidden from assistive tech.
  */
-function Spinner(props: React.ComponentProps<"svg">) {
+function Spinner(props: React.ComponentProps<"span">) {
   return <RingSpinner aria-hidden role="presentation" aria-label={undefined} {...props} />
 }
 
