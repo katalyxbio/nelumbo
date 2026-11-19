@@ -1883,6 +1883,24 @@
       ]
     },
     {
+      "name": "chemical-structure",
+      "type": "registry:ui",
+      "title": "Chemical Structure",
+      "description": "A molecule's skeletal formula from SMILES, drawn as theme-aware SVG: conventional heteroatom colors or mono, stereo wedges, highlighted atoms, molecular formula.",
+      "dependencies": [
+        "smiles-drawer"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/chemical-structure.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "kbd",
       "type": "registry:ui",
       "title": "Kbd",

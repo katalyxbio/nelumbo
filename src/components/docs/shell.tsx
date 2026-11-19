@@ -123,6 +123,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: "/components/chromosome-ideogram", label: "Chromosome Ideogram", isNew: true },
       { href: "/components/phylo-tree", label: "Phylo Tree", isNew: true },
       { href: "/components/protein-structure", label: "Protein Structure", isNew: true },
+      { href: "/components/chemical-structure", label: "Chemical Structure", isNew: true },
     ],
   },
   {

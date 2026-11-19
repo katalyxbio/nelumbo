@@ -200,6 +200,7 @@ export const USED_ICONS: IconName[] = [
   "picture_as_pdf",
   "pill",
   "play_arrow",
+  "polymer",
   "print",
   "priority_high",
   "privacy",
