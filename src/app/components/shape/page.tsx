@@ -88,7 +88,7 @@ export default function ShapePage() {
   return (
     <>
       <PageHeader eyebrow="Component 85" title="Shape">
-        Thirty-five soft shapes, from circles and pills to cookies, clovers, bursts, a heart and pixel shapes. Use them
+        Thirty-four soft shapes, from circles and pills to cookies, clovers, bursts and pixel shapes. Use them
         for avatars, image crops, icon containers and small moments of expression. Every shape morphs into every other.
       </PageHeader>
 
@@ -157,23 +157,12 @@ export default function ShapePage() {
 
       <Section
         title="Loading indicator"
-        description="LoadingIndicator takes its sequence from the same library. Give it shapes for your own loop; two or more shapes work."
+        description="LoadingIndicator morphs through seven shapes from this library: soft burst, cookie 9, pentagon, pill, sunny, clover 4 and oval."
       >
         <Preview className="gap-10">
-          <div className="flex flex-col items-center gap-3">
-            <LoadingIndicator size={56} />
-            <span className="type-label-sm text-muted-foreground">Default seven</span>
-          </div>
-          <div className="flex flex-col items-center gap-3">
-            <LoadingIndicator size={56} color="brand" shapes={["heart", "flower", "cookie-12", "gem"]} />
-            <span className="type-label-sm text-muted-foreground">heart, flower, cookie-12, gem</span>
-          </div>
-          <div className="flex flex-col items-center gap-3">
-            <LoadingIndicator size={56} contained shapes={["pixel-circle", "pixel-triangle", "square"]} />
-            <span className="type-label-sm text-muted-foreground">Pixel</span>
-          </div>
+          <LoadingIndicator size={56} />
+          <LoadingIndicator size={56} color="brand" contained />
         </Preview>
-        <Code>{`<LoadingIndicator shapes={["heart", "flower", "cookie-12", "gem"]} />`}</Code>
       </Section>
 
       <Section
@@ -191,7 +180,7 @@ shapePath("sunny", { fit: "circle" })`}</Code>
       <Section title="Props">
         <PropsTable
           rows={[
-            ["name", "ShapeName", "—", `One of ${SHAPE_NAMES.length} shapes, e.g. "cookie-9", "arch", "heart".`],
+            ["name", "ShapeName", "—", `One of ${SHAPE_NAMES.length} shapes, e.g. "cookie-9", "arch", "pixel-circle".`],
             ["morph", "boolean", "true", "Morph when name changes."],
             ["children", "ReactNode", "—", "Clipped to the shape; an img or video fills it. The clip also cuts shadows and focus rings, so put those on a wrapper."],
             ["shapePath(name, options)", "string", "—", 'options.fit "box" (default) or "circle"; options.points (144).'],

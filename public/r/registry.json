@@ -1014,7 +1014,7 @@
       "name": "loading-indicator",
       "type": "registry:ui",
       "title": "Loading Indicator",
-      "description": "Material 3 Expressive loading indicator: a shape that springs through seven forms as it turns (or any sequence from the Shape library), plain or contained, brand color, any size. Pulses with reduced motion.",
+      "description": "Material 3 Expressive loading indicator: a shape that springs through seven forms as it turns, plain or contained, brand color, any size. Pulses with reduced motion.",
       "registryDependencies": [
         "utils",
         "@nelumbo/shape"
@@ -1845,7 +1845,7 @@
       "name": "shape",
       "type": "registry:ui",
       "title": "Shape",
-      "description": "Material 3 Expressive shape library: 35 soft shapes (cookies, clovers, bursts, arch, heart, pixel shapes) as a clipping Shape component that morphs between any two, plus shapePath() for your own CSS.",
+      "description": "Material 3 Expressive shape library: 34 soft shapes (cookies, clovers, bursts, arch, pixel shapes) as a clipping Shape component that morphs between any two, plus shapePath() for your own CSS.",
       "dependencies": [],
       "registryDependencies": [
         "utils"

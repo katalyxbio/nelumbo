@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils"
 /**
  * Nelumbo Shape (Material 3 Expressive shape library)
  *
- * Thirty-five soft shapes, from circle and pill to cookies, clovers, bursts,
- * a heart and pixel shapes, for avatars, image crops, icon containers and
+ * Thirty-four soft shapes, from circle and pill to cookies, clovers, bursts
+ * and pixel shapes, for avatars, image crops, icon containers and
  * decorative accents.
  *
  *   <Shape name="cookie-9" className="size-24 bg-brand-container" />
@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils"
  * - The shape is a clip-path, so it also clips shadows and focus rings:
  *   put those on a wrapper.
  * - `shapePath(name)` returns the CSS `polygon()` for your own elements, and
- *   `SHAPE_NAMES` lists them all. LoadingIndicator takes `shapes` from here.
+ *   `SHAPE_NAMES` lists them all. LoadingIndicator draws its seven from here.
  */
 
 /* ------------------------------------------------------------------ */
@@ -156,8 +156,11 @@ const times =
 /** A polygon traced through dense points (arcs, curves). */
 const traced = (n: number, f: (u: number) => Pt, corner = 0) => poly(Array.from({ length: n }, (_, i) => f(i / n)), corner)
 
-/** Stair-stepped outline from row half-widths (top to bottom), for the pixel shapes. */
-function pixels(rows: number[]): Radius {
+/**
+ * Stair-stepped outline from row half-widths (top to bottom), for the pixel shapes. These stay an exact outline,
+ * starting at the top center and running clockwise, so every step keeps its crisp corner.
+ */
+function pixels(rows: number[]): Pt[] {
   const h = rows.length
   const right: Pt[] = []
   const left: Pt[] = []
@@ -166,19 +169,36 @@ function pixels(rows: number[]): Radius {
     right.push([w, y0], [w, y0 + 1])
     left.unshift([-w, y0 + 1], [-w, y0])
   })
-  return poly([...right, ...left])
+  return [[0, -h / 2], ...right, ...left]
 }
 
-const heart = traced(
-  240,
-  (u) => {
-    const t = u * Math.PI * 2
-    const x = 16 * Math.sin(t) ** 3
-    const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)
-    return [x / 16, -(y - 2.5) / 16]
-  },
-  0
-)
+/** Spreads `n` points along an exact outline, keeping every corner and filling long edges evenly. */
+function resample(outline: Pt[], n: number): Pt[] {
+  const edges = outline.map((p, i) => {
+    const q = outline[(i + 1) % outline.length]
+    return Math.hypot(q[0] - p[0], q[1] - p[1])
+  })
+  const total = edges.reduce((a, b) => a + b, 0)
+  const spare = Math.max(0, n - outline.length)
+  const share = edges.map((l) => (l / total) * spare)
+  const extra = share.map(Math.floor)
+  let left = spare - extra.reduce((a, b) => a + b, 0)
+  share
+    .map((v, i) => [v - Math.floor(v), i] as const)
+    .sort((x, y) => y[0] - x[0])
+    .forEach(([, i]) => {
+      if (left-- > 0) extra[i]++
+    })
+  const out: Pt[] = []
+  outline.forEach((p, i) => {
+    const q = outline[(i + 1) % outline.length]
+    for (let k = 0; k <= extra[i]; k++) {
+      const t = k / (extra[i] + 1)
+      out.push([p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t])
+    }
+  })
+  return out.slice(0, n)
+}
 
 /** Half circles over a flat base, with softly rounded base corners. */
 const halfCircle = (cy: number, base: number, corner: number) => {
@@ -265,11 +285,10 @@ const LIBRARY = {
   flower: [wave(8, 0.2), 0],
   puffy: [times(squircle(1, 3.2, 0), scallop(12, 0.07)), 2],
   "puffy-diamond": [times(diamondR, scallop(16, 0.08)), 1],
-  "pixel-circle": [pixels([2, 3.5, 4.5, 5, 5, 5, 5, 4.5, 3.5, 2]), 0],
+  "pixel-circle": [pixels([2, 3, 4, 4, 5, 5, 4, 4, 3, 2]), 0],
   "pixel-triangle": [pixels([1, 1, 2, 2, 3, 3, 4, 4, 5, 5]), 0],
   bun: [bun, 2],
-  heart: [heart, 2],
-} satisfies Record<string, [Radius, number]>
+} satisfies Record<string, [Radius | Pt[], number]>
 
 type ShapeName = keyof typeof LIBRARY
 const SHAPE_NAMES = Object.keys(LIBRARY) as ShapeName[]
@@ -292,17 +311,22 @@ function shapePath(name: ShapeName, { points = 144, fit = "box" }: ShapePathOpti
   const key = `${name}:${points}:${fit}`
   const hit = cache.get(key)
   if (hit) return hit
-  const [r, soften] = LIBRARY[name] as [Radius, number]
-  const raw = Array.from({ length: points }, (_, k) => r((k / points) * Math.PI * 2))
-  const s = Math.round((soften * points) / 144)
-  const rs = raw.map((_, k) => {
-    let sum = 0
-    for (let j = -s; j <= s; j++) sum += raw[(k + j + points) % points]
-    return sum / (s * 2 + 1)
-  })
-  let pts: Pt[] = rs.map((v, k) => at(v, (k / points) * Math.PI * 2))
+  const [r, soften] = LIBRARY[name] as [Radius | Pt[], number]
+  let pts: Pt[]
+  if (Array.isArray(r)) {
+    pts = resample(r, points)
+  } else {
+    const raw = Array.from({ length: points }, (_, k) => r((k / points) * Math.PI * 2))
+    const s = Math.round((soften * points) / 144)
+    const rs = raw.map((_, k) => {
+      let sum = 0
+      for (let j = -s; j <= s; j++) sum += raw[(k + j + points) % points]
+      return sum / (s * 2 + 1)
+    })
+    pts = rs.map((v, k) => at(v, (k / points) * Math.PI * 2))
+  }
   if (fit === "circle") {
-    const peak = Math.max(...rs)
+    const peak = Math.max(...pts.map(([x, y]) => Math.hypot(x, y)))
     pts = pts.map(([x, y]) => [x / peak, y / peak])
   } else {
     const xs = pts.map((p) => p[0])

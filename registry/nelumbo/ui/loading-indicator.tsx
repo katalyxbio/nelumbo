@@ -19,12 +19,11 @@ import { shapePath, type ShapeName } from "@/registry/nelumbo/ui/shape"
  * - `contained`: on a filled circle, for use over images or busy content.
  * - `color`: "default" (black, white in dark mode) or "brand".
  * - `size`: the container in px (default 48); the shape is 38/48 of it.
- * - `shapes`: your own sequence from the Shape library, e.g.
- *   ["heart", "flower", "cookie-12"]. Any two or more shapes work.
  *
  * With reduced motion the shape stays still and gently pulses.
  */
 
+/** Material's seven, drawn from the Shape library. */
 const DEFAULT_SHAPES: ShapeName[] = ["soft-burst", "cookie-9", "pentagon", "pill", "sunny", "clover-4", "oval"]
 const STEP_MS = 650
 
@@ -71,8 +70,6 @@ type LoadingIndicatorProps = Omit<React.ComponentProps<"div">, "color" | "childr
   contained?: boolean
   color?: keyof typeof TONES
   size?: number
-  /** The shapes to morph through, in order (at least two). Defaults to Material's seven. */
-  shapes?: ShapeName[]
 }
 
 function LoadingIndicator({
@@ -81,11 +78,10 @@ function LoadingIndicator({
   contained = false,
   color = "default",
   size = 48,
-  shapes = DEFAULT_SHAPES,
   "aria-label": ariaLabel = "Loading",
   ...props
 }: LoadingIndicatorProps) {
-  const { id, css } = sequenceCss(shapes.length > 1 ? shapes : DEFAULT_SHAPES)
+  const { id, css } = sequenceCss(DEFAULT_SHAPES)
   return (
     <div
       data-slot="loading-indicator"
