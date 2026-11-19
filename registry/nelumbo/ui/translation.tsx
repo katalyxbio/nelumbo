@@ -316,7 +316,7 @@ function Translation({
         className={cn("mx-px min-w-0 px-0", selectable && "cursor-pointer", stop && "bg-foreground/80 text-background dark:bg-foreground/85")}
         style={{ gridColumn: `${a - lineStart + 2} / span ${here}` }}
       >
-        {letterHere ? stop ? <Icon name="asterisk" size={S.tile === "sm" ? 12 : 14} weight={600} className="relative top-[0.5px]" /> : text : ""}
+        {letterHere ? stop ? <Icon name="asterisk" size={S.tile === "sm" ? 12 : 14} weight={600} /> : text : ""}
       </Residue>
     )
   }
