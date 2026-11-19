@@ -1018,14 +1018,32 @@ function ChartStages({
                   <rect x={0} y={trackY(k)} width={width} height={trackHeight} rx={trackHeight / 2} className="fill-surface-container-high" />
                 </g>
               ))}
-              {/* hand-over connectors, behind the blocks */}
+              {/* hand-over connectors, behind the blocks: a line that blends the two stage colors */}
+              <defs>
+                {chain.slice(1).map((d, i) => {
+                  const prev = chain[i]
+                  if (trackY(prev.stage) === trackY(d.stage)) return null
+                  const down = trackY(d.stage) > trackY(prev.stage)
+                  // from the edge of one track to the edge of the other, where the corners are square
+                  const a = trackY(prev.stage) + (down ? trackHeight : 0)
+                  const b = trackY(d.stage) + (down ? 0 : trackHeight)
+                  const cx = x(startOf(d))
+                  return (
+                    <linearGradient key={`g${i}`} id={`${chartId}-c${i}`} gradientUnits="userSpaceOnUse" x1={cx} x2={cx} y1={a} y2={b}>
+                      <stop offset="0" stopColor={`var(--color-${prev.stage})`} />
+                      <stop offset="1" stopColor={`var(--color-${d.stage})`} />
+                    </linearGradient>
+                  )
+                })}
+              </defs>
               {chain.slice(1).map((d, i) => {
                 const prev = chain[i]
-                const a = trackY(prev.stage) + trackHeight / 2
-                const b = trackY(d.stage) + trackHeight / 2
-                if (a === b) return null
+                if (trackY(prev.stage) === trackY(d.stage)) return null
+                const down = trackY(d.stage) > trackY(prev.stage)
+                const a = trackY(prev.stage) + (down ? trackHeight : 0)
+                const b = trackY(d.stage) + (down ? 0 : trackHeight)
                 const cx = x(startOf(d))
-                return <line key={`c${i}`} x1={cx} x2={cx} y1={Math.min(a, b)} y2={Math.max(a, b)} strokeWidth={1.5} className="stroke-outline-variant" />
+                return <line key={`c${i}`} x1={cx} x2={cx} y1={Math.min(a, b)} y2={Math.max(a, b)} strokeWidth={2} stroke={`url(#${chartId}-c${i})`} />
               })}
               {data.map((d, i) => {
                 const y = trackY(d.stage)
@@ -1037,7 +1055,19 @@ function ChartStages({
                 }
                 const x1 = x(startOf(d))
                 const w = Math.max(3, x(endOf(d)) - x1)
-                return <rect key={i} x={x1} y={y} width={w} height={trackHeight} rx={Math.min(trackHeight / 2, w / 2)} fill={color} />
+                const r = Math.min(trackHeight / 2, w / 2)
+                // the corner a connector leaves from or arrives at is square, so the line springs from a point
+                const j = chain.indexOf(d)
+                const into = j > 0 && chain[j - 1].stage !== d.stage ? chain[j - 1] : null
+                const out = j >= 0 && j < chain.length - 1 && chain[j + 1].stage !== d.stage ? chain[j + 1] : null
+                const sharp = { tl: false, tr: false, br: false, bl: false }
+                if (into && Math.abs(x(startOf(d)) - x(endOf(into))) < 2) trackY(d.stage) > trackY(into.stage) ? (sharp.tl = true) : (sharp.bl = true)
+                if (out && Math.abs(x(startOf(out)) - x(endOf(d))) < 2) trackY(out.stage) > trackY(d.stage) ? (sharp.br = true) : (sharp.tr = true)
+                const c = (on: boolean) => (on ? 0 : r)
+                const X2 = x1 + w
+                const Y2 = y + trackHeight
+                const path = `M${x1 + c(sharp.tl)},${y} H${X2 - c(sharp.tr)} A${c(sharp.tr)},${c(sharp.tr)} 0 0 1 ${X2},${y + c(sharp.tr)} V${Y2 - c(sharp.br)} A${c(sharp.br)},${c(sharp.br)} 0 0 1 ${X2 - c(sharp.br)},${Y2} H${x1 + c(sharp.bl)} A${c(sharp.bl)},${c(sharp.bl)} 0 0 1 ${x1},${Y2 - c(sharp.bl)} V${y + c(sharp.tl)} A${c(sharp.tl)},${c(sharp.tl)} 0 0 1 ${x1 + c(sharp.tl)},${y} Z`
+                return <path key={i} d={path} fill={color} />
               })}
             </>
           )}
