@@ -318,6 +318,9 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
     setRot((r) => r + ((((targetAngle - r) % 360) + 540) % 360) - 180)
   }, [targetAngle])
 
+  // The hand always animates: a spring when the time changes by typing or a tap, a quicker glide while it follows a drag.
+  const hand = dragging ? "duration-150 ease-(--ease-standard)" : "duration-300 ease-(--ease-spring)"
+
   const spokes = Array.from({ length: 12 }, (_, i) => i)
   const hourNumber = (i: number, ring: "out" | "in") => {
     if (clock.h12) return { value: (i % 12) + (pm ? 12 : 0), text: String(i === 0 ? 12 : i) }
@@ -411,7 +414,7 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
             ref={dial}
             aria-hidden
             data-slot="time-dial"
-            className="mx-auto size-64 max-w-full touch-none rounded-full bg-surface-container-high select-none dark:bg-surface-container-highest"
+            className={cn("mx-auto size-64 max-w-full touch-none rounded-full bg-surface-container-high select-none dark:bg-surface-container-highest", dragging ? "cursor-grabbing" : "cursor-pointer")}
             onPointerDown={(e) => {
               if (e.button !== 0) return
               e.currentTarget.setPointerCapture(e.pointerId)
@@ -431,7 +434,7 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
               {/* the hand: turns to the angle; the stem grows to the ring */}
               <g
                 style={{ transform: `rotate(${rot}deg)`, transformOrigin: `${C}px ${C}px` }}
-                className={cn("text-primary", !dragging && "transition-transform duration-300 ease-(--ease-spring) motion-reduce:transition-none")}
+                className={cn("text-primary", `transition-transform ${hand} motion-reduce:transition-none`)}
               >
                 <rect
                   x={C - 1}
@@ -440,7 +443,7 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
                   height={1}
                   fill="currentColor"
                   style={{ transform: `scaleY(${(inner ? R_IN : R_OUT) - 1})`, transformOrigin: `${C}px ${C}px` }}
-                  className={cn(!dragging && "transition-transform duration-300 ease-(--ease-spring) motion-reduce:transition-none")}
+                  className={cn(`transition-transform ${hand} motion-reduce:transition-none`)}
                 />
                 <circle
                   cx={C}
@@ -448,14 +451,14 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
                   r={inner ? 18 : 24}
                   fill="currentColor"
                   style={{ transform: `translateY(${-(inner ? R_IN : R_OUT)}px)` }}
-                  className={cn(!dragging && "transition-[transform,r] duration-300 ease-(--ease-spring) motion-reduce:transition-none")}
+                  className={cn(`transition-[transform,r] ${hand} motion-reduce:transition-none`)}
                 />
               </g>
               <circle cx={C} cy={C} r={4} className="fill-primary" />
               {offNumber && (
                 <g
                   style={{ transform: `rotate(${rot}deg)`, transformOrigin: `${C}px ${C}px` }}
-                  className={cn(!dragging && "transition-transform duration-300 ease-(--ease-spring) motion-reduce:transition-none")}
+                  className={cn(`transition-transform ${hand} motion-reduce:transition-none`)}
                 >
                   <circle cx={C} cy={C - R_OUT} r={2} className="fill-primary-foreground" />
                 </g>
@@ -475,7 +478,7 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
                         dy="0.35em"
                         textAnchor="middle"
                         fontSize={16}
-                        className={cn(on ? "fill-primary-foreground" : "fill-foreground", !hourOk(n.value, ok) && "opacity-40")}
+                        className={cn("transition-[fill] duration-200 ease-(--ease-standard) motion-reduce:transition-none", on ? "fill-primary-foreground" : "fill-foreground", !hourOk(n.value, ok) && "opacity-40")}
                       >
                         {n.text}
                       </text>
@@ -494,7 +497,7 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
                           dy="0.35em"
                           textAnchor="middle"
                           fontSize={14}
-                          className={cn(on ? "fill-primary-foreground" : "fill-foreground", !hourOk(n.value, ok) && "opacity-40")}
+                          className={cn("transition-[fill] duration-200 ease-(--ease-standard) motion-reduce:transition-none", on ? "fill-primary-foreground" : "fill-foreground", !hourOk(n.value, ok) && "opacity-40")}
                         >
                           {n.text}
                         </text>
@@ -514,7 +517,7 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
                       dy="0.35em"
                       textAnchor="middle"
                       fontSize={16}
-                      className={cn(on ? "fill-primary-foreground" : "fill-foreground", !ok(h * 60 + v) && "opacity-40")}
+                      className={cn("transition-[fill] duration-200 ease-(--ease-standard) motion-reduce:transition-none", on ? "fill-primary-foreground" : "fill-foreground", !ok(h * 60 + v) && "opacity-40")}
                     >
                       {pad(v)}
                     </text>
