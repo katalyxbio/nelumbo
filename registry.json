@@ -1858,6 +1858,24 @@
       ]
     },
     {
+      "name": "protein-structure",
+      "type": "registry:ui",
+      "title": "Protein Structure",
+      "description": "A 3D protein backbone viewer with no 3D library: a shaded C-alpha tube you can turn and zoom, colored by secondary structure, AlphaFold pLDDT or N to C, with highlighted residues, linked hover and a PDB parser.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils",
+        "@nelumbo/button",
+        "@nelumbo/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/nelumbo/ui/protein-structure.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "kbd",
       "type": "registry:ui",
       "title": "Kbd",

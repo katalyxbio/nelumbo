@@ -3,6 +3,7 @@ import type { IconName } from "@/registry/nelumbo/ui/icon"
 
 export const USED_ICONS: IconName[] = [
   "2d",
+  "3d_rotation",
   "abc",
   "accessibility_new",
   "account_circle",
@@ -39,6 +40,7 @@ export const USED_ICONS: IconName[] = [
   "campaign",
   "cancel",
   "category",
+  "center_focus_strong",
   "chat",
   "chat_bubble",
   "check",
@@ -254,6 +256,7 @@ export const USED_ICONS: IconName[] = [
   "stop",
   "storage",
   "storefront",
+  "style",
   "sunny",
   "support",
   "support_agent",
