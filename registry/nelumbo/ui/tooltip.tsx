@@ -65,7 +65,7 @@ function TooltipContent({ className, variant = "plain", shortcut, sideOffset = 6
         sideOffset={sideOffset}
         collisionPadding={collisionPadding}
         className={cn(
-          "z-50 w-fit max-w-[calc(100vw-1rem)] text-balance origin-(--radix-tooltip-content-transform-origin)",
+          "z-50 w-fit max-w-[calc(100vw-1rem)] text-balance transition-none origin-(--radix-tooltip-content-transform-origin)",
           VARIANTS[variant],
           "animate-in fade-in-0 zoom-in-[0.85] duration-[396ms] ease-(--ease-spring-snappy)",
           "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:duration-100 data-[state=closed]:ease-(--ease-standard)",

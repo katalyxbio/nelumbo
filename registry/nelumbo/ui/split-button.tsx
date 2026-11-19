@@ -105,7 +105,7 @@ function SplitButtonMenu({ label, children, disabled, align = "end", open, onOpe
           align={align}
           sideOffset={6}
           className={cn(
-            "z-50 min-w-48 origin-(--radix-dropdown-menu-content-transform-origin) rounded-2xl bg-popover p-1.5 text-popover-foreground shadow-e3",
+            "z-50 min-w-48 transition-none origin-(--radix-dropdown-menu-content-transform-origin) rounded-2xl bg-popover p-1.5 text-popover-foreground shadow-e3",
             "ring-1 ring-border dark:bg-surface-container-high",
             "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
             "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"

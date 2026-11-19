@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils"
 
 /** Surface and motion shared by popovers and menus. */
 export const floatingSurface = cn(
-  "z-50 rounded-xl bg-card text-card-foreground shadow-e3 outline-none dark:bg-surface-container-high",
+  "z-50 rounded-xl bg-card text-card-foreground shadow-e3 outline-none transition-none dark:bg-surface-container-high",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-[0.9]",
   "data-[state=open]:duration-[396ms] data-[state=open]:ease-(--ease-spring)",
   "data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1",
