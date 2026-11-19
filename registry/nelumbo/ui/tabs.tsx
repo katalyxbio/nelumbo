@@ -11,8 +11,9 @@ import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
  *
  * API-compatible with shadcn's Tabs (Tabs, TabsList, TabsTrigger,
  * TabsContent), plus:
- *  - TabsList `variant`: "pill" (default: a raised pill on a tonal track,
- *    like shadcn) or "underline" (Material primary tabs: a 3px bar under the
+ *  - TabsList `variant`: "pill" (default: a solid inverse pill on a tonal
+ *    track, tabs a little apart; `tone="muted"` makes it a soft raised pill
+ *    for something more subtle) or "underline" (Material primary tabs: a 3px bar under the
  *    label, on a hairline).
  *  - The indicator is one element that slides and resizes between tabs on
  *    the smooth spring, instead of each tab fading its own background.
@@ -35,6 +36,8 @@ function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive
 
 type TabsListProps = React.ComponentProps<typeof TabsPrimitive.List> & {
   variant?: "pill" | "underline"
+  /** Pill lists: "bold" (default) a solid inverse pill, or "muted" a soft raised pill for something more subtle. */
+  tone?: "bold" | "muted"
   color?: "default" | "brand"
   fullWidth?: boolean
 }
@@ -45,11 +48,11 @@ const LIST = {
 }
 
 const INDICATOR = {
-  pill: "inset-y-1 rounded-full bg-inverse-surface shadow-e1",
+  pill: "inset-y-1 rounded-full shadow-e1",
   underline: "bottom-0 h-[3px] rounded-t-full",
 }
 
-function TabsList({ className, variant = "pill", color = "default", fullWidth = false, children, ...props }: TabsListProps) {
+function TabsList({ className, variant = "pill", tone = "bold", color = "default", fullWidth = false, children, ...props }: TabsListProps) {
   const ref = React.useRef<HTMLDivElement>(null)
   const [box, setBox] = React.useState<{ x: number; w: number } | null>(null)
   const [ready, setReady] = React.useState(false)
@@ -89,6 +92,7 @@ function TabsList({ className, variant = "pill", color = "default", fullWidth = 
       ref={ref}
       data-slot="tabs-list"
       data-variant={variant}
+      data-tone={variant === "pill" ? tone : undefined}
       className={cn(
         "group/tabs-list relative isolate flex w-fit max-w-full items-stretch",
         LIST[variant],
@@ -104,6 +108,7 @@ function TabsList({ className, variant = "pill", color = "default", fullWidth = 
         className={cn(
           "pointer-events-none absolute left-0 -z-10 w-(--w) translate-x-(--x)",
           INDICATOR[variant],
+          variant === "pill" && (tone === "muted" ? "bg-card shadow-e2 dark:bg-surface-container-highest" : "bg-inverse-surface"),
           variant === "underline" && (color === "brand" ? "z-10 bg-brand" : "z-10 bg-primary"),
           ready && "transition-[translate,width] duration-[519ms] ease-(--ease-spring) motion-reduce:transition-none",
           !box && "opacity-0"
@@ -131,7 +136,7 @@ function TabsTrigger({ className, icon, badge, children, ...props }: TabsTrigger
         "type-label-lg text-muted-foreground transition-colors duration-200 hover:text-foreground data-[state=active]:text-foreground",
         "[--icon-size:18px] [--icon-opsz:20] data-[state=active]:[--icon-fill:1]",
         // pill
-        "group-data-[variant=pill]/tabs-list:rounded-full group-data-[variant=pill]/tabs-list:px-5 group-data-[variant=pill]/tabs-list:data-[state=active]:font-semibold group-data-[variant=pill]/tabs-list:data-[state=active]:text-inverse-foreground",
+        "group-data-[variant=pill]/tabs-list:rounded-full group-data-[variant=pill]/tabs-list:px-5 group-data-[variant=pill]/tabs-list:data-[state=active]:font-semibold group-data-[tone=bold]/tabs-list:data-[state=active]:text-inverse-foreground",
         "group-data-[variant=pill]/tabs-list:data-[state=active]:after:opacity-0",
         // underline
         "group-data-[variant=underline]/tabs-list:px-4 group-data-[variant=underline]/tabs-list:after:rounded-t-lg",

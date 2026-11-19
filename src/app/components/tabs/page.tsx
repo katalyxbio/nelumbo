@@ -116,6 +116,23 @@ export default function TabsPage() {
         </Preview>
       </Section>
 
+      <Section title="Muted" description='tone="muted" keeps the pill but swaps the solid selected tab for a soft raised one, for something more subtle.'>
+        <Preview className="flex-col items-stretch gap-6">
+          <Tabs defaultValue="all">
+            <TabsList tone="muted">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="open">Open</TabsTrigger>
+              <TabsTrigger value="closed">Closed</TabsTrigger>
+            </TabsList>
+            {["all", "open", "closed"].map((v) => (
+              <TabsContent key={v} value={v} className="type-body-md text-muted-foreground">
+                Showing {v} items.
+              </TabsContent>
+            ))}
+          </Tabs>
+        </Preview>
+      </Section>
+
       <Section title="Full width and brand color" description="fullWidth shares the width equally. The underline can use the accent.">
         <Preview className="flex-col items-stretch gap-8">
           <Tabs defaultValue="day">
@@ -189,6 +206,7 @@ export default function TabsPage() {
           rows={[
             ["TabsList variant", '"pill" | "underline"', '"pill"', ""],
             ["TabsList color", '"default" | "brand"', '"default"', "Underline color"],
+            ["TabsList tone", '"bold" | "muted"', '"bold"', "Pill lists: a solid inverse pill, or a soft raised one"],
             ["TabsList fullWidth", "boolean", "false", "Tabs share the width"],
             ["TabsTrigger icon", "IconName", "", "Fills in when active"],
             ["TabsTrigger badge", "number | boolean", "", "A count, or a dot"],
