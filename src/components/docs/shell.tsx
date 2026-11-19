@@ -130,7 +130,7 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   return (
     <div className="mx-auto flex min-h-dvh max-w-[1280px] flex-col md:flex-row">
-      <aside className="flex shrink-0 flex-col gap-6 border-b border-border px-5 py-5 md:sticky md:top-0 md:h-dvh md:w-64 md:border-r md:border-b-0 md:py-8">
+      <aside className="flex shrink-0 flex-col gap-6 border-b border-border px-5 py-5 md:sticky md:top-0 md:h-dvh md:w-64 md:overflow-y-auto md:overscroll-contain md:border-r md:border-b-0 md:py-8">
         <div className="flex items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-2.5 rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring">
             <span className="size-6 rounded-[0.55rem] bg-primary bg-linear-to-br from-white/25 to-transparent shadow-e1 inset-shadow-highlight" />
