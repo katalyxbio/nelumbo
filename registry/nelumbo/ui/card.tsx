@@ -11,7 +11,9 @@ import { cn } from "@/lib/utils"
  * CardDescription, CardAction, CardContent, CardFooter), plus:
  *  - variant: "elevated" (default, a soft shadow), "filled" (a tonal surface,
  *    no shadow) or "outlined" (a hairline border, flat).
- *  - size: "default" (24px padding) or "sm" (16px), for dense grids.
+ *  - size: "default" or "sm" (a smaller radius, so tighter), for dense grids.
+ *    Padding and gap are derived from the corner radius (1.15x), so a rounder
+ *    card is roomier. Set --card-r (e.g. `[--card-r:2rem]`) to change both.
  *  - interactive: the whole card is one control. Use it with `asChild` and a
  *    link or button: hover shows a faint overlay and lifts elevated cards,
  *    pressing gives the same springy press as buttons. Don't put other
@@ -35,7 +37,7 @@ import { cn } from "@/lib/utils"
  */
 const cardVariants = cva(
   [
-    "flex flex-col gap-(--card-gap) overflow-hidden rounded-xl py-(--card-p) text-card-foreground",
+    "flex flex-col gap-(--card-gap) overflow-hidden rounded-(--card-r) py-(--card-p) text-card-foreground",
     // a media block at the top or bottom drops the outer padding and takes the corners
     "has-[>[data-slot=card-media]:first-child]:pt-0 has-[>[data-slot=card-media]:last-child]:pb-0",
   ],
@@ -47,8 +49,8 @@ const cardVariants = cva(
         outlined: "border border-outline-variant bg-card",
       },
       size: {
-        default: "[--card-p:1.5rem] [--card-gap:1.5rem]",
-        sm: "[--card-p:1rem] [--card-gap:1rem]",
+        default: "[--card-r:var(--radius-xl)] [--card-p:calc(var(--card-r)*1.15)] [--card-gap:var(--card-p)]",
+        sm: "[--card-r:var(--radius-lg)] [--card-p:calc(var(--card-r)*1.15)] [--card-gap:var(--card-p)]",
       },
       interactive: {
         true: [
@@ -137,7 +139,7 @@ function CardMedia({ className, inset = false, asChild = false, ...props }: Reac
       data-slot={inset ? "card-media-inset" : "card-media"}
       className={cn(
         "relative aspect-video w-full overflow-hidden bg-surface-container-highest object-cover",
-        inset && "mx-(--card-p) w-auto rounded-lg",
+        inset && "mx-(--card-p) w-auto rounded-[calc(var(--card-r)*0.6)]",
         className
       )}
       {...props}
