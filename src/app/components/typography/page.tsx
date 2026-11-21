@@ -71,7 +71,7 @@ function ScaleRow({ s }: { s: (typeof SCALE)[number] }) {
         <span className="type-body-sm text-muted-foreground">{s.use}</span>
       </div>
       <div className="flex min-w-0 flex-col gap-1">
-        <span ref={ref} className={`${s.cls} block min-w-0 truncate`}>
+        <span ref={ref} className={`${s.cls} -my-[0.15em] block min-w-0 truncate py-[0.15em]`}>
           {s.sample}
         </span>
         <span className="type-body-sm text-muted-foreground tabular-nums">{spec || "\u00a0"}</span>
