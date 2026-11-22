@@ -181,7 +181,9 @@ function CommandList({ className, children, ref, ...props }: React.ComponentProp
         if (!sizer || !row) return setPill(null)
         const r = row.getBoundingClientRect()
         const o = sizer.getBoundingClientRect()
-        const next = { x: r.left - o.left, y: r.top - o.top, w: r.width, h: r.height }
+        // the dialog opens with a zoom, so screen rects are scaled; divide it back out
+        const k = sizer.offsetWidth ? o.width / sizer.offsetWidth : 1
+        const next = { x: (r.left - o.left) / k, y: (r.top - o.top) / k, w: row.offsetWidth, h: row.offsetHeight }
         setPill((p) =>
           p && p.x === next.x && p.y === next.y && p.w === next.w && p.h === next.h ? p : { ...next, moved: p !== null && !byPointer.current }
         )
