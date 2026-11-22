@@ -48,13 +48,13 @@ import {
  *   </CommandDialog>
  *
  * - The container is a rounded surface-container-high with the menu elevation.
- * - CommandInput is Nelumbo's search field (SearchField from search.tsx): a pill with
- *   the search icon, and a clear button that springs in while there is text. It empties
+ * - CommandInput is the palette's header, as in a Material search view: Nelumbo's
+ *   SearchField, flush with the container, with the search icon, and a clear button that springs in while there is text. It empties
  *   cmdk's search, controlled or not, and keeps focus. The input is type="search".
  * - Filtering, arrow keys, Home/End and Enter come from cmdk.
  *   Escape closes CommandDialog (Radix Dialog).
- * - The highlighted item gets a surface-container-highest tone and the state
- *   layer. Items are 48px tall; a leading Icon sits at the list icon size.
+ * - The highlighted item gets the focus state layer (foreground at 10%), no shadow.
+ *   Items are 56px tall; a leading Icon sits plain at 24px and fills when highlighted.
  * - No lines anywhere: groups are separated by spacing, and CommandSeparator
  *   is an empty spacer (it is hidden while the user is searching).
  * - CommandEmpty and CommandLoading sit inside CommandList as disabled options,
@@ -68,7 +68,7 @@ function Command({ className, ...props }: React.ComponentProps<typeof CommandPri
     <CommandPrimitive
       data-slot="command"
       className={cn(
-        "flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl bg-surface-container-high text-foreground shadow-e3 outline-none",
+        "flex h-full w-full min-w-0 flex-col overflow-hidden rounded-3xl bg-surface-container-high text-foreground shadow-e3 outline-none",
         className
       )}
       {...props}
@@ -132,7 +132,7 @@ function CommandInput({ className, ref, ...props }: React.ComponentProps<typeof 
         input.focus()
       }}
       className={cn(
-        "mx-2 mt-2 mb-1 w-auto bg-surface-container-highest",
+        "h-16 w-auto rounded-none bg-transparent px-3 [&_input]:type-body-lg",
         // the palette keeps focus in its field the whole time, so a ring would never
         // go away; the caret and the icon turning foreground mark it instead
         "has-[input:focus-visible]:outline-none"
@@ -153,7 +153,7 @@ function CommandInput({ className, ref, ...props }: React.ComponentProps<typeof 
 }
 
 /**
- * The highlighted row sits on a raised pill. It springs from row to row as
+ * The highlighted row sits on a tonal state layer. It glides from row to row as
  * the arrow keys move; under the pointer it stays put on each row instead of
  * chasing the cursor. Until it is measured, the row draws its own fill.
  */
@@ -223,8 +223,8 @@ function CommandList({ className, children, ref, ...props }: React.ComponentProp
         aria-hidden
         data-slot="command-indicator"
         className={cn(
-          "pointer-events-none absolute top-0 left-0 -z-10 rounded-[0.875rem] bg-surface-container-lowest shadow-e1 dark:bg-surface-bright",
-          pill?.moved && "transition-[translate,width,height] duration-[420ms] ease-(--ease-spring-bouncy) motion-reduce:transition-none",
+          "pointer-events-none absolute top-0 left-0 -z-10 rounded-(--radius-lg) bg-foreground/10",
+          pill?.moved && "transition-[translate,width,height] duration-200 ease-(--ease-standard) motion-reduce:transition-none",
           !pill && "hidden"
         )}
         style={pill ? { translate: `${pill.x}px ${pill.y}px`, width: pill.w, height: pill.h } : undefined}
@@ -289,7 +289,7 @@ function CommandGroup({ className, ...props }: React.ComponentProps<typeof Comma
       className={cn(
         "overflow-hidden p-0 text-foreground",
         // heading: a label above the rows, no rule
-        "[&_[cmdk-group-heading]]:px-2.5 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:type-label-md [&_[cmdk-group-heading]]:text-muted-foreground",
+        "[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:type-label-md [&_[cmdk-group-heading]]:text-muted-foreground",
         // groups are separated by space, not lines
         "[&+[data-slot=command-group]]:mt-1",
         className
@@ -300,28 +300,20 @@ function CommandGroup({ className, ...props }: React.ComponentProps<typeof Comma
 }
 
 /**
- * A row. A leading Icon sits on a tonal tile that turns inverse, fills its
- * glyph and pops when the row is highlighted.
+ * A row: a plain leading Icon, the label, an optional shortcut. The highlighted
+ * row gets the focus state layer and its icon fills.
  */
 function CommandItem({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Item>) {
   return (
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "relative flex min-h-13 cursor-default items-center gap-3 rounded-[0.875rem] px-2 py-1.5 type-body-lg text-foreground outline-none select-none",
-        // the row fills itself until the list's sliding pill is measured
-        "data-[selected=true]:bg-surface-container-lowest data-[selected=true]:shadow-e1 dark:data-[selected=true]:bg-surface-bright",
-        "group-data-pill/command-list:data-[selected=true]:bg-transparent group-data-pill/command-list:data-[selected=true]:shadow-none",
-        "dark:group-data-pill/command-list:data-[selected=true]:bg-transparent",
-        // leading icon on a tile: the tile is a spread shadow, so the glyph box stays untouched
-        "[--icon-size:20px] [--icon-opsz:20] [--tile:var(--surface-container-highest)]",
-        "[&>[data-slot=icon]]:m-2 [&>[data-slot=icon]]:shrink-0 [&>[data-slot=icon]]:rounded-[2px] [&>[data-slot=icon]]:text-muted-foreground",
-        "[&>[data-slot=icon]]:bg-(--tile) [&>[data-slot=icon]]:shadow-[0_0_0_8px_var(--tile)]",
-        "[&>[data-slot=icon]]:transition-[background-color,box-shadow,color,scale,border-radius] [&>[data-slot=icon]]:duration-[200ms,200ms,200ms,420ms,420ms]",
-        "[&>[data-slot=icon]]:ease-[var(--ease-standard),var(--ease-standard),var(--ease-standard),var(--ease-spring-bouncy),var(--ease-spring)]",
-        "data-[selected=true]:[--tile:var(--inverse-surface)] data-[selected=true]:[&>[data-slot=icon]]:text-inverse-foreground",
-        "data-[selected=true]:[&>[data-slot=icon]]:scale-105 data-[selected=true]:[&>[data-slot=icon]]:rounded-full data-[selected=true]:[--icon-fill:1]",
-        "motion-reduce:[&>[data-slot=icon]]:transition-none",
+        "relative flex min-h-14 cursor-default items-center gap-4 rounded-(--radius-lg) px-4 py-2 type-body-lg text-foreground outline-none select-none",
+        // the row fills itself until the list's sliding highlight is measured
+        "data-[selected=true]:bg-foreground/10 group-data-pill/command-list:data-[selected=true]:bg-transparent",
+        // plain leading icon, as in a Material list; it fills when the row is highlighted
+        "[--icon-size:24px] [--icon-opsz:24] [&>[data-slot=icon]]:shrink-0 [&>[data-slot=icon]]:text-muted-foreground",
+        "data-[selected=true]:[--icon-fill:1] data-[selected=true]:[&>[data-slot=icon]]:text-foreground",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-40",
         className
       )}
