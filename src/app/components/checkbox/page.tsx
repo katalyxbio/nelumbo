@@ -55,8 +55,8 @@ export default function CheckboxPage() {
           <Labelled text="disabled checked">
             <Checkbox aria-label="Disabled, checked" disabled defaultChecked />
           </Labelled>
-          <Labelled text="neutral">
-            <Checkbox aria-label="Neutral" color="neutral" defaultChecked />
+          <Labelled text="brand">
+            <Checkbox aria-label="Brand" color="brand" defaultChecked />
           </Labelled>
         </Preview>
       </Section>
@@ -128,7 +128,7 @@ export default function CheckboxPage() {
         <PropsTable
           rows={[
             ["checked", 'boolean | "indeterminate"', "", "Controlled state"],
-            ["color", '"brand" | "neutral"', '"brand"', ""],
+            ["color", '"auto" | "neutral" | "brand"', '"auto"', ""],
             ["aria-invalid", "boolean", "", "Error color"],
           ]}
         />

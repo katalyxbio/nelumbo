@@ -133,7 +133,7 @@ function NavigationRailItem({ className, icon, label, description, active = fals
       <span
         aria-hidden
         className={cn(
-          "absolute inset-0 rounded-[inherit] bg-brand-container",
+          "absolute inset-0 rounded-[inherit] bg-tone-container",
           "scale-x-[0.4] opacity-0 transition-[scale,opacity] duration-[396ms] ease-(--ease-spring-snappy) motion-reduce:transition-none",
           "group-data-active/item:scale-x-100 group-data-active/item:opacity-100"
         )}
@@ -146,7 +146,7 @@ function NavigationRailItem({ className, icon, label, description, active = fals
       <span className="relative grid place-items-center">
         <Icon
           name={icon}
-          className="text-muted-foreground transition-colors group-hover/item:text-foreground group-data-active/item:text-brand-container-foreground"
+          className="text-muted-foreground transition-colors group-hover/item:text-foreground group-data-active/item:text-tone-container-foreground"
         />
         {/* badge on the icon (collapsed), or at the end of the row (expanded) */}
         <span
@@ -167,7 +167,7 @@ function NavigationRailItem({ className, icon, label, description, active = fals
         )}
       >
         <span className="truncate type-label-lg text-foreground">{label}</span>
-        {description && <span className="truncate type-body-sm text-muted-foreground group-data-active/item:text-brand-container-foreground/75">{description}</span>}
+        {description && <span className="truncate type-body-sm text-muted-foreground group-data-active/item:text-tone-container-foreground/75">{description}</span>}
       </span>
       {expanded && showBadge && <span className="relative ml-2 shrink-0">{badgeEl}</span>}
     </span>

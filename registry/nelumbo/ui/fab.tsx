@@ -30,6 +30,7 @@ const fabVariants = cva(
       color: {
         primary: "bg-primary-container text-primary-container-foreground",
         secondary: "bg-secondary text-secondary-foreground",
+        auto: "bg-tone-container text-tone-container-foreground",
         brand: "bg-brand-container text-brand-container-foreground",
         surface: "bg-surface-container-high text-primary dark:bg-surface-container-highest",
         solid: "bg-primary text-primary-foreground",
@@ -40,7 +41,7 @@ const fabVariants = cva(
         lg: "[--fab-h:6rem] [--fab-radius:1.75rem] [--fab-pad:1.875rem] [--icon-size:36px] [--icon-opsz:40] type-title-md",
       },
     },
-    defaultVariants: { color: "brand", size: "default" },
+    defaultVariants: { color: "auto", size: "default" },
   }
 )
 

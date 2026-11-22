@@ -34,7 +34,7 @@ const CSS = `
 .vlv-cal td.vlv-rs.vlv-re::before { content: none }
 .vlv-cal td.vlv-rm:first-child::before, .vlv-cal td.vlv-re:first-child::before { border-radius: 9999px 0 0 9999px }
 .vlv-cal td.vlv-rm:last-child::before, .vlv-cal td.vlv-rs:last-child::before { border-radius: 0 9999px 9999px 0 }
-.vlv-cal td.vlv-rm > button { color: var(--brand-container-foreground) }
+.vlv-cal td.vlv-rm > button { color: var(--tone-container-foreground) }
 /* range preview: a soft band from the picked start to the day under the pointer or focus */
 .vlv-cal { --vlv-preview: color-mix(in oklab, var(--secondary) 55%, transparent) }
 .vlv-cal td.vlv-pm::before, .vlv-cal td.vlv-pe::before, .vlv-cal td.vlv-ps.vlv-ps::before { content: ""; position: absolute; inset: 0; background: var(--vlv-preview) }
@@ -42,14 +42,14 @@ const CSS = `
 .vlv-cal td.vlv-pe::before { right: 50% }
 .vlv-cal td.vlv-pm:first-child::before, .vlv-cal td.vlv-pe:first-child::before { border-radius: 9999px 0 0 9999px }
 .vlv-cal td.vlv-pm:last-child::before, .vlv-cal td.vlv-ps.vlv-ps:last-child::before { border-radius: 0 9999px 9999px 0 }
-.vlv-cal td.vlv-pm > button { color: var(--brand-container-foreground) }
-.vlv-cal td.vlv-pe > button { background: var(--brand-container); color: var(--brand-container-foreground) }
+.vlv-cal td.vlv-pm > button { color: var(--tone-container-foreground) }
+.vlv-cal td.vlv-pe > button { background: var(--tone-container); color: var(--tone-container-foreground) }
 /* a range that carries over into another month fades out at the month's last day and in at its first */
 .vlv-cal td.vlv-ml.vlv-rm::before, .vlv-cal td.vlv-ml.vlv-rs::before, .vlv-cal td.vlv-ml.vlv-pm::before, .vlv-cal td.vlv-ml.vlv-ps::before { -webkit-mask-image: linear-gradient(to right, #000 15%, transparent); mask-image: linear-gradient(to right, #000 15%, transparent) }
 .vlv-cal td.vlv-mf.vlv-rm::before, .vlv-cal td.vlv-mf.vlv-re::before, .vlv-cal td.vlv-mf.vlv-pm::before, .vlv-cal td.vlv-mf.vlv-pe::before { -webkit-mask-image: linear-gradient(to left, #000 15%, transparent); mask-image: linear-gradient(to left, #000 15%, transparent) }
 .vlv-cal td.vlv-ml::before { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important }
 .vlv-cal td.vlv-mf::before { border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important }
-.vlv-cal td[data-selected]:not(.vlv-rm) > button { background: var(--brand); color: var(--brand-foreground) }
+.vlv-cal td[data-selected]:not(.vlv-rm) > button { background: var(--tone); color: var(--tone-foreground) }
 .vlv-cal td[data-today]:not([data-selected]) > button { box-shadow: inset 0 0 0 1px var(--foreground); font-weight: 600 }
 .vlv-cal td[data-outside] > button { color: var(--muted-foreground) }
 .vlv-cal td[data-disabled] > button { opacity: 0.38; cursor: default }
@@ -360,7 +360,7 @@ function YearGrid({ id, month, from, to, onPick, onClose }: { id: string; month:
             className={cn(
               "state-layer h-9 w-[4.5rem] cursor-pointer rounded-full type-body-lg tabular-nums outline-none",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-              y === year ? "bg-brand text-brand-foreground" : "text-foreground",
+              y === year ? "bg-tone text-tone-foreground" : "text-foreground",
               y === thisYear && y !== year && "shadow-[inset_0_0_0_1px_var(--foreground)]"
             )}
           >

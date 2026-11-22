@@ -28,7 +28,7 @@ export default function FabPage() {
         <Code>{`npx shadcn@latest add @nelumbo/fab`}</Code>
       </Section>
 
-      <Section title="Colors" description="The accent container by default. Primary is a neutral container; solid is black (white in dark mode), for when the action must stand out against busy content.">
+      <Section title="Colors" description="Neutral container by default, the accent container inside a dynamic color scope. Brand always uses the accent container; solid is black (white in dark mode), for when the action must stand out against busy content.">
         <Preview className="gap-5">
           <Fab icon="edit" label="Compose" color="primary" />
           <Fab icon="edit" label="Compose" color="secondary" />
@@ -86,7 +86,7 @@ export default function FabPage() {
             ["icon", "IconName", "required", ""],
             ["label", "string", "required", "Visible when extended; accessible name always"],
             ["extended", "boolean", "false", "Animates the label in and out"],
-            ["color", '"primary" | "secondary" | "brand" | "surface" | "solid"', '"primary"', ""],
+            ["color", '"auto" | "primary" | "secondary" | "brand" | "surface" | "solid"', '"auto"', "auto: neutral container, the accent container inside a dynamic scope"],
             ["size", '"sm" | "default" | "lg"', '"default"', "40, 56, 96 px"],
           ]}
         />

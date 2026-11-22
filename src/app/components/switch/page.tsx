@@ -35,7 +35,7 @@ export default function SwitchPage() {
         <Code>{`npx shadcn@latest add @nelumbo/switch`}</Code>
       </Section>
 
-      <Section title="States" description="The track fills with the accent when on. Hover shows a soft halo around the thumb.">
+      <Section title="States" description="Black when on, white in dark mode. Hover shows a soft halo around the thumb.">
         <Preview className="gap-8">
           <Labelled text="off">
             <Switch aria-label="Example, off" />
@@ -66,11 +66,11 @@ export default function SwitchPage() {
         </Preview>
       </Section>
 
-      <Section title="Neutral color" description="Switches use the accent by default. Neutral is black (white in dark mode), for dense settings where color would be noise.">
+      <Section title="Brand color" description="For a switch that should carry the accent, for example a feature you are promoting.">
         <Preview className="gap-8">
-          <Switch color="neutral" aria-label="Neutral, off" />
-          <Switch color="neutral" aria-label="Neutral, on" defaultChecked />
-          <Switch color="neutral" icons aria-label="Neutral with icons, on" defaultChecked />
+          <Switch color="brand" aria-label="Brand, off" />
+          <Switch color="brand" aria-label="Brand, on" defaultChecked />
+          <Switch color="brand" icons aria-label="Brand with icons, on" defaultChecked />
         </Preview>
       </Section>
 
@@ -130,14 +130,14 @@ export default function SwitchPage() {
   <Switch checked={wifi} onCheckedChange={setWifi} />
 </label>
 
-<Switch icons color="neutral" aria-label="Beta features" />`}</Code>
+<Switch icons color="brand" aria-label="Beta features" />`}</Code>
       </Section>
 
       <Section title="Props" description="Other props go to Radix Switch (checked, defaultChecked, onCheckedChange, name, required…).">
         <PropsTable
           rows={[
             ["icons", "boolean", "false", "Check and cross inside the thumb"],
-            ["color", '"brand" | "neutral"', '"brand"', ""],
+            ["color", '"auto" | "neutral" | "brand"', '"auto"', ""],
             ["size", '"default" | "sm"', '"default"', "52 × 32 or 40 × 24"],
           ]}
         />

@@ -109,19 +109,36 @@ const type: [string, string, string, string, string][] = [
   ["label-sm", "0.75rem", "1.2", "0.02em", "520"],
 ]
 
+const TONE_ROLES = ["tone", "tone-foreground", "tone-container", "tone-container-foreground"] as const
+
 // every color role becomes a Tailwind color: bg-surface-container-high, etc.
 for (const name of COLOR_ROLE_NAMES) themeTokens[`color-${name}`] = `var(--${name})`
+// the "tone" roles: neutral by default, the brand inside a data-color="dynamic" scope
+for (const name of TONE_ROLES) themeTokens[`color-${name}`] = `var(--${name})`
 
 // ---------------------------------------------------------------------------
 // Utilities and base layer, as a nested CSS object (shadcn registry format).
 // ---------------------------------------------------------------------------
 type CssTree = { [key: string]: string | CssTree }
 
+const toneVars = (solid: string, container: string) => ({
+  "--tone": `var(--${solid})`,
+  "--tone-foreground": `var(--${solid}-foreground)`,
+  "--tone-container": `var(--${container})`,
+  "--tone-container-foreground": `var(--${container}-foreground)`,
+})
+
 export const cssTree: CssTree = {
   "@layer base": {
     "*": { "@apply border-border outline-ring/50": {} },
     // Material Symbols: slightly lighter grade on dark backgrounds reduces glare
     ".dark": { "--icon-grad": "-25" },
+    // Dynamic color is scoped. The UI is black and white; wrap a page or section in
+    // data-color="dynamic" and the controls inside it take the brand accent.
+    // data-color="neutral" turns it back off for a nested part.
+    ':root, .dark, [data-color="neutral"]': toneVars("primary", "secondary"),
+    '[data-color="dynamic"], .dark [data-color="dynamic"], .dark[data-color="dynamic"]': toneVars("brand", "brand-container"),
+    '[data-color="dynamic"] [data-color="neutral"]': toneVars("primary", "secondary"),
     body: {
       "@apply bg-background text-foreground": {},
       "font-feature-settings": '"cv11", "ss01"',

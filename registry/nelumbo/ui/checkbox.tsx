@@ -20,11 +20,12 @@ import { Icon } from "@/registry/nelumbo/ui/icon"
  * Set `aria-invalid` to show the error color.
  */
 type CheckboxProps = Omit<React.ComponentProps<typeof CheckboxPrimitive.Root>, "color"> & {
-  color?: "neutral" | "brand"
+  color?: "auto" | "neutral" | "brand"
 }
 
 const COLORS = {
   neutral: "data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground",
+  auto: "data-[state=checked]:border-tone data-[state=checked]:bg-tone data-[state=checked]:text-tone-foreground data-[state=indeterminate]:border-tone data-[state=indeterminate]:bg-tone data-[state=indeterminate]:text-tone-foreground",
   brand: "data-[state=checked]:border-brand data-[state=checked]:bg-brand data-[state=checked]:text-brand-foreground data-[state=indeterminate]:border-brand data-[state=indeterminate]:bg-brand data-[state=indeterminate]:text-brand-foreground",
 }
 
@@ -35,7 +36,7 @@ export const selectionHalo = cn(
   "hover:after:opacity-[0.08] active:after:opacity-[0.12] disabled:after:opacity-0"
 )
 
-function Checkbox({ className, color = "brand", ...props }: CheckboxProps) {
+function Checkbox({ className, color = "auto", ...props }: CheckboxProps) {
   return (
     <CheckboxPrimitive.Root
       data-slot="checkbox"

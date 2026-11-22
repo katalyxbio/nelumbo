@@ -97,11 +97,12 @@ type FilterChipProps = Omit<React.ComponentProps<"button">, "color"> & {
   icon?: IconName
   trailingIcon?: IconName
   elevated?: boolean
-  color?: "neutral" | "brand"
+  color?: "auto" | "neutral" | "brand"
 }
 
 const SELECTED = {
   neutral: "data-selected:border-transparent data-selected:hover:border-transparent data-selected:bg-secondary data-selected:text-secondary-foreground",
+  auto: "data-selected:border-transparent data-selected:hover:border-transparent data-selected:bg-tone-container data-selected:text-tone-container-foreground",
   brand: "data-selected:border-transparent data-selected:hover:border-transparent data-selected:bg-brand-container data-selected:text-brand-container-foreground",
 }
 
@@ -113,7 +114,7 @@ function FilterChip({
   icon,
   trailingIcon,
   elevated,
-  color = "brand",
+  color = "auto",
   onClick,
   children,
   ...props

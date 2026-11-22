@@ -100,8 +100,8 @@ export default function ProgressPage() {
             <Labelled text='size="thick"' className="flex flex-col gap-3">
               <Progress size="thick" value={value} aria-label="Example, thick" />
             </Labelled>
-            <Labelled text='color="neutral"' className="flex flex-col gap-3">
-              <Progress color="neutral" value={value} aria-label="Example, neutral" />
+            <Labelled text='color="brand"' className="flex flex-col gap-3">
+              <Progress color="brand" value={value} aria-label="Example, brand" />
             </Labelled>
           </div>
         </Preview>
@@ -121,8 +121,8 @@ export default function ProgressPage() {
           <Labelled text='size="thick"' className="flex flex-col gap-3">
             <Progress shape="wavy" size="thick" value={value} aria-label="Wavy, thick" />
           </Labelled>
-          <Labelled text='color="neutral"' className="flex flex-col gap-3">
-            <Progress shape="wavy" color="neutral" value={value} aria-label="Wavy, neutral" />
+          <Labelled text='color="brand"' className="flex flex-col gap-3">
+            <Progress shape="wavy" color="brand" value={value} aria-label="Wavy, brand" />
           </Labelled>
         </Preview>
       </Section>
@@ -144,8 +144,8 @@ export default function ProgressPage() {
           <Labelled text="wavy, indeterminate">
             <CircularProgress shape="wavy" aria-label="Circular wavy, indeterminate" />
           </Labelled>
-          <Labelled text="neutral, 24px">
-            <CircularProgress color="neutral" size={24} thickness={3} value={value} aria-label="Circular, small" />
+          <Labelled text="brand, 24px">
+            <CircularProgress color="brand" size={24} thickness={3} value={value} aria-label="Circular, small" />
           </Labelled>
           <Labelled text="with a label">
             <CircularProgress size={72} thickness={6} value={value} aria-label="Storage used">
@@ -179,7 +179,7 @@ export default function ProgressPage() {
             ["value", "number | null", "", "Leave out or pass null for indeterminate"],
             ["max", "number", "100", ""],
             ["shape", '"flat" | "wavy"', '"flat"', "Wavy: a travelling wave on the indicator"],
-            ["color", '"brand" | "neutral"', '"brand"', "The accent, or black (white in dark mode)"],
+            ["color", '"auto" | "neutral" | "brand"', '"auto"', "Black (white in dark mode), or the accent"],
             ["Progress size", '"default" | "thick"', '"default"', "4px or 8px"],
             ["CircularProgress size", "number", "40", "Diameter in px"],
             ["CircularProgress thickness", "number", "4", "Stroke width in px"],

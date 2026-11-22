@@ -23,15 +23,16 @@ function RadioGroup({ className, ...props }: React.ComponentProps<typeof RadioGr
 }
 
 type RadioGroupItemProps = Omit<React.ComponentProps<typeof RadioGroupPrimitive.Item>, "color"> & {
-  color?: "neutral" | "brand"
+  color?: "auto" | "neutral" | "brand"
 }
 
 const COLORS = {
   neutral: "data-[state=checked]:border-primary [--radio-dot:var(--primary)]",
+  auto: "data-[state=checked]:border-tone [--radio-dot:var(--tone)]",
   brand: "data-[state=checked]:border-brand [--radio-dot:var(--brand)]",
 }
 
-function RadioGroupItem({ className, color = "brand", ...props }: RadioGroupItemProps) {
+function RadioGroupItem({ className, color = "auto", ...props }: RadioGroupItemProps) {
   return (
     <RadioGroupPrimitive.Item
       data-slot="radio-group-item"

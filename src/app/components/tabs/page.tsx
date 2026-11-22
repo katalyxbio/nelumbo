@@ -133,7 +133,7 @@ export default function TabsPage() {
         </Preview>
       </Section>
 
-      <Section title="Full width and neutral color" description="fullWidth shares the width equally. The underline is the accent by default, or black when neutral.">
+      <Section title="Full width and brand color" description="fullWidth shares the width equally. The underline can use the accent.">
         <Preview className="flex-col items-stretch gap-8">
           <Tabs defaultValue="day">
             <TabsList fullWidth>
@@ -149,7 +149,7 @@ export default function TabsPage() {
             ))}
           </Tabs>
           <Tabs defaultValue="flights">
-            <TabsList variant="underline" color="neutral" fullWidth>
+            <TabsList variant="underline" color="brand" fullWidth>
               <TabsTrigger value="flights" icon="flight">
                 Flights
               </TabsTrigger>
@@ -205,7 +205,7 @@ export default function TabsPage() {
         <PropsTable
           rows={[
             ["TabsList variant", '"pill" | "underline"', '"pill"', ""],
-            ["TabsList color", '"brand" | "neutral"', '"brand"', "Underline color"],
+            ["TabsList color", '"auto" | "neutral" | "brand"', '"auto"', "Underline color"],
             ["TabsList tone", '"bold" | "muted"', '"bold"', "Pill lists: a solid inverse pill, or a soft raised one"],
             ["TabsList fullWidth", "boolean", "false", "Tabs share the width"],
             ["TabsTrigger icon", "IconName", "", "Fills in when active"],

@@ -17,7 +17,7 @@ import { shapePath, type ShapeName } from "@/registry/nelumbo/ui/shape"
  * work. For progress you can measure, use Progress or CircularProgress.
  *
  * - `contained`: on a filled circle, for use over images or busy content.
- * - `color`: "brand" (the accent, default) or "neutral" (black, white in dark mode).
+ * - `color`: "auto" (default: black and white, the accent inside a data-color="dynamic" scope), "neutral" or "brand" to force one.
  * - `size`: the container in px (default 48); the shape is 38/48 of it.
  *
  * With reduced motion the shape stays still and gently pulses.
@@ -63,6 +63,7 @@ ${frames}
 
 const TONES = {
   neutral: { plain: "text-primary", contained: "bg-secondary text-secondary-foreground" },
+  auto: { plain: "text-tone", contained: "bg-tone-container text-tone-container-foreground" },
   brand: { plain: "text-brand", contained: "bg-brand-container text-brand-container-foreground" },
 }
 
@@ -76,7 +77,7 @@ function LoadingIndicator({
   className,
   style,
   contained = false,
-  color = "brand",
+  color = "auto",
   size = 48,
   "aria-label": ariaLabel = "Loading",
   ...props

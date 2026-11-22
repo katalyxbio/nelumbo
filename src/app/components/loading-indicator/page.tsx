@@ -85,17 +85,17 @@ export default function LoadingIndicatorPage() {
         description="Seven shapes in a loop: burst, cookie, pentagon, pill, sun, clover and oval. Contained puts it on a filled circle, for use over images or busy content. With reduced motion it stays still and gently pulses."
       >
         <Preview className="justify-center gap-10">
-          <Labelled text="brand">
+          <Labelled text="default">
             <LoadingIndicator />
           </Labelled>
           <Labelled text="contained">
             <LoadingIndicator contained />
           </Labelled>
-          <Labelled text='color="neutral"'>
-            <LoadingIndicator color="neutral" />
+          <Labelled text='color="brand"'>
+            <LoadingIndicator color="brand" />
           </Labelled>
-          <Labelled text="neutral, contained">
-            <LoadingIndicator color="neutral" contained />
+          <Labelled text="brand, contained">
+            <LoadingIndicator color="brand" contained />
           </Labelled>
           <Labelled text="size={24}">
             <LoadingIndicator size={24} />
@@ -153,7 +153,7 @@ export default function LoadingIndicatorPage() {
 import { Skeleton } from "@/components/ui/skeleton"
 
 <LoadingIndicator />                                  // aria-label="Loading"
-<LoadingIndicator contained color="neutral" size={64} aria-label="Refreshing" />
+<LoadingIndicator contained color="brand" size={64} aria-label="Refreshing" />
 
 <div aria-busy={loading}>
   <Skeleton className="size-10 rounded-full" />
@@ -165,7 +165,7 @@ import { Skeleton } from "@/components/ui/skeleton"
         <PropsTable
           rows={[
             ["LoadingIndicator contained", "boolean", "false", "On a filled circle"],
-            ["LoadingIndicator color", '"brand" | "neutral"', '"brand"', ""],
+            ["LoadingIndicator color", '"auto" | "neutral" | "brand"', '"auto"', ""],
             ["LoadingIndicator size", "number", "48", "Container in px; the shape is 38/48 of it"],
             ["LoadingIndicator aria-label", "string", '"Loading"', "What screen readers hear"],
             ["Skeleton className", "string", "", "Set the size and radius here"],

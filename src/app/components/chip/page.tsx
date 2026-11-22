@@ -88,14 +88,14 @@ export default function ChipPage() {
         </Preview>
       </Section>
 
-      <Section title="Neutral color" description="Selected filter chips use the accent container by default; neutral uses grey.">
+      <Section title="Brand color" description="Selected filter chips can use the accent container.">
         <Preview>
           <ChipGroup aria-label="Plan">
-            <FilterChip color="neutral" defaultSelected>
+            <FilterChip color="brand" defaultSelected>
               Monthly
             </FilterChip>
-            <FilterChip color="neutral">Yearly</FilterChip>
-            <FilterChip color="neutral" icon="bolt" defaultSelected>
+            <FilterChip color="brand">Yearly</FilterChip>
+            <FilterChip color="brand" icon="bolt" defaultSelected>
               Fast shipping
             </FilterChip>
           </ChipGroup>
@@ -179,7 +179,7 @@ export default function ChipPage() {
             ["icon / trailingIcon", "IconName", "", "Chip and FilterChip; InputChip takes icon"],
             ["elevated", "boolean", "false", "Chip and FilterChip: shadow instead of a border"],
             ["FilterChip selected", "boolean", "", "Controlled; or defaultSelected, with onSelectedChange"],
-            ["FilterChip color", '"brand" | "neutral"', '"brand"', "Selected fill"],
+            ["FilterChip color", '"auto" | "neutral" | "brand"', '"auto"', "Selected fill"],
             ["InputChip avatar", "string | ReactNode", "", "Image URL, or initials in a circle"],
             ["InputChip onRemove", "() => void", "", "Shows the remove button"],
             ["ChipGroup scroll", "boolean", "false", "One scrolling row instead of wrapping"],

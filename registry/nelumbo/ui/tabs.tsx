@@ -38,7 +38,7 @@ type TabsListProps = React.ComponentProps<typeof TabsPrimitive.List> & {
   variant?: "pill" | "underline"
   /** Pill lists: "bold" (default) a solid inverse pill, or "muted" a soft raised pill for something more subtle. */
   tone?: "bold" | "muted"
-  color?: "neutral" | "brand"
+  color?: "auto" | "neutral" | "brand"
   fullWidth?: boolean
 }
 
@@ -52,7 +52,7 @@ const INDICATOR = {
   underline: "bottom-0 h-[3px] rounded-t-full",
 }
 
-function TabsList({ className, variant = "pill", tone = "bold", color = "brand", fullWidth = false, children, ...props }: TabsListProps) {
+function TabsList({ className, variant = "pill", tone = "bold", color = "auto", fullWidth = false, children, ...props }: TabsListProps) {
   const ref = React.useRef<HTMLDivElement>(null)
   const [box, setBox] = React.useState<{ x: number; w: number } | null>(null)
   const [ready, setReady] = React.useState(false)
@@ -109,7 +109,7 @@ function TabsList({ className, variant = "pill", tone = "bold", color = "brand",
           "pointer-events-none absolute left-0 -z-10 w-(--w) translate-x-(--x)",
           INDICATOR[variant],
           variant === "pill" && (tone === "muted" ? "bg-card shadow-e2 dark:bg-surface-container-highest" : "bg-inverse-surface"),
-          variant === "underline" && (color === "neutral" ? "z-10 bg-primary" : "z-10 bg-brand"),
+          variant === "underline" && (color === "neutral" ? "z-10 bg-primary" : color === "brand" ? "z-10 bg-brand" : "z-10 bg-tone"),
           ready && "transition-[translate,width] duration-[519ms] ease-(--ease-spring) motion-reduce:transition-none",
           !box && "opacity-0"
         )}

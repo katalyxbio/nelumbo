@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils"
  *
  * - `shape`: "flat" or "wavy". The wave travels while it works and suits
  *   longer, more expressive waits; flat suits dense UI.
- * - `color`: "brand" (the accent, default) or "neutral" (black, white in dark mode).
+ * - `color`: "auto" (default: black and white, the accent inside a data-color="dynamic" scope), "neutral" or "brand" to force one.
  * - Progress `size`: "default" (4px) or "thick" (8px).
  * - CircularProgress `size` (px, default 40) and `thickness` (px, default 4).
  *
@@ -34,6 +34,7 @@ const GAP = 4 // px between the indicator and the track
 
 const TONES = {
   neutral: "[--ind:var(--primary)] [--trk:var(--surface-container-highest)]",
+  auto: "[--ind:var(--tone)] [--trk:var(--tone-container)]",
   brand: "[--ind:var(--brand)] [--trk:var(--brand-container)]",
 }
 
@@ -150,7 +151,7 @@ type ProgressProps = Omit<React.ComponentProps<typeof ProgressPrimitive.Root>, "
   size?: keyof typeof LINEAR
 }
 
-function Progress({ className, style, value, max = 100, color = "brand", shape = "flat", size = "default", ...props }: ProgressProps) {
+function Progress({ className, style, value, max = 100, color = "auto", shape = "flat", size = "default", ...props }: ProgressProps) {
   const p = percent(value, max)
   const wavy = shape === "wavy"
   const { t, a, wl } = LINEAR[size]
@@ -245,7 +246,7 @@ function CircularProgress({
   style,
   value,
   max = 100,
-  color = "brand",
+  color = "auto",
   shape = "flat",
   size = 40,
   thickness = 4,

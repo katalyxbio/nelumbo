@@ -6,6 +6,11 @@ import { ACCENT_NAMES, paletteRamps } from "@/lib/nelumbo/scheme"
 import { Button } from "@/registry/nelumbo/ui/button"
 import { Code, PageHeader, Preview, Section } from "@/components/docs/primitives"
 import { useStudio } from "@/components/docs/studio"
+import { Switch } from "@/registry/nelumbo/ui/switch"
+import { Checkbox } from "@/registry/nelumbo/ui/checkbox"
+import { Slider } from "@/registry/nelumbo/ui/slider"
+import { Progress } from "@/registry/nelumbo/ui/progress"
+import { FilterChip } from "@/registry/nelumbo/ui/chip"
 
 const NEUTRAL_ROLES = [
   ["primary", "primary-foreground", "Primary actions"],
@@ -136,6 +141,30 @@ export default function FoundationsPage() {
             </div>
           ))}
         </div>
+      </Section>
+
+      <Section
+        title="Dynamic color"
+        description={<>The interface is black and white. Wrap a page or a section in <code className="font-mono type-body-sm">data-color=&quot;dynamic&quot;</code> and the controls inside it switch to the accent: selection, progress, navigation indicators, date and time selection, the FAB. Buttons, text and surfaces stay neutral. Nest <code className="font-mono type-body-sm">data-color=&quot;neutral&quot;</code> to turn it off again.</>}
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          {(["neutral", "dynamic"] as const).map((mode) => (
+            <div key={mode} data-color={mode === "dynamic" ? "dynamic" : undefined} className="flex flex-col gap-5 rounded-(--radius-2xl) bg-surface-container-low p-6">
+              <span className="type-label-md text-muted-foreground">{mode === "dynamic" ? 'data-color="dynamic"' : "Default"}</span>
+              <div className="flex items-center gap-4">
+                <Switch defaultChecked aria-label={`Switch, ${mode}`} />
+                <Checkbox defaultChecked aria-label={`Checkbox, ${mode}`} />
+                <FilterChip defaultSelected>Assayed</FilterChip>
+              </div>
+              <Slider defaultValue={[62]} aria-label={`Slider, ${mode}`} />
+              <Progress value={48} aria-label={`Progress, ${mode}`} />
+            </div>
+          ))}
+        </div>
+        <Code>{`<section data-color="dynamic">
+  <Switch />          {/* accent */}
+  <Button>Save</Button> {/* still neutral */}
+</section>`}</Code>
       </Section>
 
       <Section title="Tonal palettes" description="HCT tones 0 to 100. Roles pick tones from these ramps, so contrast is the same for every accent.">

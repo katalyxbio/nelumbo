@@ -313,6 +313,10 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-tone: var(--tone);
+  --color-tone-foreground: var(--tone-foreground);
+  --color-tone-container: var(--tone-container);
+  --color-tone-container-foreground: var(--tone-container-foreground);
 }
 
 @layer base {
@@ -321,6 +325,24 @@
   }
   .dark {
     --icon-grad: -25;
+  }
+  :root, .dark, [data-color="neutral"] {
+    --tone: var(--primary);
+    --tone-foreground: var(--primary-foreground);
+    --tone-container: var(--secondary);
+    --tone-container-foreground: var(--secondary-foreground);
+  }
+  [data-color="dynamic"], .dark [data-color="dynamic"], .dark[data-color="dynamic"] {
+    --tone: var(--brand);
+    --tone-foreground: var(--brand-foreground);
+    --tone-container: var(--brand-container);
+    --tone-container-foreground: var(--brand-container-foreground);
+  }
+  [data-color="dynamic"] [data-color="neutral"] {
+    --tone: var(--primary);
+    --tone-foreground: var(--primary-foreground);
+    --tone-container: var(--secondary);
+    --tone-container-foreground: var(--secondary-foreground);
   }
   body {
     @apply bg-background text-foreground;
