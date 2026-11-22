@@ -23,13 +23,13 @@ import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
  * - `marks`: a dot for every step (keep it to coarse steps).
  * - `size`: default (16px track) or lg (40px track). lg can carry an `icon`
  *   inside the active track; it hops past the handle when there is no room.
- * - `color`: "default" (black, white in dark mode) or "brand".
+ * - `color`: "brand" (the accent, default) or "neutral" (black, white in dark mode).
  *
  * Horizontal only.
  */
 type SliderProps = Omit<React.ComponentProps<typeof SliderPrimitive.Root>, "color" | "orientation"> & {
   size?: "default" | "lg"
-  color?: "default" | "brand"
+  color?: "neutral" | "brand"
   marks?: boolean
   valueLabel?: boolean
   formatValue?: (value: number) => string
@@ -43,7 +43,7 @@ const SIZES = {
 }
 
 const COLORS = {
-  default: "[--active:var(--primary)] [--on-active:var(--primary-foreground)]",
+  neutral: "[--active:var(--primary)] [--on-active:var(--primary-foreground)]",
   brand: "[--active:var(--brand)] [--on-active:var(--brand-foreground)]",
 }
 
@@ -56,7 +56,7 @@ const center = (pct: number) => `calc((100% - ${HANDLE}px) * ${pct / 100} + ${HA
 function Slider({
   className,
   size = "default",
-  color = "default",
+  color = "brand",
   marks = false,
   valueLabel = false,
   formatValue = String,

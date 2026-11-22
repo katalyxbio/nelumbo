@@ -28,7 +28,7 @@ export default function FabPage() {
         <Code>{`npx shadcn@latest add @nelumbo/fab`}</Code>
       </Section>
 
-      <Section title="Colors" description="Neutral container by default. Brand uses the accent container; solid is black (white in dark mode), for when the action must stand out against busy content.">
+      <Section title="Colors" description="The accent container by default. Primary is a neutral container; solid is black (white in dark mode), for when the action must stand out against busy content.">
         <Preview className="gap-5">
           <Fab icon="edit" label="Compose" color="primary" />
           <Fab icon="edit" label="Compose" color="secondary" />

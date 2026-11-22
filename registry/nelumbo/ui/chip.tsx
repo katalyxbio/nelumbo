@@ -27,7 +27,7 @@ import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
  *   `trailingIcon="arrow_drop_down"` for a chip that opens a menu.
  * - InputChip: a value the user entered, with a remove button. Backspace or
  *   Delete on the remove button removes it too.
- * - `color="brand"` on FilterChip uses the accent container when selected.
+ * - A selected FilterChip uses the accent container; `color="neutral"` makes it grey.
  */
 
 const base = [
@@ -97,11 +97,11 @@ type FilterChipProps = Omit<React.ComponentProps<"button">, "color"> & {
   icon?: IconName
   trailingIcon?: IconName
   elevated?: boolean
-  color?: "default" | "brand"
+  color?: "neutral" | "brand"
 }
 
 const SELECTED = {
-  default: "data-selected:border-transparent data-selected:hover:border-transparent data-selected:bg-secondary data-selected:text-secondary-foreground",
+  neutral: "data-selected:border-transparent data-selected:hover:border-transparent data-selected:bg-secondary data-selected:text-secondary-foreground",
   brand: "data-selected:border-transparent data-selected:hover:border-transparent data-selected:bg-brand-container data-selected:text-brand-container-foreground",
 }
 
@@ -113,7 +113,7 @@ function FilterChip({
   icon,
   trailingIcon,
   elevated,
-  color = "default",
+  color = "brand",
   onClick,
   children,
   ...props

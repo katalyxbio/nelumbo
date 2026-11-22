@@ -364,7 +364,7 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
           "state-layer grid h-20 w-24 cursor-pointer place-items-center rounded-lg type-display-lg tabular-nums outline-none select-none",
           "transition-[background-color,color] duration-200 ease-(--ease-standard) motion-reduce:transition-none",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-          active ? "bg-primary text-primary-foreground" : "bg-surface-container-high text-foreground dark:bg-surface-container-highest"
+          active ? "bg-brand text-brand-foreground" : "bg-surface-container-high text-foreground dark:bg-surface-container-highest"
         )}
       >
         {pad(value)}
@@ -434,7 +434,7 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
               {/* the hand: turns to the angle; the stem grows to the ring */}
               <g
                 style={{ transform: `rotate(${rot}deg)`, transformOrigin: `${C}px ${C}px` }}
-                className={cn("text-primary", `transition-transform ${hand} motion-reduce:transition-none`)}
+                className={cn("text-brand", `transition-transform ${hand} motion-reduce:transition-none`)}
               >
                 <rect
                   x={C - 1}
@@ -454,13 +454,13 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
                   className={cn(`transition-[transform,r] ${hand} motion-reduce:transition-none`)}
                 />
               </g>
-              <circle cx={C} cy={C} r={4} className="fill-primary" />
+              <circle cx={C} cy={C} r={4} className="fill-brand" />
               {offNumber && (
                 <g
                   style={{ transform: `rotate(${rot}deg)`, transformOrigin: `${C}px ${C}px` }}
                   className={cn(`transition-transform ${hand} motion-reduce:transition-none`)}
                 >
-                  <circle cx={C} cy={C - R_OUT} r={2} className="fill-primary-foreground" />
+                  <circle cx={C} cy={C - R_OUT} r={2} className="fill-brand-foreground" />
                 </g>
               )}
 
@@ -478,7 +478,7 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
                         dy="0.35em"
                         textAnchor="middle"
                         fontSize={16}
-                        className={cn("transition-[fill] duration-200 ease-(--ease-standard) motion-reduce:transition-none", on ? "fill-primary-foreground" : "fill-foreground", !hourOk(n.value, ok) && "opacity-40")}
+                        className={cn("transition-[fill] duration-200 ease-(--ease-standard) motion-reduce:transition-none", on ? "fill-brand-foreground" : "fill-foreground", !hourOk(n.value, ok) && "opacity-40")}
                       >
                         {n.text}
                       </text>
@@ -497,7 +497,7 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
                           dy="0.35em"
                           textAnchor="middle"
                           fontSize={14}
-                          className={cn("transition-[fill] duration-200 ease-(--ease-standard) motion-reduce:transition-none", on ? "fill-primary-foreground" : "fill-foreground", !hourOk(n.value, ok) && "opacity-40")}
+                          className={cn("transition-[fill] duration-200 ease-(--ease-standard) motion-reduce:transition-none", on ? "fill-brand-foreground" : "fill-foreground", !hourOk(n.value, ok) && "opacity-40")}
                         >
                           {n.text}
                         </text>
@@ -517,7 +517,7 @@ function TimePanel({ initial, clock, ok, mode, label, onConfirm, onCancel }: Pan
                       dy="0.35em"
                       textAnchor="middle"
                       fontSize={16}
-                      className={cn("transition-[fill] duration-200 ease-(--ease-standard) motion-reduce:transition-none", on ? "fill-primary-foreground" : "fill-foreground", !ok(h * 60 + v) && "opacity-40")}
+                      className={cn("transition-[fill] duration-200 ease-(--ease-standard) motion-reduce:transition-none", on ? "fill-brand-foreground" : "fill-foreground", !ok(h * 60 + v) && "opacity-40")}
                     >
                       {pad(v)}
                     </text>
@@ -608,7 +608,7 @@ function Column({ label, options, selected, onSelect, autoFocus, className }: { 
           className={cn(
             "state-layer grid h-10 cursor-pointer place-items-center rounded-full type-title-md tabular-nums select-none",
             "transition-[background-color,color] duration-200 ease-(--ease-standard) motion-reduce:transition-none",
-            o.value === selected ? "bg-primary text-primary-foreground" : "text-foreground",
+            o.value === selected ? "bg-brand text-brand-foreground" : "text-foreground",
             o.disabled && "pointer-events-none opacity-40"
           )}
         >

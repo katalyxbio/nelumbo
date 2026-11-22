@@ -17,7 +17,7 @@ import { Icon, type IconName } from "@/registry/nelumbo/ui/icon"
  *    label, on a hairline).
  *  - The indicator is one element that slides and resizes between tabs on
  *    the smooth spring, instead of each tab fading its own background.
- *  - TabsList `color="brand"`: brand underline (underline variant).
+ *  - TabsList `color`: the underline is the accent by default; "neutral" makes it black.
  *  - TabsList `fullWidth`: tabs share the width equally.
  *  - TabsTrigger `icon` and `badge` (a count, or `true` for a dot).
  *  - Underline lists scroll sideways when the tabs don't fit.
@@ -38,7 +38,7 @@ type TabsListProps = React.ComponentProps<typeof TabsPrimitive.List> & {
   variant?: "pill" | "underline"
   /** Pill lists: "bold" (default) a solid inverse pill, or "muted" a soft raised pill for something more subtle. */
   tone?: "bold" | "muted"
-  color?: "default" | "brand"
+  color?: "neutral" | "brand"
   fullWidth?: boolean
 }
 
@@ -52,7 +52,7 @@ const INDICATOR = {
   underline: "bottom-0 h-[3px] rounded-t-full",
 }
 
-function TabsList({ className, variant = "pill", tone = "bold", color = "default", fullWidth = false, children, ...props }: TabsListProps) {
+function TabsList({ className, variant = "pill", tone = "bold", color = "brand", fullWidth = false, children, ...props }: TabsListProps) {
   const ref = React.useRef<HTMLDivElement>(null)
   const [box, setBox] = React.useState<{ x: number; w: number } | null>(null)
   const [ready, setReady] = React.useState(false)
@@ -109,7 +109,7 @@ function TabsList({ className, variant = "pill", tone = "bold", color = "default
           "pointer-events-none absolute left-0 -z-10 w-(--w) translate-x-(--x)",
           INDICATOR[variant],
           variant === "pill" && (tone === "muted" ? "bg-card shadow-e2 dark:bg-surface-container-highest" : "bg-inverse-surface"),
-          variant === "underline" && (color === "brand" ? "z-10 bg-brand" : "z-10 bg-primary"),
+          variant === "underline" && (color === "neutral" ? "z-10 bg-primary" : "z-10 bg-brand"),
           ready && "transition-[translate,width] duration-[519ms] ease-(--ease-spring) motion-reduce:transition-none",
           !box && "opacity-0"
         )}

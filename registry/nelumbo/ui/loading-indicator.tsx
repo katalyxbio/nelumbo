@@ -8,7 +8,7 @@ import { shapePath, type ShapeName } from "@/registry/nelumbo/ui/shape"
  *
  *   <LoadingIndicator />                       // aria-label defaults to "Loading"
  *   <LoadingIndicator contained />
- *   <LoadingIndicator color="brand" size={64} />
+ *   <LoadingIndicator size={64} />
  *
  * A soft shape that morphs through seven forms (burst, cookie, pentagon,
  * pill, sun, clover, oval) while it turns, springing into each one. Use it
@@ -17,7 +17,7 @@ import { shapePath, type ShapeName } from "@/registry/nelumbo/ui/shape"
  * work. For progress you can measure, use Progress or CircularProgress.
  *
  * - `contained`: on a filled circle, for use over images or busy content.
- * - `color`: "default" (black, white in dark mode) or "brand".
+ * - `color`: "brand" (the accent, default) or "neutral" (black, white in dark mode).
  * - `size`: the container in px (default 48); the shape is 38/48 of it.
  *
  * With reduced motion the shape stays still and gently pulses.
@@ -62,7 +62,7 @@ ${frames}
 }
 
 const TONES = {
-  default: { plain: "text-primary", contained: "bg-secondary text-secondary-foreground" },
+  neutral: { plain: "text-primary", contained: "bg-secondary text-secondary-foreground" },
   brand: { plain: "text-brand", contained: "bg-brand-container text-brand-container-foreground" },
 }
 
@@ -76,7 +76,7 @@ function LoadingIndicator({
   className,
   style,
   contained = false,
-  color = "default",
+  color = "brand",
   size = 48,
   "aria-label": ariaLabel = "Loading",
   ...props

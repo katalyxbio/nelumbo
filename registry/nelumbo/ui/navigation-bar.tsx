@@ -84,7 +84,7 @@ function NavigationBarItem({ className, icon, label, active = false, badge, disa
       <span
         aria-hidden
         className={cn(
-          "absolute inset-0 rounded-full bg-secondary",
+          "absolute inset-0 rounded-full bg-brand-container",
           "scale-x-[0.4] opacity-0 transition-[scale,opacity] duration-[396ms] ease-(--ease-spring-snappy) motion-reduce:transition-none",
           "group-data-active/item:scale-x-100 group-data-active/item:opacity-100"
         )}
@@ -97,7 +97,7 @@ function NavigationBarItem({ className, icon, label, active = false, badge, disa
       <span className="relative grid place-items-center">
         <Icon
           name={icon}
-          className="text-muted-foreground transition-colors group-hover/item:text-foreground group-data-active/item:text-secondary-foreground"
+          className="text-muted-foreground transition-colors group-hover/item:text-foreground group-data-active/item:text-brand-container-foreground"
         />
         {showBadge && (
           <span

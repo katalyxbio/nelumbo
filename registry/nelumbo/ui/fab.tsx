@@ -40,7 +40,7 @@ const fabVariants = cva(
         lg: "[--fab-h:6rem] [--fab-radius:1.75rem] [--fab-pad:1.875rem] [--icon-size:36px] [--icon-opsz:40] type-title-md",
       },
     },
-    defaultVariants: { color: "primary", size: "default" },
+    defaultVariants: { color: "brand", size: "default" },
   }
 )
 

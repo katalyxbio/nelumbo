@@ -11,7 +11,7 @@ import { Icon } from "@/registry/nelumbo/ui/icon"
  *
  *   <Checkbox aria-label="Accept" />
  *   <Checkbox checked="indeterminate" />
- *   <Checkbox color="brand" defaultChecked />
+ *   <Checkbox defaultChecked />  // accent; color="neutral" for black
  *
  * An 18px box whose corners follow the text field radius (--radius-control). The check is a Material Symbols glyph that wipes in, the box gives a
  * small springy press, and a 40px halo shows hover and press (the halo is
@@ -20,11 +20,11 @@ import { Icon } from "@/registry/nelumbo/ui/icon"
  * Set `aria-invalid` to show the error color.
  */
 type CheckboxProps = Omit<React.ComponentProps<typeof CheckboxPrimitive.Root>, "color"> & {
-  color?: "default" | "brand"
+  color?: "neutral" | "brand"
 }
 
 const COLORS = {
-  default: "data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground",
+  neutral: "data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground",
   brand: "data-[state=checked]:border-brand data-[state=checked]:bg-brand data-[state=checked]:text-brand-foreground data-[state=indeterminate]:border-brand data-[state=indeterminate]:bg-brand data-[state=indeterminate]:text-brand-foreground",
 }
 
@@ -35,7 +35,7 @@ export const selectionHalo = cn(
   "hover:after:opacity-[0.08] active:after:opacity-[0.12] disabled:after:opacity-0"
 )
 
-function Checkbox({ className, color = "default", ...props }: CheckboxProps) {
+function Checkbox({ className, color = "brand", ...props }: CheckboxProps) {
   return (
     <CheckboxPrimitive.Root
       data-slot="checkbox"

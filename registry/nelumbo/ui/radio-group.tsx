@@ -15,23 +15,23 @@ import { selectionHalo } from "@/registry/nelumbo/ui/checkbox"
  *   </RadioGroup>
  *
  * A 20px ring; the selected dot grows in from the exact center. Arrow keys move
- * the selection, like native radios. Set `color="brand"` on an item for the
- * accent, and `aria-invalid` for the error color.
+ * the selection, like native radios. The ring is the accent; `color="neutral"` on an item
+ * makes it black, and `aria-invalid` gives the error color.
  */
 function RadioGroup({ className, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
   return <RadioGroupPrimitive.Root data-slot="radio-group" className={cn("grid gap-3", className)} {...props} />
 }
 
 type RadioGroupItemProps = Omit<React.ComponentProps<typeof RadioGroupPrimitive.Item>, "color"> & {
-  color?: "default" | "brand"
+  color?: "neutral" | "brand"
 }
 
 const COLORS = {
-  default: "data-[state=checked]:border-primary [--radio-dot:var(--primary)]",
+  neutral: "data-[state=checked]:border-primary [--radio-dot:var(--primary)]",
   brand: "data-[state=checked]:border-brand [--radio-dot:var(--brand)]",
 }
 
-function RadioGroupItem({ className, color = "default", ...props }: RadioGroupItemProps) {
+function RadioGroupItem({ className, color = "brand", ...props }: RadioGroupItemProps) {
   return (
     <RadioGroupPrimitive.Item
       data-slot="radio-group-item"

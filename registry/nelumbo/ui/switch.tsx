@@ -10,7 +10,7 @@ import { Icon } from "@/registry/nelumbo/ui/icon"
  * Nelumbo Switch (Material 3 style, built on Radix Switch)
  *
  *   <Switch aria-label="Wi-Fi" />
- *   <Switch icons color="brand" defaultChecked />
+ *   <Switch icons defaultChecked />
  *
  * Off, the thumb is small and quiet on an outlined track; on, it grows and
  * slides across a filled track; while pressed it swells a little more. The
@@ -18,7 +18,7 @@ import { Icon } from "@/registry/nelumbo/ui/icon"
  *
  * - `icons`: a check (on) and a cross (off) inside the thumb. The thumb is
  *   full size in both states so the icon fits.
- * - `color`: "default" (black, white in dark mode) or "brand" (the accent).
+ * - `color`: "brand" (the accent, default) or "neutral" (black, white in dark mode).
  * - `size`: default 52 x 32, sm 40 x 24.
  *
  * Positions and sizes are CSS variables, so the states are one formula:
@@ -26,7 +26,7 @@ import { Icon } from "@/registry/nelumbo/ui/icon"
  */
 type SwitchProps = Omit<React.ComponentProps<typeof SwitchPrimitive.Root>, "color"> & {
   icons?: boolean
-  color?: "default" | "brand"
+  color?: "neutral" | "brand"
   size?: "default" | "sm"
 }
 
@@ -38,11 +38,11 @@ const SIZES = {
 }
 
 const COLORS = {
-  default: "data-[state=checked]:border-primary data-[state=checked]:bg-primary [--on-thumb:var(--primary-foreground)] [--on-icon:var(--primary)]",
+  neutral: "data-[state=checked]:border-primary data-[state=checked]:bg-primary [--on-thumb:var(--primary-foreground)] [--on-icon:var(--primary)]",
   brand: "data-[state=checked]:border-brand data-[state=checked]:bg-brand [--on-thumb:var(--brand-foreground)] [--on-icon:var(--brand)]",
 }
 
-function Switch({ className, icons = false, color = "default", size = "default", ...props }: SwitchProps) {
+function Switch({ className, icons = false, color = "brand", size = "default", ...props }: SwitchProps) {
   return (
     <SwitchPrimitive.Root
       data-slot="switch"

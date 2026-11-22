@@ -62,13 +62,13 @@ export default function SliderPage() {
       <Section title="Large, with an icon" description="The lg size is made for media and device controls. The icon sits inside the filled part, and moves past the handle when there is no room.">
         <Preview className="flex-col items-stretch gap-6 px-8">
           <Slider size="lg" icon="volume_up" aria-label="Media volume" defaultValue={[64]} />
-          <Slider size="lg" icon="light_mode" aria-label="Brightness" defaultValue={[6]} color="brand" />
+          <Slider size="lg" icon="light_mode" aria-label="Brightness" defaultValue={[6]} color="neutral" />
         </Preview>
       </Section>
 
-      <Section title="Brand color" description="For a slider that should carry the accent.">
+      <Section title="Neutral color" description="Sliders use the accent by default; neutral is black (white in dark mode).">
         <Preview className="flex-col items-stretch gap-8 px-8 pt-14">
-          <Slider color="brand" aria-label="Warmth" defaultValue={[70]} valueLabel formatValue={(v) => `${v}%`} />
+          <Slider color="neutral" aria-label="Warmth" defaultValue={[70]} valueLabel formatValue={(v) => `${v}%`} />
         </Preview>
       </Section>
 
@@ -108,7 +108,7 @@ export default function SliderPage() {
         <PropsTable
           rows={[
             ["size", '"default" | "lg"', '"default"', "16px or 40px track"],
-            ["color", '"default" | "brand"', '"default"', ""],
+            ["color", '"brand" | "neutral"', '"brand"', ""],
             ["marks", "boolean", "false", "A dot for every step"],
             ["valueLabel", "boolean", "false", "Bubble with the value while dragging or focused"],
             ["formatValue", "(value: number) => string", "String", "Used by the bubble and as aria-valuetext"],
